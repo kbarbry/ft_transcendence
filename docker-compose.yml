@@ -1,0 +1,33 @@
+version: "3.5"
+
+services:
+  postgresql:
+    container_name: "postgresql"
+    hostname: "postgresql"
+    image: "postgres:15.1"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: postgres
+    volumes:
+      - postgres_volume:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    restart: always
+
+  pgadmin:
+    container_name: "pgadmin"
+    depends_on:
+      - postgresql
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: pgadmin4@pgadmin.org
+      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_CONFIG_SERVER_MODE: "False"
+    ports:
+      - "5050:80"
+    restart: always
+
+volumes:
+  postgres_volume:
+    name: postgres_db
