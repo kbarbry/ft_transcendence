@@ -1,0 +1,101 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+//***********************************//
+//  ENUM
+//***********************************//
+
+enum EStatus {
+  Online
+  Offline
+  Playing
+}
+
+enum ELanguage {
+  English
+  French
+  Spanish
+}
+
+//***********************************//
+//  USER
+//***********************************//
+
+model User {
+  id        String  @id @default(nanoid())
+  avatarUrl String
+
+  mail      String  @unique
+  username  String  @unique
+  password  String? 
+
+  googleId    String?
+  school42Id  String?
+
+  doubleA Boolean @default(false)
+  status  EStatus @default(Offline)
+
+  userPresences   UserPresence[]
+  languages       ELanguage @default(English)
+
+  // Relations
+  relationFriendA  RelationFriend[] @relation("relationFriendA")
+  relationFriendB  RelationFriend[] @relation("relationFriendB")
+
+  requestSender   RelationRequests[] @relation("requestSender")
+  requestReceiver RelationRequests[] @relation("requestReceiver")
+
+  userBlock   RelationBlocked[] @relation("userBlock")
+  userBlocked RelationBlocked[] @relation("userBlocked")
+}
+
+model UserPresence {
+  id        String  @id @default(nanoid())
+  user      User    @relation(fields: [userId], references: [id])
+  userId    String
+  connectedAt       DateTime  @default(now())
+  disconnectedAt    DateTime?
+}
+
+//***********************************//
+//  USER RELATIONS
+//***********************************//
+
+model RelationFriend {
+  userA   User    @relation("relationFriendA", fields: [userAId], references: [id])
+  userAId String
+
+  userB   User    @relation("relationFriendB", fields: [userBId], references: [id])
+  userBId String
+
+  @@id([userAId, userBId])
+}
+
+model RelationRequests {
+  userA   User    @relation("requestSender", fields: [userSenderId], references: [id])
+  userSenderId String
+
+  userB   User    @relation("requestReceiver", fields: [userReceiverId], references: [id])
+  userReceiverId String
+
+  @@id([userSenderId, userReceiverId])
+}
+
+model RelationBlocked {
+  userA   User    @relation("userBlock", fields: [userBlockingId], references: [id])
+  userBlockingId String
+
+  userB   User    @relation("userBlocked", fields: [userBlockedId], references: [id])
+  userBlockedId String
+
+  @@id([userBlockingId, userBlockedId])
+}
