@@ -26,15 +26,15 @@ enum ELanguage {
   Spanish
 }
 
+
 //***********************************//
 //  USER
 //***********************************//
-
 model User {
   id        String  @id @default(nanoid())
   avatarUrl String
 
-  email     String  @unique
+  mail      String  @unique
   username  String  @unique
   password  String? 
 
@@ -47,6 +47,12 @@ model User {
   userPresences   UserPresence[]
   languages       ELanguage @default(English)
 
+  // Channel
+  Admin   Channel[] @relation("AdminChannel")
+  Rooms   Channel[] @relation("UserChannel")
+  Owner   Channel[] @relation("OwnerChannel")
+  Message Message[] @relation()
+
   // Relations
   relationFriendA  RelationFriend[] @relation("relationFriendA")
   relationFriendB  RelationFriend[] @relation("relationFriendB")
@@ -56,8 +62,6 @@ model User {
 
   userBlock   RelationBlocked[] @relation("userBlock")
   userBlocked RelationBlocked[] @relation("userBlocked")
-
-  @@index([username, email])
 }
 
 model UserPresence {
@@ -100,4 +104,44 @@ model RelationBlocked {
   userBlockedId String
 
   @@id([userBlockingId, userBlockedId])
+}
+
+//***********************************//
+//  CHANNEL
+//***********************************//
+
+enum EChannelType {
+  Public
+  Protected
+  Private
+  DirectMessageChannel
+}
+
+model Channel {
+  id        String        @id @default(nanoid())
+  name      String
+  password  String?       @unique //Password is required only if the Channeltype is "private"
+
+  owner     User          @relation("OwnerChannel", fields: [ownerId], references: [id])
+  ownerId   String        @unique
+
+  maxUsers  Int           @default(50)
+
+  type      EChannelType  @default(Public) // If type is "DMChannel" set maxUser at 2, 
+  // the room will be the DM room for both user just need to check if the room alrady exist
+
+  message   Message[]
+  users     User[]        @relation("UserChannel")
+  admin     User[]        @relation("AdminChannel")
+}
+
+model Message {
+  id          String    @id @default(nanoid())
+  user        User      @relation(fields: [senderId], references: [id])
+  senderId    String
+
+  channel     Channel   @relation(fields: [channelId], references: [id])
+  channelId   String
+
+  content     String
 }

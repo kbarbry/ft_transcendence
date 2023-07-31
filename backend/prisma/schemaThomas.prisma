@@ -34,7 +34,7 @@ model User {
   id        String  @id @default(nanoid())
   avatarUrl String
 
-  email     String  @unique
+  mail      String  @unique
   username  String  @unique
   password  String? 
 
@@ -56,8 +56,6 @@ model User {
 
   userBlock   RelationBlocked[] @relation("userBlock")
   userBlocked RelationBlocked[] @relation("userBlocked")
-
-  @@index([username, email])
 }
 
 model UserPresence {
@@ -101,3 +99,7 @@ model RelationBlocked {
 
   @@id([userBlockingId, userBlockedId])
 }
+
+//***********************************//
+//  CHANNEL
+//***********************************//

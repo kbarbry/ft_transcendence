@@ -26,6 +26,12 @@ enum ELanguage {
   Spanish
 }
 
+enum EAccess {
+  Public
+  Private
+  Protected
+}
+
 //***********************************//
 //  USER
 //***********************************//
@@ -34,7 +40,7 @@ model User {
   id        String  @id @default(nanoid())
   avatarUrl String
 
-  email     String  @unique
+  mail      String  @unique
   username  String  @unique
   password  String? 
 
@@ -48,16 +54,21 @@ model User {
   languages       ELanguage @default(English)
 
   // Relations
-  relationFriendA  RelationFriend[] @relation("relationFriendA")
-  relationFriendB  RelationFriend[] @relation("relationFriendB")
+  relationFriendA   RelationFriend[] @relation("relationFriendA")
+  relationFriendB   RelationFriend[] @relation("relationFriendB")
 
-  requestSender   RelationRequests[] @relation("requestSender")
-  requestReceiver RelationRequests[] @relation("requestReceiver")
+  requestSender     RelationRequests[] @relation("requestSender")
+  requestReceiver   RelationRequests[] @relation("requestReceiver")
 
-  userBlock   RelationBlocked[] @relation("userBlock")
-  userBlocked RelationBlocked[] @relation("userBlocked")
+  userBlock         RelationBlocked[] @relation("userBlock")
+  userBlocked       RelationBlocked[] @relation("userBlocked")
 
-  @@index([username, email])
+  // Channels
+  channelAdmin    Channel @relation("adminUsers", fields: [channelAdminId], references: [id])
+  channelAdminId  String
+
+  bannedChan      Channel @relation("bannedUsers", fields: [bannedChanId], references: [id])
+  bannedChanId    String
 }
 
 model UserPresence {
@@ -100,4 +111,26 @@ model RelationBlocked {
   userBlockedId String
 
   @@id([userBlockingId, userBlockedId])
+}
+
+//***********************************//
+//  CHANNEL
+//***********************************//
+
+model Channel {
+  id          String    @id @default(nanoid())
+  avatarUrl   String
+  topic       String?
+  
+  maxUsers    Int       @default(50)
+  
+  access      EAccess   @default(Public)
+  
+  admin       User[]    @relation("adminUsers")
+  bannedUsers User[]    @relation("bannedUsers")
+
+  // avatarList  User[]    @relation(fields: [avatarChan], references: [id])
+
+  createdAt   DateTime  @default(now())
+  // updatedAt   DateTime?  @updatedAt
 }
