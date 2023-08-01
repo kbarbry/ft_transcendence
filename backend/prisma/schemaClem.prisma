@@ -121,7 +121,7 @@ model Channel {
   id          String    @id @default(nanoid())
   avatarUrl   String
   topic       String?
-  
+
   maxUsers    Int       @default(50)
   
   access      EAccess   @default(Public)
