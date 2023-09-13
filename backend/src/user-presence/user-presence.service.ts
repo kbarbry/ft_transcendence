@@ -57,7 +57,7 @@ export class UserPresenceService {
     })
   }
 
-  async findAll(): Promise<UserPresence[]> {
+  async findAll(userId: string): Promise<UserPresence[]> {
     return this.prisma.userPresence.findMany()
   }
   // chercher par ID pour chercher un tableau d'Userpresence

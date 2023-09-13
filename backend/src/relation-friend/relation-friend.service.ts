@@ -41,23 +41,23 @@ export class RelationFriendService {
     return id_tab
   }
 
-  async deleteById(idA: string, idB: string): Promise<RelationFriend> {
-    return this.prisma.relationFriend.delete({
-      where: {
-        //oui je sais que c'est du caca je vais corriger ca
-        userAId: idA,
-        userBId: idB
-        // OR: [
-        //   {
-        //     userAId: idA,
-        //     userBId: idB
-        //   },
-        //   {
-        //     userAId: idA,
-        //     userBId: idB
-        //   }
-        // ]
-      }
-    })
-  }
+  // async deleteById(idA: string, idB: string): Promise<RelationFriend> {
+  //   return this.prisma.relationFriend.delete({
+  //     where: {
+  //       //oui je sais que c'est du caca je vais corriger ca
+  //       userAId: idA,
+  //       userBId: idB
+  //       // OR: [
+  //       //   {
+  //       //     userAId: idA,
+  //       //     userBId: idB
+  //       //   },
+  //       //   {
+  //       //     userAId: idA,
+  //       //     userBId: idB
+  //       //   }
+  //       // ]
+  //     }
+  //   })
+  // }
 }

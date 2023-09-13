@@ -46,7 +46,7 @@ export class RelationRequestsService {
     })
   }
 
-  async exist(idA: string, idB: string): Promise<boolean> {
+  async isExisting(idA: string, idB: string): Promise<boolean> {
     if (idA > idB) [idA, idB] = [idB, idA]
     if (
       this.prisma.relationRequests.findUnique({
