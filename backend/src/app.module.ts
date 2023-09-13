@@ -13,13 +13,12 @@ import { ChannelMemberService } from './channel-member/channel-member.service'
 import { ChannelMessageService } from './channel-message/channel-message.service'
 import { PrivateMessageService } from './private-message/private-message.service'
 import { GameStatService } from './game-stat/game-stat.service'
-import { PrismaService } from './prisma/prisma.service'
+import { PrismaModule } from './prisma/prisma.module'
 
 @Module({
-  imports: [],
+  imports: [PrismaModule],
   controllers: [AppController, UserController],
   providers: [
-    PrismaService,
     AppService,
     UserService,
     UserPresenceService,
