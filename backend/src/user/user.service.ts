@@ -16,7 +16,7 @@ export class UserService {
     })
   }
 
-  async update(id: string, data: Prisma.UserUpdateInput) {
+  async update(id: string, data: Prisma.UserUpdateInput): Promise<User> {
     return this.prisma.user.update({
       where: {
         id
@@ -37,9 +37,27 @@ export class UserService {
   //  QUERY
   //**************************************************//
 
-  async findOne(where: Prisma.UserWhereUniqueInput): Promise<User | null> {
+  async findOne(id: string): Promise<User | null> {
     return this.prisma.user.findUnique({
-      where
+      where: {
+        id
+      }
+    })
+  }
+
+  async findOnebyMail(mail: string): Promise<User | null> {
+    return this.prisma.user.findUnique({
+      where: {
+        mail
+      }
+    })
+  }
+
+  async findOneByUsername(username: string): Promise<User | null> {
+    return this.prisma.user.findUnique({
+      where: {
+        username
+      }
     })
   }
 }
