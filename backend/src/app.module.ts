@@ -14,9 +14,32 @@ import { ChannelMessageService } from './channel-message/channel-message.service
 import { PrivateMessageService } from './private-message/private-message.service'
 import { GameStatService } from './game-stat/game-stat.service'
 import { PrismaService } from './prisma/prisma.service'
+import { PrismaModule } from './prisma/prisma.module'
+import { ChannelModule } from './channel/channel.module'
+import { ChannelMemberModule } from './channel-member/channel-member.module'
+import { ChannelMessageModule } from './channel-message/channel-message.module'
+import { GameStatModule } from './game-stat/game-stat.module'
+import { PrivateMessageModule } from './private-message/private-message.module'
+import { RelationBlockedModule } from './relation-blocked/relation-blocked.module'
+import { RelationFriendModule } from './relation-friend/relation-friend.module'
+import { RelationRequestsModule } from './relation-requests/relation-requests.module'
+import { UserModule } from './user/user.module'
+import { UserPresenceModule } from './user-presence/user-presence.module'
 
 @Module({
-  imports: [],
+  imports: [
+    PrismaModule,
+    ChannelModule,
+    ChannelMemberModule,
+    ChannelMessageModule,
+    GameStatModule,
+    PrivateMessageModule,
+    RelationBlockedModule,
+    RelationFriendModule,
+    RelationRequestsModule,
+    UserModule,
+    UserPresenceModule
+  ],
   controllers: [AppController, UserController],
   providers: [
     PrismaService,
