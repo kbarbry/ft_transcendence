@@ -13,9 +13,9 @@ export class RelationRequestsService {
   //**************************************************//
   //  MUTATION
   //**************************************************//
-  async create(userAId: string, userBId: string): Promise<RelationRequests> {
+  async create(userAId: string, userBId: string): Promise<RelationRequests | null> {
     // A Blocked B
-    // if (RelationBlockedService)
+    if (RelationBlockedService)
     // No relation
     return this.prisma.relationRequests.create({
       data: {
