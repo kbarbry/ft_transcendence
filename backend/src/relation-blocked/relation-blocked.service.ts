@@ -10,6 +10,7 @@ export class RelationBlockedService {
   //  MUTATION
   //**************************************************//
 
+  //A block B
   async create(userA: string, userB: string): Promise<RelationBlocked> {
     return this.prisma.relationBlocked.create({
       data: {
@@ -17,6 +18,19 @@ export class RelationBlockedService {
         userBlockedId: userB
       }
     })
+  }
+
+  //A unblock B     ==> delete or update gor name?
+  async delete(userId1: string, userId2: string) {
+    const updatedRelation = await this.prisma.relationBlocked.delete({
+      where: {
+        userBlockingId_userBlockedId: {
+          userBlockingId: userId1,
+          userBlockedId: userId2
+        }
+      }
+    })
+    return updatedRelation
   }
 
   //**************************************************//
@@ -33,9 +47,10 @@ export class RelationBlockedService {
         }
       }
     })
-
     return !!relation
   }
 
-  //   async blockedByChan
+  // async isUserBlockedByChan(userId: string, chanId: string): Promise<boolean> {
+  //==>Enum EMemberType()
+  // }
 }
