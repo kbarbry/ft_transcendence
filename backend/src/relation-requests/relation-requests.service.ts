@@ -15,14 +15,14 @@ export class RelationRequestsService {
   //**************************************************//
   async create(userAId: string, userBId: string): Promise<RelationRequests> {
     // A Blocked B
-    if (RelationBlockedService)
-      // No relation
-      return this.prisma.relationRequests.create({
-        data: {
-          userReceiverId: userAId,
-          userSenderId: userBId
-        }
-      })
+    // if (RelationBlockedService)
+    // No relation
+    return this.prisma.relationRequests.create({
+      data: {
+        userReceiverId: userAId,
+        userSenderId: userBId
+      }
+    })
   }
 
   async delete(userAId: string, userBId: string): Promise<RelationRequests> {
