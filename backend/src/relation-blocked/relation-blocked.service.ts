@@ -11,34 +11,41 @@ export class RelationBlockedService {
   //**************************************************//
 
   //A block B
-  async create(userA: string, userB: string): Promise<RelationBlocked> {
-    return this.prisma.relationBlocked.create({
-      data: {
-        userBlockingId: userA,
-        userBlockedId: userB
-      }
-    })
+  async create(userAId: string, userBId: string): Promise<RelationBlocked | null> {
+    if (!(await this.isBlocked(userAId, userBId))) {
+      return this.prisma.relationBlocked.create({
+        data: {
+          userBlockingId: userAId,
+          userBlockedId: userBId
+        }
+      });
+    } else {
+      return Promise.resolve(null);
+    }
   }
 
-  //A unblock B     ==> delete or update gor name?
-  async delete(userId1: string, userId2: string) {
-    const updatedRelation = await this.prisma.relationBlocked.delete({
-      where: {
-        userBlockingId_userBlockedId: {
-          userBlockingId: userId1,
-          userBlockedId: userId2
+  //A unlock B
+  async delete(userAId: string, userBId: string) {
+    if (await this.isBlocked(userAId, userBId)) {
+      return await this.prisma.relationBlocked.delete({
+        where: {
+          userBlockingId_userBlockedId: {
+            userBlockingId: userAId,
+            userBlockedId: userBId
+          }
         }
-      }
-    })
-    return updatedRelation
+      })
+    }
+    //Pas de return, donc la fonction renvoie 'undefined' si 'isBlocked'
+    //est évalué à 'false'..
   }
 
   //**************************************************//
   //  QUERY
   //**************************************************//
 
-  //A blocked by B?
-  async isUserBlocked(userAId: string, userBId: string): Promise<boolean> {
+  // A blocked by B?
+  async isBlocked(userAId: string, userBId: string): Promise<boolean> {
     const relation = await this.prisma.relationBlocked.findUnique({
       where: {
         userBlockingId_userBlockedId: {
@@ -50,7 +57,29 @@ export class RelationBlockedService {
     return !!relation
   }
 
-  // async isUserBlockedByChan(userId: string, chanId: string): Promise<boolean> {
-  //==>Enum EMemberType()
-  // }
+  async findAllBlockedByUser(id: string): Promise<string[]> {
+    return (
+      await this.prisma.relationBlocked.findMany({
+        where: {
+          userBlockingId: id
+        },
+        select: {
+          userBlockedId: true
+        }
+      })
+    ).map((elem) => elem.userBlockedId)
+  }
+
+  async findAllBlockingByUser(id: string): Promise<string[]> {
+    return (
+      await this.prisma.relationBlocked.findMany({
+        where: {
+          userBlockedId: id
+        },
+        select: {
+          userBlockingId: true
+        }
+      })
+    ).map((elem) => elem.userBlockingId)
+  }
 }

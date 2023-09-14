@@ -20,13 +20,13 @@ describe('Test UserService', () => {
     await prismaService.$disconnect()
   })
 
-  describe('Tests create', () => {
+  describe('Tests mutation User', () => {
     it('should be defined', () => {
       expect(userService).toBeDefined()
     })
     const userData = {
-      mail: 'example@example2.com',
-      username: 'example_user2',
+      mail: 'CreateUser@example.com',
+      username: 'CreateUser_user',
       password: 'password123',
       level: 0,
       avatarUrl: 'url_de_l_avatar_par_defaut'
@@ -42,29 +42,45 @@ describe('Test UserService', () => {
     })
   })
 
-  //   it('should update an existing user', async () => {
-  //     // Créez un utilisateur de test pour la mise à jour
-  //     const createUserInput = {
-  //       mail: 'test@example2.com',
-  //       username: 'example_user2',
-  //       password: 'password123',
-  //       level: 1,
-  //       avatarUrl: 'url_de_l_avatar_par_defaut2'
-  //     }
+  it('should update an existing user', async () => {
+    // Créez un utilisateur de test pour la mise à jour
+    const updateUserInput = {
+      mail: 'updateUserExemple.com',
+      username: 'UpdateUser_user',
+      password: 'password123',
+      level: 1,
+      avatarUrl: 'url_de_l_avatar_par_defaut2'
+    }
 
-  //     const createdUser = await userService.create(createUserInput)
+    const createdUser = await userService.create(updateUserInput)
 
-  //     // Données de mise à jour
-  //     const updateUserData = {
-  //       username: 'new_username'
-  //     }
+    // Données de mise à jour
+    const updateUserData = {
+      username: 'new_username'
+    }
 
-  //     // Appelez la fonction de mise à jour
-  //     const updatedUser = await userService.update(createdUser.id, updateUserData)
+    // Appelez la fonction de mise à jour
+    const updatedUser = await userService.update(createdUser.id, updateUserData)
 
-  //     // Vérifiez que l'utilisateur a été mis à jour correctement
-  //     expect(updatedUser).toBeDefined()
-  //     expect(updatedUser.id).toEqual(createdUser.id)
-  //     expect(updatedUser.username).toEqual(updateUserData.username)
-  //   })
+    // Vérifiez que l'utilisateur a été mis à jour correctement
+    expect(updatedUser).toBeDefined()
+    expect(updatedUser.id).toEqual(createdUser.id)
+    expect(updatedUser.username).toEqual(updateUserData.username)
+  })
+
+  it('should delete an user', async () => {
+    const deleteUserInput = {
+      mail: 'deleteUser@exemple.com',
+      username: 'deleteUser_User',
+      password: 'password123',
+      level: 1,
+      avatarUrl: 'default'
+    }
+
+    const mustBeDeletedUser = await userService.create(deleteUserInput)
+    await userService.delete(mustBeDeletedUser.id)
+
+    const isDeleted = await userService.findOne(mustBeDeletedUser.id)
+    expect(isDeleted).toBeNull
+  })
 })
