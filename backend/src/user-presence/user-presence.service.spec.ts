@@ -10,11 +10,11 @@ describe('UserPresenceService', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [UserPresenceService, PrismaService]
+      providers: [UserPresenceService, PrismaService, UserService]
     }).compile()
 
     userPresenceService = module.get<UserPresenceService>(UserPresenceService)
-    //userService = module.get<UserService>(UserService)
+    userService = module.get<UserService>(UserService)
     prismaService = module.get<PrismaService>(PrismaService)
   })
 
@@ -50,7 +50,9 @@ describe('UserPresenceService', () => {
         userPresenceData
       )
       expect(CreateUserPresence).toBeDefined()
-      expect(CreateUserPresence.connectedAt).toBe(userPresenceData.connectedAt)
+      expect(CreateUserPresence.connectedAt).toStrictEqual(
+        userPresenceData.connectedAt
+      )
     })
   })
 })
