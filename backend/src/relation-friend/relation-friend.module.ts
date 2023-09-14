@@ -1,4 +1,9 @@
-import { Module } from '@nestjs/common';
+import { Module } from '@nestjs/common'
+import { RelationFriendService } from './relation-friend.service'
 
-@Module({})
+@Module({
+  imports: [],
+  exports: [RelationFriendService],
+  providers: [RelationFriendService]
+})
 export class RelationFriendModule {}

@@ -1,31 +1,36 @@
-import { Injectable } from '@nestjs/common'
-import { RelationRequests } from '@prisma/client'
+import { Inject, Injectable } from '@nestjs/common'
 import { PrismaService } from 'src/prisma/prisma.service'
+import { RelationRequests } from '@prisma/client'
+import { RelationBlockedService } from 'src/relation-blocked/relation-blocked.service'
 
 @Injectable()
 export class RelationRequestsService {
   constructor(private prisma: PrismaService) {}
 
+  @Inject(RelationBlockedService)
+  private readonly relationBlockedService: RelationBlockedService
+
   //**************************************************//
   //  MUTATION
   //**************************************************//
-  async create(idA: string, idB: string): Promise<RelationRequests> {
-    if (idA > idB) [idA, idB] = [idB, idA]
-    return this.prisma.relationRequests.create({
-      data: {
-        userReceiverId: idA,
-        userSenderId: idB
-      }
-    })
+  async create(userAId: string, userBId: string): Promise<RelationRequests> {
+    // A Blocked B
+    if (RelationBlockedService)
+      // No relation
+      return this.prisma.relationRequests.create({
+        data: {
+          userReceiverId: userAId,
+          userSenderId: userBId
+        }
+      })
   }
 
-  async delete(idA: string, idB: string): Promise<RelationRequests> {
-    if (idA > idB) [idA, idB] = [idB, idA]
+  async delete(userAId: string, userBId: string): Promise<RelationRequests> {
     return this.prisma.relationRequests.delete({
       where: {
         userSenderId_userReceiverId: {
-          userSenderId: idA,
-          userReceiverId: idB
+          userSenderId: userAId,
+          userReceiverId: userBId
         }
       }
     })
@@ -34,26 +39,27 @@ export class RelationRequestsService {
   //**************************************************//
   //  QUERY
   //**************************************************//
-  async findOne(idA: string, idB: string): Promise<RelationRequests | null> {
-    if (idA > idB) [idA, idB] = [idB, idA]
+  async findOne(
+    userAId: string,
+    userBId: string
+  ): Promise<RelationRequests | null> {
     return this.prisma.relationRequests.findUnique({
       where: {
         userSenderId_userReceiverId: {
-          userSenderId: idA,
-          userReceiverId: idB
+          userSenderId: userAId,
+          userReceiverId: userBId
         }
       }
     })
   }
 
-  async isExisting(idA: string, idB: string): Promise<boolean> {
-    if (idA > idB) [idA, idB] = [idB, idA]
+  async isRequested(userAId: string, userBId: string): Promise<boolean> {
     if (
       this.prisma.relationRequests.findUnique({
         where: {
           userSenderId_userReceiverId: {
-            userSenderId: idA,
-            userReceiverId: idB
+            userSenderId: userAId,
+            userReceiverId: userBId
           }
         }
       }) !== null
@@ -62,8 +68,8 @@ export class RelationRequestsService {
     return false
   }
 
-  async findAll(id: string): Promise<string[]> {
-    const caseSender = (
+  async findAllRequestSent(id: string): Promise<string[]> {
+    return (
       await this.prisma.relationRequests.findMany({
         where: {
           userSenderId: id
@@ -73,7 +79,10 @@ export class RelationRequestsService {
         }
       })
     ).map((elem) => elem.userReceiverId)
-    const caseReceiver = (
+  }
+
+  async findAllRequestReceived(id: string): Promise<string[]> {
+    return (
       await this.prisma.relationRequests.findMany({
         where: {
           userReceiverId: id
@@ -83,6 +92,5 @@ export class RelationRequestsService {
         }
       })
     ).map((elem) => elem.userSenderId)
-    return [...caseSender, ...caseReceiver]
   }
 }

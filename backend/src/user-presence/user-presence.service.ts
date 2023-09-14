@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common'
 import { Prisma, UserPresence } from '@prisma/client'
-import { PrismaService } from 'src/prisma/prisma.service'
+import { PrismaService } from '../prisma/prisma.service'
 
 @Injectable()
 export class UserPresenceService {
@@ -58,7 +58,13 @@ export class UserPresenceService {
   }
 
   async findAll(userId: string): Promise<UserPresence[]> {
-    return this.prisma.userPresence.findMany()
+    return this.prisma.userPresence.findMany({
+      where: {
+        userId
+      },
+      orderBy: {
+        connectedAt: 'desc'
+      }
+    })
   }
-  // chercher par ID pour chercher un tableau d'Userpresence
 }
