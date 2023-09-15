@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common'
 import { RelationBlocked } from '@prisma/client'
 import { PrismaService } from 'src/prisma/prisma.service'
-
+//blop
 @Injectable()
 export class RelationBlockedService {
   constructor(private prisma: PrismaService) {}
