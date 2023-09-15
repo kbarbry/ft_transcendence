@@ -67,4 +67,26 @@ export class UserPresenceService {
       }
     })
   }
+
+  async disconnected(id: string, disconnectedAt: Date): Promise<UserPresence> {
+    return this.prisma.userPresence.update({
+      where: {
+        id
+      },
+      data: {
+        disconnectedAt
+      }
+    })
+  }
+
+  async connected(id: string, connectedAt: Date): Promise<UserPresence> {
+    return this.prisma.userPresence.update({
+      where: {
+        id
+      },
+      data: {
+        connectedAt
+      }
+    })
+  }
 }

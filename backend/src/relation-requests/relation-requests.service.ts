@@ -2,6 +2,13 @@ import { Inject, Injectable } from '@nestjs/common'
 import { PrismaService } from 'src/prisma/prisma.service'
 import { RelationRequests } from '@prisma/client'
 import { RelationBlockedService } from 'src/relation-blocked/relation-blocked.service'
+import { RelationFriendService } from 'src/relation-friend/relation-friend.service'
+import {
+  ExceptionUserBlocked,
+  ExceptionUserBlockedYou
+} from 'src/user/exceptions/blocked.exceptions'
+import { ExceptionUsersAlreadyFriend } from 'src/user/exceptions/friend.exceptions'
+import { ExceptionRequestAlreadySent } from 'src/user/exceptions/request.exceptions'
 
 @Injectable()
 export class RelationRequestsService {
@@ -10,12 +17,30 @@ export class RelationRequestsService {
   @Inject(RelationBlockedService)
   private readonly relationBlockedService: RelationBlockedService
 
+  @Inject(RelationFriendService)
+  private readonly relationFriendService: RelationFriendService
+
   //**************************************************//
   //  MUTATION
   //**************************************************//
-  async create(userAId: string, userBId: string): Promise<RelationRequests | null> {
-    // A Blocked B
-    if (RelationBlockedService)
+  async create(
+    userAId: string,
+    userBId: string
+  ): Promise<RelationRequests | null> {
+    // if blocked
+    if (await this.relationBlockedService.isBlocked(userAId, userBId))
+      throw new ExceptionUserBlocked()
+    // if blocked by the other user
+    if (await this.relationBlockedService.isBlocked(userBId, userAId))
+      throw new ExceptionUserBlockedYou()
+    // if friend
+    if (await this.relationFriendService.isFriend(userAId, userBId))
+      throw new ExceptionUsersAlreadyFriend()
+    if (await this.isRequested(userAId, userBId))
+      throw new ExceptionRequestAlreadySent()
+    // if no relations
+    // if requestFriendSent
+    // if requestFriendReceived
     // No relation
     return this.prisma.relationRequests.create({
       data: {

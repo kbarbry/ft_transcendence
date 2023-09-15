@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { PrismaService } from '../prisma/prisma.service'
 import { UserService } from './user.service'
+import { disconnect } from 'process'
 
 describe('Test UserService', () => {
   let userService: UserService

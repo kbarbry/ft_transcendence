@@ -3,6 +3,8 @@ import { UserPresenceService } from './user-presence.service'
 import { PrismaService } from '../prisma/prisma.service'
 import { UserService } from '../user/user.service'
 
+//todo Faire une fonction spéciale pour Disconnect (Looks like update disconnect)
+
 describe('UserPresenceService', () => {
   let userPresenceService: UserPresenceService
   let prismaService: PrismaService
@@ -78,6 +80,7 @@ describe('UserPresenceService', () => {
         expect(updatedUserPresence.disconnectedAt).toEqual(
           updatedData.disconnectedAt
         )
+        expect(updatedUserPresence.connectedAt).toEqual(updatedData.connectedAt)
       })
       it('should delete UserPresence', async () => {
         const tmp = await userPresenceService.create(userPresenceData)
@@ -105,6 +108,28 @@ describe('UserPresenceService', () => {
         expect(ValidUserPresence).toBeDefined()
         expect(Array.isArray(ValidUserPresence)).toBeTruthy()
         expect(ValidUserPresence.length).toBeGreaterThan(0)
+      })
+      it('should update the disconnect time', async () => {
+        const updatedData = {
+          disconnectedAt: new Date('12/01')
+        }
+        const updateDisconnected = await userPresenceService.disconnected(
+          CreateUserPresence.id,
+          updatedData.disconnectedAt
+        )
+        expect(updateDisconnected.disconnectedAt).toEqual(
+          updatedData.disconnectedAt
+        )
+      })
+      it('should update the connected time', async () => {
+        const updatedData = {
+          connectedAt: new Date(123)
+        }
+        const updateConnected = await userPresenceService.connected(
+          CreateUserPresence.id,
+          updatedData.connectedAt
+        )
+        expect(updateConnected.connectedAt).toEqual(updatedData.connectedAt)
       })
     })
   })

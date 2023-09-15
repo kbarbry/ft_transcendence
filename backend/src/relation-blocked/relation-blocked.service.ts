@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common'
 import { RelationBlocked } from '@prisma/client'
 import { PrismaService } from 'src/prisma/prisma.service'
-//blop
+import { UserAlreadyBlockedException } from 'src/user/exceptions/user-already-blocked.exception'
 @Injectable()
 export class RelationBlockedService {
   constructor(private prisma: PrismaService) {}
@@ -11,17 +11,25 @@ export class RelationBlockedService {
   //**************************************************//
 
   //A block B
-  async create(userAId: string, userBId: string): Promise<RelationBlocked | null> {
-    if (!(await this.isBlocked(userAId, userBId))) {
-      return this.prisma.relationBlocked.create({
-        data: {
-          userBlockingId: userAId,
-          userBlockedId: userBId
-        }
-      });
-    } else {
-      return Promise.resolve(null);
-    }
+  async create(
+    userAId: string,
+    userBId: string
+  ): Promise<RelationBlocked | null> {
+    // if no relations
+    // if already blocked
+    // if blocked by the other user
+    // if friend
+    // if requestFriendSent
+    // if requestFriendReceived
+    if (await this.isBlocked(userAId, userBId))
+      throw new UserAlreadyBlockedException()
+    return this.prisma.relationBlocked.create({
+      data: {
+        userBlockingId: userAId,
+        userBlockedId: userBId
+      }
+    })
+    return Promise.resolve(null)
   }
 
   //A unlock B
