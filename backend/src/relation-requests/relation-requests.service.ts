@@ -1,14 +1,21 @@
 import { Inject, Injectable } from '@nestjs/common'
-import { PrismaService } from 'src/prisma/prisma.service'
-import { RelationRequests } from '@prisma/client'
-import { RelationBlockedService } from 'src/relation-blocked/relation-blocked.service'
-import { RelationFriendService } from 'src/relation-friend/relation-friend.service'
+import { PrismaService } from '../prisma/prisma.service'
+import { RelationFriend, RelationRequests } from '@prisma/client'
+import { RelationBlockedService } from '../relation-blocked/relation-blocked.service'
+import { RelationFriendService } from '../relation-friend/relation-friend.service'
 import {
   ExceptionUserBlocked,
   ExceptionUserBlockedYou
-} from 'src/user/exceptions/blocked.exceptions'
-import { ExceptionUsersAlreadyFriend } from 'src/user/exceptions/friend.exceptions'
-import { ExceptionRequestAlreadySent } from 'src/user/exceptions/request.exceptions'
+} from '../user/exceptions/blocked.exceptions'
+import { ExceptionUsersAlreadyFriend } from '../user/exceptions/friend.exceptions'
+import { ExceptionRequestAlreadySent } from '../user/exceptions/request.exceptions'
+
+// if blocked
+// if blocked by the other user
+// if friend
+// if requestFriendSent
+// if requestFriendReceived
+// if no relations
 
 @Injectable()
 export class RelationRequestsService {
@@ -26,7 +33,7 @@ export class RelationRequestsService {
   async create(
     userAId: string,
     userBId: string
-  ): Promise<RelationRequests | null> {
+  ): Promise<RelationRequests | RelationFriend> {
     // if blocked
     if (await this.relationBlockedService.isBlocked(userAId, userBId))
       throw new ExceptionUserBlocked()
@@ -36,12 +43,21 @@ export class RelationRequestsService {
     // if friend
     if (await this.relationFriendService.isFriend(userAId, userBId))
       throw new ExceptionUsersAlreadyFriend()
-    if (await this.isRequested(userAId, userBId))
-      throw new ExceptionRequestAlreadySent()
-    // if no relations
     // if requestFriendSent
+    console.log('Before request sent')
+    const res = await this.isRequested(userAId, userBId)
+    console.log('RETURN RES VALUE:', res)
+    if (res === true) {
+      console.log('RETURN TRUE')
+      throw new ExceptionRequestAlreadySent()
+    }
+    console.log('After request sent')
     // if requestFriendReceived
-    // No relation
+    if (await this.isRequested(userBId, userAId)) {
+      await this.delete(userBId, userAId)
+      return this.relationFriendService.create(userAId, userBId)
+    }
+    // if no relations
     return this.prisma.relationRequests.create({
       data: {
         userReceiverId: userAId,
@@ -79,18 +95,9 @@ export class RelationRequestsService {
   }
 
   async isRequested(userAId: string, userBId: string): Promise<boolean> {
-    if (
-      this.prisma.relationRequests.findUnique({
-        where: {
-          userSenderId_userReceiverId: {
-            userSenderId: userAId,
-            userReceiverId: userBId
-          }
-        }
-      }) !== null
-    )
-      return true
-    return false
+    const res = await this.findOne(userAId, userBId)
+    console.log('DEDANS')
+    return res !== null
   }
 
   async findAllRequestSent(id: string): Promise<string[]> {
