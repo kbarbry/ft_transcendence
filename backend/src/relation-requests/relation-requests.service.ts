@@ -44,14 +44,9 @@ export class RelationRequestsService {
     if (await this.relationFriendService.isFriend(userAId, userBId))
       throw new ExceptionUsersAlreadyFriend()
     // if requestFriendSent
-    console.log('Before request sent')
-    const res = await this.isRequested(userAId, userBId)
-    console.log('RETURN RES VALUE:', res)
-    if (res === true) {
-      console.log('RETURN TRUE')
+    if (await this.isRequested(userAId, userBId)) {
       throw new ExceptionRequestAlreadySent()
     }
-    console.log('After request sent')
     // if requestFriendReceived
     if (await this.isRequested(userBId, userAId)) {
       await this.delete(userBId, userAId)
@@ -96,7 +91,6 @@ export class RelationRequestsService {
 
   async isRequested(userAId: string, userBId: string): Promise<boolean> {
     const res = await this.findOne(userAId, userBId)
-    console.log('DEDANS')
     return res !== null
   }
 

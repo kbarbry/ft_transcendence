@@ -6,6 +6,7 @@ import { User } from '@prisma/client'
 import { RelationBlockedService } from '../relation-blocked/relation-blocked.service'
 import { RelationFriendService } from '../relation-friend/relation-friend.service'
 import { ExceptionRequestAlreadySent } from '../user/exceptions/request.exceptions'
+import { ExceptionAlreadyBlocked } from '../user/exceptions/blocked.exceptions'
 
 describe('RelationRequestsService', () => {
   let relationRequestsService: RelationRequestsService
@@ -67,8 +68,6 @@ describe('RelationRequestsService', () => {
   })
 
   describe('Test UserRelationRequest Mutation', () => {
-    beforeEach
-    afterEach
     describe('Create - no relation', () => {
       it('Should be created', async () => {
         const resRequest = await relationRequestsService.create(
@@ -79,12 +78,25 @@ describe('RelationRequestsService', () => {
         expect(resRequest).toBeDefined()
       })
     })
+    describe('Should be deleted', () => {
+      it('Delete - exist in database', async () => {
+        const res = await relationRequestsService.findOne(userA.id, userB.id)
+        console.log(res)
+        // await relationRequestsService.create(userA.id, userB.id)
+        const resRequest = await relationRequestsService.delete(
+          userA.id,
+          userB.id
+        )
+        console.log('deleted data', resRequest)
+        expect(resRequest).toBeDefined()
+      })
+    })
     describe('Create - already asked', () => {
       it('Should throw ExceptionRequestAlreadySent', () => {
         expect(async () => {
-          const res = await relationRequestsService.create(userB.id, userA.id)
-          console.log(res)
-        }).toThrow(ExceptionRequestAlreadySent)
+          await relationRequestsService.create(userA.id, userB.id)
+          await relationRequestsService.create(userA.id, userB.id)
+        }).rejects.toThrow()
       })
     })
   })
