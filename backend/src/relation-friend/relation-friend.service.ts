@@ -11,7 +11,6 @@ export class RelationFriendService {
   //**************************************************//
 
   async create(userAId: string, userBId: string): Promise<RelationFriend> {
-    // condition des blocked, c'est meetic genre
     if (userAId > userBId) [userAId, userBId] = [userBId, userAId]
     return this.prisma.relationFriend.create({
       data: {
@@ -50,6 +49,7 @@ export class RelationFriendService {
   }
 
   async isFriend(userAId: string, userBId: string): Promise<boolean> {
+    if (userAId > userBId) [userAId, userBId] = [userBId, userAId]
     const relation = await this.prisma.relationFriend.findUnique({
       where: {
         userAId_userBId: {
@@ -59,33 +59,6 @@ export class RelationFriendService {
       }
     })
     return !!relation
-  }
-
-  async findAllById(id: string): Promise<Array<string>> {
-    const id_tab: Array<string> = []
-
-    const dbreturn = await this.prisma.relationFriend.findMany({
-      where: {
-        OR: [
-          {
-            userAId: id
-          },
-          {
-            userBId: id
-          }
-        ]
-      }
-    })
-
-    for (const rel of dbreturn) {
-      if (rel.userAId == id) {
-        id_tab.push(rel.userBId)
-      } else {
-        id_tab.push(rel.userAId)
-      }
-    }
-
-    return id_tab
   }
 
   async deleteById(userAId: string, userBId: string): Promise<RelationFriend> {
