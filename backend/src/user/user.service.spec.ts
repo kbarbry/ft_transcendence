@@ -43,7 +43,7 @@ describe('Test UserService', () => {
     expect(prismaService).toBeDefined()
   })
 
-  describe('Tests mutations User', () => {
+  describe('Test Mutations', () => {
     it('should create a new user', async () => {
       const userData = {
         mail: 'CreateUser@example.com',
@@ -53,7 +53,7 @@ describe('Test UserService', () => {
         avatarUrl: 'url'
       }
       newUser = await userService.create(userData)
-      expect(newUser).toBeDefined
+      expect(newUser).toBeDefined()
     })
 
     it('should update an existing user', async () => {
@@ -69,18 +69,33 @@ describe('Test UserService', () => {
       expect(deletedUser).toBeDefined()
     })
   })
-  describe('Test Query Users', () => {
-    it('should find user', async () => {
+  describe('Test Query', () => {
+    it('should find user by id', async () => {
       const findUser = await userService.findOne('51d43c2')
       expect(findUser).toBeDefined()
     })
-    it('should find user', async () => {
+    it('should find user by email', async () => {
       const findUser = await userService.findOnebyMail('charlie@42.fr')
       expect(findUser).toBeDefined()
     })
-    it('should find user', async () => {
-      const findUser = await userService.findOne('51d43c2')
+    it('should find user by username', async () => {
+      const findUser = await userService.findOneByUsername('Bobby')
       expect(findUser).toBeDefined()
+    })
+  })
+  describe('Test Error', () => {
+    it('user already created', async () => {
+      expect(async () => {
+        const userData = {
+          mail: 'CreateUser@example.com',
+          username: 'CreateUser_user',
+          password: 'password123',
+          level: 0,
+          avatarUrl: 'url'
+        }
+        newUser = await userService.create(userData)
+        newUser = await userService.create(userData)
+      }).rejects.toThrow()
     })
   })
 })
