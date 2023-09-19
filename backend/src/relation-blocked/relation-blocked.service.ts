@@ -62,7 +62,8 @@ export class RelationBlockedService {
         }
       }
     })
-    return !!relation
+    console.log('BLOCKED OR NOT', relation)
+    return relation !== null
   }
 
   async findAllBlockedByUser(id: string): Promise<string[]> {

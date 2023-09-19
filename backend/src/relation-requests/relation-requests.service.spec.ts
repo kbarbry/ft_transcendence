@@ -16,6 +16,10 @@ describe('RelationRequestsService', () => {
   let userService: UserService
   let userA: User
   let userB: User
+  let expectedRes: {
+    userSenderId: string
+    userReceiverId: string
+  }
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -41,6 +45,9 @@ describe('RelationRequestsService', () => {
     //  USERS CREATION
     //**************************************************//
 
+    await prismaService.$executeRaw`INSERT INTO "public"."User" VALUES ('51d43c2', 'random url', 'alfred@42.fr', 'Ally', 'oui', null, null, false, 'Online', 'English', 1);`
+    await prismaService.$executeRaw`INSERT INTO "public"."User" VALUES ('51d43c2', 'random url', 'alfred@42.fr', 'Ally', 'oui', null, null, false, 'Online', 'English', 1);`
+    
     const userAData = {
       mail: 'userA@example.com',
       username: 'userA',
@@ -57,6 +64,10 @@ describe('RelationRequestsService', () => {
       avatarUrl: 'url_de_l_avatar_par_defaut'
     }
     userB = await userService.create(userBData)
+    expectedRes = {
+      userSenderId: userA.id,
+      userReceiverId: userB.id
+    }
   })
 
   afterAll(async () => {
@@ -68,36 +79,36 @@ describe('RelationRequestsService', () => {
   })
 
   describe('Test UserRelationRequest Mutation', () => {
+    it('Service should be defined', () => {
+      expect(RelationRequestsService).toBeDefined()
+    })
     describe('Create - no relation', () => {
       it('Should be created', async () => {
         const resRequest = await relationRequestsService.create(
           userA.id,
           userB.id
         )
-        console.log(resRequest)
-        expect(resRequest).toBeDefined()
+        expect(resRequest).toStrictEqual(expectedRes)
       })
-    })
-    describe('Should be deleted', () => {
       it('Delete - exist in database', async () => {
-        const res = await relationRequestsService.findOne(userA.id, userB.id)
-        console.log(res)
-        // await relationRequestsService.create(userA.id, userB.id)
         const resRequest = await relationRequestsService.delete(
           userA.id,
           userB.id
         )
-        console.log('deleted data', resRequest)
-        expect(resRequest).toBeDefined()
+        expect(resRequest).toStrictEqual(expectedRes)
       })
-    })
-    describe('Create - already asked', () => {
       it('Should throw ExceptionRequestAlreadySent', () => {
         expect(async () => {
+          console.log('createdlaunch')
+          const res = await relationBlockedService.isBlocked(userA.id, userB.id)
+          console.log(res)
           await relationRequestsService.create(userA.id, userB.id)
-          await relationRequestsService.create(userA.id, userB.id)
-        }).rejects.toThrow()
+          console.log('createdended')
+          // await relationRequestsService.create(userA.id, userB.id)
+        }).rejects.toThrow(ExceptionRequestAlreadySent)
       })
     })
+    // describe('Should be deleted', () => {})
+    // describe('Create - already asked', () => {})
   })
 })

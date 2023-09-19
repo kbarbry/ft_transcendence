@@ -31,42 +31,55 @@ export class RelationRequestsService {
   //  MUTATION
   //**************************************************//
   async create(
-    userAId: string,
-    userBId: string
+    userSenderId: string,
+    userReceiverId: string
   ): Promise<RelationRequests | RelationFriend> {
     // if blocked
-    if (await this.relationBlockedService.isBlocked(userAId, userBId))
+    console.log('EWE MON CON')
+    if (
+      await this.relationBlockedService.isBlocked(userSenderId, userReceiverId)
+    )
       throw new ExceptionUserBlocked()
     // if blocked by the other user
-    if (await this.relationBlockedService.isBlocked(userBId, userAId))
+    console.log('EWE MON CON 2')
+    if (
+      await this.relationBlockedService.isBlocked(userReceiverId, userSenderId)
+    )
       throw new ExceptionUserBlockedYou()
+    console.log('EWE MON CON 3')
     // if friend
-    if (await this.relationFriendService.isFriend(userAId, userBId))
+    if (await this.relationFriendService.isFriend(userSenderId, userReceiverId))
       throw new ExceptionUsersAlreadyFriend()
+    console.log('EWE MON CON 4')
     // if requestFriendSent
-    if (await this.isRequested(userAId, userBId)) {
+    if (await this.isRequested(userSenderId, userReceiverId)) {
       throw new ExceptionRequestAlreadySent()
     }
+    console.log('EWE MON CON 5')
     // if requestFriendReceived
-    if (await this.isRequested(userBId, userAId)) {
-      await this.delete(userBId, userAId)
-      return this.relationFriendService.create(userAId, userBId)
+    if (await this.isRequested(userReceiverId, userSenderId)) {
+      await this.delete(userReceiverId, userSenderId)
+      return this.relationFriendService.create(userSenderId, userReceiverId)
     }
+    console.log('EWE MON CON 6')
     // if no relations
     return this.prisma.relationRequests.create({
       data: {
-        userReceiverId: userAId,
-        userSenderId: userBId
+        userSenderId,
+        userReceiverId
       }
     })
   }
 
-  async delete(userAId: string, userBId: string): Promise<RelationRequests> {
+  async delete(
+    userSenderId: string,
+    userReceiverId: string
+  ): Promise<RelationRequests> {
     return this.prisma.relationRequests.delete({
       where: {
         userSenderId_userReceiverId: {
-          userSenderId: userAId,
-          userReceiverId: userBId
+          userSenderId,
+          userReceiverId
         }
       }
     })
@@ -76,21 +89,24 @@ export class RelationRequestsService {
   //  QUERY
   //**************************************************//
   async findOne(
-    userAId: string,
-    userBId: string
+    userSenderId: string,
+    userReceiverId: string
   ): Promise<RelationRequests | null> {
     return this.prisma.relationRequests.findUnique({
       where: {
         userSenderId_userReceiverId: {
-          userSenderId: userAId,
-          userReceiverId: userBId
+          userSenderId,
+          userReceiverId
         }
       }
     })
   }
 
-  async isRequested(userAId: string, userBId: string): Promise<boolean> {
-    const res = await this.findOne(userAId, userBId)
+  async isRequested(
+    userSenderId: string,
+    userReceiverId: string
+  ): Promise<boolean> {
+    const res = await this.findOne(userSenderId, userReceiverId)
     return res !== null
   }
 
