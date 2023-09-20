@@ -1,3 +1,6 @@
+DELETE FROM "public"."RelationRequests";
+DELETE FROM "public"."User";
+
 --    Column   |       Type       | Collation | Nullable |        Default         | Storage  | Compression | Stats target | Description
 -- ------------+------------------+-----------+----------+------------------------+----------+-------------+--------------+-------------
 --  id         | text             |           | not null |                        | extended |             |              |
@@ -12,7 +15,6 @@
 --  languages  | "ELanguage"      |           | not null | 'English'::"ELanguage" | plain    |             |              |
 --  level      | double precision |           | not null |                        | plain    |             |              |
 
-DELETE FROM "public"."User";
 INSERT INTO 
 "public"."User" 
 VALUES 
@@ -23,14 +25,12 @@ VALUES
 ('ec178ef86d29197b6ffd', 'random url', 'evan@42.fr', 'evee', 'oui', null, null, false, 'Idle', 'Spanish', 36),
 ('e28d4ff1f6cd647fc171', 'random url', 'frank@42.fr', 'punisher', 'oui', null, null, false, 'DoNotDisturb', 'Spanish', 9000);
 
-
 --                                        Table "public.RelationRequests"
 --      Column     | Type | Collation | Nullable | Default | Storage  | Compression | Stats target | Description
 -- ----------------+------+-----------+----------+---------+----------+-------------+--------------+-------------
 --  userSenderId   | text |           | not null |         | extended |             |              |
 --  userReceiverId | text |           | not null |         | extended |             |              |
 
-DELETE FROM "public"."RelationRequests";
 INSERT INTO 
 "public"."RelationRequests" 
 VALUES 
