@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common'
 import { Prisma, UserPresence } from '@prisma/client'
 import { PrismaService } from '../prisma/prisma.service'
+import { ExceptionTryingToUpdateID } from '../user/exceptions/user.exceptions'
 
 @Injectable()
 export class UserPresenceService {
@@ -19,6 +20,7 @@ export class UserPresenceService {
     id: string,
     data: Prisma.UserPresenceUpdateInput
   ): Promise<UserPresence> {
+    if (data.id) throw new ExceptionTryingToUpdateID()
     return this.prisma.userPresence.update({
       where: {
         id
