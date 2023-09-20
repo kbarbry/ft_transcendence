@@ -1,3 +1,6 @@
+DELETE FROM "public"."GameStat";
+DELETE FROM "public"."User";
+
 --    Column   |       Type       | Collation | Nullable |        Default         | Storage  | Compression | Stats target | Description
 -- ------------+------------------+-----------+----------+------------------------+----------+-------------+--------------+-------------
 --  id         | text             |           | not null |                        | extended |             |              |
@@ -12,7 +15,6 @@
 --  languages  | "ELanguage"      |           | not null | 'English'::"ELanguage" | plain    |             |              |
 --  level      | double precision |           | not null |                        | plain    |             |              |
 
-DELETE FROM "public"."User";
 INSERT INTO 
 "public"."User" 
 VALUES 
@@ -40,7 +42,6 @@ VALUES
 --     "GameStat_looserId_fkey" FOREIGN KEY ("looserId") REFERENCES "User"(id) ON UPDATE CASCADE ON DELETE RESTRICT
 --     "GameStat_winnerId_fkey" FOREIGN KEY ("winnerId") REFERENCES "User"(id) ON UPDATE CASCADE ON DELETE RESTRICT
 
-DELETE FROM "public"."GameStat";
 INSERT INTO 
 "public"."GameStat" 
 VALUES 
