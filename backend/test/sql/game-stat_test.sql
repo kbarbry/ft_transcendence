@@ -16,12 +16,12 @@ DELETE FROM "public"."User";
 INSERT INTO 
 "public"."User" 
 VALUES 
-('51d43c2', 'random url', 'alfred@42.fr', 'Ally', 'oui', null, null, false, 'Online', 'English', 1),
-('807e588', 'random url', 'bob.fr', 'Bobby', 'Babby', null, null, false, 'Online', 'English', 1),
-('4ee771a', 'random url', 'charlie@42.fr', 'Chacha', 'oui', null, null, false, 'Invisble', 'French', 12),
-('3fc7224', 'random url', 'david@42.fr', 'dav', 'oui', null, null, false, 'Invisble', 'French', 12),
-('a5cfce0', 'random url', 'evan@42.fr', 'evee', 'oui', null, null, false, 'Idle', 'Spanish', 36),
-('f568b3a', 'random url', 'frank@42.fr', 'punisher', 'oui', null, null, false, 'DoNotDisturb', 'Spanish', 9000);
+('537d4ec6daffd64a2d4c', 'random url', 'alfred@42.fr', 'Ally', 'oui', null, null, false, 'Online', 'English', 1),
+('f488e59aef615c5df6df', 'random url', 'bob.fr', 'Bobby', 'Babby', null, null, false, 'Online', 'English', 1),
+('4376f06677b65d3168d6', 'random url', 'charlie@42.fr', 'Chacha', 'oui', null, null, false, 'Invisble', 'French', 12),
+('df87734d323ac71c6efb', 'random url', 'david@42.fr', 'dav', 'oui', null, null, false, 'Invisble', 'French', 12),
+('ec178ef86d29197b6ffd', 'random url', 'evan@42.fr', 'evee', 'oui', null, null, false, 'Idle', 'Spanish', 36),
+('e28d4ff1f6cd647fc171', 'random url', 'frank@42.fr', 'punisher', 'oui', null, null, false, 'DoNotDisturb', 'Spanish', 9000);
 
 --                                                            Table "public.GameStat"
 --    Column    |              Type              | Collation | Nullable |      Default      | Storage  | Compression | Stats target | Description
@@ -44,9 +44,9 @@ DELETE FROM "public"."GameStat";
 INSERT INTO 
 "public"."GameStat" 
 VALUES 
-('51d43c2', 'random url', 'alfred@42.fr', 'Ally', 'oui', null, null, false, 'Online', 'English', 1),
-('807e588', 'random url', 'bob.fr', 'Bobby', 'Babby', null, null, false, 'Online', 'English', 1),
-('4ee771a', 'random url', 'charlie@42.fr', 'Chacha', 'oui', null, null, false, 'Invisble', 'French', 12),
-('3fc7224', 'random url', 'david@42.fr', 'dav', 'oui', null, null, false, 'Invisble', 'French', 12),
-('a5cfce0', 'random url', 'evan@42.fr', 'evee', 'oui', null, null, false, 'Idle', 'Spanish', 36),
-('f568b3a', 'random url', 'frank@42.fr', 'punisher', 'oui', null, null, false, 'DoNotDisturb', 'Spanish', 9000);
+('537d4ec6daffd64a2d4c', '537d4ec6daffd64a2d4c', 'f488e59aef615c5df6df', 'Classic', 300, 1, 0, '2023-09-13 10:00:00'),
+('f488e59aef615c5df6df', '537d4ec6daffd64a2d4c', '4376f06677b65d3168d6', 'Classic', 350, 10, 5, '2023-09-13 11:00:00'),
+('4376f06677b65d3168d6', '4376f06677b65d3168d6', '537d4ec6daffd64a2d4c', 'Classic', 200, 20, 1, '2023-09-13 12:00:00'),
+('df87734d323ac71c6efb', '4376f06677b65d3168d6', '537d4ec6daffd64a2d4c', 'Classic', 60, 5, 4, '2023-09-13 8:00:00'),
+('ec178ef86d29197b6ffd', '537d4ec6daffd64a2d4c', 'ec178ef86d29197b6ffd', 'Special', 3600, 420, 69, '2023-09-13 7:30:00'),
+('e28d4ff1f6cd647fc171', 'ec178ef86d29197b6ffd', 'e28d4ff1f6cd647fc171', 'Special', 500, 65, 40, '2023-09-13 7:45:00');
