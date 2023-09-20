@@ -2,12 +2,20 @@ import { Test, TestingModule } from '@nestjs/testing'
 import { PrismaService } from '../prisma/prisma.service'
 import { UserService } from './user.service'
 import { Prisma } from '@prisma/client'
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library'
+import { ExceptionTryingToUpdateID } from './exceptions/user.exceptions'
 
 describe('Test UserService', () => {
   let userService: UserService
   let prismaService: PrismaService
-  let userData: any
   let newUser: any
+  const userData = {
+    mail: 'CreateUser@example.com',
+    username: 'CreateUser_user',
+    password: 'password123',
+    level: 0,
+    avatarUrl: 'url'
+  }
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -20,10 +28,10 @@ describe('Test UserService', () => {
 
   beforeEach(async () => {
     //await prismaService.$executeRaw`DELETE FROM "public"."User";`
-    await prismaService.$executeRaw`INSERT INTO "public"."User" VALUES ('51d43c2', 'random url', 'alfred@42.fr', 'Ally', 'oui', null, null, false, 'Online', 'English', 1);`
-    await prismaService.$executeRaw`INSERT INTO "public"."User" VALUES ('4ee771a', 'random url', 'charlie@42.fr', 'Chacha', 'oui', null, null, false, 'Invisble', 'French', 12);`
-    await prismaService.$executeRaw`INSERT INTO "public"."User" VALUES ('807e588', 'random url', 'bob@42.fr', 'Bobby', 'Babby', null, null, false, 'Online', 'English', 1);`
-    // await prismaService.$executeRaw`INSERT INTO "public"."User" VALUES ('3fc7224', 'random url', 'david@42.fr', 'dav', 'oui', null, null, false, 'Invisble', 'French', 12);`
+    await prismaService.$executeRaw`INSERT INTO "public"."User" VALUES ('d2OayPlUh0qtDrePkJ87t', 'random url', 'alfred@42.fr', 'Ally', 'oui', null, null, false, 'Online', 'English', 1);`
+    await prismaService.$executeRaw`INSERT INTO "public"."User" VALUES ('j6-X94_NVjmzVm9QL3k4r', 'random url', 'charlie@42.fr', 'Chacha', 'oui', null, null, false, 'Invisble', 'French', 12);`
+    await prismaService.$executeRaw`INSERT INTO "public"."User" VALUES ('_U0vTLhbNpjA39Pc7wwtn', 'random url', 'bob@42.fr', 'Bobby', 'Babby', null, null, false, 'Online', 'English', 1);`
+    // await prismaService.$executeRaw`INSERT INTO "public"."User" VALUES ('c-vzGU-8QlEvmHk8rjNRI', 'random url', 'david@42.fr', 'dav', 'oui', null, null, false, 'Invisble', 'French', 12);`
     // await prismaService.$executeRaw`INSERT INTO "public"."User" VALUES ('a5cfce0', 'random url', 'evan@42.fr', 'evee', 'oui', null, null, false, 'Idle', 'Spanish', 36);`
     // await prismaService.$executeRaw`INSERT INTO "public"."User" VALUES ('f568b3a', 'random url', 'frank@42.fr', 'punisher', 'oui', null, null, false, 'DoNotDisturb', 'Spanish', 9000);`
   })
@@ -43,44 +51,92 @@ describe('Test UserService', () => {
     expect(prismaService).toBeDefined()
   })
 
-  describe('Tests mutations User', () => {
+  describe('Test Mutations', () => {
     it('should create a new user', async () => {
-      const userData = {
-        mail: 'CreateUser@example.com',
-        username: 'CreateUser_user',
-        password: 'password123',
-        level: 0,
-        avatarUrl: 'url'
-      }
       newUser = await userService.create(userData)
-      expect(newUser).toBeDefined
+      expect(newUser).toBeDefined()
     })
 
     it('should update an existing user', async () => {
       const updateUserData = {
         mail: 'updatedmail@exemple.com'
       }
-      const updatedUser = await userService.update('51d43c2', updateUserData)
+      const updatedUser = await userService.update(
+        'd2OayPlUh0qtDrePkJ87t',
+        updateUserData
+      )
       expect(updatedUser.mail).toStrictEqual(updateUserData.mail)
     })
 
     it('should delete an user', async () => {
-      const deletedUser = await userService.delete('51d43c2')
+      const deletedUser = await userService.delete('d2OayPlUh0qtDrePkJ87t')
       expect(deletedUser).toBeDefined()
     })
   })
-  describe('Test Query Users', () => {
-    it('should find user', async () => {
-      const findUser = await userService.findOne('51d43c2')
+  describe('Test Query', () => {
+    it('should find user by id', async () => {
+      const findUser = await userService.findOne('d2OayPlUh0qtDrePkJ87t')
       expect(findUser).toBeDefined()
     })
-    it('should find user', async () => {
+    it('should find user by email', async () => {
       const findUser = await userService.findOnebyMail('charlie@42.fr')
       expect(findUser).toBeDefined()
     })
-    it('should find user', async () => {
-      const findUser = await userService.findOne('51d43c2')
+    it('should find user by username', async () => {
+      const findUser = await userService.findOneByUsername('Bobby')
       expect(findUser).toBeDefined()
+    })
+  })
+  describe('Test Error', () => {
+    it('user already created - same mail', async () => {
+      const userDataSameEmail = {
+        mail: 'CreateUser@example.com',
+        username: 'CreateUser_user2',
+        password: 'password1234',
+        level: 0,
+        avatarUrl: 'url'
+      }
+      expect(async () => {
+        await userService.create(userData)
+        await userService.create(userDataSameEmail)
+      }).rejects.toThrow(PrismaClientKnownRequestError)
+    })
+    it('user already created - same username', async () => {
+      const userDataSameUsername = {
+        mail: 'CreateUser2@example.com',
+        username: 'CreateUser_user',
+        password: 'password1234',
+        level: 0,
+        avatarUrl: 'url'
+      }
+      expect(async () => {
+        await userService.create(userData)
+        await userService.create(userDataSameUsername)
+      }).rejects.toThrow(PrismaClientKnownRequestError)
+    })
+    it('change id field', async () => {
+      expect(async () => {
+        const updatedData = { id: '55555' }
+        await userService.update('d2OayPlUh0qtDrePkJ87t', updatedData)
+      }).rejects.toThrow(ExceptionTryingToUpdateID)
+    })
+    it('update already taken username', async () => {
+      const updatedData = { username: 'Ally' }
+      expect(async () => {
+        newUser = await userService.update('j6-X94_NVjmzVm9QL3k4r', updatedData)
+      }).rejects.toThrow(PrismaClientKnownRequestError)
+    })
+    it('update already taken email', async () => {
+      const updatedData = { mail: 'alfred@42.fr' }
+      expect(async () => {
+        newUser = await userService.update('j6-X94_NVjmzVm9QL3k4r', updatedData)
+      }).rejects.toThrow(PrismaClientKnownRequestError)
+    })
+    it('user already deleted', async () => {
+      expect(async () => {
+        await userService.delete('j6-X94_NVjmzVm9QL3k4r')
+        await userService.delete('j6-X94_NVjmzVm9QL3k4r')
+      }).rejects.toThrow(PrismaClientKnownRequestError)
     })
   })
 })
