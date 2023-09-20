@@ -1,3 +1,6 @@
+DELETE FROM "public"."RelationFriend";
+DELETE FROM "public"."User";
+
 --    Column   |       Type       | Collation | Nullable |        Default         | Storage  | Compression | Stats target | Description
 -- ------------+------------------+-----------+----------+------------------------+----------+-------------+--------------+-------------
 --  id         | text             |           | not null |                        | extended |             |              |
@@ -12,7 +15,6 @@
 --  languages  | "ELanguage"      |           | not null | 'English'::"ELanguage" | plain    |             |              |
 --  level      | double precision |           | not null |                        | plain    |             |              |
 
-DELETE FROM "public"."User";
 INSERT INTO 
 "public"."User" 
 VALUES 
@@ -23,7 +25,6 @@ VALUES
 ('ec178ef86d29197b6ffd', 'random url', 'evan@42.fr', 'evee', 'oui', null, null, false, 'Idle', 'Spanish', 36),
 ('e28d4ff1f6cd647fc171', 'random url', 'frank@42.fr', 'punisher', 'oui', null, null, false, 'DoNotDisturb', 'Spanish', 9000);
 
-DELETE FROM "public"."RelationFriend";
 INSERT INTO 
 "public"."RelationFriend" 
 VALUES 
@@ -31,7 +32,7 @@ VALUES
 ('4376f06677b65d3168d6', 'df87734d323ac71c6efb'),
 ('e28d4ff1f6cd647fc171', 'ec178ef86d29197b6ffd'),
 ('e28d4ff1f6cd647fc171', 'f488e59aef615c5df6df'),
-('df87734d323ac71c6efb', 'e28d4ff1f6cd647fc171'),;
+('df87734d323ac71c6efb', 'e28d4ff1f6cd647fc171');
 
 -- 4376f06677b65d3168d6
 -- 537d4ec6daffd64a2d4c
