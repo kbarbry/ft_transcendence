@@ -6,7 +6,8 @@ import {
   ExceptionTryingToUpdatePrivateMessageID,
   ExceptionPrivateMessageYourself,
   ExceptionTryingToUpdateDateMessage,
-  ExceptionTryingToUpdateUsersId
+  ExceptionTryingToUpdateUsersId,
+  ExceptionInvalidNeedlePrivateMessage
 } from '../channel/exceptions/private-message.exception'
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library'
 import { cleanDataBase } from '../../test/setup-environment'
@@ -51,31 +52,32 @@ describe('PrivateMessageService', () => {
     await prismaService.$executeRaw`
       INSERT INTO
       "public"."PrivateMessage"
+      ("id", "senderId", "receiverId", "content", "updatedAt", "createdAt")
       VALUES
-      ('in1ayPlUh0qtDrePkJ87t', 'rtjayPlUh0qtDrePkJ87t', '42tX94_NVjmzVm9QL3k4r', 'Ceci est un supermessage', '2023-09-13 10:00:00'),
-      ('in2ayPlUh0qtDrePkJ87t', '42tX94_NVjmzVm9QL3k4r', 'rtjayPlUh0qtDrePkJ87t', 'Ceci est un supermessage', '2023-09-13 10:00:00'),
-      ('in3ayPlUh0qtDrePkJ87t', 'rtjayPlUh0qtDrePkJ87t', '42tX94_NVjmzVm9QL3k4r', 'Ceci est un supermessage', '2023-09-13 10:00:00'),
-      ('in4ayPlUh0qtDrePkJ87t', '42tX94_NVjmzVm9QL3k4r', 'rtjayPlUh0qtDrePkJ87t', 'Ceci est un supermessage', '2023-09-13 10:00:00'),
-      ('in5ayPlUh0qtDrePkJ87t', '42tX94_NVjmzVm9QL3k4r', 'rtjayPlUh0qtDrePkJ87t', 'Ceci est un supermessage', '2023-09-13 10:00:00'),
-      ('in6ayPlUh0qtDrePkJ87t', '42tX94_NVjmzVm9QL3k4r', 'rtjayPlUh0qtDrePkJ87t', 'Ceci est un supermessage', '2023-09-13 10:00:00'),
-      ('in7ayPlUh0qtDrePkJ87t', '42tX94_NVjmzVm9QL3k4r', 'rtjayPlUh0qtDrePkJ87t', 'Ceci est un supermessage', '2023-09-13 10:00:00'),
-      ('in8ayPlUh0qtDrePkJ87t', '42tX94_NVjmzVm9QL3k4r', 'rtjayPlUh0qtDrePkJ87t', 'Ceci est un supermessage', '2023-09-13 10:00:00'),
-      ('in9ayPlUh0qtDrePkJ87t', '42tX94_NVjmzVm9QL3k4r', 'rtjayPlUh0qtDrePkJ87t', 'Ceci est un supermessage', '2023-09-13 10:00:00'),
-      ('in10yPlUh0qtDrePkJ87t', '42tX94_NVjmzVm9QL3k4r', 'rtjayPlUh0qtDrePkJ87t', 'Ceci est un supermessage', '2023-09-13 10:00:00'),
-      ('in11yPlUh0qtDrePkJ87t', '42tX94_NVjmzVm9QL3k4r', 'rtjayPlUh0qtDrePkJ87t', 'Ceci est un supermessage', '2023-09-13 10:00:00'),
-      ('in12yPlUh0qtDrePkJ87t', '42tX94_NVjmzVm9QL3k4r', 'rtjayPlUh0qtDrePkJ87t', 'Ceci est un supermessage', '2023-09-13 10:00:00'),
-      ('in13yPlUh0qtDrePkJ87t', '42tX94_NVjmzVm9QL3k4r', 'rtjayPlUh0qtDrePkJ87t', 'Ceci est un supermessage', '2023-09-13 10:00:00'),
-      ('in14yPlUh0qtDrePkJ87t', '42tX94_NVjmzVm9QL3k4r', 'rtjayPlUh0qtDrePkJ87t', 'Ceci est un supermessage', '2023-09-13 10:00:00'),
-      ('in15yPlUh0qtDrePkJ87t', '42tX94_NVjmzVm9QL3k4r', 'rtjayPlUh0qtDrePkJ87t', 'Ceci est un supermessage', '2023-09-13 10:00:00'),
-      ('in16yPlUh0qtDrePkJ87t', '42tX94_NVjmzVm9QL3k4r', 'rtjayPlUh0qtDrePkJ87t', 'Ceci est un supermessage', '2023-09-13 10:00:00'),
-      ('in17yPlUh0qtDrePkJ87t', '42tX94_NVjmzVm9QL3k4r', 'rtjayPlUh0qtDrePkJ87t', 'Ceci est un supermessage', '2023-09-13 10:00:00'),
-      ('in18yPlUh0qtDrePkJ87t', '42tX94_NVjmzVm9QL3k4r', 'rtjayPlUh0qtDrePkJ87t', 'Ceci est un supermessage', '2023-09-13 10:00:00'),
-      ('in19yPlUh0qtDrePkJ87t', '42tX94_NVjmzVm9QL3k4r', 'rtjayPlUh0qtDrePkJ87t', 'Ceci est un supermessage', '2023-09-13 10:00:00'),
-      ('in20yPlUh0qtDrePkJ87t', '42tX94_NVjmzVm9QL3k4r', 'rtjayPlUh0qtDrePkJ87t', 'Ceci est un supermessage', '2023-09-13 10:00:00'),
-      ('in21yPlUh0qtDrePkJ87t', '42tX94_NVjmzVm9QL3k4r', 'rtjayPlUh0qtDrePkJ87t', 'Ceci est un supermessage', '2023-09-13 10:00:00'),
-      ('in22yPlUh0qtDrePkJ87t', '42tX94_NVjmzVm9QL3k4r', 'rtjayPlUh0qtDrePkJ87t', 'Ceci est un supermessage', '2023-09-13 10:00:00'),
-      ('er10yPlUh0qtDrePkJ87t', 'rtjayPlUh0qtDrePkJ87t', 'YunzGU-8QlEvmHk8rjNRI', 'Ceci est un supermessage', '2023-09-13 10:00:00'),
-      ('er11yPlUh0qtDrePkJ87t', '42tX94_NVjmzVm9QL3k4r', 'YunzGU-8QlEvmHk8rjNRI', 'Ceci est un supermessage', '2023-09-13 10:00:00');`
+      ('in1ayPlUh0qtDrePkJ87t', 'rtjayPlUh0qtDrePkJ87t', '42tX94_NVjmzVm9QL3k4r', 'Ceci est un supermessage', null, '2023-09-13 10:00:00'),
+      ('in2ayPlUh0qtDrePkJ87t', '42tX94_NVjmzVm9QL3k4r', 'rtjayPlUh0qtDrePkJ87t', 'Ceci est un supermessage', null, '2023-09-13 10:00:00'),
+      ('in3ayPlUh0qtDrePkJ87t', 'rtjayPlUh0qtDrePkJ87t', '42tX94_NVjmzVm9QL3k4r', 'Ceci est un supermessage', null, '2023-09-13 10:00:00'),
+      ('in4ayPlUh0qtDrePkJ87t', '42tX94_NVjmzVm9QL3k4r', 'rtjayPlUh0qtDrePkJ87t', 'Ceci est un supermessage', null, '2023-09-13 10:00:00'),
+      ('in5ayPlUh0qtDrePkJ87t', '42tX94_NVjmzVm9QL3k4r', 'rtjayPlUh0qtDrePkJ87t', 'Ceci est un supermessage', null, '2023-09-13 10:00:00'),
+      ('in6ayPlUh0qtDrePkJ87t', '42tX94_NVjmzVm9QL3k4r', 'rtjayPlUh0qtDrePkJ87t', 'Ceci est un supermessage', null, '2023-09-13 10:00:00'),
+      ('in7ayPlUh0qtDrePkJ87t', '42tX94_NVjmzVm9QL3k4r', 'rtjayPlUh0qtDrePkJ87t', 'Ceci est un supermessage', null, '2023-09-13 10:00:00'),
+      ('in8ayPlUh0qtDrePkJ87t', '42tX94_NVjmzVm9QL3k4r', 'rtjayPlUh0qtDrePkJ87t', 'Ceci est un supermessage', null, '2023-09-13 10:00:00'),
+      ('in9ayPlUh0qtDrePkJ87t', '42tX94_NVjmzVm9QL3k4r', 'rtjayPlUh0qtDrePkJ87t', 'Ceci est un supermessage', null, '2023-09-13 10:00:00'),
+      ('in10yPlUh0qtDrePkJ87t', '42tX94_NVjmzVm9QL3k4r', 'rtjayPlUh0qtDrePkJ87t', 'Ceci est un supermessage', null, '2023-09-13 10:00:00'),
+      ('in11yPlUh0qtDrePkJ87t', '42tX94_NVjmzVm9QL3k4r', 'rtjayPlUh0qtDrePkJ87t', 'Ceci est un supermessage', null, '2023-09-13 10:00:00'),
+      ('in12yPlUh0qtDrePkJ87t', '42tX94_NVjmzVm9QL3k4r', 'rtjayPlUh0qtDrePkJ87t', 'Ceci est un supermessage', null, '2023-09-13 10:00:00'),
+      ('in13yPlUh0qtDrePkJ87t', '42tX94_NVjmzVm9QL3k4r', 'rtjayPlUh0qtDrePkJ87t', 'Ceci est un supermessage', null, '2023-09-13 10:00:00'),
+      ('in14yPlUh0qtDrePkJ87t', '42tX94_NVjmzVm9QL3k4r', 'rtjayPlUh0qtDrePkJ87t', 'Ceci est un supermessage', null, '2023-09-13 10:00:00'),
+      ('in15yPlUh0qtDrePkJ87t', '42tX94_NVjmzVm9QL3k4r', 'rtjayPlUh0qtDrePkJ87t', 'Ceci est un supermessage', null, '2023-09-13 10:00:00'),
+      ('in16yPlUh0qtDrePkJ87t', '42tX94_NVjmzVm9QL3k4r', 'rtjayPlUh0qtDrePkJ87t', 'Ceci est un supermessage', null, '2023-09-13 10:00:00'),
+      ('in17yPlUh0qtDrePkJ87t', '42tX94_NVjmzVm9QL3k4r', 'rtjayPlUh0qtDrePkJ87t', 'Ceci est un supermessage', null, '2023-09-13 10:00:00'),
+      ('in18yPlUh0qtDrePkJ87t', '42tX94_NVjmzVm9QL3k4r', 'rtjayPlUh0qtDrePkJ87t', 'Ceci est un supermessage', null, '2023-09-13 10:00:00'),
+      ('in19yPlUh0qtDrePkJ87t', '42tX94_NVjmzVm9QL3k4r', 'rtjayPlUh0qtDrePkJ87t', 'Ceci est un supermessage', null, '2023-09-13 10:00:00'),
+      ('in20yPlUh0qtDrePkJ87t', '42tX94_NVjmzVm9QL3k4r', 'rtjayPlUh0qtDrePkJ87t', 'Ceci est un supermessage', null, '2023-09-13 10:00:00'),
+      ('in21yPlUh0qtDrePkJ87t', '42tX94_NVjmzVm9QL3k4r', 'rtjayPlUh0qtDrePkJ87t', 'Ceci est un supermessage', null, '2023-09-13 10:00:00'),
+      ('in22yPlUh0qtDrePkJ87t', '42tX94_NVjmzVm9QL3k4r', 'rtjayPlUh0qtDrePkJ87t', 'Ceci est un supermessage', null, '2023-09-13 10:00:00'),
+      ('er10yPlUh0qtDrePkJ87t', 'rtjayPlUh0qtDrePkJ87t', 'YunzGU-8QlEvmHk8rjNRI', 'Ceci est un supermessage', null, '2023-09-13 10:00:00'),
+      ('er11yPlUh0qtDrePkJ87t', '42tX94_NVjmzVm9QL3k4r', 'YunzGU-8QlEvmHk8rjNRI', 'Ceci est un supermessage', null, '2023-09-13 10:00:00');`
 
     privateMessageData = {
       content: 'This is a wonderfull message',
@@ -122,6 +124,22 @@ describe('PrivateMessageService', () => {
       )
       expect(deletedMessage).toBeDefined
     })
+    it('should update the updatedAt', async () => {
+      const updatedata = {
+        content: 'updated content'
+      }
+      const date = new Date()
+      const updatedPrivateMessage = await privateMessageService.update(
+        'in7ayPlUh0qtDrePkJ87t',
+        updatedata
+      )
+      if (updatedPrivateMessage.updatedAt) {
+        const timeDifferenceInSeconds = Math.abs(
+          (updatedPrivateMessage.updatedAt.getTime() - date.getTime()) / 1000
+        )
+        expect(timeDifferenceInSeconds).toBeLessThanOrEqual(2)
+      }
+    })
   })
 
   describe('Test Query', () => {
@@ -156,6 +174,11 @@ describe('PrivateMessageService', () => {
         )
       expect(HistoricDiscussion.length).toStrictEqual(20)
     })
+    it('should find all message that contains the needle', async () => {
+      const foundPrivateMessage =
+        await privateMessageService.findPrivateMessageContain('Ceci')
+      expect(foundPrivateMessage?.length).toStrictEqual(24)
+    })
   })
 
   describe('Test Error', () => {
@@ -188,7 +211,7 @@ describe('PrivateMessageService', () => {
 
     it('send a message to someone who do not exist', async () => {
       await expect(
-        prismaService.$executeRaw`INSERT INTO "public"."PrivateMessage" VALUES ('er12yPlUh0qtDrePkJ87t', '42tX94_NVjmzVm9QL3k4r', 'zunzGU-8QlEvmHk8rjNRI', 'Ceci est un supermessage', '2023-09-13 10:00:00');`
+        prismaService.$executeRaw`INSERT INTO "public"."PrivateMessage" VALUES ('er12yPlUh0qtDrePkJ87t', '42tX94_NVjmzVm9QL3k4r', 'zunzGU-8QlEvmHk8rjNRI', 'Ceci est un supermessage', null, '2023-09-13 10:00:00');`
       ).rejects.toThrow(PrismaClientKnownRequestError)
     })
 
@@ -217,6 +240,11 @@ describe('PrivateMessageService', () => {
       await expect(
         privateMessageService.update('er10yPlUh0qtDrePkJ87t', wrongData)
       ).rejects.toThrow(ExceptionTryingToUpdateUsersId)
+    })
+    it('trying to send an empty needle to find PrivatMessage', async () => {
+      await expect(
+        privateMessageService.findPrivateMessageContain('')
+      ).rejects.toThrow(ExceptionInvalidNeedlePrivateMessage)
     })
   })
 })

@@ -26,3 +26,12 @@ export class ExceptionTryingToUpdateDateMessage extends HttpException {
     super('You are trying to update the date of a message', HttpStatus.CONFLICT)
   }
 }
+
+export class ExceptionInvalidNeedlePrivateMessage extends HttpException {
+  constructor() {
+    super(
+      'You are trying to send an invalid needle to findPrivateMessageContain',
+      HttpStatus.CONFLICT
+    )
+  }
+}
