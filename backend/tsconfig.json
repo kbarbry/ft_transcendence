@@ -20,5 +20,10 @@
     "strictBindCallApply": true,
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true
+    
+  },
+  "paths": {
+    "jest-postgres": ["node_modules/jest-postgres"]
   }
+  
 }
