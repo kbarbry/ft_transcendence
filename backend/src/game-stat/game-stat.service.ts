@@ -1,6 +1,10 @@
 import { Injectable } from '@nestjs/common'
 import { PrismaService } from '../prisma/prisma.service'
 import { Prisma, GameStat, EGameType } from '@prisma/client'
+import {
+  ExceptionTryingToUpdateID,
+  ExceptionSamePlayerInGame
+} from '../user/exceptions/game-stat.exception'
 
 @Injectable()
 export class GameStatService {
@@ -10,6 +14,9 @@ export class GameStatService {
   //**************************************************//
 
   async create(data: Prisma.GameStatCreateInput): Promise<GameStat> {
+    if (data.looser?.connect?.id == data.winner?.connect?.id) {
+      throw new ExceptionSamePlayerInGame()
+    }
     return this.prisma.gameStat.create({
       data
     })
@@ -19,6 +26,8 @@ export class GameStatService {
     id: string,
     data: Prisma.GameStatUpdateInput
   ): Promise<GameStat> {
+    if (data.id || data.looser?.connect?.id || data.winner?.connect?.id)
+      throw new ExceptionTryingToUpdateID()
     return this.prisma.gameStat.update({
       where: {
         id

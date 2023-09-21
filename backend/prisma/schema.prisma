@@ -122,15 +122,15 @@ model PrivateMessage {
 
 model GameStat {
   id          String    @id @default(nanoid())
-  winnerId    String
-  looserId    String
+  winnerId    String?
+  looserId    String?
   type        EGameType
   timePlayed  Int
   scoreWinner Int
   scoreLoser  Int
   createdAt   DateTime  @default(now())
-  looser      User      @relation("looserUser", fields: [looserId], references: [id])
-  winner      User      @relation("winnerUser", fields: [winnerId], references: [id])
+  looser      User?      @relation("looserUser", fields: [looserId], references: [id], onDelete: SetNull)
+  winner      User?      @relation("winnerUser", fields: [winnerId], references: [id], onDelete: SetNull)
 }
 
 enum EStatus {
