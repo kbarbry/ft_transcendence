@@ -97,7 +97,6 @@ describe('UserPresenceService', () => {
         const foundUserPresence = await userPresenceService.findOne(
           'drfOayPwwUh12tDrePkJ8'
         )
-        console.log('logdate => ', foundUserPresence?.connectedAt)
         expect(foundUserPresence).toBeDefined
         expect(foundUserPresence?.id).toStrictEqual('drfOayPwwUh12tDrePkJ8')
       })

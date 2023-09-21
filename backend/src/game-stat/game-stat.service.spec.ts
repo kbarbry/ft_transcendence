@@ -3,89 +3,75 @@ import { PrismaService } from '../prisma/prisma.service'
 import { UserService } from '../user/user.service'
 import { GameStatService } from './game-stat.service'
 import { EGameType, GameStat, User, Prisma } from '@prisma/client'
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library'
+import {
+  ExceptionTryingToUpdateID,
+  ExceptionSamePlayerInGame
+} from '../user/exceptions/game-stat.exception'
+import { async } from 'rxjs'
 
 describe('GameStatService', () => {
   let gameStatService: GameStatService
   let prismaService: PrismaService
-  let userService: UserService
-  let userLooser: User
-  let userWinner: User
-  let createdGameStat: GameStat
   let gameStatData: Prisma.GameStatCreateInput
-  let gameStatData2: Prisma.GameStatCreateInput
-  let gameStatSpecialData: Prisma.GameStatCreateInput
+  let invalidplayersdata: Prisma.GameStatCreateInput
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [GameStatService, PrismaService, UserService]
+      providers: [GameStatService, PrismaService]
     }).compile()
 
     gameStatService = module.get<GameStatService>(GameStatService)
-    userService = module.get<UserService>(UserService)
     prismaService = module.get<PrismaService>(PrismaService)
+  })
+  afterEach(async () => {
+    //await prismaService.$executeRaw`DELETE FROM "public"."GameStat";`
+    //await prismaService.$executeRaw`DELETE FROM "public"."User";`
+  })
 
+  beforeEach(async () => {
     //**************************************************//
     //  USER CREATION
     //**************************************************//
 
-    const userDataLooser = {
-      mail: 'L2132131@example.com',
-      username: 'Loo231123ser1User',
-      password: 'password123',
-      level: 0,
-      avatarUrl: 'url_de_l_avatar_par_defaut1'
-    }
-    userLooser = await userService.create(userDataLooser)
-
-    const userDataWinner = {
-      mail: 'W213213r1@example.com',
-      username: 'Win12312ner1User',
-      password: 'password123',
-      level: 0,
-      avatarUrl: 'url_de_l_avatar_par_defaut2'
-    }
-    userWinner = await userService.create(userDataWinner)
+    await prismaService.$executeRaw`DELETE FROM "public"."GameStat";`
+    await prismaService.$executeRaw`DELETE FROM "public"."User";`
+    await prismaService.$executeRaw`INSERT INTO "public"."User" VALUES ('d2OayPlUh0qtDrePkJ87t', 'random url', 'alfred@42.fr', 'Ally', 'oui', null, null, false, 'Online', 'English', 1);`
+    await prismaService.$executeRaw`INSERT INTO "public"."User" VALUES ('j6-X94_NVjmzVm9QL3k4r', 'random url', 'charlie@42.fr', 'Chacha', 'oui', null, null, false, 'Invisble', 'French', 12);`
+    await prismaService.$executeRaw`INSERT INTO "public"."User" VALUES ('_U0vTLhbNpjA39Pc7wwtn', 'random url', 'bob@42.fr', 'Bobby', 'Babby', null, null, false, 'Online', 'English', 1);`
+    await prismaService.$executeRaw`INSERT INTO "public"."User" VALUES ('c-vzGU-8QlEvmHk8rjNRI', 'random url', 'david@42.fr', 'dav', 'oui', null, null, false, 'Invisble', 'French', 12);`
 
     //**************************************************//
     //  GAME STAT CREATION
     //**************************************************//
 
+    await prismaService.$executeRaw`INSERT INTO "public"."GameStat" VALUES ('drfOayPc2Uh12tDrePkJ8', 'j6-X94_NVjmzVm9QL3k4r','d2OayPlUh0qtDrePkJ87t', 'Classic', 12, 15, 2, '2023-09-13 10:00:00');`
+    await prismaService.$executeRaw`INSERT INTO "public"."GameStat" VALUES ('uywayPlUh0qtDrePkJ87t', 'j6-X94_NVjmzVm9QL3k4r','d2OayPlUh0qtDrePkJ87t', 'Classic', 12, 15, 2, '2023-09-13 10:00:00');`
+    await prismaService.$executeRaw`INSERT INTO "public"."GameStat" VALUES ('cftOayPc2Uh12tDrePkJ8', 'd2OayPlUh0qtDrePkJ87t','j6-X94_NVjmzVm9QL3k4r', 'Classic', 12, 15, 2, '2023-09-13 10:00:00');`
+    await prismaService.$executeRaw`INSERT INTO "public"."GameStat" VALUES ('oiuOayPc2Uh12tDrePkJ8', 'd2OayPlUh0qtDrePkJ87t','j6-X94_NVjmzVm9QL3k4r', 'Special', 12, 15, 2, '2023-09-13 10:00:00');`
+
     gameStatData = {
-      timePlayed: 10,
-      scoreWinner: 15,
-      scoreLoser: 8,
-      createdAt: new Date(),
-      type: EGameType.Classic,
-      winner: { connect: { id: userWinner.id } },
-      looser: { connect: { id: userLooser.id } }
-    }
-
-    createdGameStat = await gameStatService.create(gameStatData)
-
-    gameStatData2 = {
       timePlayed: 12,
       scoreWinner: 15,
       scoreLoser: 3,
       createdAt: new Date(),
       type: EGameType.Classic,
-      winner: { connect: { id: userLooser.id } },
-      looser: { connect: { id: userWinner.id } }
+      winner: { connect: { id: 'd2OayPlUh0qtDrePkJ87t' } },
+      looser: { connect: { id: 'j6-X94_NVjmzVm9QL3k4r' } }
     }
 
-    gameStatSpecialData = {
-      timePlayed: 120,
+    invalidplayersdata = {
+      timePlayed: 12,
       scoreWinner: 15,
       scoreLoser: 3,
       createdAt: new Date(),
-      type: EGameType.Special,
-      winner: { connect: { id: userWinner.id } },
-      looser: { connect: { id: userLooser.id } }
+      type: EGameType.Classic,
+      winner: { connect: { id: 'd2OayPlUh0qtDrePkJ87t' } },
+      looser: { connect: { id: 'd2OayPlUh0qtDrePkJ87t' } }
     }
   })
 
   afterAll(async () => {
-    await prismaService.gameStat.deleteMany({})
-    await prismaService.user.deleteMany({})
     await prismaService.$disconnect()
   })
 
@@ -93,43 +79,91 @@ describe('GameStatService', () => {
     it('should be defined', () => {
       expect(GameStatService).toBeDefined()
     })
-    it('should create a GaneStat', () => {
+    it('should create a GameStat', () => {
+      const createdGameStat = gameStatService.create(gameStatData)
       expect(createdGameStat).toBeDefined
-      expect(createdGameStat.timePlayed).toEqual(gameStatData.timePlayed)
+    })
+    it('should update the GameStat', async () => {
+      const updatedData = {
+        scoreWinner: 55,
+        scoreLoser: 32
+      }
+      const updatedGameStat = await gameStatService.update(
+        'drfOayPc2Uh12tDrePkJ8',
+        updatedData
+      )
+      expect(updatedGameStat.scoreWinner).toStrictEqual(updatedData.scoreWinner)
+      expect(updatedGameStat.scoreLoser).toStrictEqual(updatedData.scoreLoser)
+    })
+    it('should delete the gameStats', async () => {
+      const deletedUser = await gameStatService.delete('uywayPlUh0qtDrePkJ87t')
+      console.log('DeletedUser =>> ', deletedUser)
+      expect(deletedUser).toBeDefined
     })
   })
-  describe('test Gamestat Query', () => {
-    it('Should find GameStat array', async () => {
-      const looserWinnerInversion = await gameStatService.create(gameStatData2)
-      const specialGame = await gameStatService.create(gameStatSpecialData)
-      const ValidGameStat = await gameStatService.findAll(userWinner.id)
-      expect(ValidGameStat).toBeDefined
-      expect(Array.isArray(ValidGameStat)).toBeTruthy()
-      expect(ValidGameStat.length).toBeGreaterThan(1)
-      console.log('All games', ValidGameStat)
+  describe('Test Query', () => {
+    it('should fin the GameStats', async () => {
+      const foundGameStat = await gameStatService.findOne(
+        'drfOayPc2Uh12tDrePkJ8'
+      )
+      expect(foundGameStat).toBeDefined
     })
-    it('should find win games', async () => {
-      const WinGameStat = await gameStatService.findWin(userWinner.id)
-      expect(WinGameStat).toBeDefined
-      expect(WinGameStat.length).toBeGreaterThan(0)
-      console.log('WinGameStats', WinGameStat)
+    it('should find all game on an User', async () => {
+      const foundAllGameStat = await gameStatService.findAll(
+        'd2OayPlUh0qtDrePkJ87t'
+      )
+      expect(foundAllGameStat).toBeDefined
+      expect(foundAllGameStat.length).toBeGreaterThan(2)
     })
-    it('should find loose games', async () => {
-      const LooseGameStat = await gameStatService.findLoose(userWinner.id)
-      expect(LooseGameStat).toBeDefined
-      expect(LooseGameStat.length).toBeGreaterThan(0)
-      console.log('loseGameStats', LooseGameStat)
+    it('should find all the wingame of an user', async () => {
+      const foundAllWinGameStat = await gameStatService.findWin(
+        'd2OayPlUh0qtDrePkJ87t'
+      )
+      expect(foundAllWinGameStat).toBeDefined
+      expect(foundAllWinGameStat.length).toBeGreaterThan(1)
     })
-    it('should find classic games', async () => {
-      const ClassicGameStat = await gameStatService.findClassic(userWinner.id)
-      expect(ClassicGameStat).toBeDefined
-      console.log('ClassicGameStats', ClassicGameStat)
+    it('should find all the losegame of an user', async () => {
+      const foundAllLoseGameStat = await gameStatService.findLoose(
+        'd2OayPlUh0qtDrePkJ87t'
+      )
+      expect(foundAllLoseGameStat).toBeDefined
+      expect(foundAllLoseGameStat.length).toBeGreaterThan(1)
     })
-    it('should find special games', async () => {
-      // const tmp = await gameStatService.create(gameStatSpecialData)
-      const SpecialGameStat = await gameStatService.findSpecial(userWinner.id)
-      expect(SpecialGameStat).toBeDefined
-      console.log('SpecialGameStats', SpecialGameStat)
+    it('should find all classic game of an user', async () => {
+      const foundAllClassicGameStat = await gameStatService.findClassic(
+        'd2OayPlUh0qtDrePkJ87t'
+      )
+      expect(foundAllClassicGameStat).toBeDefined
+    })
+    it('should find all special game of an user', async () => {
+      const foundAllSpecialGameStat = await gameStatService.findClassic(
+        'd2OayPlUh0qtDrePkJ87t'
+      )
+      expect(foundAllSpecialGameStat).toBeDefined
+    })
+  })
+  describe('Test Error', () => {
+    it('Gamestat created with already taken ID', async () => {
+      expect(async () => {
+        await prismaService.$executeRaw`INSERT INTO "public"."GameStat" VALUES ('drfOayPc2Uh12tDrePkJ8', 'j6-X94_NVjmzVm9QL3k4r','d2OayPlUh0qtDrePkJ87t', 'Classic', 12, 15, 2, '2023-09-13 10:00:00');`
+      }).rejects.toThrow(PrismaClientKnownRequestError)
+    })
+    it('change id field', async () => {
+      expect(async () => {
+        const updatedData = { id: '5555' }
+        await gameStatService.update('drfOayPc2Uh12tDrePkJ8', updatedData)
+      }).rejects.toThrow(ExceptionTryingToUpdateID)
+    })
+    it('Game stat already deleted', async () => {
+      expect(async () => {
+        await gameStatService.delete('drfOayPc2Uh12tDrePkJ8')
+        await gameStatService.delete('drfOayPc2Uh12tDrePkJ8')
+      }).rejects.toThrow(PrismaClientKnownRequestError)
+    })
+    it('Cannot make a game with the same player', async () => {
+      expect(async () => {
+        await gameStatService.create(invalidplayersdata)
+      }).rejects.toThrow(ExceptionSamePlayerInGame)
     })
   })
 })
