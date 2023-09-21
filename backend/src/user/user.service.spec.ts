@@ -1,7 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { PrismaService } from '../prisma/prisma.service'
 import { UserService } from './user.service'
-import { Prisma } from '@prisma/client'
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library'
 import { ExceptionTryingToUpdateID } from './exceptions/user.exceptions'
 

@@ -8,7 +8,7 @@ import {
   ExceptionUserBlockedYou
 } from '../user/exceptions/blocked.exceptions'
 import { ExceptionUsersAlreadyFriend } from '../user/exceptions/friend.exceptions'
-import { ExceptionRequestAlreadySent } from '../user/exceptions/request.exceptions'
+import { ExceptionRequestingYourself } from '../user/exceptions/request.exceptions'
 
 // if blocked
 // if blocked by the other user
@@ -34,34 +34,25 @@ export class RelationRequestsService {
     userSenderId: string,
     userReceiverId: string
   ): Promise<RelationRequests | RelationFriend> {
+    if (userSenderId === userReceiverId) throw new ExceptionRequestingYourself()
     // if blocked
-    console.log('EWE MON CON')
     if (
       await this.relationBlockedService.isBlocked(userSenderId, userReceiverId)
     )
       throw new ExceptionUserBlocked()
     // if blocked by the other user
-    console.log('EWE MON CON 2')
     if (
       await this.relationBlockedService.isBlocked(userReceiverId, userSenderId)
     )
       throw new ExceptionUserBlockedYou()
-    console.log('EWE MON CON 3')
     // if friend
     if (await this.relationFriendService.isFriend(userSenderId, userReceiverId))
       throw new ExceptionUsersAlreadyFriend()
-    console.log('EWE MON CON 4')
-    // if requestFriendSent
-    if (await this.isRequested(userSenderId, userReceiverId)) {
-      throw new ExceptionRequestAlreadySent()
-    }
-    console.log('EWE MON CON 5')
     // if requestFriendReceived
     if (await this.isRequested(userReceiverId, userSenderId)) {
       await this.delete(userReceiverId, userSenderId)
       return this.relationFriendService.create(userSenderId, userReceiverId)
     }
-    console.log('EWE MON CON 6')
     // if no relations
     return this.prisma.relationRequests.create({
       data: {

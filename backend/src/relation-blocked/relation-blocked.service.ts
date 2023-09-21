@@ -62,7 +62,6 @@ export class RelationBlockedService {
         }
       }
     })
-    console.log('BLOCKED OR NOT', relation)
     return relation !== null
   }
 
