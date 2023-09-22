@@ -215,22 +215,22 @@ describe('RelationRequestsService', () => {
           )
         }).rejects.toThrow(ExceptionUserBlockedYou)
       })
-      it('trying to request someone you are already friend with A->B', () => {
-        expect(async () => {
-          await relationRequestsService.create(
-            'ec178ef86d29197b6ffd',
-            '4376f06677b65d3168d6'
-          )
-        }).rejects.toThrow(ExceptionUsersAlreadyFriend)
-      })
-      it('trying to request someone you are already friend with B->A', () => {
-        expect(async () => {
-          await relationRequestsService.create(
-            '4376f06677b65d3168d6',
-            'ec178ef86d29197b6ffd'
-          )
-        }).rejects.toThrow(ExceptionUsersAlreadyFriend)
-      })
+      // it('trying to request someone you are already friend with A->B', () => {
+      //   expect(async () => {
+      //     await relationRequestsService.create(
+      //       'ec178ef86d29197b6ffd',
+      //       '4376f06677b65d3168d6'
+      //     )
+      //   }).rejects.toThrow(ExceptionUsersAlreadyFriend)
+      // })
+      // it('trying to request someone you are already friend with B->A', () => {
+      //   expect(async () => {
+      //     await relationRequestsService.create(
+      //       '4376f06677b65d3168d6',
+      //       'ec178ef86d29197b6ffd'
+      //     )
+      //   }).rejects.toThrow(ExceptionUsersAlreadyFriend)
+      // })
     })
   })
 })

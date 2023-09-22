@@ -51,7 +51,6 @@ export class RelationFriendService {
 
   async isFriend(userAId: string, userBId: string): Promise<boolean> {
     if (userAId > userBId) [userAId, userBId] = [userBId, userAId]
-    console.log('isFriend', userAId, userBId)
     const relation = await this.prisma.relationFriend.findUnique({
       where: {
         userAId_userBId: {
