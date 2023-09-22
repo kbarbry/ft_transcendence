@@ -2,57 +2,58 @@ import { Test, TestingModule } from '@nestjs/testing'
 import { UserPresenceService } from './user-presence.service'
 import { PrismaService } from '../prisma/prisma.service'
 import { UserService } from '../user/user.service'
-
-//todo Faire une fonction spéciale pour Disconnect (Looks like update disconnect)
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library'
+import { ExceptionTryingToUpdateID } from '../user/exceptions/user.exceptions'
 
 describe('UserPresenceService', () => {
   let userPresenceService: UserPresenceService
   let prismaService: PrismaService
-  let userService: UserService
-  let user: any
-  let CreateUserPresence: any
   let userPresenceData: any
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [UserPresenceService, PrismaService, UserService]
+      providers: [UserPresenceService, PrismaService] // Incluez le PrismaService dans les providers
     }).compile()
 
     userPresenceService = module.get<UserPresenceService>(UserPresenceService)
-    userService = module.get<UserService>(UserService)
     prismaService = module.get<PrismaService>(PrismaService)
+  })
 
-    //**************************************************//
-    //  USER CREATION
-    //**************************************************//
+  beforeEach(async () => {
+    ///////////////////////////////////////////////////
+    // User Creation
+    ///////////////////////////////////////////////////
 
-    const userData = {
-      mail: 'CreateUser@example.com',
-      username: 'CreateUser_user',
-      password: 'password123',
-      level: 0,
-      avatarUrl: 'url_de_l_avatar_par_defaut'
-    }
-    user = await userService.create(userData)
+    await prismaService.$executeRaw`DELETE FROM "public"."User";`
+    await prismaService.$executeRaw`DELETE FROM "public"."UserPresence";`
+    await prismaService.$executeRaw`INSERT INTO "public"."User" VALUES ('d2OayPlUh0qtDrePkJ87t', 'random url', 'alfred@42.fr', 'Ally', 'oui', null, null, false, 'Online', 'English', 1);`
+    await prismaService.$executeRaw`INSERT INTO "public"."User" VALUES ('j6-X94_NVjmzVm9QL3k4r', 'random url', 'charlie@42.fr', 'Chacha', 'oui', null, null, false, 'Invisble', 'French', 12);`
+    await prismaService.$executeRaw`INSERT INTO "public"."User" VALUES ('_U0vTLhbNpjA39Pc7wwtn', 'random url', 'bob@42.fr', 'Bobby', 'Babby', null, null, false, 'Online', 'English', 1);`
+    await prismaService.$executeRaw`INSERT INTO "public"."User" VALUES ('c-vzGU-8QlEvmHk8rjNRI', 'random url', 'david@42.fr', 'dav', 'oui', null, null, false, 'Invisble', 'French', 12);`
+    await prismaService.$executeRaw`INSERT INTO "public"."User" VALUES ('a5cfce0', 'random url', 'evan@42.fr', 'evee', 'oui', null, null, false, 'Idle', 'Spanish', 36);`
+    await prismaService.$executeRaw`INSERT INTO "public"."User" VALUES ('f568b3a', 'random url', 'frank@42.fr', 'punisher', 'oui', null, null, false, 'DoNotDisturb', 'Spanish', 9000);`
 
-    //**************************************************//
-    //  USER PRESENCE CREATION
-    //**************************************************//
+    ///////////////////////////////////////////////////
+    // UserPresence Creation
+    ///////////////////////////////////////////////////
+
+    await prismaService.$executeRaw`INSERT INTO "public"."UserPresence" VALUES ('drfOayPwwUh12tDrePkJ8', 'd2OayPlUh0qtDrePkJ87t', '2023-09-13 10:00:00');`
+    await prismaService.$executeRaw`INSERT INTO "public"."UserPresence" VALUES ('qci4ayPwwUh12tDrePkJ8', 'j6-X94_NVjmzVm9QL3k4r', '2023-09-13 11:00:00');`
+    await prismaService.$executeRaw`INSERT INTO "public"."UserPresence" VALUES ('yui1ayPwwUh12tDrePkJ8', '_U0vTLhbNpjA39Pc7wwtn', '2023-09-13 12:00:00');`
+    await prismaService.$executeRaw`INSERT INTO "public"."UserPresence" VALUES ('gru1ayPwwUh12tDrePkJ8', '_U0vTLhbNpjA39Pc7wwtn', '2023-09-13 13:00:00');`
 
     userPresenceData = {
+      id: 'drfOayWwwUh12tDrePkJ8',
       connectedAt: new Date(),
       user: {
         connect: {
-          id: user.id
+          id: 'd2OayPlUh0qtDrePkJ87t'
         }
       }
     }
-    CreateUserPresence = await userPresenceService.create(userPresenceData)
   })
 
   afterAll(async () => {
-    await prismaService.userPresence.deleteMany({})
-    await prismaService.user.deleteMany({})
     await prismaService.$disconnect()
   })
 
@@ -62,74 +63,98 @@ describe('UserPresenceService', () => {
         expect(UserPresenceService).toBeDefined()
       })
       it('Should create a new UserPresence', async () => {
-        expect(CreateUserPresence).toBeDefined()
-        expect(CreateUserPresence.connectedAt).toStrictEqual(
+        const userPresence = await userPresenceService.create(userPresenceData)
+        expect(userPresence).toBeDefined()
+        expect(userPresence.connectedAt).toStrictEqual(
           userPresenceData.connectedAt
         )
       })
-      it('should update user presence', async () => {
-        const updatedData = {
+      it('should update the UserPresence', async () => {
+        const updatedUserPresenceData = {
           disconnectedAt: new Date(),
           connectedAt: new Date()
         }
         const updatedUserPresence = await userPresenceService.update(
-          CreateUserPresence.id,
-          updatedData
+          'drfOayPwwUh12tDrePkJ8',
+          updatedUserPresenceData
         )
-        expect(updatedUserPresence).toBeDefined()
         expect(updatedUserPresence.disconnectedAt).toEqual(
-          updatedData.disconnectedAt
+          updatedUserPresenceData.disconnectedAt
         )
-        expect(updatedUserPresence.connectedAt).toEqual(updatedData.connectedAt)
+        expect(updatedUserPresence.connectedAt).toEqual(
+          updatedUserPresenceData.connectedAt
+        )
       })
-      it('should delete UserPresence', async () => {
-        const tmp = await userPresenceService.create(userPresenceData)
-        await userPresenceService.delete(tmp.id)
-        const isTmp = await userPresenceService.findOne(tmp.id)
-        expect(isTmp).toBeNull()
+      it('should delete the UserPresence', async () => {
+        const deletedUser = await userPresenceService.delete(
+          'drfOayPwwUh12tDrePkJ8'
+        )
+        expect(deletedUser).toBeDefined
       })
     })
-
-    describe('Testing user Query', () => {
-      it('should find ValidUserPresence && not WrongUserPresence', async () => {
-        const ValidUserPresence = await userPresenceService.findOne(
-          CreateUserPresence.id
+    describe('Test Query', () => {
+      it('should find the UserPresence', async () => {
+        const foundUserPresence = await userPresenceService.findOne(
+          'drfOayPwwUh12tDrePkJ8'
         )
-        const WrongUserPresence = await userPresenceService.findOne('testwrong')
-        expect(ValidUserPresence).toBeDefined()
-        expect(WrongUserPresence).toBeNull()
+        expect(foundUserPresence).toBeDefined
+        expect(foundUserPresence?.id).toStrictEqual('drfOayPwwUh12tDrePkJ8')
       })
-      it('should find ValidUserPresence Array && not WrongUserPresence Array', async () => {
-        const tmp = await userPresenceService.create(userPresenceData)
-        const ValidUserPresence = await userPresenceService.findAll(
-          CreateUserPresence.id
+      it('should find the UserPresence with an UserId', async () => {
+        const foundUserpresence = await userPresenceService.findOnebyUserId(
+          'd2OayPlUh0qtDrePkJ87t'
         )
-        ValidUserPresence.push(tmp)
-        expect(ValidUserPresence).toBeDefined()
-        expect(Array.isArray(ValidUserPresence)).toBeTruthy()
-        expect(ValidUserPresence.length).toBeGreaterThan(0)
+        expect(foundUserpresence?.id).toStrictEqual('drfOayPwwUh12tDrePkJ8')
       })
-      it('should update the disconnect time', async () => {
-        const updatedData = {
-          disconnectedAt: new Date('12/01')
+      it('should find all UserPresence of an UserId', async () => {
+        const foundUserPresence = await userPresenceService.findAll(
+          '_U0vTLhbNpjA39Pc7wwtn'
+        )
+        expect(foundUserPresence).toBeDefined
+        expect(foundUserPresence).toHaveLength(2)
+      })
+      it('should update disconnected value', async () => {
+        const newDisconnecteddata = {
+          disconnectedAt: new Date()
         }
-        const updateDisconnected = await userPresenceService.disconnected(
-          CreateUserPresence.id,
-          updatedData.disconnectedAt
+        const newUserPresence = await userPresenceService.disconnected(
+          'drfOayPwwUh12tDrePkJ8',
+          newDisconnecteddata.disconnectedAt
         )
-        expect(updateDisconnected.disconnectedAt).toEqual(
-          updatedData.disconnectedAt
+        expect(newDisconnecteddata.disconnectedAt).toStrictEqual(
+          newUserPresence.disconnectedAt
         )
       })
-      it('should update the connected time', async () => {
-        const updatedData = {
-          connectedAt: new Date(123)
+      it('should update connected value', async () => {
+        const newDisconnecteddata = {
+          connectedAt: new Date()
         }
-        const updateConnected = await userPresenceService.connected(
-          CreateUserPresence.id,
-          updatedData.connectedAt
+        const newUserPresence = await userPresenceService.disconnected(
+          'drfOayPwwUh12tDrePkJ8',
+          newDisconnecteddata.connectedAt
         )
-        expect(updateConnected.connectedAt).toEqual(updatedData.connectedAt)
+        expect(newDisconnecteddata.connectedAt).toStrictEqual(
+          newUserPresence.disconnectedAt
+        )
+      })
+    })
+    describe('Test Error', () => {
+      it('User presence created with already taken ID', async () => {
+        expect(async () => {
+          await prismaService.$executeRaw`INSERT INTO "public"."UserPresence" VALUES ('drfOayPwwUh12tDrePkJ8', 'd2OayPlUh0qtDrePkJ87t', '2023-09-13 10:00:00');`
+        }).rejects.toThrow(PrismaClientKnownRequestError)
+      })
+      it('change id field', async () => {
+        expect(async () => {
+          const updatedData = { id: '5555' }
+          await userPresenceService.update('drfOayPwwUh12tDrePkJ8', updatedData)
+        }).rejects.toThrow(ExceptionTryingToUpdateID)
+      })
+      it('user presence already deleted', async () => {
+        expect(async () => {
+          await userPresenceService.delete('drfOayPwwUh12tDrePkJ8')
+          await userPresenceService.delete('drfOayPwwUh12tDrePkJ8')
+        }).rejects.toThrow(PrismaClientKnownRequestError)
       })
     })
   })
