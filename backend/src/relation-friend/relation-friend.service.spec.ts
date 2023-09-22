@@ -58,111 +58,139 @@ describe('RelationFriendService', () => {
     await prismaService.$disconnect()
   })
 
-  it('create a new relaton in DB with id in the right order', async () => {
-    const creatRet = await relationFriendService.create(
-      '4376f06677b65d3168d6-',
-      'f488e59aef615c5df6df-'
-    )
-    expect(creatRet).toStrictEqual({
-      userAId: '4376f06677b65d3168d6-',
-      userBId: 'f488e59aef615c5df6df-'
+  describe('Test Mutations', () => {
+    it('create a new relaton in DB with id in the right order', async () => {
+      const creatRet = await relationFriendService.create(
+        '4376f06677b65d3168d6-',
+        'f488e59aef615c5df6df-'
+      )
+      expect(creatRet).toStrictEqual({
+        userAId: '4376f06677b65d3168d6-',
+        userBId: 'f488e59aef615c5df6df-'
+      })
+    })
+
+    it('create a new relaton in DB with id in the wrong order', async () => {
+      const creatRet = await relationFriendService.create(
+        'e28d4ff1f6cd647fc171-',
+        '4376f06677b65d3168d6-'
+      )
+      expect(creatRet).toStrictEqual({
+        userAId: '4376f06677b65d3168d6-',
+        userBId: 'e28d4ff1f6cd647fc171-'
+      })
+    })
+
+    it('delete a new relaton in DB with id in the right order', async () => {
+      const deleteRet = await relationFriendService.delete(
+        '4376f06677b65d3168d6-',
+        'ec178ef86d29197b6ffd-'
+      )
+      expect(deleteRet).toStrictEqual({
+        userAId: '4376f06677b65d3168d6-',
+        userBId: 'ec178ef86d29197b6ffd-'
+      })
+    })
+
+    it('delete a new relaton in DB with id in the wrong order', async () => {
+      const deleteRet = await relationFriendService.delete(
+        'ec178ef86d29197b6ffd-',
+        '537d4ec6daffd64a2d4c-'
+      )
+      expect(deleteRet).toStrictEqual({
+        userAId: '537d4ec6daffd64a2d4c-',
+        userBId: 'ec178ef86d29197b6ffd-'
+      })
     })
   })
 
-  it('create a new relaton in DB with id in the wrong order', async () => {
-    const creatRet = await relationFriendService.create(
-      'e28d4ff1f6cd647fc171-',
-      '4376f06677b65d3168d6-'
-    )
-    expect(creatRet).toStrictEqual({
-      userAId: '4376f06677b65d3168d6-',
-      userBId: 'e28d4ff1f6cd647fc171-'
+  describe('Test Query', () => {
+    it("return all friend of an existing user's id", async () => {
+      const friend_list: string[] = [
+        'e28d4ff1f6cd647fc171-',
+        '4376f06677b65d3168d6-'
+      ]
+      const friends = await relationFriendService.findAll(
+        'df87734d323ac71c6efb-'
+      )
+      expect(friends).toStrictEqual(friend_list)
     })
-  })
 
-  it('create a new relaton in DB with an already existing id', async () => {
-    expect(async () => {
-      await relationFriendService.create(
+    it('verify if two users in WRONG order are friend', async () => {
+      const isFriendRet = await relationFriendService.isFriend(
+        '537d4ec6daffd64a2d4c-',
+        '4376f06677b65d3168d6-'
+      )
+      expect(isFriendRet).toStrictEqual(true)
+    })
+
+    it('verify if two users in RIGHT order are friend', async () => {
+      const isFriendRet = await relationFriendService.isFriend(
         '4376f06677b65d3168d6-',
         '537d4ec6daffd64a2d4c-'
       )
-    }).rejects.toThrow(PrismaClientKnownRequestError)
-  })
+      expect(isFriendRet).toStrictEqual(true)
+    })
 
-  it('delete a new relaton in DB with id in the right order', async () => {
-    const deleteRet = await relationFriendService.deleteById(
-      '4376f06677b65d3168d6-',
-      'ec178ef86d29197b6ffd-'
-    )
-    expect(deleteRet).toStrictEqual({
-      userAId: '4376f06677b65d3168d6-',
-      userBId: 'ec178ef86d29197b6ffd-'
+    it('verify if two users in WRONG order are not friend', async () => {
+      const isFriendRet = await relationFriendService.isFriend(
+        'ec178ef86d29197b6ffd-',
+        'f488e59aef615c5df6df-'
+      )
+      expect(isFriendRet).toStrictEqual(false)
+    })
+
+    it('verify if two users in RIGHT order are not friend', async () => {
+      const isFriendRet = await relationFriendService.isFriend(
+        'f488e59aef615c5df6df-',
+        'ec178ef86d29197b6ffd-'
+      )
+      expect(isFriendRet).toStrictEqual(false)
     })
   })
 
-  it('delete a new relaton in DB with id in the wrong order', async () => {
-    const deleteRet = await relationFriendService.deleteById(
-      'ec178ef86d29197b6ffd-',
-      '537d4ec6daffd64a2d4c-'
-    )
-    expect(deleteRet).toStrictEqual({
-      userAId: '537d4ec6daffd64a2d4c-',
-      userBId: 'ec178ef86d29197b6ffd-'
+  describe('Test Error', () => {
+    it('throw an error after trying to create a new relaton in DB with an already existing id', async () => {
+      expect(async () => {
+        await relationFriendService.create(
+          '4376f06677b65d3168d6-',
+          '537d4ec6daffd64a2d4c-'
+        )
+      }).rejects.toThrow(PrismaClientKnownRequestError)
     })
-  })
 
-  it("return all friend of an existing user's id", async () => {
-    const friend_list: string[] = [
-      'e28d4ff1f6cd647fc171-',
-      '4376f06677b65d3168d6-'
-    ]
-    const friends = await relationFriendService.findAll('df87734d323ac71c6efb-')
-    expect(friends).toStrictEqual(friend_list)
-  })
+    it("throw an error after trying to create a new relaton in DB with id's of non existing user", async () => {
+      expect(async () => {
+        await relationFriendService.create(
+          'fff6f06677b65d3168d6-',
+          'fffd4ec6daffd64a2d4c-'
+        )
+      }).rejects.toThrow(PrismaClientKnownRequestError)
+    })
 
-  it("return all friend of a non existing user's id", async () => {
-    const emptytab: string[] = []
-    const friends = await relationFriendService.findAll('fffd4ff1f6cd647fc171-')
-    expect(friends).toStrictEqual(emptytab)
-  })
+    it('throw an error after trying to delete non existing id', async () => {
+      expect(async () => {
+        await relationFriendService.delete(
+          'fff6f06677b65d3168d6-',
+          'fffd4ec6daffd64a2d4c-'
+        )
+      }).rejects.toThrow(PrismaClientKnownRequestError)
+    })
 
-  it('verify if two users in WRONG order are friend', async () => {
-    const isFriendRet = await relationFriendService.isFriend(
-      '537d4ec6daffd64a2d4c-',
-      '4376f06677b65d3168d6-'
-    )
-    expect(isFriendRet).toStrictEqual(true)
-  })
+    it("return all friend of a non existing user's id", async () => {
+      const emptytab: string[] = []
+      const friends = await relationFriendService.findAll(
+        'fffd4ff1f6cd647fc171-'
+      )
+      expect(friends).toStrictEqual(emptytab)
+    })
 
-  it('verify if two users in RIGHT order are friend', async () => {
-    const isFriendRet = await relationFriendService.isFriend(
-      '4376f06677b65d3168d6-',
-      '537d4ec6daffd64a2d4c-'
-    )
-    expect(isFriendRet).toStrictEqual(true)
-  })
-
-  it('verify if two users in WRONG order are not friend', async () => {
-    const isFriendRet = await relationFriendService.isFriend(
-      'ec178ef86d29197b6ffd-',
-      'f488e59aef615c5df6df-'
-    )
-    expect(isFriendRet).toStrictEqual(false)
-  })
-
-  it('verify if two users in RIGHT order are not friend', async () => {
-    const isFriendRet = await relationFriendService.isFriend(
-      'f488e59aef615c5df6df-',
-      'ec178ef86d29197b6ffd-'
-    )
-    expect(isFriendRet).toStrictEqual(false)
-  })
-
-  it('verify if an existing user is friend with a non existing user', async () => {
-    const isFriendRet = await relationFriendService.isFriend(
-      'f488e59aef615c5df6df-',
-      'ffff8ef86d29197b6ffd-'
-    )
-    expect(isFriendRet).toStrictEqual(false)
+    it('verify if an existing user is friend with a non existing user', async () => {
+      const isFriendRet = await relationFriendService.isFriend(
+        'f488e59aef615c5df6df-',
+        'ffff8ef86d29197b6ffd-'
+      )
+      expect(isFriendRet).toStrictEqual(false)
+    })
   })
 })

@@ -61,7 +61,7 @@ export class RelationFriendService {
     return relation !== null
   }
 
-  async deleteById(userAId: string, userBId: string): Promise<RelationFriend> {
+  async delete(userAId: string, userBId: string): Promise<RelationFriend> {
     if (userAId > userBId) [userAId, userBId] = [userBId, userAId]
     return this.prisma.relationFriend.delete({
       where: {
