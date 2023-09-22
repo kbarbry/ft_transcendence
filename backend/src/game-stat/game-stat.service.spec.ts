@@ -1,14 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { PrismaService } from '../prisma/prisma.service'
-import { UserService } from '../user/user.service'
 import { GameStatService } from './game-stat.service'
-import { EGameType, GameStat, User, Prisma } from '@prisma/client'
+import { EGameType, Prisma } from '@prisma/client'
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library'
 import {
   ExceptionTryingToUpdateID,
   ExceptionSamePlayerInGame
 } from '../user/exceptions/game-stat.exception'
-import { async } from 'rxjs'
 
 describe('GameStatService', () => {
   let gameStatService: GameStatService
@@ -23,19 +21,31 @@ describe('GameStatService', () => {
 
     gameStatService = module.get<GameStatService>(GameStatService)
     prismaService = module.get<PrismaService>(PrismaService)
-  })
-  afterEach(async () => {
-    //await prismaService.$executeRaw`DELETE FROM "public"."GameStat";`
-    //await prismaService.$executeRaw`DELETE FROM "public"."User";`
+
+    await prismaService.$executeRaw`DELETE FROM "public"."RelationFriend";`
+    await prismaService.$executeRaw`DELETE FROM "public"."RelationBlocked";`
+    await prismaService.$executeRaw`DELETE FROM "public"."RelationRequests";`
+    await prismaService.$executeRaw`DELETE FROM "public"."UserPresence";`
+    await prismaService.$executeRaw`DELETE FROM "public"."GameStat";`
+    await prismaService.$executeRaw`DELETE FROM "public"."User";`
+    await prismaService.$executeRaw`DELETE FROM "public"."Channel";`
+    await prismaService.$executeRaw`DELETE FROM "public"."ChannelMember";`
+    await prismaService.$executeRaw`DELETE FROM "public"."ChannelMessage";`
+    await prismaService.$executeRaw`DELETE FROM "public"."PrivateMessage";`
   })
 
   beforeEach(async () => {
     //**************************************************//
-    //  USER CREATION
+    //  MAKE IT CLEAN
     //**************************************************//
 
     await prismaService.$executeRaw`DELETE FROM "public"."GameStat";`
     await prismaService.$executeRaw`DELETE FROM "public"."User";`
+
+    //**************************************************//
+    //  USER CREATION
+    //**************************************************//
+
     await prismaService.$executeRaw`INSERT INTO "public"."User" VALUES ('d2OayPlUh0qtDrePkJ87t', 'random url', 'alfred@42.fr', 'Ally', 'oui', null, null, false, 'Online', 'English', 1);`
     await prismaService.$executeRaw`INSERT INTO "public"."User" VALUES ('j6-X94_NVjmzVm9QL3k4r', 'random url', 'charlie@42.fr', 'Chacha', 'oui', null, null, false, 'Invisble', 'French', 12);`
     await prismaService.$executeRaw`INSERT INTO "public"."User" VALUES ('_U0vTLhbNpjA39Pc7wwtn', 'random url', 'bob@42.fr', 'Bobby', 'Babby', null, null, false, 'Online', 'English', 1);`
@@ -164,6 +174,26 @@ describe('GameStatService', () => {
       expect(async () => {
         await gameStatService.create(invalidplayersdata)
       }).rejects.toThrow(ExceptionSamePlayerInGame)
+    })
+    it('Gamestat created with already taken ID', async () => {
+      expect(async () => {
+        await prismaService.$executeRaw`INSERT INTO "public"."GameStat" VALUES ('drfOayPc2Uh12tDrePkJ8', 'j6-X94_NVjmzVm9QL3k4r','d2OayPlUh0qtDrePkJ87t', 'Classic', 12, 15, 2, '2023-09-13 10:00:00');`
+      }).rejects.toThrow(PrismaClientKnownRequestError)
+    })
+    it('Gamestat created with already taken ID', async () => {
+      expect(async () => {
+        await prismaService.$executeRaw`INSERT INTO "public"."GameStat" VALUES ('drfOayPc2Uh12tDrePkJ8', 'j6-X94_NVjmzVm9QL3k4r','d2OayPlUh0qtDrePkJ87t', 'Classic', 12, 15, 2, '2023-09-13 10:00:00');`
+      }).rejects.toThrow(PrismaClientKnownRequestError)
+    })
+    it('Gamestat created with already taken ID', async () => {
+      expect(async () => {
+        await prismaService.$executeRaw`INSERT INTO "public"."GameStat" VALUES ('drfOayPc2Uh12tDrePkJ8', 'j6-X94_NVjmzVm9QL3k4r','d2OayPlUh0qtDrePkJ87t', 'Classic', 12, 15, 2, '2023-09-13 10:00:00');`
+      }).rejects.toThrow(PrismaClientKnownRequestError)
+    })
+    it('Gamestat created with already taken ID', async () => {
+      expect(async () => {
+        await prismaService.$executeRaw`INSERT INTO "public"."GameStat" VALUES ('drfOayPc2Uh12tDrePkJ8', 'j6-X94_NVjmzVm9QL3k4r','d2OayPlUh0qtDrePkJ87t', 'Classic', 12, 15, 2, '2023-09-13 10:00:00');`
+      }).rejects.toThrow(PrismaClientKnownRequestError)
     })
   })
 })
