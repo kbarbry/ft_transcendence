@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common'
 import { RelationFriend } from '@prisma/client'
-import { PrismaService } from 'src/prisma/prisma.service'
+import { PrismaService } from '../prisma/prisma.service'
 
 @Injectable()
 export class RelationFriendService {
@@ -25,26 +25,26 @@ export class RelationFriendService {
   //**************************************************//
   async findAll(id: string): Promise<string[]> {
     const caseSender = (
-      await this.prisma.relationRequests.findMany({
+      await this.prisma.relationFriend.findMany({
         where: {
-          userSenderId: id
+          userAId: id
         },
         select: {
-          userReceiverId: true
+          userBId: true
         }
       })
-    ).map((elem) => elem.userReceiverId)
+    ).map((elem) => elem.userBId)
 
     const caseReceiver = (
-      await this.prisma.relationRequests.findMany({
+      await this.prisma.relationFriend.findMany({
         where: {
-          userReceiverId: id
+          userBId: id
         },
         select: {
-          userSenderId: true
+          userAId: true
         }
       })
-    ).map((elem) => elem.userSenderId)
+    ).map((elem) => elem.userAId)
     return [...caseSender, ...caseReceiver]
   }
 
@@ -58,7 +58,7 @@ export class RelationFriendService {
         }
       }
     })
-    return !!relation
+    return relation !== null
   }
 
   async deleteById(userAId: string, userBId: string): Promise<RelationFriend> {
