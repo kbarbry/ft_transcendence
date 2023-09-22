@@ -1,7 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { ChannelService } from './channel.service'
 import { PrismaService } from '../prisma/prisma.service'
-import { channel } from 'diagnostics_channel'
 import { EChannelType, Prisma } from '@prisma/client'
 
 describe('ChannelService', () => {
@@ -20,7 +19,7 @@ describe('ChannelService', () => {
 
   beforeEach(async () => {
     //**************************************************//
-    //  DELETE CREATION
+    //  MAKE IT CLEAN
     //**************************************************//
 
     await prismaService.$executeRaw`DELETE FROM "public"."Channel";`
@@ -37,6 +36,7 @@ describe('ChannelService', () => {
     //**************************************************//
 
     await prismaService.$executeRaw`INSERT INTO "public"."Channel" VALUES ('pihayPlUh0qtDrePkJ87t', 'random name', 'randomURL', 'TopicName', 'Password123', '567ayPlUh0qtDrePkJ87t', 50, 'Public', '2023-09-13 10:00:00');`
+    await prismaService.$executeRaw`INSERT INTO "public"."Channel" VALUES ('333ayPlUh0qtDrePkJ87t', 'random name', 'randomURL', 'TopicName', 'Password123', '567ayPlUh0qtDrePkJ87t', 50, 'Public', '2023-09-13 10:00:00');`
 
     channelData = {
       name: 'testName',
@@ -76,6 +76,23 @@ describe('ChannelService', () => {
         'pihayPlUh0qtDrePkJ87t'
       )
       expect(deletedChannel).toBeDefined
+    })
+  })
+  describe('Test query', () => {
+    it('should fin a Channel', async () => {
+      const foundChannel = await channelService.findOne('pihayPlUh0qtDrePkJ87t')
+      expect(foundChannel).toBeDefined
+      expect(foundChannel?.ownerId).toStrictEqual('567ayPlUh0qtDrePkJ87t')
+    })
+    it('should return the ownerID of the Channel', async () => {
+      const ownerID = await channelService.findOwner('pihayPlUh0qtDrePkJ87t')
+      expect(ownerID).toStrictEqual('567ayPlUh0qtDrePkJ87t')
+    })
+    it('should find all Channel owned by an User', async () => {
+      const channels = await channelService.findAllChannelOfOwner(
+        '567ayPlUh0qtDrePkJ87t'
+      )
+      expect(channels?.length).toBeGreaterThan(1)
     })
   })
 })
