@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common'
 import { RelationFriend } from '@prisma/client'
-import { PrismaService } from 'src/prisma/prisma.service'
+import { PrismaService } from '../prisma/prisma.service'
 
 @Injectable()
 export class RelationFriendService {
@@ -50,6 +50,7 @@ export class RelationFriendService {
   }
 
   async isFriend(userAId: string, userBId: string): Promise<boolean> {
+    if (userAId > userBId) [userAId, userBId] = [userBId, userAId]
     const relation = await this.prisma.relationFriend.findUnique({
       where: {
         userAId_userBId: {
@@ -58,7 +59,7 @@ export class RelationFriendService {
         }
       }
     })
-    return !!relation
+    return relation !== null
   }
 
   async findAllById(id: string): Promise<Array<string>> {
