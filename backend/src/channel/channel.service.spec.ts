@@ -15,6 +15,21 @@ describe('ChannelService', () => {
 
     prismaService = module.get<PrismaService>(PrismaService)
     channelService = module.get<ChannelService>(ChannelService)
+
+    //**************************************************//
+    //  PREPARE DATABASE
+    //**************************************************//
+
+    await prismaService.$executeRaw`DELETE FROM "public"."RelationFriend";`
+    await prismaService.$executeRaw`DELETE FROM "public"."RelationBlocked";`
+    await prismaService.$executeRaw`DELETE FROM "public"."RelationRequests";`
+    await prismaService.$executeRaw`DELETE FROM "public"."UserPresence";`
+    await prismaService.$executeRaw`DELETE FROM "public"."GameStat";`
+    await prismaService.$executeRaw`DELETE FROM "public"."Channel";`
+    await prismaService.$executeRaw`DELETE FROM "public"."ChannelMember";`
+    await prismaService.$executeRaw`DELETE FROM "public"."ChannelMessage";`
+    await prismaService.$executeRaw`DELETE FROM "public"."PrivateMessage";`
+    await prismaService.$executeRaw`DELETE FROM "public"."User";`
   })
 
   beforeEach(async () => {
@@ -29,14 +44,14 @@ describe('ChannelService', () => {
     //  USER CREATION
     //**************************************************//
 
-    await prismaService.$executeRaw`INSERT INTO "public"."User" VALUES ('567ayPlUh0qtDrePkJ87t', 'random url', 'alfred@42.fr', 'Ally', 'oui', null, null, false, 'Online', 'English', 1);`
+    await prismaService.$executeRaw`INSERT INTO "public"."User" VALUES ('564ayPlUh0qtDrePkJ87t', 'random url', 'alfred@42.fr', 'Ally', 'oui', null, null, false, 'Online', 'English', 1);`
 
     //**************************************************//
     //  CHANNEL CREATION
     //**************************************************//
 
-    await prismaService.$executeRaw`INSERT INTO "public"."Channel" VALUES ('pihayPlUh0qtDrePkJ87t', 'random name', 'randomURL', 'TopicName', 'Password123', '567ayPlUh0qtDrePkJ87t', 50, 'Public', '2023-09-13 10:00:00');`
-    await prismaService.$executeRaw`INSERT INTO "public"."Channel" VALUES ('333ayPlUh0qtDrePkJ87t', 'random name', 'randomURL', 'TopicName', 'Password123', '567ayPlUh0qtDrePkJ87t', 50, 'Public', '2023-09-13 10:00:00');`
+    await prismaService.$executeRaw`INSERT INTO "public"."Channel" VALUES ('pihayPlUh0qtDrePkJ87t', 'random name', 'randomURL', 'TopicName', 'Password123', '564ayPlUh0qtDrePkJ87t', 50, 'Public', '2023-09-13 10:00:00');`
+    await prismaService.$executeRaw`INSERT INTO "public"."Channel" VALUES ('333ayPlUh0qtDrePkJ87t', 'random name', 'randomURL', 'TopicName', 'Password123', '564ayPlUh0qtDrePkJ87t', 50, 'Public', '2023-09-13 10:00:00');`
 
     channelData = {
       name: 'testName',
@@ -46,7 +61,7 @@ describe('ChannelService', () => {
       maxUsers: 50,
       type: EChannelType.Public,
       createdAt: new Date(),
-      owner: { connect: { id: '567ayPlUh0qtDrePkJ87t' } }
+      owner: { connect: { id: '564ayPlUh0qtDrePkJ87t' } }
     }
   })
   afterAll(async () => {
@@ -82,15 +97,15 @@ describe('ChannelService', () => {
     it('should fin a Channel', async () => {
       const foundChannel = await channelService.findOne('pihayPlUh0qtDrePkJ87t')
       expect(foundChannel).toBeDefined
-      expect(foundChannel?.ownerId).toStrictEqual('567ayPlUh0qtDrePkJ87t')
+      expect(foundChannel?.ownerId).toStrictEqual('564ayPlUh0qtDrePkJ87t')
     })
     it('should return the ownerID of the Channel', async () => {
       const ownerID = await channelService.findOwner('pihayPlUh0qtDrePkJ87t')
-      expect(ownerID).toStrictEqual('567ayPlUh0qtDrePkJ87t')
+      expect(ownerID).toStrictEqual('564ayPlUh0qtDrePkJ87t')
     })
     it('should find all Channel owned by an User', async () => {
       const channels = await channelService.findAllChannelOfOwner(
-        '567ayPlUh0qtDrePkJ87t'
+        '564ayPlUh0qtDrePkJ87t'
       )
       expect(channels?.length).toBeGreaterThan(1)
     })
