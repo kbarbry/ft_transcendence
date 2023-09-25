@@ -5,6 +5,7 @@ import {
   ExceptionAlreadyBlocked,
   ExceptionBlockedYourself
 } from '../user/exceptions/blocked.exceptions'
+
 @Injectable()
 export class RelationBlockedService {
   constructor(private prisma: PrismaService) {}

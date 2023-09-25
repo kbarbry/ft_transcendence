@@ -1,14 +1,14 @@
 import { Inject, Injectable } from '@nestjs/common'
-import { PrismaService } from 'src/prisma/prisma.service'
+import { PrismaService } from '../prisma/prisma.service'
 import { RelationRequests } from '@prisma/client'
-import { RelationBlockedService } from 'src/relation-blocked/relation-blocked.service'
-import { RelationFriendService } from 'src/relation-friend/relation-friend.service'
+import { RelationBlockedService } from '../relation-blocked/relation-blocked.service'
+import { RelationFriendService } from '../relation-friend/relation-friend.service'
 import {
   ExceptionUserBlocked,
   ExceptionUserBlockedYou
-} from 'src/user/exceptions/blocked.exceptions'
-import { ExceptionUsersAlreadyFriend } from 'src/user/exceptions/friend.exceptions'
-import { ExceptionRequestAlreadySent } from 'src/user/exceptions/request.exceptions'
+} from '../user/exceptions/blocked.exceptions'
+import { ExceptionUsersAlreadyFriend } from '../user/exceptions/friend.exceptions'
+import { ExceptionRequestAlreadySent } from '../user/exceptions/request.exceptions'
 
 @Injectable()
 export class RelationRequestsService {
