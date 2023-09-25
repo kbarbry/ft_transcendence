@@ -5,8 +5,12 @@ import { RelationFriendService } from '../relation-friend/relation-friend.servic
 import { RelationBlockedService } from './relation-blocked.service'
 import { PrismaService } from '../prisma/prisma.service'
 import { UserService } from '../user/user.service'
+import { cleanDataBase } from '../../test/setup-environment'
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library'
-import { ExceptionBlockedYourself } from '../user/exceptions/blocked.exceptions'
+import {
+  ExceptionAlreadyBlocked,
+  ExceptionBlockedYourself
+} from '../user/exceptions/blocked.exceptions'
 // import { ExceptionTryingToUpdateID } from '../user/exceptions/user.exceptions'
 
 describe('UserPresenceService', () => {
@@ -47,12 +51,15 @@ describe('UserPresenceService', () => {
   ///////////////////////////////////////////////////
 
   beforeEach(async () => {
+    // await cleanDataBase(prismaService)
+    await prismaService.$executeRaw`DELETE FROM "public"."RelationBlocked";`
     await prismaService.$executeRaw`DELETE FROM "public"."User";`
-    await prismaService.$executeRaw`DELETE FROM "public"."UserPresence";`
     await prismaService.$executeRaw`INSERT INTO "public"."User" VALUES ('d2OayPlUh0qtDrePkJ87t', 'random url', 'alfred@42.fr', 'Ally', 'oui', null, null, false, 'Online', 'English', 1);`
     await prismaService.$executeRaw`INSERT INTO "public"."User" VALUES ('j6-X94_NVjmzVm9QL3k4r', 'random url', 'charlie@42.fr', 'Chacha', 'oui', null, null, false, 'Invisble', 'French', 12);`
-    await prismaService.$executeRaw`INSERT INTO "public"."User" VALUES ('aaaayPlUh0qtDrePkJ87t', 'random url', 'adel@42.fr', 'Ally', 'oui', null, null, false, 'Online', 'English', 1);`
-    await prismaService.$executeRaw`INSERT INTO "public"."User" VALUES ('bbbayPlUh0qtDrePkJ87t', 'random url', 'maman@42.fr', 'Ally', 'oui', null, null, false, 'Online', 'English', 1);`
+    await prismaService.$executeRaw`INSERT INTO "public"."User" VALUES ('aaaayPlUh0qtDrePkJ87t', 'random url', 'adel@42.fr', 'Adelou', 'oui', null, null, false, 'Online', 'English', 1);`
+    await prismaService.$executeRaw`INSERT INTO "public"."User" VALUES ('bbbbyPlUh0qtDrePkJ87t', 'random url', 'mama@42.fr', 'mama', 'oui', null, null, false, 'Online', 'English', 1);`
+    await prismaService.$executeRaw`INSERT INTO "public"."User" VALUES ('ccccyPlUh0qtDrePkJ87t', 'random url', 'maurice@42.fr', 'Momo', 'oui', null, null, false, 'Online', 'English', 1);`
+    await prismaService.$executeRaw`INSERT INTO "public"."User" VALUES ('ddddyPlUh0qtDrePkJ87t', 'random url', 'suzette@42.fr', 'Suzette', 'oui', null, null, false, 'Online', 'English', 1);`
 
     ///////////////////////////////////////////////////
     //            USER PRESENCE CREATION
@@ -64,48 +71,93 @@ describe('UserPresenceService', () => {
   afterAll(async () => {
     await prismaService.$disconnect()
   })
-  describe('TEST USER BLOCKED', () => {
-    describe('TEST SHOULD BE DEFINE', () => {
-      it('should be define', () => {
-        expect(userBlockedService).toBeDefined()
-      })
+  describe('TEST MUTATION', () => {
+    it('should be define', () => {
+      expect(userBlockedService).toBeDefined()
     })
   })
-  describe('TEST RELATION BLOCKED SERVICE', () => {
-    describe('Create - no relation', () => {
-      it('Should be created', async () => {
+  describe('Test Mutation', () => {
+    it('relationRequest should be defined', () => {
+      expect(RelationRequestsService).toBeDefined()
+    })
+    it('relationFriend should be defined', () => {
+      expect(RelationFriendService).toBeDefined()
+    })
+    it('relationBlocked should be defined', () => {
+      expect(RelationBlockedService).toBeDefined()
+    })
+    it('prismaService should be defined', () => {
+      expect(RelationRequestsService).toBeDefined()
+    })
+    describe('TEST QUERY', () => {
+      it('should create a blockedRelation', async () => {
         const resBlocked = await userBlockedService.create(
           'd2OayPlUh0qtDrePkJ87t',
           'j6-X94_NVjmzVm9QL3k4r'
         )
-        expect(RelationBlockedService).toBeDefined()
+        // console.log(resBlocked)
+        const expectedRes = {
+          userBlockedId: 'j6-X94_NVjmzVm9QL3k4r',
+          userBlockingId: 'd2OayPlUh0qtDrePkJ87t'
+        }
+        expect(resBlocked).toStrictEqual(expectedRes)
+      })
+      it('should return isBlocked - true', async () => {
+        const result = await userBlockedService.isBlocked(
+          'd2OayPlUh0qtDrePkJ87t',
+          'j6-X94_NVjmzVm9QL3k4r'
+        )
+        console.log('isBlocked result in spec: ', result)
+        expect(result).toBe(true)
       })
     })
   })
-  describe('TEST RETURN OF CREATE', () => {
-    it('Should create a relation between different users', async () => {
-      const resBlocked = await userBlockedService.create(
-        'd2OayPlUh0qtDrePkJ87t',
-        'j6-X94_NVjmzVm9QL3k4r'
-      )
-      // Assurez-vous que la création a réussi et que resBlocked n'est pas null.
-      expect(resBlocked).not.toBeNull()
-    })
-  })
-  describe('Create - no relation', () => {
-    it('Should be created', async () => {
-      try {
-        const resBlocked = await userBlockedService.create(
-          'd2OayPlUh0qtDrePkJ87t',
-          'd2OayPlUh0qtDrePkJ87t'
-        )
-        // Si nous atteignons cette ligne, cela signifie que la création a réussi,
-        // nous pouvons ajouter une assertion pour vérifier que resBlocked n'est pas null.
-        expect(resBlocked).not.toBeNull()
-      } catch (error) {
-        // S'il y a une exception, nous nous attendons à ce qu'elle soit de type ExceptionBlockedYourself.
-        expect(error).toBeInstanceOf(ExceptionBlockedYourself)
-      }
-    })
-  })
 })
+
+// const expectedRes = {
+//   userSenderId: '537d4ec6daffd64a2d4c',
+//   userReceiverId: '4376f06677b65d3168d6'
+// }
+// expect(resRequest).toStrictEqual(expectedRes)
+// })
+
+//     it('Should return ExceptionAlreadyBlocked', async () => {
+//       try {
+//         const resBlocked2 = await userBlockedService.create(
+//           'd2OayPlUh0qtDrePkJ87t',
+//           'j6-X94_NVjmzVm9QL3k4r'
+//         )
+//         expect(resBlocked2).not.toBeNull()
+//       } catch (error) {
+//         console.error(error)
+//         expect(error).toBeInstanceOf(ExceptionAlreadyBlocked)
+//       }
+//     })
+//   })
+//   describe('TEST ERROR', () => {
+//     it('Should return ExceptionBlockedYourself', async () => {
+//       try {
+//         const resBlocked = await userBlockedService.create(
+//           'd2OayPlUh0qtDrePkJ87t',
+//           'd2OayPlUh0qtDrePkJ87t'
+//         )
+//         expect(resBlocked).not.toBeNull()
+//       } catch (error) {
+//         // console.error(error)
+//         expect(error).toBeInstanceOf(ExceptionBlockedYourself)
+//       }
+//     })
+//   })
+// })
+
+//test wrong order
+
+// describe('Test Error', () => {
+//   it('throw an error after trying to create a new relaton in DB with an already existing id', async () => {
+//     expect(async () => {
+//       await relationFriendService.create(
+//         '4376f06677b65d3168d6-',
+//         '537d4ec6daffd64a2d4c-'
+//       )
+//     }).rejects.toThrow(PrismaClientKnownRequestError)
+//   })

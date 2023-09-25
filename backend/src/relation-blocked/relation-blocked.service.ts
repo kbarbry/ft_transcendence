@@ -35,7 +35,6 @@ export class RelationBlockedService {
         userBlockedId: userBId
       }
     })
-    return Promise.resolve(null)
   }
 
   //A unlock B
@@ -59,17 +58,45 @@ export class RelationBlockedService {
   //**************************************************//
 
   // A blocked by B?
+  // async isBlocked(userAId: string, userBId: string): Promise<boolean> {
+  //   const relation = await this.prisma.relationBlocked.findUnique({
+  //     where: {
+  //       userBlockingId_userBlockedId: {
+  //         userBlockingId: userAId,
+  //         userBlockedId: userBId
+  //       }
+  //     }
+  //   })
+  //   return !!relation
+  // }
+
+  // A blocked by B?
   async isBlocked(userAId: string, userBId: string): Promise<boolean> {
-    const relation = await this.prisma.relationBlocked.findUnique({
-      where: {
-        userBlockingId_userBlockedId: {
-          userBlockingId: userAId,
-          userBlockedId: userBId
+    if (
+      this.prisma.relationBlocked.findUnique({
+        where: {
+          userBlockingId_userBlockedId: {
+            userBlockingId: userAId,
+            userBlockedId: userBId
+          }
         }
-      }
-    })
-    return !!relation
+      }) !== null
+    )
+      return true
+    return false
   }
+
+  // async isBlocked(userAId: string, userBId: string): Promise<boolean> {
+  //   const relation = await this.prisma.relationBlocked.findUnique({
+  //     where: {
+  //       userBlockingId_userBlockedId: {
+  //         userBlockingId: userAId,
+  //         userBlockedId: userBId
+  //       }
+  //     }
+  //   })
+  //   return relation !== null
+  // }
 
   async findAllBlockedByUser(id: string): Promise<string[]> {
     return (
