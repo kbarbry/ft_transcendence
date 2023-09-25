@@ -3,18 +3,13 @@ import { PrismaService } from '../prisma/prisma.service'
 import { UserService } from './user.service'
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library'
 import { ExceptionTryingToUpdateID } from './exceptions/user.exceptions'
+import { Prisma } from '@prisma/client'
 
 describe('Test UserService', () => {
   let userService: UserService
   let prismaService: PrismaService
   let newUser: any
-  const userData = {
-    mail: 'CreateUser@example.com',
-    username: 'CreateUser_user',
-    password: 'password123',
-    level: 0,
-    avatarUrl: 'url'
-  }
+  let userData: Prisma.UserCreateInput
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -23,16 +18,45 @@ describe('Test UserService', () => {
 
     userService = module.get<UserService>(UserService)
     prismaService = module.get<PrismaService>(PrismaService)
+
+    //**************************************************//
+    //  MAKE IT CLEAN
+    //**************************************************//
+
+    await prismaService.$executeRaw`DELETE FROM "public"."RelationFriend";`
+    await prismaService.$executeRaw`DELETE FROM "public"."RelationBlocked";`
+    await prismaService.$executeRaw`DELETE FROM "public"."RelationRequests";`
+    await prismaService.$executeRaw`DELETE FROM "public"."UserPresence";`
+    await prismaService.$executeRaw`DELETE FROM "public"."GameStat";`
+    await prismaService.$executeRaw`DELETE FROM "public"."Channel";`
+    await prismaService.$executeRaw`DELETE FROM "public"."ChannelMember";`
+    await prismaService.$executeRaw`DELETE FROM "public"."ChannelMessage";`
+    await prismaService.$executeRaw`DELETE FROM "public"."PrivateMessage";`
+    await prismaService.$executeRaw`DELETE FROM "public"."User";`
   })
 
   beforeEach(async () => {
-    //await prismaService.$executeRaw`DELETE FROM "public"."User";`
+    //**************************************************//
+    //  MAKE IT CLEAN
+    //**************************************************//
+
+    await prismaService.$executeRaw`DELETE FROM "public"."User";`
+
+    //**************************************************//
+    //  USER CREATION
+    //**************************************************//
+
     await prismaService.$executeRaw`INSERT INTO "public"."User" VALUES ('d2OayPlUh0qtDrePkJ87t', 'random url', 'alfred@42.fr', 'Ally', 'oui', null, null, false, 'Online', 'English', 1);`
     await prismaService.$executeRaw`INSERT INTO "public"."User" VALUES ('j6-X94_NVjmzVm9QL3k4r', 'random url', 'charlie@42.fr', 'Chacha', 'oui', null, null, false, 'Invisble', 'French', 12);`
     await prismaService.$executeRaw`INSERT INTO "public"."User" VALUES ('_U0vTLhbNpjA39Pc7wwtn', 'random url', 'bob@42.fr', 'Bobby', 'Babby', null, null, false, 'Online', 'English', 1);`
-    // await prismaService.$executeRaw`INSERT INTO "public"."User" VALUES ('c-vzGU-8QlEvmHk8rjNRI', 'random url', 'david@42.fr', 'dav', 'oui', null, null, false, 'Invisble', 'French', 12);`
-    // await prismaService.$executeRaw`INSERT INTO "public"."User" VALUES ('a5cfce0', 'random url', 'evan@42.fr', 'evee', 'oui', null, null, false, 'Idle', 'Spanish', 36);`
-    // await prismaService.$executeRaw`INSERT INTO "public"."User" VALUES ('f568b3a', 'random url', 'frank@42.fr', 'punisher', 'oui', null, null, false, 'DoNotDisturb', 'Spanish', 9000);`
+
+    userData = {
+      mail: 'CreateUser@example.com',
+      username: 'CreateUser_user',
+      password: 'password123',
+      level: 0,
+      avatarUrl: 'url'
+    }
   })
 
   afterEach(async () => {

@@ -7,6 +7,7 @@ import {
   ExceptionTryingToUpdateID,
   ExceptionSamePlayerInGame
 } from '../user/exceptions/game-stat.exception'
+import { cleanDataBase } from '../../test/setup-environment'
 
 describe('GameStatService', () => {
   let gameStatService: GameStatService
@@ -21,17 +22,22 @@ describe('GameStatService', () => {
 
     gameStatService = module.get<GameStatService>(GameStatService)
     prismaService = module.get<PrismaService>(PrismaService)
+    // cleanDataBase(prismaService)
+
+    //**************************************************//
+    //  PREPARE DATABASE
+    //**************************************************//
 
     await prismaService.$executeRaw`DELETE FROM "public"."RelationFriend";`
     await prismaService.$executeRaw`DELETE FROM "public"."RelationBlocked";`
     await prismaService.$executeRaw`DELETE FROM "public"."RelationRequests";`
     await prismaService.$executeRaw`DELETE FROM "public"."UserPresence";`
     await prismaService.$executeRaw`DELETE FROM "public"."GameStat";`
-    await prismaService.$executeRaw`DELETE FROM "public"."User";`
     await prismaService.$executeRaw`DELETE FROM "public"."Channel";`
     await prismaService.$executeRaw`DELETE FROM "public"."ChannelMember";`
     await prismaService.$executeRaw`DELETE FROM "public"."ChannelMessage";`
     await prismaService.$executeRaw`DELETE FROM "public"."PrivateMessage";`
+    await prismaService.$executeRaw`DELETE FROM "public"."User";`
   })
 
   beforeEach(async () => {
@@ -86,8 +92,11 @@ describe('GameStatService', () => {
   })
 
   describe('Test GameStat Mutation', () => {
-    it('should be defined', () => {
+    it('GamestatService should be defined', () => {
       expect(GameStatService).toBeDefined()
+    })
+    it('PrismaSerice should be defined', () => {
+      expect(PrismaService).toBeDefined
     })
     it('should create a GameStat', () => {
       const createdGameStat = gameStatService.create(gameStatData)
