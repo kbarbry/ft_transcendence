@@ -1,6 +1,10 @@
 import { Injectable } from '@nestjs/common'
 import { Prisma, PrivateMessage } from '@prisma/client'
 import { PrismaService } from '../prisma/prisma.service'
+import {
+  ExceptionTryingToUpdatePrivateMessageID,
+  ExceptionPrivateMessageYourself
+} from '../channel/exceptions/private-message.exception'
 
 @Injectable()
 export class PrivateMessageService {
@@ -13,6 +17,9 @@ export class PrivateMessageService {
   async create(
     data: Prisma.PrivateMessageCreateInput
   ): Promise<PrivateMessage> {
+    if (data.receiver.connect?.id == data.sender.connect?.id) {
+      throw new ExceptionPrivateMessageYourself()
+    }
     return this.prisma.privateMessage.create({
       data
     })
@@ -22,6 +29,7 @@ export class PrivateMessageService {
     id: string,
     data: Prisma.PrivateMessageUpdateInput
   ): Promise<PrivateMessage> {
+    if (data.id) throw new ExceptionTryingToUpdatePrivateMessageID()
     return this.prisma.privateMessage.update({
       where: {
         id
@@ -57,6 +65,40 @@ export class PrivateMessageService {
       orderBy: {
         createdAt: 'desc'
       }
+    })
+  }
+  async findAllMessageWith(
+    idSender: string,
+    idReceiv: string
+  ): Promise<PrivateMessage[]> {
+    return this.prisma.privateMessage.findMany({
+      where: {
+        OR: [
+          { AND: [{ senderId: idSender }, { receiverId: idReceiv }] },
+          { AND: [{ senderId: idReceiv }, { receiverId: idSender }] }
+        ]
+      },
+      orderBy: {
+        createdAt: 'desc'
+      }
+    })
+  }
+
+  async findAllMessageWithLiteVersion(
+    idSender: string,
+    idReceiv: string
+  ): Promise<PrivateMessage[]> {
+    return this.prisma.privateMessage.findMany({
+      where: {
+        OR: [
+          { AND: [{ senderId: idSender }, { receiverId: idReceiv }] },
+          { AND: [{ senderId: idReceiv }, { receiverId: idSender }] }
+        ]
+      },
+      orderBy: {
+        createdAt: 'desc'
+      },
+      take: 20
     })
   }
 }
