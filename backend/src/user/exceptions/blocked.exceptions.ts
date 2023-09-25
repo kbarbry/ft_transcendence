@@ -2,7 +2,7 @@ import { HttpException, HttpStatus } from '@nestjs/common'
 
 export class ExceptionAlreadyBlocked extends HttpException {
   constructor() {
-    super('The user already is blocked', HttpStatus.CONFLICT)
+    super('The user is already blocked', HttpStatus.CONFLICT)
   }
 }
 

@@ -5,7 +5,7 @@ import { RelationFriendService } from '../relation-friend/relation-friend.servic
 import { RelationBlockedService } from './relation-blocked.service'
 import { PrismaService } from '../prisma/prisma.service'
 import { UserService } from '../user/user.service'
-import { cleanDataBase } from '../../test/setup-environment'
+// import { cleanDataBase } from '../../test/setup-environment'
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library'
 import {
   ExceptionAlreadyBlocked,
@@ -54,9 +54,9 @@ describe('UserPresenceService', () => {
     // await cleanDataBase(prismaService)
     await prismaService.$executeRaw`DELETE FROM "public"."RelationBlocked";`
     await prismaService.$executeRaw`DELETE FROM "public"."User";`
-    await prismaService.$executeRaw`INSERT INTO "public"."User" VALUES ('d2OayPlUh0qtDrePkJ87t', 'random url', 'alfred@42.fr', 'Ally', 'oui', null, null, false, 'Online', 'English', 1);`
+    await prismaService.$executeRaw`INSERT INTO "public"."User" VALUES ('a2OayPlUh0qtDrePkJ87t', 'random url', 'alfred@42.fr', 'Ally', 'oui', null, null, false, 'Online', 'English', 1);`
+    await prismaService.$executeRaw`INSERT INTO "public"."User" VALUES ('baaayPlUh0qtDrePkJ87t', 'random url', 'adel@42.fr', 'Adelou', 'oui', null, null, false, 'Online', 'English', 1);`
     await prismaService.$executeRaw`INSERT INTO "public"."User" VALUES ('j6-X94_NVjmzVm9QL3k4r', 'random url', 'charlie@42.fr', 'Chacha', 'oui', null, null, false, 'Invisble', 'French', 12);`
-    await prismaService.$executeRaw`INSERT INTO "public"."User" VALUES ('aaaayPlUh0qtDrePkJ87t', 'random url', 'adel@42.fr', 'Adelou', 'oui', null, null, false, 'Online', 'English', 1);`
     await prismaService.$executeRaw`INSERT INTO "public"."User" VALUES ('bbbbyPlUh0qtDrePkJ87t', 'random url', 'mama@42.fr', 'mama', 'oui', null, null, false, 'Online', 'English', 1);`
     await prismaService.$executeRaw`INSERT INTO "public"."User" VALUES ('ccccyPlUh0qtDrePkJ87t', 'random url', 'maurice@42.fr', 'Momo', 'oui', null, null, false, 'Online', 'English', 1);`
     await prismaService.$executeRaw`INSERT INTO "public"."User" VALUES ('ddddyPlUh0qtDrePkJ87t', 'random url', 'suzette@42.fr', 'Suzette', 'oui', null, null, false, 'Online', 'English', 1);`
@@ -65,6 +65,7 @@ describe('UserPresenceService', () => {
     //            USER PRESENCE CREATION
     ///////////////////////////////////////////////////
 
+    await prismaService.$executeRaw`INSERT INTO "public"."RelationBlocked" VALUES ('a2OayPlUh0qtDrePkJ87t', 'baaayPlUh0qtDrePkJ87t')`
     // await prismaService.$executeRaw`INSERT INTO "public"."UserPresence" VALUES ('drfOayPwwUh12tDrePkJ8', 'd2OayPlUh0qtDrePkJ87t', '2023-09-13 10:00:00');`
     // await prismaService.$executeRaw`INSERT INTO "public"."UserPresence" VALUES ('qci4ayPwwUh12tDrePkJ8', 'j6-X94_NVjmzVm9QL3k4r', '2023-09-13 11:00:00');`
   })
@@ -89,75 +90,112 @@ describe('UserPresenceService', () => {
     it('prismaService should be defined', () => {
       expect(RelationRequestsService).toBeDefined()
     })
+    it('should return isBlocked - false - uknown userA', async () => {
+      const result = await userBlockedService.isBlocked(
+        'bcdefPlUh0qtDrePkJ87t',
+        'a2OayPlUh0qtDrePkJ87tt'
+      )
+      console.log('isBlocked result in spec uknown userA: ', result)
+      expect(result).toBe(false)
+    })
+    it('should return isBlocked - false - uknown userB', async () => {
+      const result = await userBlockedService.isBlocked(
+        'ccccyPlUh0qtDrePkJ87t',
+        'jeanPlUh0qtDrePkJ87tt'
+      )
+      console.log('isBlocked result in spec uknown userA: ', result)
+      expect(result).toBe(false)
+    })
     describe('TEST QUERY', () => {
-      it('should create a blockedRelation', async () => {
-        const resBlocked = await userBlockedService.create(
-          'd2OayPlUh0qtDrePkJ87t',
-          'j6-X94_NVjmzVm9QL3k4r'
-        )
-        // console.log(resBlocked)
-        const expectedRes = {
-          userBlockedId: 'j6-X94_NVjmzVm9QL3k4r',
-          userBlockingId: 'd2OayPlUh0qtDrePkJ87t'
-        }
-        expect(resBlocked).toStrictEqual(expectedRes)
-      })
       it('should return isBlocked - true', async () => {
         const result = await userBlockedService.isBlocked(
-          'd2OayPlUh0qtDrePkJ87t',
-          'j6-X94_NVjmzVm9QL3k4r'
+          'a2OayPlUh0qtDrePkJ87t',
+          'baaayPlUh0qtDrePkJ87t'
         )
         console.log('isBlocked result in spec: ', result)
         expect(result).toBe(true)
+      })
+      it('should create a blockedRelation', async () => {
+        const resBlocked = await userBlockedService.create(
+          'a2OayPlUh0qtDrePkJ87t',
+          'j6-X94_NVjmzVm9QL3k4r'
+        )
+        console.log(resBlocked)
+        const expectedRes = {
+          userBlockedId: 'j6-X94_NVjmzVm9QL3k4r',
+          userBlockingId: 'a2OayPlUh0qtDrePkJ87t'
+        }
+        expect(resBlocked).toStrictEqual(expectedRes)
+      })
+      //
+      it('should create a blockedRelation - 2', async () => {
+        const resBlocked = await userBlockedService.create(
+          'a2OayPlUh0qtDrePkJ87t',
+          'ddddyPlUh0qtDrePkJ87t'
+        )
+        console.log(resBlocked)
+        const expectedRes = {
+          userBlockedId: 'ddddyPlUh0qtDrePkJ87t',
+          userBlockingId: 'a2OayPlUh0qtDrePkJ87t'
+        }
+        expect(resBlocked).toStrictEqual(expectedRes)
+      })
+      //
+      it('should create a blockedRelation - 3', async () => {
+        const resBlocked = await userBlockedService.create(
+          'a2OayPlUh0qtDrePkJ87t',
+          'bbbbyPlUh0qtDrePkJ87t'
+        )
+        console.log(resBlocked)
+        const expectedRes = {
+          userBlockedId: 'bbbbyPlUh0qtDrePkJ87t',
+          userBlockingId: 'a2OayPlUh0qtDrePkJ87t'
+        }
+        expect(resBlocked).toStrictEqual(expectedRes)
+      })
+      it('Should return ExceptionAlreadyBlocked', async () => {
+        try {
+          const resBlocked2 = await userBlockedService.create(
+            'a2OayPlUh0qtDrePkJ87t',
+            'j6-X94_NVjmzVm9QL3k4r'
+          )
+          expect(resBlocked2).not.toBeNull()
+        } catch (error) {
+          console.error(error)
+          expect(error).toBeInstanceOf(ExceptionAlreadyBlocked)
+        }
+      })
+      // it('findAllBlockingByUser test - ddddyPlUh0qtDrePkJ87t - j6-X94_NVjmzVm9QL3k4r - bbbbyPlUh0qtDrePkJ87t', async () => {
+      //   const findUsers = await userBlockedService.findAllBlockingByUser(
+      //     'a2OayPlUh0qtDrePkJ87t'
+      //   )
+      //   console.log('findAllBlockedByUser: ', findUsers)
+      // })
+    })
+    describe('TEST ERROR', () => {
+      it('should return ExceptionBlockedYourself', async () => {
+        try {
+          const resBlocked = await userBlockedService.create(
+            'aaaayPlUh0qtDrePkJ87t',
+            'aaaayPlUh0qtDrePkJ87t'
+          )
+          expect(resBlocked).not.toBeNull()
+        } catch (error) {
+          // console.error(error)
+          expect(error).toBeInstanceOf(ExceptionBlockedYourself)
+        }
+      })
+      it('should return isBlocked - false - wrong order test', async () => {
+        const result = await userBlockedService.isBlocked(
+          'baaayPlUh0qtDrePkJ87t',
+          'a2OayPlUh0qtDrePkJ87t'
+        )
+        console.log('isBlocked result in spec wrong order: ', result)
+        expect(result).toBe(false)
       })
     })
   })
 })
 
-// const expectedRes = {
-//   userSenderId: '537d4ec6daffd64a2d4c',
-//   userReceiverId: '4376f06677b65d3168d6'
-// }
-// expect(resRequest).toStrictEqual(expectedRes)
-// })
-
-//     it('Should return ExceptionAlreadyBlocked', async () => {
-//       try {
-//         const resBlocked2 = await userBlockedService.create(
-//           'd2OayPlUh0qtDrePkJ87t',
-//           'j6-X94_NVjmzVm9QL3k4r'
-//         )
-//         expect(resBlocked2).not.toBeNull()
-//       } catch (error) {
-//         console.error(error)
-//         expect(error).toBeInstanceOf(ExceptionAlreadyBlocked)
-//       }
-//     })
-//   })
-//   describe('TEST ERROR', () => {
-//     it('Should return ExceptionBlockedYourself', async () => {
-//       try {
-//         const resBlocked = await userBlockedService.create(
-//           'd2OayPlUh0qtDrePkJ87t',
-//           'd2OayPlUh0qtDrePkJ87t'
-//         )
-//         expect(resBlocked).not.toBeNull()
-//       } catch (error) {
-//         // console.error(error)
-//         expect(error).toBeInstanceOf(ExceptionBlockedYourself)
-//       }
-//     })
-//   })
-// })
-
-//test wrong order
-
-// describe('Test Error', () => {
-//   it('throw an error after trying to create a new relaton in DB with an already existing id', async () => {
-//     expect(async () => {
-//       await relationFriendService.create(
-//         '4376f06677b65d3168d6-',
-//         '537d4ec6daffd64a2d4c-'
-//       )
-//     }).rejects.toThrow(PrismaClientKnownRequestError)
-//   })
+//rest to test
+//findAllBlockingByUser
