@@ -54,20 +54,34 @@ describe('UserPresenceService', () => {
     // await cleanDataBase(prismaService)
     await prismaService.$executeRaw`DELETE FROM "public"."RelationBlocked";`
     await prismaService.$executeRaw`DELETE FROM "public"."User";`
-    await prismaService.$executeRaw`INSERT INTO "public"."User" VALUES ('a2OayPlUh0qtDrePkJ87t', 'random url', 'alfred@42.fr', 'Ally', 'oui', null, null, false, 'Online', 'English', 1);`
-    await prismaService.$executeRaw`INSERT INTO "public"."User" VALUES ('baaayPlUh0qtDrePkJ87t', 'random url', 'adel@42.fr', 'Adelou', 'oui', null, null, false, 'Online', 'English', 1);`
-    await prismaService.$executeRaw`INSERT INTO "public"."User" VALUES ('j6-X94_NVjmzVm9QL3k4r', 'random url', 'charlie@42.fr', 'Chacha', 'oui', null, null, false, 'Invisble', 'French', 12);`
-    await prismaService.$executeRaw`INSERT INTO "public"."User" VALUES ('bbbbyPlUh0qtDrePkJ87t', 'random url', 'mama@42.fr', 'mama', 'oui', null, null, false, 'Online', 'English', 1);`
-    await prismaService.$executeRaw`INSERT INTO "public"."User" VALUES ('ccccyPlUh0qtDrePkJ87t', 'random url', 'maurice@42.fr', 'Momo', 'oui', null, null, false, 'Online', 'English', 1);`
-    await prismaService.$executeRaw`INSERT INTO "public"."User" VALUES ('ddddyPlUh0qtDrePkJ87t', 'random url', 'suzette@42.fr', 'Suzette', 'oui', null, null, false, 'Online', 'English', 1);`
+    await prismaService.$executeRaw`INSERT INTO "public"."User" VALUES ('a2OayPlUh0qtDrePkJ87t', 'random url', 'alfred@42.fr', 'Ally', 'oui', null, null, false, 'Online', 'English', 1)`
+    await prismaService.$executeRaw`INSERT INTO "public"."User" VALUES ('baaayPlUh0qtDrePkJ87t', 'random url', 'adel@42.fr', 'Adelou', 'oui', null, null, false, 'Online', 'English', 1)`
+    await prismaService.$executeRaw`INSERT INTO "public"."User" VALUES ('j6-X94_NVjmzVm9QL3k4r', 'random url', 'charlie@42.fr', 'Chacha', 'oui', null, null, false, 'Invisble', 'French', 12)`
+    await prismaService.$executeRaw`INSERT INTO "public"."User" VALUES ('bbbbyPlUh0qtDrePkJ87t', 'random url', 'mama@42.fr', 'mama', 'oui', null, null, false, 'Online', 'English', 1)`
+    await prismaService.$executeRaw`INSERT INTO "public"."User" VALUES ('ccccyPlUh0qtDrePkJ87t', 'random url', 'maurice@42.fr', 'Momo', 'oui', null, null, false, 'Online', 'English', 1)`
+    await prismaService.$executeRaw`INSERT INTO "public"."User" VALUES ('ddddyPlUh0qtDrePkJ87t', 'random url', 'suzette@42.fr', 'Suzette', 'oui', null, null, false, 'Online', 'English', 1)`
+    await prismaService.$executeRaw`INSERT INTO "public"."User" VALUES ('eeeeyPlUh0qtDrePkJ87t', 'random url', 'mauricette@42.fr', 'Momoe', 'oui', null, null, false, 'Online', 'English', 1)`
+    await prismaService.$executeRaw`INSERT INTO "public"."User" VALUES ('j9-X94_NVjmzVm9QL3k4r', 'random url', 'seveneleven@42.fr', '79', 'oui', null, null, false, 'Online', 'English', 1)`
+    await prismaService.$executeRaw`INSERT INTO "public"."User" VALUES ('drfOayPwwUh12tDrePkJ8', 'random url', 'other@42.fr', 'other', 'oui', null, null, false, 'Online', 'English', 1)`
+    await prismaService.$executeRaw`INSERT INTO "public"."User" VALUES ('qci4ayPwwUh12tDrePkJ8', 'random url', 'dad42.fr', 'dad', 'oui', null, null, false, 'Online', 'English', 1);`
 
     ///////////////////////////////////////////////////
     //            USER PRESENCE CREATION
     ///////////////////////////////////////////////////
 
-    await prismaService.$executeRaw`INSERT INTO "public"."RelationBlocked" VALUES ('a2OayPlUh0qtDrePkJ87t', 'baaayPlUh0qtDrePkJ87t')`
-    // await prismaService.$executeRaw`INSERT INTO "public"."UserPresence" VALUES ('drfOayPwwUh12tDrePkJ8', 'd2OayPlUh0qtDrePkJ87t', '2023-09-13 10:00:00');`
-    // await prismaService.$executeRaw`INSERT INTO "public"."UserPresence" VALUES ('qci4ayPwwUh12tDrePkJ8', 'j6-X94_NVjmzVm9QL3k4r', '2023-09-13 11:00:00');`
+    // await prismaService.$executeRaw`INSERT INTO "public"."RelationBlocked" VALUES ('a2OayPlUh0qtDrePkJ87t', 'baaayPlUh0qtDrePkJ87t'),`
+    // await prismaService.$executeRaw`INSERT INTO "public"."RelationBlocked" VALUES ('eeeeyPlUh0qtDrePkJ87t', 'ddddyPlUh0qtDrePkJ87t'),`
+    // await prismaService.$executeRaw`INSERT INTO "public"."RelationBlocked" VALUES ('eeeeyPlUh0qtDrePkJ87t', 'ccccyPlUh0qtDrePkJ87t'),`
+    // await prismaService.$executeRaw`INSERT INTO "public"."RelationBlocked" VALUES ('eeeeyPlUh0qtDrePkJ87t', 'bbbbyPlUh0qtDrePkJ87t');`
+    await prismaService.$executeRaw`INSERT INTO
+    "public"."RelationBlocked"
+    VALUES
+    ('a2OayPlUh0qtDrePkJ87t', 'baaayPlUh0qtDrePkJ87t'),
+    ('eeeeyPlUh0qtDrePkJ87t', 'ddddyPlUh0qtDrePkJ87t'),
+    ('eeeeyPlUh0qtDrePkJ87t', 'ccccyPlUh0qtDrePkJ87t'),
+    ('eeeeyPlUh0qtDrePkJ87t', 'bbbbyPlUh0qtDrePkJ87t'),
+    ('drfOayPwwUh12tDrePkJ8', 'j9-X94_NVjmzVm9QL3k4r'),
+    ('qci4ayPwwUh12tDrePkJ8', 'j9-X94_NVjmzVm9QL3k4r');`
   })
   afterAll(async () => {
     await prismaService.$disconnect()
@@ -115,6 +129,7 @@ describe('UserPresenceService', () => {
         console.log('isBlocked result in spec: ', result)
         expect(result).toBe(true)
       })
+      ////////////////////////////////
       it('should create a blockedRelation', async () => {
         const resBlocked = await userBlockedService.create(
           'a2OayPlUh0qtDrePkJ87t',
@@ -127,7 +142,7 @@ describe('UserPresenceService', () => {
         }
         expect(resBlocked).toStrictEqual(expectedRes)
       })
-      //
+      ////////////////////////////////
       it('should create a blockedRelation - 2', async () => {
         const resBlocked = await userBlockedService.create(
           'a2OayPlUh0qtDrePkJ87t',
@@ -140,7 +155,7 @@ describe('UserPresenceService', () => {
         }
         expect(resBlocked).toStrictEqual(expectedRes)
       })
-      //
+      ////////////////////////////////
       it('should create a blockedRelation - 3', async () => {
         const resBlocked = await userBlockedService.create(
           'a2OayPlUh0qtDrePkJ87t',
@@ -165,34 +180,61 @@ describe('UserPresenceService', () => {
           expect(error).toBeInstanceOf(ExceptionAlreadyBlocked)
         }
       })
-      // it('findAllBlockingByUser test - ddddyPlUh0qtDrePkJ87t - j6-X94_NVjmzVm9QL3k4r - bbbbyPlUh0qtDrePkJ87t', async () => {
-      //   const findUsers = await userBlockedService.findAllBlockingByUser(
-      //     'a2OayPlUh0qtDrePkJ87t'
-      //   )
-      //   console.log('findAllBlockedByUser: ', findUsers)
-      // })
-    })
-    describe('TEST ERROR', () => {
-      it('should return ExceptionBlockedYourself', async () => {
-        try {
-          const resBlocked = await userBlockedService.create(
-            'aaaayPlUh0qtDrePkJ87t',
-            'aaaayPlUh0qtDrePkJ87t'
-          )
-          expect(resBlocked).not.toBeNull()
-        } catch (error) {
-          // console.error(error)
-          expect(error).toBeInstanceOf(ExceptionBlockedYourself)
-        }
-      })
-      it('should return isBlocked - false - wrong order test', async () => {
-        const result = await userBlockedService.isBlocked(
-          'baaayPlUh0qtDrePkJ87t',
+      //should return Other users blocked by id in param
+      //PARLER AUX AUTRES D'INVERSER LES NOMS DES FINDALL
+      it('findAllBlockedUser - should find one one user blocked by ID', async () => {
+        const findUsers = await userBlockedService.findAllBlockedByUser(
           'a2OayPlUh0qtDrePkJ87t'
         )
-        console.log('isBlocked result in spec wrong order: ', result)
-        expect(result).toBe(false)
+        const expectedRes = ['baaayPlUh0qtDrePkJ87t']
+        expect(findUsers).toStrictEqual(expectedRes)
+        console.log('findAllBlockedUser', findUsers)
       })
+    })
+    it('findAllBlockedUser - should find users blocked by ID', async () => {
+      const blockedUsers = await userBlockedService.findAllBlockedByUser(
+        'eeeeyPlUh0qtDrePkJ87t'
+      )
+      const expectedBlockedUsers = [
+        'ddddyPlUh0qtDrePkJ87t',
+        'ccccyPlUh0qtDrePkJ87t',
+        'bbbbyPlUh0qtDrePkJ87t'
+      ]
+      expect(blockedUsers).toEqual(expectedBlockedUsers)
+      console.log('return of findAllBlockedUser: ', blockedUsers)
+    })
+  })
+  it('findAllBlockingUser - should find users blocking ID', async () => {
+    const blockedUsers = await userBlockedService.findAllBlockingByUser(
+      'j9-X94_NVjmzVm9QL3k4r'
+    )
+    const expectedBlockedUsers = [
+      'drfOayPwwUh12tDrePkJ8',
+      'qci4ayPwwUh12tDrePkJ8'
+    ]
+    expect(blockedUsers).toEqual(expectedBlockedUsers)
+    console.log('return of findAllBlockingUser: ', blockedUsers)
+  })
+  describe('TEST ERROR', () => {
+    it('should return ExceptionBlockedYourself', async () => {
+      try {
+        const resBlocked = await userBlockedService.create(
+          'aaaayPlUh0qtDrePkJ87t',
+          'aaaayPlUh0qtDrePkJ87t'
+        )
+        expect(resBlocked).not.toBeNull()
+      } catch (error) {
+        // console.error(error)
+        expect(error).toBeInstanceOf(ExceptionBlockedYourself)
+      }
+    })
+    it('should return isBlocked - false - wrong order test', async () => {
+      const result = await userBlockedService.isBlocked(
+        'baaayPlUh0qtDrePkJ87t',
+        'a2OayPlUh0qtDrePkJ87t'
+      )
+      console.log('isBlocked result in spec wrong order: ', result)
+      expect(result).toBe(false)
     })
   })
 })
