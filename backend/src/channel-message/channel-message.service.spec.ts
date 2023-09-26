@@ -3,6 +3,7 @@ import { ChannelMessageService } from './channel-message.service'
 import { PrismaService } from '../prisma/prisma.service'
 import { Prisma } from '@prisma/client'
 import { ExceptionTryingToUpdateID } from '../user/exceptions/channel-message.exception'
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library'
 
 describe('ChannelMessageService', () => {
   let channelMessageService: ChannelMessageService
@@ -131,23 +132,33 @@ describe('ChannelMessageService', () => {
     })
 
     it('return a list of messages from a channel', async () => {
-      const msgList = channelMessageService.findAllFromChannel(
+      const msgList = await channelMessageService.findAllFromChannel(
         'ac7d4ec6daffd64a2d4ca'
       )
       expect(msgList).toBeDefined()
     })
 
     it('return a list of messages from a user in a specified channel', async () => {
-      const msgList = channelMessageService.findAllFromChannelIdsAndUserId(
-        'ac7d4ec6daffd64a2d4ca',
-        'au7d4ec6daffd64a2d4ca'
-      )
+      const msgList =
+        await channelMessageService.findAllFromChannelIdsAndUserId(
+          'ac7d4ec6daffd64a2d4ca',
+          'au7d4ec6daffd64a2d4ca'
+        )
       expect(msgList).toBeDefined()
     })
   })
 
   describe('Test Error', () => {
-    it('try to update a message id and return an error', async () => {
+    it('return an empty list of messages from a user in a specified channel where he is not', async () => {
+      const msgList =
+        await channelMessageService.findAllFromChannelIdsAndUserId(
+          'bc88e59aef615c5df6dfb',
+          'au7d4ec6daffd64a2d4ca'
+        )
+      expect(msgList.length).toStrictEqual(0)
+    })
+
+    it('throw an error after trying to try to update a message id', async () => {
       expect(async () => {
         const messageUpdateInput: Prisma.ChannelMessageUpdateInput = {
           id: 'random id'
@@ -157,6 +168,12 @@ describe('ChannelMessageService', () => {
           messageUpdateInput
         )
       }).rejects.toThrow(ExceptionTryingToUpdateID)
+    })
+
+    it('throw an error after trying to delete non existing id', async () => {
+      expect(async () => {
+        await channelMessageService.delete('zzzd4ec6daffd64a2d4cc')
+      }).rejects.toThrow(PrismaClientKnownRequestError)
     })
   })
 })
