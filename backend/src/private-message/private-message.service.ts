@@ -3,7 +3,9 @@ import { Prisma, PrivateMessage } from '@prisma/client'
 import { PrismaService } from '../prisma/prisma.service'
 import {
   ExceptionTryingToUpdatePrivateMessageID,
-  ExceptionPrivateMessageYourself
+  ExceptionPrivateMessageYourself,
+  ExceptionTryingToUpdateDateMessage,
+  ExceptionTryingToUpdateUsersId
 } from '../channel/exceptions/private-message.exception'
 
 @Injectable()
@@ -30,6 +32,9 @@ export class PrivateMessageService {
     data: Prisma.PrivateMessageUpdateInput
   ): Promise<PrivateMessage> {
     if (data.id) throw new ExceptionTryingToUpdatePrivateMessageID()
+    if (data.createdAt) throw new ExceptionTryingToUpdateDateMessage()
+    if (data.receiver?.connect?.id || data.sender?.connect?.id)
+      throw new ExceptionTryingToUpdateUsersId()
     return this.prisma.privateMessage.update({
       where: {
         id

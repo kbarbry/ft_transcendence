@@ -4,7 +4,9 @@ import { PrismaService } from '../prisma/prisma.service'
 import { Prisma } from '@prisma/client'
 import {
   ExceptionTryingToUpdatePrivateMessageID,
-  ExceptionPrivateMessageYourself
+  ExceptionPrivateMessageYourself,
+  ExceptionTryingToUpdateDateMessage,
+  ExceptionTryingToUpdateUsersId
 } from '../channel/exceptions/private-message.exception'
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library'
 
@@ -183,6 +185,38 @@ describe('PrivateMessageService', () => {
       expect(async () => {
         await privateMessageService.create(wrongData)
       }).rejects.toThrow(ExceptionPrivateMessageYourself)
+    })
+    it('send a message to someone who do not exist', async () => {
+      expect(async () => {
+        await prismaService.$executeRaw`INSERT INTO "public"."PrivateMessage" VALUES ('er12yPlUh0qtDrePkJ87t', '42tX94_NVjmzVm9QL3k4r', 'zunzGU-8QlEvmHk8rjNRI', 'Ceci est un supermessage', '2023-09-13 10:00:00');`
+      }).rejects.toThrow(PrismaClientKnownRequestError)
+    })
+    it('trying to change the date of a message', async () => {
+      const wrongUpdatedData = {
+        createdAt: '2023-09-13 20:00:00'
+      }
+      expect(async () => {
+        await privateMessageService.update(
+          'er10yPlUh0qtDrePkJ87t',
+          wrongUpdatedData
+        )
+      }).rejects.toThrow(ExceptionTryingToUpdateDateMessage)
+    })
+    it('trying to update senderId', async () => {
+      const wrongData = {
+        sender: { connect: { id: 'ttjayPlUh0qtDrePkJ87t' } }
+      }
+      expect(async () => {
+        await privateMessageService.update('er10yPlUh0qtDrePkJ87t', wrongData)
+      }).rejects.toThrow(ExceptionTryingToUpdateUsersId)
+    })
+    it('trying to update receiverId', async () => {
+      const wrongData = {
+        receiver: { connect: { id: 'ttjayPlUh0qtDrePkJ87t' } }
+      }
+      expect(async () => {
+        await privateMessageService.update('er10yPlUh0qtDrePkJ87t', wrongData)
+      }).rejects.toThrow(ExceptionTryingToUpdateUsersId)
     })
   })
 })
