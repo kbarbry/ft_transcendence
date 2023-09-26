@@ -25,5 +25,4 @@
   "paths": {
     "jest-postgres": ["node_modules/jest-postgres"]
   }
-  
 }

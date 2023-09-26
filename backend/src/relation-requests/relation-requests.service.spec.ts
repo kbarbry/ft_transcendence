@@ -50,7 +50,9 @@ describe('RelationRequestsService', () => {
       ('4376f06677b65d3168d6', 'random url', 'charlie@42.fr', 'Chacha', 'oui', null, null, false, 'Invisble', 'French', 12),
       ('df87734d323ac71c6efb', 'random url', 'david@42.fr', 'dav', 'oui', null, null, false, 'Invisble', 'French', 12),
       ('ec178ef86d29197b6ffd', 'random url', 'evan@42.fr', 'evee', 'oui', null, null, false, 'Idle', 'Spanish', 36),
-      ('e28d4ff1f6cd647fc171', 'random url', 'frank@42.fr', 'punisher', 'oui', null, null, false, 'DoNotDisturb', 'Spanish', 9000);`
+      ('e28d4ff1f6cd647fc171', 'random url', 'frank@42.fr', 'punisher', 'oui', null, null, false, 'DoNotDisturb', 'Spanish', 9000),
+      ('ohohoff1f6cd647fc171', 'random url', 'billy@42.fr', 'wallE', 'oui', null, null, false, 'Idle', 'English', 42),
+      ('bababff1f6cd647fc171', 'random url', 'castex@42.fr', 'XxCovidxX', 'oui', null, null, false, 'Online', 'French', 666);`
     await prismaService.$executeRaw`INSERT INTO 
       "public"."RelationRequests" 
       VALUES 
@@ -58,6 +60,7 @@ describe('RelationRequestsService', () => {
       ('4376f06677b65d3168d6', 'f488e59aef615c5df6df'),
       ('4376f06677b65d3168d6', 'df87734d323ac71c6efb'),
       ('e28d4ff1f6cd647fc171', 'f488e59aef615c5df6df'),
+      ('bababff1f6cd647fc171', 'ohohoff1f6cd647fc171'),
       ('e28d4ff1f6cd647fc171', 'df87734d323ac71c6efb');`
     await prismaService.$executeRaw`INSERT INTO
       "public"."RelationBlocked"
@@ -111,6 +114,17 @@ describe('RelationRequestsService', () => {
         const expectedRes = {
           userSenderId: '537d4ec6daffd64a2d4c',
           userReceiverId: '4376f06677b65d3168d6'
+        }
+        expect(resRequest).toStrictEqual(expectedRes)
+      })
+      it('should add userB as friend (alreadyRequested B->A)', async () => {
+        const resRequest = await relationRequestsService.create(
+          'ohohoff1f6cd647fc171',
+          'bababff1f6cd647fc171'
+        )
+        const expectedRes = {
+          userAId: 'bababff1f6cd647fc171',
+          userBId: 'ohohoff1f6cd647fc171'
         }
         expect(resRequest).toStrictEqual(expectedRes)
       })
@@ -215,22 +229,22 @@ describe('RelationRequestsService', () => {
           )
         }).rejects.toThrow(ExceptionUserBlockedYou)
       })
-      // it('trying to request someone you are already friend with A->B', () => {
-      //   expect(async () => {
-      //     await relationRequestsService.create(
-      //       'ec178ef86d29197b6ffd',
-      //       '4376f06677b65d3168d6'
-      //     )
-      //   }).rejects.toThrow(ExceptionUsersAlreadyFriend)
-      // })
-      // it('trying to request someone you are already friend with B->A', () => {
-      //   expect(async () => {
-      //     await relationRequestsService.create(
-      //       '4376f06677b65d3168d6',
-      //       'ec178ef86d29197b6ffd'
-      //     )
-      //   }).rejects.toThrow(ExceptionUsersAlreadyFriend)
-      // })
+      it('trying to request someone you are already friend with A->B', () => {
+        expect(async () => {
+          await relationRequestsService.create(
+            'ec178ef86d29197b6ffd',
+            '4376f06677b65d3168d6'
+          )
+        }).rejects.toThrow(ExceptionUsersAlreadyFriend)
+      })
+      it('trying to request someone you are already friend with B->A', () => {
+        expect(async () => {
+          await relationRequestsService.create(
+            '4376f06677b65d3168d6',
+            'ec178ef86d29197b6ffd'
+          )
+        }).rejects.toThrow(ExceptionUsersAlreadyFriend)
+      })
     })
   })
 })
