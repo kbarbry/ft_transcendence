@@ -8,14 +8,7 @@ import {
   ExceptionUserBlockedYou
 } from '../user/exceptions/blocked.exceptions'
 import { ExceptionUsersAlreadyFriend } from '../user/exceptions/friend.exceptions'
-import { ExceptionRequestingYourself } from '../user/exceptions/request.exceptions'
-
-// if blocked
-// if blocked by the other user
-// if friend
-// if requestFriendSent
-// if requestFriendReceived
-// if no relations
+import { ExceptionRequestAlreadySent } from '../user/exceptions/request.exceptions'
 
 @Injectable()
 export class RelationRequestsService {

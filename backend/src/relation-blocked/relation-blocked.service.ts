@@ -1,11 +1,21 @@
 import { Injectable } from '@nestjs/common'
 import { RelationBlocked } from '@prisma/client'
 import { PrismaService } from '../prisma/prisma.service'
-import { ExceptionAlreadyBlocked } from '../user/exceptions/blocked.exceptions'
+import {
+  ExceptionAlreadyBlocked,
+  ExceptionBlockedYourself
+} from '../user/exceptions/blocked.exceptions'
 
 @Injectable()
 export class RelationBlockedService {
   constructor(private prisma: PrismaService) {}
+
+  // if no relations
+  // if already blocked
+  // if blocked by the other user
+  // if friend
+  // if requestFriendSent
+  // if requestFriendReceived
 
   //**************************************************//
   //  MUTATION
@@ -16,12 +26,7 @@ export class RelationBlockedService {
     userAId: string,
     userBId: string
   ): Promise<RelationBlocked | null> {
-    // if no relations
-    // if already blocked
-    // if blocked by the other user
-    // if friend
-    // if requestFriendSent
-    // if requestFriendReceived
+    if (userAId == userBId) throw new ExceptionBlockedYourself()
     if (await this.isBlocked(userAId, userBId))
       throw new ExceptionAlreadyBlocked()
     return this.prisma.relationBlocked.create({
