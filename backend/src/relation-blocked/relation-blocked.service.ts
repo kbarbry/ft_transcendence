@@ -67,7 +67,6 @@ export class RelationBlockedService {
         }
       }
     })
-
     return relation !== null
   }
 
