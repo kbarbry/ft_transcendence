@@ -1,20 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { ChannelMessageService } from './channel-message.service'
-import { PrismaService } from 'src/prisma/prisma.service'
-
-//                                                         Table "public.ChannelMessage"
-//   Column   |              Type              | Collation | Nullable |      Default      | Storage  | Compression | Stats target | Description
-// -----------+--------------------------------+-----------+----------+-------------------+----------+-------------+--------------+-------------
-//  id        | text                           |           | not null |                   | extended |             |              |
-//  senderId  | text                           |           | not null |                   | extended |             |              |
-//  channelId | text                           |           | not null |                   | extended |             |              |
-//  content   | text                           |           | not null |                   | extended |             |              |
-//  createdAt | timestamp(3) without time zone |           | not null | CURRENT_TIMESTAMP | plain    |             |              |
-// Indexes:
-//     "ChannelMessage_pkey" PRIMARY KEY, btree (id)
-// Foreign-key constraints:
-//     "ChannelMessage_channelId_fkey" FOREIGN KEY ("channelId") REFERENCES "Channel"(id) ON UPDATE CASCADE ON DELETE CASCADE
-//     "ChannelMessage_senderId_fkey" FOREIGN KEY ("senderId") REFERENCES "User"(id) ON UPDATE CASCADE ON DELETE RESTRICT
+import { PrismaService } from '../prisma/prisma.service'
+import { Prisma } from '@prisma/client'
+import { ExceptionTryingToUpdateID } from '../user/exceptions/channel-message.exception'
 
 describe('ChannelMessageService', () => {
   let channelMessageService: ChannelMessageService
@@ -29,6 +17,37 @@ describe('ChannelMessageService', () => {
       ChannelMessageService
     )
     prismaService = module.get<PrismaService>(PrismaService)
+
+    await prismaService.$executeRaw`DELETE FROM "public"."ChannelMessage"`
+    await prismaService.$executeRaw`DELETE FROM "public"."Channel"`
+    await prismaService.$executeRaw`DELETE FROM "public"."User"`
+
+    await prismaService.$executeRaw`INSERT INTO 
+      "public"."User" 
+      VALUES 
+      ('au7d4ec6daffd64a2d4ca', 'random url', 'alfred@42.fr', 'Ally', 'oui', null, null, false, 'Online', 'English', 1),
+      ('bu88e59aef615c5df6dfb', 'random url', 'bob.fr', 'Bobby', 'Babby', null, null, false, 'Online', 'English', 1),
+      ('cu76f06677b65d3168d6c', 'random url', 'charlie@42.fr', 'Chacha', 'oui', null, null, false, 'Invisble', 'French', 12),
+      ('du87734d323ac71c6efbd', 'random url', 'david@42.fr', 'dav', 'oui', null, null, false, 'Invisble', 'French', 12),
+      ('eu178ef86d29197b6ffde', 'random url', 'evan@42.fr', 'evee', 'oui', null, null, false, 'Idle', 'Spanish', 36),
+      ('fu8d4ff1f6cd647fc171f', 'random url', 'frank@42.fr', 'punisher', 'oui', null, null, false, 'DoNotDisturb', 'Spanish', 9000);`
+
+    await prismaService.$executeRaw`INSERT INTO
+      "public"."Channel"
+      VALUES
+      ('ac7d4ec6daffd64a2d4ca', 'public one', 'avatar url', 'pubic things', null, 'au7d4ec6daffd64a2d4ca', 5, 'Public', '2023-09-13 11:30:42'),
+      ('bc88e59aef615c5df6dfb', 'protected one', 'avatar url', 'protected things', null, 'bu88e59aef615c5df6dfb', 5, 'Private', '2023-09-13 11:30:42'),
+      ('cc76f06677b65d3168d6c', 'private one', 'avatar url', 'private things', null, 'cu76f06677b65d3168d6c', 5, 'Protected', '2023-09-13 11:30:42');`
+
+    await prismaService.$executeRaw`INSERT INTO
+      "public"."ChannelMessage"
+      VALUES
+      ('am7d4ec6daffd64a2d4ca', 'au7d4ec6daffd64a2d4ca', 'ac7d4ec6daffd64a2d4ca', 'Hello', '2023-09-13 11:30:42'),
+      ('bm7d4ec6daffd64a2d4cb', 'bu88e59aef615c5df6dfb', 'ac7d4ec6daffd64a2d4ca', 'Hello you too', '2023-09-13 11:30:42'),
+      ('cm7d4ec6daffd64a2d4cc', 'cu76f06677b65d3168d6c', 'ac7d4ec6daffd64a2d4ca', 'Hi lol', '2023-09-13 11:30:42'),
+      ('em7d4ec6daffd64a2d4cc', 'du87734d323ac71c6efbd', 'ac7d4ec6daffd64a2d4ca', 'To be deleted', '2023-09-13 11:30:42'),
+      ('fm7d4ec6daffd64a2d4cd', 'au7d4ec6daffd64a2d4ca', 'ac7d4ec6daffd64a2d4ca', 'You all are dumb', '2023-09-13 11:30:42'),
+      ('gm7d4ec6daffd64a2d4cg', 'du87734d323ac71c6efbd', 'ac7d4ec6daffd64a2d4ca', 'For id update test', '2023-09-13 11:30:42');`
   })
 
   afterAll(async () => {
@@ -39,20 +58,105 @@ describe('ChannelMessageService', () => {
   })
 
   describe('Test channel-message Mutation', () => {
-    it('should be defined', async () => {
-      expect(channelMessageService).toBeDefined()
+    it('insert a new message in DB', async () => {
+      const newMessageInput: Prisma.ChannelMessageCreateInput = {
+        content: 'New Message from au7d4',
+        createdAt: new Date(Date.UTC(2023, 8, 13, 11, 30, 42)),
+        user: { connect: { id: 'au7d4ec6daffd64a2d4ca' } },
+        channel: { connect: { id: 'ac7d4ec6daffd64a2d4ca' } }
+      }
+
+      const messageDB = {
+        senderId: 'au7d4ec6daffd64a2d4ca',
+        channelId: 'ac7d4ec6daffd64a2d4ca',
+        content: 'New Message from au7d4',
+        createdAt: new Date(Date.UTC(2023, 8, 13, 11, 30, 42))
+      }
+
+      const dbret = await channelMessageService.create(newMessageInput)
+      expect(dbret.senderId).toStrictEqual(messageDB.senderId)
+      expect(dbret.channelId).toStrictEqual(messageDB.channelId)
+      expect(dbret.content).toStrictEqual(messageDB.content)
+      expect(dbret.createdAt).toStrictEqual(messageDB.createdAt)
+    })
+
+    it('update a message in DB', async () => {
+      const messageUpdateInput: Prisma.ChannelMessageUpdateInput = {
+        content: 'You all are nice'
+      }
+      const messageUpdated = {
+        id: 'fm7d4ec6daffd64a2d4cd',
+        senderId: 'au7d4ec6daffd64a2d4ca',
+        channelId: 'ac7d4ec6daffd64a2d4ca',
+        content: 'You all are nice',
+        createdAt: new Date(Date.UTC(2023, 8, 13, 11, 30, 42))
+      }
+
+      const dbret = await channelMessageService.update(
+        'fm7d4ec6daffd64a2d4cd',
+        messageUpdateInput
+      )
+
+      expect(dbret).toStrictEqual(messageUpdated)
+    })
+
+    it('delete a message from DB', async () => {
+      const delMessage = {
+        id: 'em7d4ec6daffd64a2d4cc',
+        senderId: 'du87734d323ac71c6efbd',
+        channelId: 'ac7d4ec6daffd64a2d4ca',
+        content: 'To be deleted',
+        createdAt: new Date(Date.UTC(2023, 8, 13, 11, 30, 42))
+      }
+      const dbmessage = await channelMessageService.delete(
+        'em7d4ec6daffd64a2d4cc'
+      )
+      expect(dbmessage).toStrictEqual(delMessage)
     })
   })
 
   describe('Test Query', () => {
-    it('should be defined', async () => {
-      expect(channelMessageService).toBeDefined()
+    it("return a message by it's id", async () => {
+      const compMessage = {
+        id: 'am7d4ec6daffd64a2d4ca',
+        senderId: 'au7d4ec6daffd64a2d4ca',
+        channelId: 'ac7d4ec6daffd64a2d4ca',
+        content: 'Hello',
+        createdAt: new Date(Date.UTC(2023, 8, 13, 11, 30, 42))
+      }
+      const message = await channelMessageService.findOne(
+        'am7d4ec6daffd64a2d4ca'
+      )
+      expect(message).toStrictEqual(compMessage)
+    })
+
+    it('return a list of messages from a channel', async () => {
+      const msgList = channelMessageService.findAllFromChannel(
+        'ac7d4ec6daffd64a2d4ca'
+      )
+      expect(msgList).toBeDefined()
+    })
+
+    it('return a list of messages from a user in a specified channel', async () => {
+      const msgList = channelMessageService.findAllFromChannelIdsAndUserId(
+        'ac7d4ec6daffd64a2d4ca',
+        'au7d4ec6daffd64a2d4ca'
+      )
+      expect(msgList).toBeDefined()
     })
   })
 
   describe('Test Error', () => {
-    it('should be defined', async () => {
-      expect(channelMessageService).toBeDefined()
+    it('try to update a message id and return an error', async () => {
+      expect(async () => {
+        const messageUpdateInput: Prisma.ChannelMessageUpdateInput = {
+          id: 'random id'
+        }
+        await channelMessageService.update(
+          'gm7d4ec6daffd64a2d4cg',
+          messageUpdateInput
+        )
+      }).rejects.toThrow(ExceptionTryingToUpdateID)
     })
   })
 })
