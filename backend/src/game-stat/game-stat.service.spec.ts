@@ -22,49 +22,37 @@ describe('GameStatService', () => {
 
     gameStatService = module.get<GameStatService>(GameStatService)
     prismaService = module.get<PrismaService>(PrismaService)
-    // cleanDataBase(prismaService)
-
-    //**************************************************//
-    //  PREPARE DATABASE
-    //**************************************************//
-
-    await prismaService.$executeRaw`DELETE FROM "public"."RelationFriend";`
-    await prismaService.$executeRaw`DELETE FROM "public"."RelationBlocked";`
-    await prismaService.$executeRaw`DELETE FROM "public"."RelationRequests";`
-    await prismaService.$executeRaw`DELETE FROM "public"."UserPresence";`
-    await prismaService.$executeRaw`DELETE FROM "public"."GameStat";`
-    await prismaService.$executeRaw`DELETE FROM "public"."Channel";`
-    await prismaService.$executeRaw`DELETE FROM "public"."ChannelMember";`
-    await prismaService.$executeRaw`DELETE FROM "public"."ChannelMessage";`
-    await prismaService.$executeRaw`DELETE FROM "public"."PrivateMessage";`
-    await prismaService.$executeRaw`DELETE FROM "public"."User";`
   })
 
   beforeEach(async () => {
     //**************************************************//
     //  MAKE IT CLEAN
     //**************************************************//
-
-    await prismaService.$executeRaw`DELETE FROM "public"."GameStat";`
-    await prismaService.$executeRaw`DELETE FROM "public"."User";`
+    await cleanDataBase(prismaService)
 
     //**************************************************//
     //  USER CREATION
     //**************************************************//
-
-    await prismaService.$executeRaw`INSERT INTO "public"."User" VALUES ('d2OayPlUh0qtDrePkJ87t', 'random url', 'alfred@42.fr', 'Ally', 'oui', null, null, false, 'Online', 'English', 1);`
-    await prismaService.$executeRaw`INSERT INTO "public"."User" VALUES ('j6-X94_NVjmzVm9QL3k4r', 'random url', 'charlie@42.fr', 'Chacha', 'oui', null, null, false, 'Invisble', 'French', 12);`
-    await prismaService.$executeRaw`INSERT INTO "public"."User" VALUES ('_U0vTLhbNpjA39Pc7wwtn', 'random url', 'bob@42.fr', 'Bobby', 'Babby', null, null, false, 'Online', 'English', 1);`
-    await prismaService.$executeRaw`INSERT INTO "public"."User" VALUES ('c-vzGU-8QlEvmHk8rjNRI', 'random url', 'david@42.fr', 'dav', 'oui', null, null, false, 'Invisble', 'French', 12);`
+    await prismaService.$executeRaw`
+      INSERT INTO
+      "public"."User"
+      VALUES
+      ('d2OayPlUh0qtDrePkJ87t', 'random url', 'alfred@42.fr', 'Ally', 'oui', null, null, false, 'Online', 'English', 1),
+      ('j6-X94_NVjmzVm9QL3k4r', 'random url', 'charlie@42.fr', 'Chacha', 'oui', null, null, false, 'Invisble', 'French', 12),
+      ('_U0vTLhbNpjA39Pc7wwtn', 'random url', 'bob@42.fr', 'Bobby', 'Babby', null, null, false, 'Online', 'English', 1),
+      ('c-vzGU-8QlEvmHk8rjNRI', 'random url', 'david@42.fr', 'dav', 'oui', null, null, false, 'Invisble', 'French', 12);`
 
     //**************************************************//
     //  GAME STAT CREATION
     //**************************************************//
-
-    await prismaService.$executeRaw`INSERT INTO "public"."GameStat" VALUES ('drfOayPc2Uh12tDrePkJ8', 'j6-X94_NVjmzVm9QL3k4r','d2OayPlUh0qtDrePkJ87t', 'Classic', 12, 15, 2, '2023-09-13 10:00:00');`
-    await prismaService.$executeRaw`INSERT INTO "public"."GameStat" VALUES ('uywayPlUh0qtDrePkJ87t', 'j6-X94_NVjmzVm9QL3k4r','d2OayPlUh0qtDrePkJ87t', 'Classic', 12, 15, 2, '2023-09-13 10:00:00');`
-    await prismaService.$executeRaw`INSERT INTO "public"."GameStat" VALUES ('cftOayPc2Uh12tDrePkJ8', 'd2OayPlUh0qtDrePkJ87t','j6-X94_NVjmzVm9QL3k4r', 'Classic', 12, 15, 2, '2023-09-13 10:00:00');`
-    await prismaService.$executeRaw`INSERT INTO "public"."GameStat" VALUES ('oiuOayPc2Uh12tDrePkJ8', 'd2OayPlUh0qtDrePkJ87t','j6-X94_NVjmzVm9QL3k4r', 'Special', 12, 15, 2, '2023-09-13 10:00:00');`
+    await prismaService.$executeRaw`
+      INSERT INTO
+      "public"."GameStat"
+      VALUES
+      ('drfOayPc2Uh12tDrePkJ8', 'j6-X94_NVjmzVm9QL3k4r','d2OayPlUh0qtDrePkJ87t', 'Classic', 12, 15, 2, '2023-09-13 10:00:00'),
+      ('uywayPlUh0qtDrePkJ87t', 'j6-X94_NVjmzVm9QL3k4r','d2OayPlUh0qtDrePkJ87t', 'Classic', 12, 15, 2, '2023-09-13 10:00:00'),
+      ('cftOayPc2Uh12tDrePkJ8', 'd2OayPlUh0qtDrePkJ87t','j6-X94_NVjmzVm9QL3k4r', 'Classic', 12, 15, 2, '2023-09-13 10:00:00'),
+      ('oiuOayPc2Uh12tDrePkJ8', 'd2OayPlUh0qtDrePkJ87t','j6-X94_NVjmzVm9QL3k4r', 'Special', 12, 15, 2, '2023-09-13 10:00:00');`
 
     gameStatData = {
       timePlayed: 12,
@@ -88,16 +76,18 @@ describe('GameStatService', () => {
   })
 
   afterAll(async () => {
+    await cleanDataBase(prismaService)
     await prismaService.$disconnect()
   })
 
-  describe('Test GameStat Mutation', () => {
-    it('GamestatService should be defined', () => {
-      expect(GameStatService).toBeDefined()
-    })
-    it('PrismaSerice should be defined', () => {
-      expect(PrismaService).toBeDefined
-    })
+  it('gamestatService should be defined', () => {
+    expect(gameStatService).toBeDefined()
+  })
+  it('PrismaSerice should be defined', () => {
+    expect(prismaService).toBeDefined()
+  })
+
+  describe('Test Mutation', () => {
     it('should create a GameStat', () => {
       const createdGameStat = gameStatService.create(gameStatData)
       expect(createdGameStat).toBeDefined
@@ -116,7 +106,6 @@ describe('GameStatService', () => {
     })
     it('should delete the gameStats', async () => {
       const deletedUser = await gameStatService.delete('uywayPlUh0qtDrePkJ87t')
-      console.log('DeletedUser =>> ', deletedUser)
       expect(deletedUser).toBeDefined
     })
   })

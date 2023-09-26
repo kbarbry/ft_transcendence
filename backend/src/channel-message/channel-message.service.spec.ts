@@ -4,6 +4,7 @@ import { PrismaService } from '../prisma/prisma.service'
 import { Prisma } from '@prisma/client'
 import { ExceptionTryingToUpdateID } from '../user/exceptions/channel-message.exception'
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library'
+import { cleanDataBase } from '../../test/setup-environment'
 
 describe('ChannelMessageService', () => {
   let channelMessageService: ChannelMessageService
@@ -18,10 +19,10 @@ describe('ChannelMessageService', () => {
       ChannelMessageService
     )
     prismaService = module.get<PrismaService>(PrismaService)
+  })
 
-    await prismaService.$executeRaw`DELETE FROM "public"."ChannelMessage"`
-    await prismaService.$executeRaw`DELETE FROM "public"."Channel"`
-    await prismaService.$executeRaw`DELETE FROM "public"."User"`
+  beforeEach(async () => {
+    await cleanDataBase(prismaService)
 
     await prismaService.$executeRaw`INSERT INTO 
       "public"."User" 
@@ -52,9 +53,7 @@ describe('ChannelMessageService', () => {
   })
 
   afterAll(async () => {
-    prismaService.$executeRaw`DELETE FROM "public"."ChannelMessage"`
-    prismaService.$executeRaw`DELETE FROM "public"."Channel"`
-    prismaService.$executeRaw`DELETE FROM "public"."User"`
+    await cleanDataBase(prismaService)
     await prismaService.$disconnect()
   })
 

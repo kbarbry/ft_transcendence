@@ -1,9 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { ChannelMemberService } from './channel-member.service'
 import { PrismaService } from '../prisma/prisma.service'
-import { EGameType, EMemeberType, Prisma } from '@prisma/client'
-import { ChannelService } from '../channel/channel.service'
+import { EMemeberType, Prisma } from '@prisma/client'
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library'
+import { cleanDataBase } from '../../test/setup-environment'
 
 describe('ChannelMemberService', () => {
   let channelMemberService: ChannelMemberService
@@ -23,15 +23,8 @@ describe('ChannelMemberService', () => {
     //  MAKE IT CLEAN
     //**************************************************//
 
-    await prismaService.$executeRaw`DELETE FROM "public"."RelationFriend";`
-    await prismaService.$executeRaw`DELETE FROM "public"."RelationBlocked";`
-    await prismaService.$executeRaw`DELETE FROM "public"."RelationRequests";`
-    await prismaService.$executeRaw`DELETE FROM "public"."UserPresence";`
-    await prismaService.$executeRaw`DELETE FROM "public"."GameStat";`
     await prismaService.$executeRaw`DELETE FROM "public"."Channel";`
     await prismaService.$executeRaw`DELETE FROM "public"."ChannelMember";`
-    await prismaService.$executeRaw`DELETE FROM "public"."ChannelMessage";`
-    await prismaService.$executeRaw`DELETE FROM "public"."PrivateMessage";`
     await prismaService.$executeRaw`DELETE FROM "public"."User";`
   })
 
@@ -39,31 +32,28 @@ describe('ChannelMemberService', () => {
     //**************************************************//
     //  MAKE IT CLEAN
     //**************************************************//
-
-    await prismaService.$executeRaw`DELETE FROM "public"."Channel";`
-    await prismaService.$executeRaw`DELETE FROM "public"."ChannelMember";`
-    await prismaService.$executeRaw`DELETE FROM "public"."User";`
+    await cleanDataBase(prismaService)
 
     //**************************************************//
     //  USER CREATION
     //**************************************************//
-
-    await prismaService.$executeRaw`INSERT INTO "public"."User" VALUES ('765ayPlUh0qtDrePkJ87t', 'random url', 'alscsed@42.fr', 'Ally', 'oui', null, null, false, 'Online', 'English', 1);`
-    await prismaService.$executeRaw`INSERT INTO "public"."User" VALUES ('ftrX94_NVjmzVm9QL3k4r', 'random url', 'charlie@42.fr', 'Chacha', 'oui', null, null, false, 'Invisble', 'French', 12);`
-    await prismaService.$executeRaw`INSERT INTO "public"."User" VALUES ('fdpvTLhbNpjA39Pc7wwtn', 'random url', 'bob@42.fr', 'Bobby', 'Babby', null, null, false, 'Online', 'English', 1);`
-    await prismaService.$executeRaw`INSERT INTO "public"."User" VALUES ('wrtzGU-8QlEvmHk8rjNRI', 'random url', 'david@42.fr', 'dav', 'oui', null, null, false, 'Invisble', 'French', 12);`
-    await prismaService.$executeRaw`INSERT INTO "public"."User" VALUES ('567ayPlUh0qtDrePkJ87t', 'random url', 'alfred@42.fr', 'Awdy', 'oui', null, null, false, 'Online', 'English', 1);`
-
+    await prismaService.$executeRaw`
+      INSERT INTO
+      "public"."User"
+      VALUES
+      ('765ayPlUh0qtDrePkJ87t', 'random url', 'alscsed@42.fr', 'Ally', 'oui', null, null, false, 'Online', 'English', 1),
+      ('ftrX94_NVjmzVm9QL3k4r', 'random url', 'charlie@42.fr', 'Chacha', 'oui', null, null, false, 'Invisble', 'French', 12),
+      ('fdpvTLhbNpjA39Pc7wwtn', 'random url', 'bob@42.fr', 'Bobby', 'Babby', null, null, false, 'Online', 'English', 1),
+      ('wrtzGU-8QlEvmHk8rjNRI', 'random url', 'david@42.fr', 'dav', 'oui', null, null, false, 'Invisble', 'French', 12),
+      ('567ayPlUh0qtDrePkJ87t', 'random url', 'alfred@42.fr', 'Awdy', 'oui', null, null, false, 'Online', 'English', 1);`
     //**************************************************//
     //  CHANNEL CREATION
     //**************************************************//
-
     await prismaService.$executeRaw`INSERT INTO "public"."Channel" VALUES ('pihayPlUh0qtDrePkJ87t', 'random name', 'randomURL', 'TopicName', 'Password123', '567ayPlUh0qtDrePkJ87t', 50, 'Public', '2023-09-13 10:00:00');`
 
     //**************************************************//
     //  CHANNEL MEMBER CREATION
     //**************************************************//
-
     await prismaService.$executeRaw`INSERT INTO "public"."ChannelMember" VALUES ('NewAvatarURL', 'WonderfullNickname', '765ayPlUh0qtDrePkJ87t', 'pihayPlUh0qtDrePkJ87t', 'Member', 'true', '2023-09-13 20:00:00', '2023-09-13 10:00:00');`
     await prismaService.$executeRaw`INSERT INTO "public"."ChannelMember" VALUES ('NewAvatarURL', 'WonderfullNickname', 'ftrX94_NVjmzVm9QL3k4r', 'pihayPlUh0qtDrePkJ87t', 'Member', 'true', '2023-09-13 20:00:00', '2023-09-13 10:00:00');`
 
@@ -78,19 +68,20 @@ describe('ChannelMemberService', () => {
       channel: { connect: { id: 'pihayPlUh0qtDrePkJ87t' } }
     }
   })
+
   afterAll(async () => {
+    await cleanDataBase(prismaService)
     await prismaService.$disconnect()
   })
 
   it('channelMemberService should be defined', () => {
     expect(channelMemberService).toBeDefined()
   })
-
   it('prismaService should be defined', () => {
     expect(prismaService).toBeDefined()
   })
 
-  describe('Test Channel-member Mutation', () => {
+  describe('Test Mutation', () => {
     it('should create ChannelMember', async () => {
       const newChannelMember = await channelMemberService.create(
         channelMemberData

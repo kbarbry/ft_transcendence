@@ -46,13 +46,6 @@ export class ChannelService {
     })
   }
 
-  //Need Channel member
-  //   async findAll(id: string): Promise<Channel> {
-  //     where: {
-  //       ChannelMemberModule
-  //     }
-  //   }
-
   async findOwner(channelId: string): Promise<string | null> {
     const channel = await this.prisma.channel.findFirst({
       where: {

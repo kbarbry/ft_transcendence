@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing'
 import { ChannelService } from './channel.service'
 import { PrismaService } from '../prisma/prisma.service'
 import { EChannelType, Prisma } from '@prisma/client'
+import { cleanDataBase } from '../../test/setup-environment'
 
 describe('ChannelService', () => {
   let channelService: ChannelService
@@ -15,43 +16,28 @@ describe('ChannelService', () => {
 
     prismaService = module.get<PrismaService>(PrismaService)
     channelService = module.get<ChannelService>(ChannelService)
-
-    //**************************************************//
-    //  PREPARE DATABASE
-    //**************************************************//
-
-    await prismaService.$executeRaw`DELETE FROM "public"."RelationFriend";`
-    await prismaService.$executeRaw`DELETE FROM "public"."RelationBlocked";`
-    await prismaService.$executeRaw`DELETE FROM "public"."RelationRequests";`
-    await prismaService.$executeRaw`DELETE FROM "public"."UserPresence";`
-    await prismaService.$executeRaw`DELETE FROM "public"."GameStat";`
-    await prismaService.$executeRaw`DELETE FROM "public"."Channel";`
-    await prismaService.$executeRaw`DELETE FROM "public"."ChannelMember";`
-    await prismaService.$executeRaw`DELETE FROM "public"."ChannelMessage";`
-    await prismaService.$executeRaw`DELETE FROM "public"."PrivateMessage";`
-    await prismaService.$executeRaw`DELETE FROM "public"."User";`
   })
 
   beforeEach(async () => {
     //**************************************************//
     //  MAKE IT CLEAN
     //**************************************************//
-
-    await prismaService.$executeRaw`DELETE FROM "public"."Channel";`
-    await prismaService.$executeRaw`DELETE FROM "public"."User";`
+    await cleanDataBase(prismaService)
 
     //**************************************************//
     //  USER CREATION
     //**************************************************//
-
     await prismaService.$executeRaw`INSERT INTO "public"."User" VALUES ('564ayPlUh0qtDrePkJ87t', 'random url', 'alfred@42.fr', 'Ally', 'oui', null, null, false, 'Online', 'English', 1);`
 
     //**************************************************//
     //  CHANNEL CREATION
     //**************************************************//
-
-    await prismaService.$executeRaw`INSERT INTO "public"."Channel" VALUES ('pihayPlUh0qtDrePkJ87t', 'random name', 'randomURL', 'TopicName', 'Password123', '564ayPlUh0qtDrePkJ87t', 50, 'Public', '2023-09-13 10:00:00');`
-    await prismaService.$executeRaw`INSERT INTO "public"."Channel" VALUES ('333ayPlUh0qtDrePkJ87t', 'random name', 'randomURL', 'TopicName', 'Password123', '564ayPlUh0qtDrePkJ87t', 50, 'Public', '2023-09-13 10:00:00');`
+    await prismaService.$executeRaw`
+      INSERT INTO
+      "public"."Channel"
+      VALUES
+      ('pihayPlUh0qtDrePkJ87t', 'random name', 'randomURL', 'TopicName', 'Password123', '564ayPlUh0qtDrePkJ87t', 50, 'Public', '2023-09-13 10:00:00'),
+      ('333ayPlUh0qtDrePkJ87t', 'random name', 'randomURL', 'TopicName', 'Password123', '564ayPlUh0qtDrePkJ87t', 50, 'Public', '2023-09-13 10:00:00');`
 
     channelData = {
       name: 'testName',
@@ -64,14 +50,20 @@ describe('ChannelService', () => {
       owner: { connect: { id: '564ayPlUh0qtDrePkJ87t' } }
     }
   })
+
   afterAll(async () => {
+    await cleanDataBase(prismaService)
     await prismaService.$disconnect()
   })
 
-  describe('Test Channel Mutation', () => {
-    it('should be defined', () => {
-      expect(channelService).toBeDefined()
-    })
+  it('channelService should be defined', () => {
+    expect(channelService).toBeDefined()
+  })
+  it('prismaService should be defined', () => {
+    expect(prismaService).toBeDefined()
+  })
+
+  describe('Test Mutation', () => {
     it('should create a channel', async () => {
       const newChannel = await channelService.create(channelData)
       expect(newChannel).toBeDefined
@@ -93,7 +85,7 @@ describe('ChannelService', () => {
       expect(deletedChannel).toBeDefined
     })
   })
-  describe('Test query', () => {
+  describe('Test Query', () => {
     it('should fin a Channel', async () => {
       const foundChannel = await channelService.findOne('pihayPlUh0qtDrePkJ87t')
       expect(foundChannel).toBeDefined

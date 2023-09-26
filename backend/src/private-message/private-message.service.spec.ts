@@ -9,6 +9,7 @@ import {
   ExceptionTryingToUpdateUsersId
 } from '../channel/exceptions/private-message.exception'
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library'
+import { cleanDataBase } from '../../test/setup-environment'
 
 describe('PrivateMessageService', () => {
   let privateMessageService: PrivateMessageService
@@ -24,73 +25,57 @@ describe('PrivateMessageService', () => {
       PrivateMessageService
     )
     prismaService = module.get<PrismaService>(PrismaService)
-
-    //**************************************************//
-    //  PREPARE DATABASE
-    //**************************************************//
-
-    await prismaService.$executeRaw`DELETE FROM "public"."RelationFriend";`
-    await prismaService.$executeRaw`DELETE FROM "public"."RelationBlocked";`
-    await prismaService.$executeRaw`DELETE FROM "public"."RelationRequests";`
-    await prismaService.$executeRaw`DELETE FROM "public"."UserPresence";`
-    await prismaService.$executeRaw`DELETE FROM "public"."GameStat";`
-    await prismaService.$executeRaw`DELETE FROM "public"."Channel";`
-    await prismaService.$executeRaw`DELETE FROM "public"."ChannelMember";`
-    await prismaService.$executeRaw`DELETE FROM "public"."ChannelMessage";`
-    await prismaService.$executeRaw`DELETE FROM "public"."PrivateMessage";`
-    await prismaService.$executeRaw`DELETE FROM "public"."User";`
   })
 
   beforeEach(async () => {
     //**************************************************//
     //  MAKE IT CLEAN
     //**************************************************//
-
-    await prismaService.$executeRaw`DELETE FROM "public"."PrivateMessage";`
-    await prismaService.$executeRaw`DELETE FROM "public"."User";`
+    await cleanDataBase(prismaService)
 
     //**************************************************//
     //  USER CREATION
     //**************************************************//
-
-    await prismaService.$executeRaw`INSERT INTO "public"."User" VALUES ('rtjayPlUh0qtDrePkJ87t', 'random url', 'alfred@42.fr', 'Ally', 'oui', null, null, false, 'Online', 'English', 1);`
-    await prismaService.$executeRaw`INSERT INTO "public"."User" VALUES ('42tX94_NVjmzVm9QL3k4r', 'random url', 'charlie@42.fr', 'Chacha', 'oui', null, null, false, 'Invisble', 'French', 12);`
-    await prismaService.$executeRaw`INSERT INTO "public"."User" VALUES ('dhPvTLhbNpjA39Pc7wwtn', 'random url', 'bob@42.fr', 'Bobby', 'Babby', null, null, false, 'Online', 'English', 1);`
-    await prismaService.$executeRaw`INSERT INTO "public"."User" VALUES ('YunzGU-8QlEvmHk8rjNRI', 'random url', 'david@42.fr', 'dav', 'oui', null, null, false, 'Invisble', 'French', 12);`
+    await prismaService.$executeRaw`
+      INSERT INTO 
+      "public"."User"
+      VALUES
+      ('rtjayPlUh0qtDrePkJ87t', 'random url', 'alfred@42.fr', 'Ally', 'oui', null, null, false, 'Online', 'English', 1),
+      ('42tX94_NVjmzVm9QL3k4r', 'random url', 'charlie@42.fr', 'Chacha', 'oui', null, null, false, 'Invisble', 'French', 12),
+      ('dhPvTLhbNpjA39Pc7wwtn', 'random url', 'bob@42.fr', 'Bobby', 'Babby', null, null, false, 'Online', 'English', 1),
+      ('YunzGU-8QlEvmHk8rjNRI', 'random url', 'david@42.fr', 'dav', 'oui', null, null, false, 'Invisble', 'French', 12);`
 
     //**************************************************//
     //  PRIVATE MESSAGE CREATION
     //**************************************************//
-
-    // discussion : rtjayPlUh0qtDrePkJ87t && 42tX94_NVjmzVm9QL3k4r ///
-    await prismaService.$executeRaw`INSERT INTO "public"."PrivateMessage" VALUES ('in1ayPlUh0qtDrePkJ87t', 'rtjayPlUh0qtDrePkJ87t', '42tX94_NVjmzVm9QL3k4r', 'Ceci est un supermessage', '2023-09-13 10:00:00');`
-    await prismaService.$executeRaw`INSERT INTO "public"."PrivateMessage" VALUES ('in2ayPlUh0qtDrePkJ87t', '42tX94_NVjmzVm9QL3k4r', 'rtjayPlUh0qtDrePkJ87t', 'Ceci est un supermessage', '2023-09-13 10:00:00');`
-    await prismaService.$executeRaw`INSERT INTO "public"."PrivateMessage" VALUES ('in3ayPlUh0qtDrePkJ87t', 'rtjayPlUh0qtDrePkJ87t', '42tX94_NVjmzVm9QL3k4r', 'Ceci est un supermessage', '2023-09-13 10:00:00');`
-    await prismaService.$executeRaw`INSERT INTO "public"."PrivateMessage" VALUES ('in4ayPlUh0qtDrePkJ87t', '42tX94_NVjmzVm9QL3k4r', 'rtjayPlUh0qtDrePkJ87t', 'Ceci est un supermessage', '2023-09-13 10:00:00');`
-    await prismaService.$executeRaw`INSERT INTO "public"."PrivateMessage" VALUES ('in5ayPlUh0qtDrePkJ87t', '42tX94_NVjmzVm9QL3k4r', 'rtjayPlUh0qtDrePkJ87t', 'Ceci est un supermessage', '2023-09-13 10:00:00');`
-    await prismaService.$executeRaw`INSERT INTO "public"."PrivateMessage" VALUES ('in6ayPlUh0qtDrePkJ87t', '42tX94_NVjmzVm9QL3k4r', 'rtjayPlUh0qtDrePkJ87t', 'Ceci est un supermessage', '2023-09-13 10:00:00');`
-    await prismaService.$executeRaw`INSERT INTO "public"."PrivateMessage" VALUES ('in7ayPlUh0qtDrePkJ87t', '42tX94_NVjmzVm9QL3k4r', 'rtjayPlUh0qtDrePkJ87t', 'Ceci est un supermessage', '2023-09-13 10:00:00');`
-    await prismaService.$executeRaw`INSERT INTO "public"."PrivateMessage" VALUES ('in8ayPlUh0qtDrePkJ87t', '42tX94_NVjmzVm9QL3k4r', 'rtjayPlUh0qtDrePkJ87t', 'Ceci est un supermessage', '2023-09-13 10:00:00');`
-    await prismaService.$executeRaw`INSERT INTO "public"."PrivateMessage" VALUES ('in9ayPlUh0qtDrePkJ87t', '42tX94_NVjmzVm9QL3k4r', 'rtjayPlUh0qtDrePkJ87t', 'Ceci est un supermessage', '2023-09-13 10:00:00');`
-    await prismaService.$executeRaw`INSERT INTO "public"."PrivateMessage" VALUES ('in10yPlUh0qtDrePkJ87t', '42tX94_NVjmzVm9QL3k4r', 'rtjayPlUh0qtDrePkJ87t', 'Ceci est un supermessage', '2023-09-13 10:00:00');`
-    await prismaService.$executeRaw`INSERT INTO "public"."PrivateMessage" VALUES ('in11yPlUh0qtDrePkJ87t', '42tX94_NVjmzVm9QL3k4r', 'rtjayPlUh0qtDrePkJ87t', 'Ceci est un supermessage', '2023-09-13 10:00:00');`
-    await prismaService.$executeRaw`INSERT INTO "public"."PrivateMessage" VALUES ('in12yPlUh0qtDrePkJ87t', '42tX94_NVjmzVm9QL3k4r', 'rtjayPlUh0qtDrePkJ87t', 'Ceci est un supermessage', '2023-09-13 10:00:00');`
-    await prismaService.$executeRaw`INSERT INTO "public"."PrivateMessage" VALUES ('in13yPlUh0qtDrePkJ87t', '42tX94_NVjmzVm9QL3k4r', 'rtjayPlUh0qtDrePkJ87t', 'Ceci est un supermessage', '2023-09-13 10:00:00');`
-    await prismaService.$executeRaw`INSERT INTO "public"."PrivateMessage" VALUES ('in14yPlUh0qtDrePkJ87t', '42tX94_NVjmzVm9QL3k4r', 'rtjayPlUh0qtDrePkJ87t', 'Ceci est un supermessage', '2023-09-13 10:00:00');`
-    await prismaService.$executeRaw`INSERT INTO "public"."PrivateMessage" VALUES ('in15yPlUh0qtDrePkJ87t', '42tX94_NVjmzVm9QL3k4r', 'rtjayPlUh0qtDrePkJ87t', 'Ceci est un supermessage', '2023-09-13 10:00:00');`
-    await prismaService.$executeRaw`INSERT INTO "public"."PrivateMessage" VALUES ('in16yPlUh0qtDrePkJ87t', '42tX94_NVjmzVm9QL3k4r', 'rtjayPlUh0qtDrePkJ87t', 'Ceci est un supermessage', '2023-09-13 10:00:00');`
-    await prismaService.$executeRaw`INSERT INTO "public"."PrivateMessage" VALUES ('in17yPlUh0qtDrePkJ87t', '42tX94_NVjmzVm9QL3k4r', 'rtjayPlUh0qtDrePkJ87t', 'Ceci est un supermessage', '2023-09-13 10:00:00');`
-    await prismaService.$executeRaw`INSERT INTO "public"."PrivateMessage" VALUES ('in18yPlUh0qtDrePkJ87t', '42tX94_NVjmzVm9QL3k4r', 'rtjayPlUh0qtDrePkJ87t', 'Ceci est un supermessage', '2023-09-13 10:00:00');`
-    await prismaService.$executeRaw`INSERT INTO "public"."PrivateMessage" VALUES ('in19yPlUh0qtDrePkJ87t', '42tX94_NVjmzVm9QL3k4r', 'rtjayPlUh0qtDrePkJ87t', 'Ceci est un supermessage', '2023-09-13 10:00:00');`
-    await prismaService.$executeRaw`INSERT INTO "public"."PrivateMessage" VALUES ('in20yPlUh0qtDrePkJ87t', '42tX94_NVjmzVm9QL3k4r', 'rtjayPlUh0qtDrePkJ87t', 'Ceci est un supermessage', '2023-09-13 10:00:00');`
-    await prismaService.$executeRaw`INSERT INTO "public"."PrivateMessage" VALUES ('in21yPlUh0qtDrePkJ87t', '42tX94_NVjmzVm9QL3k4r', 'rtjayPlUh0qtDrePkJ87t', 'Ceci est un supermessage', '2023-09-13 10:00:00');`
-    await prismaService.$executeRaw`INSERT INTO "public"."PrivateMessage" VALUES ('in22yPlUh0qtDrePkJ87t', '42tX94_NVjmzVm9QL3k4r', 'rtjayPlUh0qtDrePkJ87t', 'Ceci est un supermessage', '2023-09-13 10:00:00');`
-
-    // End of this discussion :: 22 messages//
-
-    // random messages
-    await prismaService.$executeRaw`INSERT INTO "public"."PrivateMessage" VALUES ('er10yPlUh0qtDrePkJ87t', 'rtjayPlUh0qtDrePkJ87t', 'YunzGU-8QlEvmHk8rjNRI', 'Ceci est un supermessage', '2023-09-13 10:00:00');`
-    await prismaService.$executeRaw`INSERT INTO "public"."PrivateMessage" VALUES ('er11yPlUh0qtDrePkJ87t', '42tX94_NVjmzVm9QL3k4r', 'YunzGU-8QlEvmHk8rjNRI', 'Ceci est un supermessage', '2023-09-13 10:00:00');`
+    await prismaService.$executeRaw`
+      INSERT INTO
+      "public"."PrivateMessage"
+      VALUES
+      ('in1ayPlUh0qtDrePkJ87t', 'rtjayPlUh0qtDrePkJ87t', '42tX94_NVjmzVm9QL3k4r', 'Ceci est un supermessage', '2023-09-13 10:00:00'),
+      ('in2ayPlUh0qtDrePkJ87t', '42tX94_NVjmzVm9QL3k4r', 'rtjayPlUh0qtDrePkJ87t', 'Ceci est un supermessage', '2023-09-13 10:00:00'),
+      ('in3ayPlUh0qtDrePkJ87t', 'rtjayPlUh0qtDrePkJ87t', '42tX94_NVjmzVm9QL3k4r', 'Ceci est un supermessage', '2023-09-13 10:00:00'),
+      ('in4ayPlUh0qtDrePkJ87t', '42tX94_NVjmzVm9QL3k4r', 'rtjayPlUh0qtDrePkJ87t', 'Ceci est un supermessage', '2023-09-13 10:00:00'),
+      ('in5ayPlUh0qtDrePkJ87t', '42tX94_NVjmzVm9QL3k4r', 'rtjayPlUh0qtDrePkJ87t', 'Ceci est un supermessage', '2023-09-13 10:00:00'),
+      ('in6ayPlUh0qtDrePkJ87t', '42tX94_NVjmzVm9QL3k4r', 'rtjayPlUh0qtDrePkJ87t', 'Ceci est un supermessage', '2023-09-13 10:00:00'),
+      ('in7ayPlUh0qtDrePkJ87t', '42tX94_NVjmzVm9QL3k4r', 'rtjayPlUh0qtDrePkJ87t', 'Ceci est un supermessage', '2023-09-13 10:00:00'),
+      ('in8ayPlUh0qtDrePkJ87t', '42tX94_NVjmzVm9QL3k4r', 'rtjayPlUh0qtDrePkJ87t', 'Ceci est un supermessage', '2023-09-13 10:00:00'),
+      ('in9ayPlUh0qtDrePkJ87t', '42tX94_NVjmzVm9QL3k4r', 'rtjayPlUh0qtDrePkJ87t', 'Ceci est un supermessage', '2023-09-13 10:00:00'),
+      ('in10yPlUh0qtDrePkJ87t', '42tX94_NVjmzVm9QL3k4r', 'rtjayPlUh0qtDrePkJ87t', 'Ceci est un supermessage', '2023-09-13 10:00:00'),
+      ('in11yPlUh0qtDrePkJ87t', '42tX94_NVjmzVm9QL3k4r', 'rtjayPlUh0qtDrePkJ87t', 'Ceci est un supermessage', '2023-09-13 10:00:00'),
+      ('in12yPlUh0qtDrePkJ87t', '42tX94_NVjmzVm9QL3k4r', 'rtjayPlUh0qtDrePkJ87t', 'Ceci est un supermessage', '2023-09-13 10:00:00'),
+      ('in13yPlUh0qtDrePkJ87t', '42tX94_NVjmzVm9QL3k4r', 'rtjayPlUh0qtDrePkJ87t', 'Ceci est un supermessage', '2023-09-13 10:00:00'),
+      ('in14yPlUh0qtDrePkJ87t', '42tX94_NVjmzVm9QL3k4r', 'rtjayPlUh0qtDrePkJ87t', 'Ceci est un supermessage', '2023-09-13 10:00:00'),
+      ('in15yPlUh0qtDrePkJ87t', '42tX94_NVjmzVm9QL3k4r', 'rtjayPlUh0qtDrePkJ87t', 'Ceci est un supermessage', '2023-09-13 10:00:00'),
+      ('in16yPlUh0qtDrePkJ87t', '42tX94_NVjmzVm9QL3k4r', 'rtjayPlUh0qtDrePkJ87t', 'Ceci est un supermessage', '2023-09-13 10:00:00'),
+      ('in17yPlUh0qtDrePkJ87t', '42tX94_NVjmzVm9QL3k4r', 'rtjayPlUh0qtDrePkJ87t', 'Ceci est un supermessage', '2023-09-13 10:00:00'),
+      ('in18yPlUh0qtDrePkJ87t', '42tX94_NVjmzVm9QL3k4r', 'rtjayPlUh0qtDrePkJ87t', 'Ceci est un supermessage', '2023-09-13 10:00:00'),
+      ('in19yPlUh0qtDrePkJ87t', '42tX94_NVjmzVm9QL3k4r', 'rtjayPlUh0qtDrePkJ87t', 'Ceci est un supermessage', '2023-09-13 10:00:00'),
+      ('in20yPlUh0qtDrePkJ87t', '42tX94_NVjmzVm9QL3k4r', 'rtjayPlUh0qtDrePkJ87t', 'Ceci est un supermessage', '2023-09-13 10:00:00'),
+      ('in21yPlUh0qtDrePkJ87t', '42tX94_NVjmzVm9QL3k4r', 'rtjayPlUh0qtDrePkJ87t', 'Ceci est un supermessage', '2023-09-13 10:00:00'),
+      ('in22yPlUh0qtDrePkJ87t', '42tX94_NVjmzVm9QL3k4r', 'rtjayPlUh0qtDrePkJ87t', 'Ceci est un supermessage', '2023-09-13 10:00:00'),
+      ('er10yPlUh0qtDrePkJ87t', 'rtjayPlUh0qtDrePkJ87t', 'YunzGU-8QlEvmHk8rjNRI', 'Ceci est un supermessage', '2023-09-13 10:00:00'),
+      ('er11yPlUh0qtDrePkJ87t', '42tX94_NVjmzVm9QL3k4r', 'YunzGU-8QlEvmHk8rjNRI', 'Ceci est un supermessage', '2023-09-13 10:00:00');`
 
     privateMessageData = {
       content: 'This is a wonderfull message',
@@ -99,14 +84,20 @@ describe('PrivateMessageService', () => {
       sender: { connect: { id: '42tX94_NVjmzVm9QL3k4r' } }
     }
   })
-  it('should be defined', () => {
+
+  afterAll(async () => {
+    await cleanDataBase(prismaService)
+    await prismaService.$disconnect()
+  })
+
+  it('privateMessageService be defined', () => {
     expect(privateMessageService).toBeDefined()
   })
-  it('should be defined', () => {
+  it('prismaService be defined', () => {
     expect(prismaService).toBeDefined()
   })
 
-  describe('Test mutation', () => {
+  describe('Test Mutation', () => {
     it('Should create a PrivateMessage', async () => {
       const newPrivateMessage = await privateMessageService.create(
         privateMessageData
@@ -130,7 +121,7 @@ describe('PrivateMessageService', () => {
       expect(deletedMessage).toBeDefined
     })
   })
-  describe('Test query', () => {
+  describe('Test Query', () => {
     it('should find a PrivateMessage', async () => {
       const foundPrivateMessage = await privateMessageService.findOne(
         'in7ayPlUh0qtDrePkJ87t'
@@ -160,7 +151,7 @@ describe('PrivateMessageService', () => {
       expect(HistoricDiscussion.length).toStrictEqual(20)
     })
   })
-  describe('Test Errors', () => {
+  describe('Test Error', () => {
     it('update ID ', async () => {
       const updatedata = {
         id: '555'

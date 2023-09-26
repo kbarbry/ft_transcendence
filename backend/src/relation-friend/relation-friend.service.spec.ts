@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing'
 import { RelationFriendService } from './relation-friend.service'
 import { PrismaService } from '../prisma/prisma.service'
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library'
+import { cleanDataBase } from '../../test/setup-environment'
 
 describe('RelationFriendService', () => {
   let relationFriendService: RelationFriendService
@@ -16,10 +17,17 @@ describe('RelationFriendService', () => {
       RelationFriendService
     )
     prismaService = module.get<PrismaService>(PrismaService)
+  })
 
-    await prismaService.$executeRaw`DELETE FROM "public"."RelationFriend";`
-    await prismaService.$executeRaw`DELETE FROM "public"."User";`
+  beforeEach(async () => {
+    //**************************************************//
+    //  MAKE IT CLEAN
+    //**************************************************//
+    await cleanDataBase(prismaService)
 
+    //**************************************************//
+    //  USER CREATION
+    //**************************************************//
     await prismaService.$executeRaw`INSERT INTO 
       "public"."User" 
       VALUES 
@@ -30,6 +38,9 @@ describe('RelationFriendService', () => {
       ('ec178ef86d29197b6ffd-', 'random url', 'evan@42.fr', 'evee', 'oui', null, null, false, 'Idle', 'Spanish', 36),
       ('e28d4ff1f6cd647fc171-', 'random url', 'frank@42.fr', 'punisher', 'oui', null, null, false, 'DoNotDisturb', 'Spanish', 9000);`
 
+    //**************************************************//
+    //  RELATION FRIEND CREATION
+    //**************************************************//
     await prismaService.$executeRaw`INSERT INTO 
       "public"."RelationFriend" 
       VALUES 
@@ -37,28 +48,24 @@ describe('RelationFriendService', () => {
       ('4376f06677b65d3168d6-', 'df87734d323ac71c6efb-'),
       ('e28d4ff1f6cd647fc171-', 'ec178ef86d29197b6ffd-'),
       ('e28d4ff1f6cd647fc171-', 'f488e59aef615c5df6df-'),
-
       ('4376f06677b65d3168d6-', 'ec178ef86d29197b6ffd-'),
       ('537d4ec6daffd64a2d4c-', 'ec178ef86d29197b6ffd-'),
-
       ('df87734d323ac71c6efb-', 'e28d4ff1f6cd647fc171-');`
   })
 
-  // Sorted Id
-  // 4376f06677b65d3168d6-
-  // 537d4ec6daffd64a2d4c-
-  // df87734d323ac71c6efb-
-  // e28d4ff1f6cd647fc171-
-  // ec178ef86d29197b6ffd-
-  // f488e59aef615c5df6df-
-
   afterAll(async () => {
-    await prismaService.$executeRaw`DELETE FROM "public"."RelationFriend";`
-    await prismaService.$executeRaw`DELETE FROM "public"."User";`
+    await cleanDataBase(prismaService)
     await prismaService.$disconnect()
   })
 
-  describe('Test Mutations', () => {
+  it('relationFriendService should be defined', () => {
+    expect(relationFriendService).toBeDefined()
+  })
+  it('prismaService should be defined', () => {
+    expect(prismaService).toBeDefined()
+  })
+
+  describe('Test Mutation', () => {
     it('create a new relaton in DB with id in the right order', async () => {
       const creatRet = await relationFriendService.create(
         '4376f06677b65d3168d6-',
