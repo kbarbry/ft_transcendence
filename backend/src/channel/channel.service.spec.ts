@@ -3,6 +3,13 @@ import { ChannelService } from './channel.service'
 import { PrismaService } from '../prisma/prisma.service'
 import { EChannelType, Prisma } from '@prisma/client'
 import { cleanDataBase } from '../../test/setup-environment'
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library'
+import {
+  ExceptionTryingToUpdateChannelID,
+  ExceptionTryingToUpdateOwnerID,
+  ExceptionInvalidMaxUserInChannel,
+  ExceptionTryingToUpdateDate
+} from './exceptions/channel.exception'
 
 describe('ChannelService', () => {
   let channelService: ChannelService
@@ -100,6 +107,70 @@ describe('ChannelService', () => {
         '564ayPlUh0qtDrePkJ87t'
       )
       expect(channels?.length).toBeGreaterThan(1)
+    })
+  })
+  describe('Test Error', () => {
+    it('trying to update channel id', async () => {
+      const updatedData = { id: '555' }
+      await expect(
+        channelService.update('pihayPlUh0qtDrePkJ87t', updatedData)
+      ).rejects.toThrow(ExceptionTryingToUpdateChannelID)
+    })
+    it('Delete an already delete channel', async () => {
+      await expect(channelService.delete('98217398')).rejects.toThrow(
+        PrismaClientKnownRequestError
+      )
+    })
+    // Todoo make a migration with NAME as unique
+    // it('Make a channel with already taken Name', async () => {
+    //   const channelData2 = {
+    //     name: 'random name',
+    //     avatarUrl: 'NiceURL',
+    //     topic: 'WonderfullRopic',
+    //     password: 'NicePassword',
+    //     maxUsers: 50,
+    //     type: EChannelType.Public,
+    //     createdAt: new Date(),
+    //     owner: { connect: { id: '564ayPlUh0qtDrePkJ87t' } }
+    //   }
+    //   await expect(channelService.create(channelData2)).rejects.toThrow(
+    //     PrismaClientKnownRequestError
+    //   )
+    // })
+    it('update Owner ID', async () => {
+      const updatedData = {
+        owner: { connect: { id: '564ayPlUh0qtDrePkJ87t' } }
+      }
+      await expect(
+        channelService.update('pihayPlUh0qtDrePkJ87t', updatedData)
+      ).rejects.toThrow(ExceptionTryingToUpdateOwnerID)
+    })
+    it('update with invalid number channel limit', async () => {
+      const updatedData = { maxUsers: -1 }
+      await expect(
+        channelService.update('pihayPlUh0qtDrePkJ87t', updatedData)
+      ).rejects.toThrow(ExceptionInvalidMaxUserInChannel)
+    })
+    it('create a new Channel with invalid MaxUser', async () => {
+      const channelData = {
+        name: 'random name',
+        avatarUrl: 'NiceURL',
+        topic: 'WonderfullRopic',
+        password: 'NicePassword',
+        maxUsers: -100,
+        type: EChannelType.Public,
+        createdAt: new Date(),
+        owner: { connect: { id: '564ayPlUh0qtDrePkJ87t' } }
+      }
+      await expect(channelService.create(channelData)).rejects.toThrow(
+        ExceptionInvalidMaxUserInChannel
+      )
+    })
+    it('update Date of a Channel', async () => {
+      const updatedData = { createdAt: new Date() }
+      await expect(
+        channelService.update('pihayPlUh0qtDrePkJ87t', updatedData)
+      ).rejects.toThrow(ExceptionTryingToUpdateDate)
     })
   })
 })

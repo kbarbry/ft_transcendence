@@ -1,7 +1,12 @@
 import { Injectable } from '@nestjs/common'
 import { PrismaService } from '../prisma/prisma.service'
-import { Prisma, Channel, EGameType } from '@prisma/client'
-import { ChannelMemberModule } from 'src/channel-member/channel-member.module'
+import { Prisma, Channel } from '@prisma/client'
+import {
+  ExceptionTryingToUpdateChannelID,
+  ExceptionTryingToUpdateOwnerID,
+  ExceptionInvalidMaxUserInChannel,
+  ExceptionTryingToUpdateDate
+} from './exceptions/channel.exception'
 
 @Injectable()
 export class ChannelService {
@@ -10,14 +15,31 @@ export class ChannelService {
   //**************************************************//
   //  MUTATION
   //**************************************************//
-
   async create(data: Prisma.ChannelCreateInput): Promise<Channel> {
+    const maxUsers = data.maxUsers as number
+    if (
+      maxUsers &&
+      ((maxUsers != undefined && maxUsers < 2) || maxUsers > 50)
+    ) {
+      throw new ExceptionInvalidMaxUserInChannel()
+    }
     return this.prisma.channel.create({
       data
     })
   }
 
   async update(id: string, data: Prisma.ChannelUpdateInput): Promise<Channel> {
+    const maxUsers = data.maxUsers as number
+
+    if (data.id) throw new ExceptionTryingToUpdateChannelID()
+    if (data.owner?.connect?.id) throw new ExceptionTryingToUpdateOwnerID()
+    if (data.createdAt) throw new ExceptionTryingToUpdateDate()
+    if (
+      maxUsers &&
+      ((maxUsers != undefined && maxUsers < 2) || maxUsers > 50)
+    ) {
+      throw new ExceptionInvalidMaxUserInChannel()
+    }
     return this.prisma.channel.update({
       where: {
         id
@@ -37,7 +59,6 @@ export class ChannelService {
   //**************************************************//
   //  QUERY
   //**************************************************//
-
   async findOne(id: string): Promise<Channel | null> {
     return this.prisma.channel.findUnique({
       where: {
@@ -46,8 +67,19 @@ export class ChannelService {
     })
   }
 
+  async findAllThatContain(str: string): Promise<Channel[] | null> {
+    return await this.prisma.channel.findMany({
+      where: {
+        name: { contains: str }
+      },
+      orderBy: {
+        name: 'desc'
+      }
+    })
+  }
+
   async findOwner(channelId: string): Promise<string | null> {
-    const channel = await this.prisma.channel.findFirst({
+    const channel = await this.prisma.channel.findUnique({
       where: {
         id: channelId
       }
