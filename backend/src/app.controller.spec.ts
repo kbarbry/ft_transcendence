@@ -12,7 +12,7 @@ describe('AppController', () => {
     //**************************************************//
     //  MAKE IT CLEAN
     //**************************************************//
-    await cleanDataBase(prismaService)
+    //await cleanDataBase(prismaService)
     const app: TestingModule = await Test.createTestingModule({
       controllers: [AppController],
       providers: [AppService]
@@ -21,8 +21,8 @@ describe('AppController', () => {
     appController = app.get<AppController>(AppController)
   })
   afterAll(async () => {
-    cleanDataBase(prismaService)
-    await prismaService.$disconnect()
+    //cleanDataBase(prismaService)
+    //await prismaService.$disconnect()
   })
 
   describe('root', () => {

@@ -11,7 +11,8 @@ describe('UserController', () => {
     //**************************************************//
     //  MAKE IT CLEAN
     //**************************************************//
-    cleanDataBase(prismaService)
+
+    //cleanDataBase(prismaService)
 
     const module: TestingModule = await Test.createTestingModule({
       controllers: [UserController]
@@ -20,8 +21,8 @@ describe('UserController', () => {
     controller = module.get<UserController>(UserController)
   })
   afterAll(async () => {
-    cleanDataBase(prismaService)
-    await prismaService.$disconnect()
+    //cleanDataBase(prismaService)
+    //await prismaService.$disconnect()
   })
 
   it('should be defined', () => {
