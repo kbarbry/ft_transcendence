@@ -43,7 +43,6 @@ export class RelationRequestsService {
       userReceiverId,
       userSenderId
     )
-
     if (userSenderId === userReceiverId) {
       throw new ExceptionRequestingYourself()
     }

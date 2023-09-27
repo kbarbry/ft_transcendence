@@ -135,9 +135,9 @@ describe('UserPresenceService', () => {
     })
     it('findAllBlockedUser - should find one user blocked by ID', async () => {
       const findUsers = await relationBlockedService.findAllBlockedByUser(
-        'a2OayPlUh0qtDrePkJ87t'
+        'qci4ayPwwUh12tDrePkJ8'
       )
-      const expectedRes = ['baaayPlUh0qtDrePkJ87t']
+      const expectedRes = ['j9-X94_NVjmzVm9QL3k4r']
       expect(findUsers).toStrictEqual(expectedRes)
     })
     it('findAllBlockedUser - should find users blocked by ID', async () => {
