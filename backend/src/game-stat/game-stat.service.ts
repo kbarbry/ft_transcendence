@@ -14,7 +14,7 @@ export class GameStatService {
   //**************************************************//
 
   async create(data: Prisma.GameStatCreateInput): Promise<GameStat> {
-    if (data.looser?.connect?.id == data.winner?.connect?.id) {
+    if (data.looser?.connect?.id === data.winner?.connect?.id) {
       throw new ExceptionSamePlayerInGame()
     }
     return this.prisma.gameStat.create({
