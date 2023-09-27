@@ -158,30 +158,30 @@ describe('RelationFriendService', () => {
 
   describe('Test Error', () => {
     it('throw an error after trying to create a new relaton in DB with an already existing id', async () => {
-      expect(async () => {
-        await relationFriendService.create(
+      await expect(
+        relationFriendService.create(
           '4376f06677b65d3168d6-',
           '537d4ec6daffd64a2d4c-'
         )
-      }).rejects.toThrow(PrismaClientKnownRequestError)
+      ).rejects.toThrow(PrismaClientKnownRequestError)
     })
 
     it("throw an error after trying to create a new relaton in DB with id's of non existing user", async () => {
-      expect(async () => {
-        await relationFriendService.create(
+      await expect(
+        relationFriendService.create(
           'fff6f06677b65d3168d6-',
           'fffd4ec6daffd64a2d4c-'
         )
-      }).rejects.toThrow(PrismaClientKnownRequestError)
+      ).rejects.toThrow(PrismaClientKnownRequestError)
     })
 
     it('throw an error after trying to delete non existing id', async () => {
-      expect(async () => {
-        await relationFriendService.delete(
+      await expect(
+        relationFriendService.delete(
           'fff6f06677b65d3168d6-',
           'fffd4ec6daffd64a2d4c-'
         )
-      }).rejects.toThrow(PrismaClientKnownRequestError)
+      ).rejects.toThrow(PrismaClientKnownRequestError)
     })
 
     it("return all friend of a non existing user's id", async () => {

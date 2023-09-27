@@ -52,14 +52,14 @@ describe('RelationRequestsService', () => {
     await prismaService.$executeRaw`INSERT INTO 
       "public"."User" 
       VALUES 
-      ('537d4ec6daffd64a2d4c', 'random url', 'alfred@42.fr', 'Ally', 'oui', null, null, false, 'Online', 'English', 1),
-      ('f488e59aef615c5df6df', 'random url', 'bob.fr', 'Bobby', 'Babby', null, null, false, 'Online', 'English', 1),
-      ('4376f06677b65d3168d6', 'random url', 'charlie@42.fr', 'Chacha', 'oui', null, null, false, 'Invisble', 'French', 12),
-      ('df87734d323ac71c6efb', 'random url', 'david@42.fr', 'dav', 'oui', null, null, false, 'Invisble', 'French', 12),
-      ('ec178ef86d29197b6ffd', 'random url', 'evan@42.fr', 'evee', 'oui', null, null, false, 'Idle', 'Spanish', 36),
-      ('e28d4ff1f6cd647fc171', 'random url', 'frank@42.fr', 'punisher', 'oui', null, null, false, 'DoNotDisturb', 'Spanish', 9000),
-      ('ohohoff1f6cd647fc171', 'random url', 'billy@42.fr', 'wallE', 'oui', null, null, false, 'Idle', 'English', 42),
-      ('bababff1f6cd647fc171', 'random url', 'castex@42.fr', 'XxCovidxX', 'oui', null, null, false, 'Online', 'French', 666);`
+      ('537d4ec6daffd64a2d4c-', 'random url', 'alfred@42.fr', 'Ally', 'oui', null, null, false, 'Online', 'English', 1),
+      ('f488e59aef615c5df6df-', 'random url', 'bob.fr', 'Bobby', 'Babby', null, null, false, 'Online', 'English', 1),
+      ('4376f06677b65d3168d6-', 'random url', 'charlie@42.fr', 'Chacha', 'oui', null, null, false, 'Invisble', 'French', 12),
+      ('df87734d323ac71c6efb-', 'random url', 'david@42.fr', 'dav', 'oui', null, null, false, 'Invisble', 'French', 12),
+      ('ec178ef86d29197b6ffd-', 'random url', 'evan@42.fr', 'evee', 'oui', null, null, false, 'Idle', 'Spanish', 36),
+      ('e28d4ff1f6cd647fc171-', 'random url', 'frank@42.fr', 'punisher', 'oui', null, null, false, 'DoNotDisturb', 'Spanish', 9000),
+      ('ohohoff1f6cd647fc171-', 'random url', 'billy@42.fr', 'wallE', 'oui', null, null, false, 'Idle', 'English', 42),
+      ('bababff1f6cd647fc171-', 'random url', 'castex@42.fr', 'XxCovidxX', 'oui', null, null, false, 'Online', 'French', 666);`
 
     //**************************************************//
     //  RELATION REQUESTS CREATION
@@ -67,27 +67,27 @@ describe('RelationRequestsService', () => {
     await prismaService.$executeRaw`INSERT INTO 
       "public"."RelationRequests" 
       VALUES 
-      ('537d4ec6daffd64a2d4c', '4376f06677b65d3168d6'),
-      ('4376f06677b65d3168d6', 'f488e59aef615c5df6df'),
-      ('4376f06677b65d3168d6', 'df87734d323ac71c6efb'),
-      ('e28d4ff1f6cd647fc171', 'f488e59aef615c5df6df'),
-      ('bababff1f6cd647fc171', 'ohohoff1f6cd647fc171'),
-      ('e28d4ff1f6cd647fc171', 'df87734d323ac71c6efb');`
+      ('537d4ec6daffd64a2d4c-', '4376f06677b65d3168d6-'),
+      ('4376f06677b65d3168d6-', 'f488e59aef615c5df6df-'),
+      ('4376f06677b65d3168d6-', 'df87734d323ac71c6efb-'),
+      ('e28d4ff1f6cd647fc171-', 'f488e59aef615c5df6df-'),
+      ('bababff1f6cd647fc171-', 'ohohoff1f6cd647fc171-'),
+      ('e28d4ff1f6cd647fc171-', 'df87734d323ac71c6efb-');`
 
     //'537d4ec6daffd64a2d4c', '4376f06677b65d3168d6'
 
     await prismaService.$executeRaw`INSERT INTO
       "public"."RelationBlocked"
       VALUES
-      ('537d4ec6daffd64a2d4c', 'df87734d323ac71c6efb'),
-      ('df87734d323ac71c6efb', 'f488e59aef615c5df6df'),
-      ('4376f06677b65d3168d6', 'e28d4ff1f6cd647fc171');`
+      ('537d4ec6daffd64a2d4c-', 'df87734d323ac71c6efb-'),
+      ('4376f06677b65d3168d6-', 'f488e59aef615c5df6df-'),
+      ('4376f06677b65d3168d6-', 'e28d4ff1f6cd647fc171-');`
 
     await prismaService.$executeRaw`INSERT INTO
       "public"."RelationFriend"
       VALUES
-      ('4376f06677b65d3168d6', 'ec178ef86d29197b6ffd'),
-      ('ec178ef86d29197b6ffd', 'e28d4ff1f6cd647fc171');`
+      ('4376f06677b65d3168d6-', 'ec178ef86d29197b6ffd-'),
+      ('ec178ef86d29197b6ffd-', 'e28d4ff1f6cd647fc171-');`
   })
 
   afterAll(async () => {
@@ -111,34 +111,34 @@ describe('RelationRequestsService', () => {
   describe('Test Mutation', () => {
     it('should create a new user', async () => {
       const resRequest = await relationRequestsService.create(
-        '537d4ec6daffd64a2d4c',
-        'f488e59aef615c5df6df'
+        '537d4ec6daffd64a2d4c-',
+        'f488e59aef615c5df6df-'
       )
       const expectedRes = {
-        userSenderId: '537d4ec6daffd64a2d4c',
-        userReceiverId: 'f488e59aef615c5df6df'
+        userSenderId: '537d4ec6daffd64a2d4c-',
+        userReceiverId: 'f488e59aef615c5df6df-'
       }
       expect(resRequest).toStrictEqual(expectedRes)
     })
     it('should delete an user', async () => {
       const resRequest = await relationRequestsService.delete(
-        '537d4ec6daffd64a2d4c',
-        '4376f06677b65d3168d6'
+        '537d4ec6daffd64a2d4c-',
+        '4376f06677b65d3168d6-'
       )
       const expectedRes = {
-        userSenderId: '537d4ec6daffd64a2d4c',
-        userReceiverId: '4376f06677b65d3168d6'
+        userSenderId: '537d4ec6daffd64a2d4c-',
+        userReceiverId: '4376f06677b65d3168d6-'
       }
       expect(resRequest).toStrictEqual(expectedRes)
     })
     it('should add userB as friend (alreadyRequested B->A)', async () => {
       const resRequest = await relationRequestsService.create(
-        'ohohoff1f6cd647fc171',
-        'bababff1f6cd647fc171'
+        'ohohoff1f6cd647fc171-',
+        'bababff1f6cd647fc171-'
       )
       const expectedRes = {
-        userAId: 'bababff1f6cd647fc171',
-        userBId: 'ohohoff1f6cd647fc171'
+        userAId: 'bababff1f6cd647fc171-',
+        userBId: 'ohohoff1f6cd647fc171-'
       }
       expect(resRequest).toStrictEqual(expectedRes)
     })
@@ -146,122 +146,117 @@ describe('RelationRequestsService', () => {
   describe('Test Query', () => {
     it('should find user by id', async () => {
       const findUser = await relationRequestsService.findOne(
-        '537d4ec6daffd64a2d4c',
-        '4376f06677b65d3168d6'
+        '537d4ec6daffd64a2d4c-',
+        '4376f06677b65d3168d6-'
       )
       const expectedRes = {
-        userSenderId: '537d4ec6daffd64a2d4c',
-        userReceiverId: '4376f06677b65d3168d6'
+        userSenderId: '537d4ec6daffd64a2d4c-',
+        userReceiverId: '4376f06677b65d3168d6-'
       }
       expect(findUser).toStrictEqual(expectedRes)
     })
     it('should exist', async () => {
       const findUser = await relationRequestsService.isRequested(
-        'e28d4ff1f6cd647fc171',
-        'f488e59aef615c5df6df'
+        'e28d4ff1f6cd647fc171-',
+        'f488e59aef615c5df6df-'
       )
       expect(findUser).toStrictEqual(true)
     })
     it('findAllRequestReceived - should find one request received', async () => {
       const findUsers = await relationRequestsService.findAllRequestReceived(
-        '4376f06677b65d3168d6'
+        '4376f06677b65d3168d6-'
       )
-      const expectedRes = ['537d4ec6daffd64a2d4c']
+      const expectedRes = ['537d4ec6daffd64a2d4c-']
       expect(findUsers).toStrictEqual(expectedRes)
     })
     it('findAllRequestReceived - should find multiple requests', async () => {
       const findUsers = await relationRequestsService.findAllRequestReceived(
-        'f488e59aef615c5df6df'
+        'f488e59aef615c5df6df-'
       )
-      const expectedRes = ['4376f06677b65d3168d6', 'e28d4ff1f6cd647fc171']
+      const expectedRes = ['4376f06677b65d3168d6-', 'e28d4ff1f6cd647fc171-']
       expect(findUsers).toStrictEqual(expectedRes)
     })
     it('findAllRequestReceived - should find no requests received', async () => {
       const findUsers = await relationRequestsService.findAllRequestReceived(
-        'e28d4ff1f6cd647fc171'
+        'e28d4ff1f6cd647fc171-'
       )
       const expectedRes: string[] = []
       expect(findUsers).toStrictEqual(expectedRes)
     })
     it('findAllRequestSent - should find one request', async () => {
       const findUsers = await relationRequestsService.findAllRequestSent(
-        '537d4ec6daffd64a2d4c'
+        '537d4ec6daffd64a2d4c-'
       )
-      const expectedRes = ['4376f06677b65d3168d6']
+      const expectedRes = ['4376f06677b65d3168d6-']
       expect(findUsers).toStrictEqual(expectedRes)
     })
     it('findAllRequestSent - should find multiple requests', async () => {
       const findUsers = await relationRequestsService.findAllRequestSent(
-        'e28d4ff1f6cd647fc171'
+        'e28d4ff1f6cd647fc171-'
       )
-      const expectedRes = ['f488e59aef615c5df6df', 'df87734d323ac71c6efb']
+      const expectedRes = ['f488e59aef615c5df6df-', 'df87734d323ac71c6efb-']
       expect(findUsers).toStrictEqual(expectedRes)
     })
     it('findAllRequestSent - should find no requests', async () => {
       const findUsers = await relationRequestsService.findAllRequestSent(
-        'df87734d323ac71c6efb'
+        'df87734d323ac71c6efb-'
       )
       const expectedRes: string[] = []
       expect(findUsers).toStrictEqual(expectedRes)
     })
   })
   describe('Test Error', () => {
-    it('id already created', () => {
-      //TODO ca marche pas
-      expect(async () => {
-        await relationRequestsService.create(
-          '537d4ec6daffd64a2d4c',
-          '4376f06677b65d3168d6'
+    //TODO ca marche pas, des fois ca retourne la promise PrismaClientKnownRequestError
+    it('id already created', async () => {
+      //TODO ca marche pas, des fois ca retourne la promise PrismaClientKnownRequestError
+      await expect(
+        relationRequestsService.create(
+          '537d4ec6daffd64a2d4c-',
+          '4376f06677b65d3168d6-'
         )
-      }).rejects.toThrow(PrismaClientKnownRequestError)
+      ).rejects.toThrow(PrismaClientKnownRequestError)
+    })
+    it('trying to request yourself (miskina)', async () => {
+      await expect(
+        relationRequestsService.create(
+          '537d4ec6daffd64a2d4c-',
+          '537d4ec6daffd64a2d4c-'
+        )
+      ).rejects.toThrow(ExceptionRequestingYourself)
+    })
+    it('trying to request someone blocked', async () => {
+      await expect(
+        relationRequestsService.create(
+          '537d4ec6daffd64a2d4c-',
+          'df87734d323ac71c6efb-'
+        )
+      ).rejects.toThrow(ExceptionUserBlocked)
     })
 
-    it('create with invalid id', async () => {
-      expect(async () => {
-        await relationRequestsService.create('537d4ec6daffd64a2d4c', '666')
-      }).rejects.toThrow(PrismaClientKnownRequestError)
-    })
-    it('trying to request yourself (miskina)', () => {
-      expect(async () => {
-        await relationRequestsService.create(
-          '537d4ec6daffd64a2d4c',
-          '537d4ec6daffd64a2d4c'
+    it('trying to request someone who blocked you', async () => {
+      // TODO ca marche pas, renvoi pas la bonne exception
+      await expect(
+        relationRequestsService.create(
+          'f488e59aef615c5df6df-',
+          '4376f06677b65d3168d6-'
         )
-      }).rejects.toThrow(ExceptionRequestingYourself)
+      ).rejects.toThrow(ExceptionUserBlockedYou)
     })
-    it('trying to request someone blocked', () => {
-      expect(async () => {
-        await relationRequestsService.create(
-          '537d4ec6daffd64a2d4c',
-          'df87734d323ac71c6efb'
+    it('trying to request someone you are already friend with A->B', async () => {
+      await expect(
+        relationRequestsService.create(
+          'ec178ef86d29197b6ffd-',
+          '4376f06677b65d3168d6-'
         )
-      }).rejects.toThrow(ExceptionUserBlocked)
+      ).rejects.toThrow(ExceptionUsersAlreadyFriend)
     })
-
-    it('trying to request someone who blocked you', () => {
-      // TODO ca marche pas
-      expect(async () => {
-        await relationRequestsService.create(
-          'f488e59aef615c5df6df',
-          '4376f06677b65d3168d6'
+    it('trying to request someone you are already friend with B->A', async () => {
+      await expect(
+        relationRequestsService.create(
+          '4376f06677b65d3168d6-',
+          'ec178ef86d29197b6ffd-'
         )
-      }).rejects.toThrow(ExceptionUserBlockedYou)
+      ).rejects.toThrow(ExceptionUsersAlreadyFriend)
     })
-    // it('trying to request someone you are already friend with A->B', () => {
-    //   expect(async () => {
-    //     await relationRequestsService.create(
-    //       'ec178ef86d29197b6ffd',
-    //       '4376f06677b65d3168d6'
-    //     )
-    //   }).rejects.toThrow(ExceptionUsersAlreadyFriend)
-    // })
-    // it('trying to request someone you are already friend with B->A', () => {
-    //   expect(async () => {
-    //     await relationRequestsService.create(
-    //       '4376f06677b65d3168d6',
-    //       'ec178ef86d29197b6ffd'
-    //     )
-    //   }).rejects.toThrow(ExceptionUsersAlreadyFriend)
-    // })
   })
 })

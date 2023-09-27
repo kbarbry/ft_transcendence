@@ -104,9 +104,9 @@ describe('Test UserService', () => {
         level: 0,
         avatarUrl: 'random url'
       }
-      expect(async () => {
-        await userService.create(userDataSameEmail)
-      }).rejects.toThrow(PrismaClientKnownRequestError)
+      await expect(userService.create(userDataSameEmail)).rejects.toThrow(
+        PrismaClientKnownRequestError
+      )
     })
 
     it('user already created - same username', async () => {
@@ -116,34 +116,33 @@ describe('Test UserService', () => {
         level: 0,
         avatarUrl: 'random url'
       }
-      expect(async () => {
-        await userService.create(userDataSameUsername)
-      }).rejects.toThrow(PrismaClientKnownRequestError)
+      await expect(userService.create(userDataSameUsername)).rejects.toThrow(
+        PrismaClientKnownRequestError
+      )
     })
 
     it('change id field', async () => {
-      expect(async () => {
-        const updatedData = { id: '55555' }
-        await userService.update('d2OayPlUh0qtDrePkJ87t', updatedData)
-      }).rejects.toThrow(ExceptionTryingToUpdateID)
+      const updatedData = { id: '55555' }
+      await expect(
+        userService.update('d2OayPlUh0qtDrePkJ87t', updatedData)
+      ).rejects.toThrow(ExceptionTryingToUpdateID)
     })
     it('update already taken username', async () => {
       const updatedData = { username: 'Ally' }
-      expect(async () => {
-        newUser = await userService.update('j6-X94_NVjmzVm9QL3k4r', updatedData)
-      }).rejects.toThrow(PrismaClientKnownRequestError)
+      await expect(
+        (newUser = userService.update('j6-X94_NVjmzVm9QL3k4r', updatedData))
+      ).rejects.toThrow(PrismaClientKnownRequestError)
     })
     it('update already taken email', async () => {
       const updatedData = { mail: 'alfred@42.fr' }
-      expect(async () => {
-        newUser = await userService.update('j6-X94_NVjmzVm9QL3k4r', updatedData)
-      }).rejects.toThrow(PrismaClientKnownRequestError)
+      await expect(
+        (newUser = userService.update('j6-X94_NVjmzVm9QL3k4r', updatedData))
+      ).rejects.toThrow(PrismaClientKnownRequestError)
     })
     it('user already deleted', async () => {
-      expect(async () => {
-        await userService.delete('j6-X94_NVjmzVm9QL3k4r')
-        await userService.delete('j6-X94_NVjmzVm9QL3k4r')
-      }).rejects.toThrow(PrismaClientKnownRequestError)
+      await expect(userService.delete('j12X94_NVjmzVm9QL3k4r')).rejects.toThrow(
+        PrismaClientKnownRequestError
+      )
     })
   })
 })

@@ -27,26 +27,44 @@ export class RelationRequestsService {
     userSenderId: string,
     userReceiverId: string
   ): Promise<RelationRequests | RelationFriend> {
-    if (userSenderId === userReceiverId) throw new ExceptionRequestingYourself()
+    const userFriend = await this.relationFriendService.isFriend(
+      userSenderId,
+      userReceiverId
+    )
+    const userBlocked = await this.relationBlockedService.isBlocked(
+      userSenderId,
+      userReceiverId
+    )
+    const userBlockedYou = await this.relationBlockedService.isBlocked(
+      userReceiverId,
+      userSenderId
+    )
+    const userRequestReceived = await this.isRequested(
+      userReceiverId,
+      userSenderId
+    )
+
+    if (userSenderId === userReceiverId) {
+      throw new ExceptionRequestingYourself()
+    }
 
     // if blocked
-    if (
-      await this.relationBlockedService.isBlocked(userSenderId, userReceiverId)
-    )
+    if (userBlocked) {
       throw new ExceptionUserBlocked()
+    }
 
     // if blocked by the other user
-    if (
-      await this.relationBlockedService.isBlocked(userReceiverId, userSenderId)
-    )
+    if (userBlockedYou) {
       throw new ExceptionUserBlockedYou()
+    }
 
     // if friend
-    if (await this.relationFriendService.isFriend(userSenderId, userReceiverId))
+    if (userFriend) {
       throw new ExceptionUsersAlreadyFriend()
+    }
 
     // if requestFriendReceived
-    if (await this.isRequested(userReceiverId, userSenderId)) {
+    if (userRequestReceived) {
       await this.delete(userReceiverId, userSenderId)
       return this.relationFriendService.create(userSenderId, userReceiverId)
     }

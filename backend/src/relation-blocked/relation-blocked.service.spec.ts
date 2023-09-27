@@ -74,6 +74,7 @@ describe('UserPresenceService', () => {
     await prismaService.$executeRaw`INSERT INTO
       "public"."RelationBlocked"
       VALUES
+      ('a2OayPlUh0qtDrePkJ87t', 'j6-X94_NVjmzVm9QL3k4r'),
       ('a2OayPlUh0qtDrePkJ87t', 'baaayPlUh0qtDrePkJ87t'),
       ('eeeeyPlUh0qtDrePkJ87t', 'ddddyPlUh0qtDrePkJ87t'),
       ('eeeeyPlUh0qtDrePkJ87t', 'ccccyPlUh0qtDrePkJ87t'),
@@ -115,67 +116,29 @@ describe('UserPresenceService', () => {
       )
       expect(result).toBe(false)
     })
-    describe('Test Query', () => {
-      it('should return isBlocked - true', async () => {
-        const result = await relationBlockedService.isBlocked(
-          'a2OayPlUh0qtDrePkJ87t',
-          'baaayPlUh0qtDrePkJ87t'
-        )
-        expect(result).toBe(true)
-      })
-      it('should create a blockedRelation', async () => {
-        const resBlocked = await relationBlockedService.create(
+  })
+  describe('Test Query', () => {
+    it('should return isBlocked - true', async () => {
+      const result = await relationBlockedService.isBlocked(
+        'a2OayPlUh0qtDrePkJ87t',
+        'baaayPlUh0qtDrePkJ87t'
+      )
+      expect(result).toBe(true)
+    })
+    it('should return ExceptionAlreadyBlocked', async () => {
+      await expect(
+        relationBlockedService.create(
           'a2OayPlUh0qtDrePkJ87t',
           'j6-X94_NVjmzVm9QL3k4r'
         )
-        const expectedRes = {
-          userBlockedId: 'j6-X94_NVjmzVm9QL3k4r',
-          userBlockingId: 'a2OayPlUh0qtDrePkJ87t'
-        }
-        expect(resBlocked).toStrictEqual(expectedRes)
-      })
-      it('should create a blockedRelation - 2', async () => {
-        const resBlocked = await relationBlockedService.create(
-          'a2OayPlUh0qtDrePkJ87t',
-          'ddddyPlUh0qtDrePkJ87t'
-        )
-        const expectedRes = {
-          userBlockedId: 'ddddyPlUh0qtDrePkJ87t',
-          userBlockingId: 'a2OayPlUh0qtDrePkJ87t'
-        }
-        expect(resBlocked).toStrictEqual(expectedRes)
-      })
-      it('should create a blockedRelation - 3', async () => {
-        const resBlocked = await relationBlockedService.create(
-          'a2OayPlUh0qtDrePkJ87t',
-          'bbbbyPlUh0qtDrePkJ87t'
-        )
-        const expectedRes = {
-          userBlockedId: 'bbbbyPlUh0qtDrePkJ87t',
-          userBlockingId: 'a2OayPlUh0qtDrePkJ87t'
-        }
-        expect(resBlocked).toStrictEqual(expectedRes)
-      })
-      it('should return ExceptionAlreadyBlocked', async () => {
-        try {
-          const resBlocked2 = await relationBlockedService.create(
-            'a2OayPlUh0qtDrePkJ87t',
-            'j6-X94_NVjmzVm9QL3k4r'
-          )
-          expect(resBlocked2).not.toBeNull()
-        } catch (error) {
-          console.error(error)
-          expect(error).toBeInstanceOf(ExceptionAlreadyBlocked)
-        }
-      })
-      //PARLER AUX AUTRES D'INVERSER LES NOMS DES FINDALL
-      it('findAllBlockedUser - should find one one user blocked by ID', async () => {
-        const findUsers = await relationBlockedService.findAllBlockedByUser(
-          'a2OayPlUh0qtDrePkJ87t'
-        )
-        const expectedRes = ['baaayPlUh0qtDrePkJ87t']
-        expect(findUsers).toStrictEqual(expectedRes)
-      })
+      ).rejects.toThrow(ExceptionAlreadyBlocked)
+    })
+    it('findAllBlockedUser - should find one user blocked by ID', async () => {
+      const findUsers = await relationBlockedService.findAllBlockedByUser(
+        'a2OayPlUh0qtDrePkJ87t'
+      )
+      const expectedRes = ['baaayPlUh0qtDrePkJ87t']
+      expect(findUsers).toStrictEqual(expectedRes)
     })
     it('findAllBlockedUser - should find users blocked by ID', async () => {
       const blockedUsers = await relationBlockedService.findAllBlockedByUser(
@@ -188,28 +151,25 @@ describe('UserPresenceService', () => {
       ]
       expect(blockedUsers).toEqual(expectedBlockedUsers)
     })
-  })
-  it('findAllBlockingUser - should find users blocking ID', async () => {
-    const blockedUsers = await relationBlockedService.findAllBlockingByUser(
-      'j9-X94_NVjmzVm9QL3k4r'
-    )
-    const expectedBlockedUsers = [
-      'drfOayPwwUh12tDrePkJ8',
-      'qci4ayPwwUh12tDrePkJ8'
-    ]
-    expect(blockedUsers).toEqual(expectedBlockedUsers)
+    it('findAllBlockingUser - should find users blocking ID', async () => {
+      const blockedUsers = await relationBlockedService.findAllBlockingByUser(
+        'j9-X94_NVjmzVm9QL3k4r'
+      )
+      const expectedBlockedUsers = [
+        'drfOayPwwUh12tDrePkJ8',
+        'qci4ayPwwUh12tDrePkJ8'
+      ]
+      expect(blockedUsers).toEqual(expectedBlockedUsers)
+    })
   })
   describe('Test Error', () => {
     it('should return ExceptionBlockedYourself', async () => {
-      try {
-        const resBlocked = await relationBlockedService.create(
+      await expect(
+        relationBlockedService.create(
           'aaaayPlUh0qtDrePkJ87t',
           'aaaayPlUh0qtDrePkJ87t'
         )
-        expect(resBlocked).not.toBeNull()
-      } catch (error) {
-        expect(error).toBeInstanceOf(ExceptionBlockedYourself)
-      }
+      ).rejects.toThrow(ExceptionBlockedYourself)
     })
     it('should return isBlocked - false - wrong order test', async () => {
       const result = await relationBlockedService.isBlocked(

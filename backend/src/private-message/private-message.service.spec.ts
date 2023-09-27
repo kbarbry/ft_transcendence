@@ -156,15 +156,14 @@ describe('PrivateMessageService', () => {
       const updatedata = {
         id: '555'
       }
-      expect(async () => {
-        await privateMessageService.update('er11yPlUh0qtDrePkJ87t', updatedata)
-      }).rejects.toThrow(ExceptionTryingToUpdatePrivateMessageID)
+      await expect(
+        privateMessageService.update('er11yPlUh0qtDrePkJ87t', updatedata)
+      ).rejects.toThrow(ExceptionTryingToUpdatePrivateMessageID)
     })
     it('creating message with taken ID', async () => {
-      expect(async () => {
-        await prismaService.$executeRaw`INSERT INTO "public"."User" VALUES ('rtjayPlUh0qtDrePkJ87t', 'random url', 'alfred@42.fr', 'Ally', 'oui', null, null, false, 'Online', 'English', 1);`
-        await prismaService.$executeRaw`INSERT INTO "public"."User" VALUES ('rtjayPlUh0qtDrePkJ87t', 'random url', 'alfred@42.fr', 'Ally', 'oui', null, null, false, 'Online', 'English', 1);`
-      }).rejects.toThrow(PrismaClientKnownRequestError)
+      await expect(
+        prismaService.$executeRaw`INSERT INTO "public"."User" VALUES ('in17yPlUh0qtDrePkJ87t', 'random url', 'alfred@42.fr', 'Ally', 'oui', null, null, false, 'Online', 'English', 1);`
+      ).rejects.toThrow(PrismaClientKnownRequestError)
     })
     it('Private message to yourself', async () => {
       const wrongData = {
@@ -173,41 +172,38 @@ describe('PrivateMessageService', () => {
         receiver: { connect: { id: 'rtjayPlUh0qtDrePkJ87t' } },
         sender: { connect: { id: 'rtjayPlUh0qtDrePkJ87t' } }
       }
-      expect(async () => {
-        await privateMessageService.create(wrongData)
-      }).rejects.toThrow(ExceptionPrivateMessageYourself)
+      await expect(privateMessageService.create(wrongData)).rejects.toThrow(
+        ExceptionPrivateMessageYourself
+      )
     })
     it('send a message to someone who do not exist', async () => {
-      expect(async () => {
-        await prismaService.$executeRaw`INSERT INTO "public"."PrivateMessage" VALUES ('er12yPlUh0qtDrePkJ87t', '42tX94_NVjmzVm9QL3k4r', 'zunzGU-8QlEvmHk8rjNRI', 'Ceci est un supermessage', '2023-09-13 10:00:00');`
-      }).rejects.toThrow(PrismaClientKnownRequestError)
+      await expect(
+        prismaService.$executeRaw`INSERT INTO "public"."PrivateMessage" VALUES ('er12yPlUh0qtDrePkJ87t', '42tX94_NVjmzVm9QL3k4r', 'zunzGU-8QlEvmHk8rjNRI', 'Ceci est un supermessage', '2023-09-13 10:00:00');`
+      ).rejects.toThrow(PrismaClientKnownRequestError)
     })
     it('trying to change the date of a message', async () => {
       const wrongUpdatedData = {
         createdAt: '2023-09-13 20:00:00'
       }
-      expect(async () => {
-        await privateMessageService.update(
-          'er10yPlUh0qtDrePkJ87t',
-          wrongUpdatedData
-        )
-      }).rejects.toThrow(ExceptionTryingToUpdateDateMessage)
+      await expect(
+        privateMessageService.update('er10yPlUh0qtDrePkJ87t', wrongUpdatedData)
+      ).rejects.toThrow(ExceptionTryingToUpdateDateMessage)
     })
     it('trying to update senderId', async () => {
       const wrongData = {
         sender: { connect: { id: 'ttjayPlUh0qtDrePkJ87t' } }
       }
-      expect(async () => {
-        await privateMessageService.update('er10yPlUh0qtDrePkJ87t', wrongData)
-      }).rejects.toThrow(ExceptionTryingToUpdateUsersId)
+      await expect(
+        privateMessageService.update('er10yPlUh0qtDrePkJ87t', wrongData)
+      ).rejects.toThrow(ExceptionTryingToUpdateUsersId)
     })
     it('trying to update receiverId', async () => {
       const wrongData = {
         receiver: { connect: { id: 'ttjayPlUh0qtDrePkJ87t' } }
       }
-      expect(async () => {
-        await privateMessageService.update('er10yPlUh0qtDrePkJ87t', wrongData)
-      }).rejects.toThrow(ExceptionTryingToUpdateUsersId)
+      await expect(
+        privateMessageService.update('er10yPlUh0qtDrePkJ87t', wrongData)
+      ).rejects.toThrow(ExceptionTryingToUpdateUsersId)
     })
   })
 })

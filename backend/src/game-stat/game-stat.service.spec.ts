@@ -150,48 +150,44 @@ describe('GameStatService', () => {
       expect(foundAllSpecialGameStat).toBeDefined
     })
   })
+
   describe('Test Error', () => {
     it('Gamestat created with already taken ID', async () => {
-      expect(async () => {
+      await expect(
         await prismaService.$executeRaw`INSERT INTO "public"."GameStat" VALUES ('drfOayPc2Uh12tDrePkJ8', 'j6-X94_NVjmzVm9QL3k4r','d2OayPlUh0qtDrePkJ87t', 'Classic', 12, 15, 2, '2023-09-13 10:00:00');`
-      }).rejects.toThrow(PrismaClientKnownRequestError)
+      ).rejects.toThrow(PrismaClientKnownRequestError)
     })
+
     it('change id field', async () => {
-      expect(async () => {
+      await expect(async () => {
         const updatedData = { id: '5555' }
         await gameStatService.update('drfOayPc2Uh12tDrePkJ8', updatedData)
       }).rejects.toThrow(ExceptionTryingToUpdateID)
     })
+
     it('Game stat already deleted', async () => {
-      expect(async () => {
-        await gameStatService.delete('drfOayPc2Uh12tDrePkJ8')
-        await gameStatService.delete('drfOayPc2Uh12tDrePkJ8')
+      await expect(async () => {
+        await gameStatService.delete('zrfOayPc2Uh12tDrePkJ8')
       }).rejects.toThrow(PrismaClientKnownRequestError)
     })
+
     it('Cannot make a game with the same player', async () => {
-      expect(async () => {
+      await expect(
         await gameStatService.create(invalidplayersdata)
-      }).rejects.toThrow(ExceptionSamePlayerInGame)
+      ).rejects.toThrow(ExceptionSamePlayerInGame)
     })
+
     it('Gamestat created with already taken ID', async () => {
-      expect(async () => {
-        await prismaService.$executeRaw`INSERT INTO "public"."GameStat" VALUES ('drfOayPc2Uh12tDrePkJ8', 'j6-X94_NVjmzVm9QL3k4r','d2OayPlUh0qtDrePkJ87t', 'Classic', 12, 15, 2, '2023-09-13 10:00:00');`
-      }).rejects.toThrow(PrismaClientKnownRequestError)
-    })
-    it('Gamestat created with already taken ID', async () => {
-      expect(async () => {
-        await prismaService.$executeRaw`INSERT INTO "public"."GameStat" VALUES ('drfOayPc2Uh12tDrePkJ8', 'j6-X94_NVjmzVm9QL3k4r','d2OayPlUh0qtDrePkJ87t', 'Classic', 12, 15, 2, '2023-09-13 10:00:00');`
-      }).rejects.toThrow(PrismaClientKnownRequestError)
-    })
-    it('Gamestat created with already taken ID', async () => {
-      expect(async () => {
-        await prismaService.$executeRaw`INSERT INTO "public"."GameStat" VALUES ('drfOayPc2Uh12tDrePkJ8', 'j6-X94_NVjmzVm9QL3k4r','d2OayPlUh0qtDrePkJ87t', 'Classic', 12, 15, 2, '2023-09-13 10:00:00');`
-      }).rejects.toThrow(PrismaClientKnownRequestError)
-    })
-    it('Gamestat created with already taken ID', async () => {
-      expect(async () => {
-        await prismaService.$executeRaw`INSERT INTO "public"."GameStat" VALUES ('drfOayPc2Uh12tDrePkJ8', 'j6-X94_NVjmzVm9QL3k4r','d2OayPlUh0qtDrePkJ87t', 'Classic', 12, 15, 2, '2023-09-13 10:00:00');`
-      }).rejects.toThrow(PrismaClientKnownRequestError)
+      const createInput: Prisma.GameStatCreateInput = {
+        id: 'drfOayPc2Uh12tDrePkJ8',
+        type: 'Classic',
+        timePlayed: 12,
+        scoreWinner: 15,
+        scoreLoser: 2
+      }
+      await expect(gameStatService.create(createInput)).rejects.toThrow(
+        PrismaClientKnownRequestError
+      )
     })
   })
 })

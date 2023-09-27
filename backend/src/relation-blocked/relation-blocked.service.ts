@@ -27,8 +27,10 @@ export class RelationBlockedService {
     userBId: string
   ): Promise<RelationBlocked | null> {
     if (userAId == userBId) throw new ExceptionBlockedYourself()
-    if (await this.isBlocked(userAId, userBId))
+    const userAlreadyBlocked = await this.isBlocked(userAId, userBId)
+    if (userAlreadyBlocked) {
       throw new ExceptionAlreadyBlocked()
+    }
     return this.prisma.relationBlocked.create({
       data: {
         userBlockingId: userAId,

@@ -158,21 +158,21 @@ describe('ChannelMessageService', () => {
     })
 
     it('throw an error after trying to try to update a message id', async () => {
-      expect(async () => {
-        const messageUpdateInput: Prisma.ChannelMessageUpdateInput = {
-          id: 'random id'
-        }
-        await channelMessageService.update(
+      const messageUpdateInput: Prisma.ChannelMessageUpdateInput = {
+        id: 'random id'
+      }
+      await expect(
+        channelMessageService.update(
           'gm7d4ec6daffd64a2d4cg',
           messageUpdateInput
         )
-      }).rejects.toThrow(ExceptionTryingToUpdateID)
+      ).rejects.toThrow(ExceptionTryingToUpdateID)
     })
 
     it('throw an error after trying to delete non existing id', async () => {
-      expect(async () => {
-        await channelMessageService.delete('zzzd4ec6daffd64a2d4cc')
-      }).rejects.toThrow(PrismaClientKnownRequestError)
+      await expect(
+        channelMessageService.delete('zzzd4ec6daffd64a2d4cc')
+      ).rejects.toThrow(PrismaClientKnownRequestError)
     })
   })
 })

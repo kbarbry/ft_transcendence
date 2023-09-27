@@ -124,41 +124,40 @@ describe('ChannelMemberService', () => {
     })
   })
   describe('Test Error', () => {
-    it('id already created', () => {
-      expect(async () => {
-        await channelMemberService.create(channelMemberData)
-        await channelMemberService.create(channelMemberData)
-      }).rejects.toThrow(PrismaClientKnownRequestError)
+    it('id already created', async () => {
+      await expect(
+        prismaService.$executeRaw`INSERT INTO "public"."ChannelMember" VALUES ('NewAvatarURL', 'WonderfullNickname', 'ftrX94_NVjmzVm9QL3k4r', 'pihayPlUh0qtDrePkJ87t', 'Member', 'true', '2023-09-13 20:00:00', '2023-09-13 10:00:00');`
+      ).rejects.toThrow(PrismaClientKnownRequestError)
     })
-    it('create with invalid channel data', () => {
-      expect(async () => {
-        const invalidData = {
-          avatarUrl: 'Nice_AVATAAAAR',
-          nickname: 'Nick_la_vie',
-          createdAt: new Date(),
-          type: EMemeberType.Member,
-          muted: false,
-          juskakan: null,
-          user: { connect: { id: '567ayPlUh0qtDrePkJ87t' } },
-          channel: { connect: { id: '666' } }
-        }
-        await channelMemberService.create(invalidData)
-      }).rejects.toThrow(PrismaClientKnownRequestError)
+    it('create with invalid channel data', async () => {
+      const invalidData = {
+        avatarUrl: 'Nice_AVATAAAAR',
+        nickname: 'Nick_la_vie',
+        createdAt: new Date(),
+        type: EMemeberType.Member,
+        muted: false,
+        juskakan: null,
+        user: { connect: { id: '567ayPlUh0qtDrePkJ87t' } },
+        channel: { connect: { id: '666' } }
+      }
+      await expect(channelMemberService.create(invalidData)).rejects.toThrow(
+        PrismaClientKnownRequestError
+      )
     })
-    it('create with invalid channel data', () => {
-      expect(async () => {
-        const invalidData = {
-          avatarUrl: 'Nice_AVATAAAAR',
-          nickname: 'Nick_la_vie',
-          createdAt: new Date(),
-          type: EMemeberType.Member,
-          muted: false,
-          juskakan: null,
-          user: { connect: { id: '666' } },
-          channel: { connect: { id: 'pihayPlUh0qtDrePkJ87t' } }
-        }
-        await channelMemberService.create(invalidData)
-      }).rejects.toThrow(PrismaClientKnownRequestError)
+    it('create with invalid channel data', async () => {
+      const invalidData = {
+        avatarUrl: 'Nice_AVATAAAAR',
+        nickname: 'Nick_la_vie',
+        createdAt: new Date(),
+        type: EMemeberType.Member,
+        muted: false,
+        juskakan: null,
+        user: { connect: { id: '666' } },
+        channel: { connect: { id: 'pihayPlUh0qtDrePkJ87t' } }
+      }
+      await expect(channelMemberService.create(invalidData)).rejects.toThrow(
+        PrismaClientKnownRequestError
+      )
     })
   })
 })

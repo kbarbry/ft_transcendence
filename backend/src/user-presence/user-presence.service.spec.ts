@@ -145,21 +145,20 @@ describe('UserPresenceService', () => {
   })
   describe('Test Error', () => {
     it('User presence created with already taken ID', async () => {
-      expect(async () => {
-        await prismaService.$executeRaw`INSERT INTO "public"."UserPresence" VALUES ('drfOayPwwUh12tDrePkJ8', 'd2OayPlUh0qtDrePkJ87t', '2023-09-13 10:00:00');`
-      }).rejects.toThrow(PrismaClientKnownRequestError)
+      expect(
+        prismaService.$executeRaw`INSERT INTO "public"."UserPresence" VALUES ('drfOayPwwUh12tDrePkJ8', 'd2OayPlUh0qtDrePkJ87t', '2023-09-13 10:00:00');`
+      ).rejects.toThrow(PrismaClientKnownRequestError)
     })
     it('change id field', async () => {
-      expect(async () => {
-        const updatedData = { id: '5555' }
-        await userPresenceService.update('drfOayPwwUh12tDrePkJ8', updatedData)
-      }).rejects.toThrow(ExceptionTryingToUpdateID)
+      const updatedData = { id: '5555' }
+      await expect(
+        userPresenceService.update('drfOayPwwUh12tDrePkJ8', updatedData)
+      ).rejects.toThrow(ExceptionTryingToUpdateID)
     })
     it('user presence already deleted', async () => {
-      expect(async () => {
-        await userPresenceService.delete('drfOayPwwUh12tDrePkJ8')
-        await userPresenceService.delete('drfOayPwwUh12tDrePkJ8')
-      }).rejects.toThrow(PrismaClientKnownRequestError)
+      await expect(
+        userPresenceService.delete('12fOayPwwUh12tDrePkJ8')
+      ).rejects.toThrow(PrismaClientKnownRequestError)
     })
   })
 })
