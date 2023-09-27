@@ -6,7 +6,6 @@ import { cleanDataBase } from '../../test/setup-environment'
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library'
 import {
   ExceptionTryingToUpdateChannelID,
-  ExceptionTryingToUpdateOwnerID,
   ExceptionInvalidMaxUserInChannel,
   ExceptionTryingToUpdateDate
 } from './exceptions/channel.exception'
@@ -93,7 +92,7 @@ describe('ChannelService', () => {
     })
   })
   describe('Test Query', () => {
-    it('should fin a Channel', async () => {
+    it('should find a Channel', async () => {
       const foundChannel = await channelService.findOne('pihayPlUh0qtDrePkJ87t')
       expect(foundChannel).toBeDefined
       expect(foundChannel?.ownerId).toStrictEqual('564ayPlUh0qtDrePkJ87t')
@@ -116,7 +115,7 @@ describe('ChannelService', () => {
         channelService.update('pihayPlUh0qtDrePkJ87t', updatedData)
       ).rejects.toThrow(ExceptionTryingToUpdateChannelID)
     })
-    it('Delete an already delete channel', async () => {
+    it('Delete an already deleted channel', async () => {
       await expect(channelService.delete('98217398')).rejects.toThrow(
         PrismaClientKnownRequestError
       )
@@ -137,14 +136,14 @@ describe('ChannelService', () => {
     //     PrismaClientKnownRequestError
     //   )
     // })
-    it('update Owner ID', async () => {
-      const updatedData = {
-        owner: { connect: { id: '564ayPlUh0qtDrePkJ87t' } }
-      }
-      await expect(
-        channelService.update('pihayPlUh0qtDrePkJ87t', updatedData)
-      ).rejects.toThrow(ExceptionTryingToUpdateOwnerID)
-    })
+    // it('update Owner ID', async () => {
+    //   const updatedData = {
+    //     owner: { connect: { id: '564ayPlUh0qtDrePkJ87t' } }
+    //   }
+    //   await expect(
+    //     channelService.update('pihayPlUh0qtDrePkJ87t', updatedData)
+    //   ).rejects.toThrow(ExceptionTryingToUpdateOwnerID)
+    // })
     it('update with invalid number channel limit', async () => {
       const updatedData = { maxUsers: -1 }
       await expect(

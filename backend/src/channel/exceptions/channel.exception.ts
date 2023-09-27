@@ -6,11 +6,11 @@ export class ExceptionTryingToUpdateChannelID extends HttpException {
   }
 }
 
-export class ExceptionTryingToUpdateOwnerID extends HttpException {
-  constructor() {
-    super('You are trying to change the id of the Owner', HttpStatus.CONFLICT)
-  }
-}
+// export class ExceptionTryingToUpdateOwnerID extends HttpException {
+//   constructor() {
+//     super('You are trying to change the id of the Owner', HttpStatus.CONFLICT)
+//   }
+// }
 
 export class ExceptionInvalidMaxUserInChannel extends HttpException {
   constructor() {
@@ -21,5 +21,11 @@ export class ExceptionInvalidMaxUserInChannel extends HttpException {
 export class ExceptionTryingToUpdateDate extends HttpException {
   constructor() {
     super('Invalid max user number', HttpStatus.CONFLICT)
+  }
+}
+
+export class ExceptionInvalidDataMaxUsers extends HttpException {
+  constructor() {
+    super('Invalid data sent for maxUser', HttpStatus.CONFLICT)
   }
 }
