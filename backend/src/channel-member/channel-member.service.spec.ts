@@ -18,14 +18,6 @@ describe('ChannelMemberService', () => {
     channelMemberService =
       module.get<ChannelMemberService>(ChannelMemberService)
     prismaService = module.get<PrismaService>(PrismaService)
-
-    //**************************************************//
-    //  MAKE IT CLEAN
-    //**************************************************//
-
-    await prismaService.$executeRaw`DELETE FROM "public"."Channel";`
-    await prismaService.$executeRaw`DELETE FROM "public"."ChannelMember";`
-    await prismaService.$executeRaw`DELETE FROM "public"."User";`
   })
 
   beforeEach(async () => {

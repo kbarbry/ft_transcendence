@@ -22,33 +22,10 @@ export class GameStatService {
     })
   }
 
-  async update(
-    id: string,
-    data: Prisma.GameStatUpdateInput
-  ): Promise<GameStat> {
-    if (data.id || data.looser?.connect?.id || data.winner?.connect?.id)
-      throw new ExceptionTryingToUpdateID()
-    return this.prisma.gameStat.update({
-      where: {
-        id
-      },
-      data
-    })
-  }
-
-  async delete(id: string): Promise<GameStat> {
-    return this.prisma.gameStat.delete({
-      where: {
-        id
-      }
-    })
-  }
-
   //**************************************************//
   //  QUERY
   //**************************************************//
 
-  // Find a GameStat with an GameStat ID \\
   async findOne(id: string): Promise<GameStat | null> {
     return this.prisma.gameStat.findUnique({
       where: {
@@ -57,7 +34,6 @@ export class GameStatService {
     })
   }
 
-  //Find all GameStat with an User ID\\
   async findAll(id: string): Promise<GameStat[]> {
     return this.prisma.gameStat.findMany({
       where: {
@@ -69,7 +45,6 @@ export class GameStatService {
     })
   }
 
-  //Find all win GameStat with an User ID\\
   async findWin(id: string): Promise<GameStat[]> {
     return this.prisma.gameStat.findMany({
       where: {
@@ -81,8 +56,7 @@ export class GameStatService {
     })
   }
 
-  //Find all loose GameStat with an User ID\\
-  async findLoose(id: string): Promise<GameStat[]> {
+  async findLose(id: string): Promise<GameStat[]> {
     return this.prisma.gameStat.findMany({
       where: {
         looserId: id
@@ -93,7 +67,6 @@ export class GameStatService {
     })
   }
 
-  //Find all classics GameStat with an User ID\\
   async findClassic(id: string): Promise<GameStat[]> {
     return this.prisma.gameStat.findMany({
       where: {
@@ -108,7 +81,6 @@ export class GameStatService {
     })
   }
 
-  //Find all special GameStat with an User ID\\
   async findSpecial(id: string): Promise<GameStat[]> {
     return this.prisma.gameStat.findMany({
       where: {
