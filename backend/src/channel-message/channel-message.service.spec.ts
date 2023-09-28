@@ -130,7 +130,7 @@ describe('ChannelMessageService', () => {
       expect(message).toStrictEqual(compMessage)
     })
 
-    it('should findAllFromChannelIdsAndUserId - return an empty list of messages from a user in a specified channel where he is not', async () => {
+    it('should find an empty ChannelMessage list by finding ChannelMessage of a user in a Channel where he is not', async () => {
       const msgList =
         await channelMessageService.findAllFromChannelIdsAndUserId(
           'bc88e59aef615c5df6dfb',
@@ -139,14 +139,14 @@ describe('ChannelMessageService', () => {
       expect(msgList.length).toStrictEqual(0)
     })
 
-    it('should findAllFromChannel - return a list of messages from a channel', async () => {
+    it('should find all ChannelMessage from a Channel', async () => {
       const msgList = await channelMessageService.findAllFromChannel(
         'ac7d4ec6daffd64a2d4ca'
       )
       expect(msgList).toBeDefined()
     })
 
-    it('should findAllFromChannelIdsAndUserId - return a list of messages from a user in a specified channel', async () => {
+    it('should find all ChannelMessage of a user in a Channel', async () => {
       const msgList =
         await channelMessageService.findAllFromChannelIdsAndUserId(
           'ac7d4ec6daffd64a2d4ca',
@@ -157,7 +157,7 @@ describe('ChannelMessageService', () => {
   })
 
   describe('Test Error', () => {
-    it('should update a message id adn throw error', async () => {
+    it('should update a ChannelMessage id and throw error', async () => {
       const messageUpdateInput: Prisma.ChannelMessageUpdateInput = {
         id: 'random id'
       }
@@ -169,7 +169,7 @@ describe('ChannelMessageService', () => {
       ).rejects.toThrow(ExceptionTryingToUpdateID)
     })
 
-    it('should delete non existing id and throw error', async () => {
+    it('should delete non existing ChannelMessage and throw error', async () => {
       await expect(
         channelMessageService.delete('zzzd4ec6daffd64a2d4cc')
       ).rejects.toThrow(PrismaClientKnownRequestError)
