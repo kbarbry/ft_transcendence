@@ -5,7 +5,6 @@ import { RelationFriendService } from '../relation-friend/relation-friend.servic
 import { RelationBlockedService } from './relation-blocked.service'
 import { PrismaService } from '../prisma/prisma.service'
 import { cleanDataBase } from '../../test/setup-environment'
-import { ExceptionRequestingYourself } from '../user/exceptions/request.exceptions'
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library'
 import {
   ExceptionAlreadyBlocked,
@@ -14,7 +13,6 @@ import {
 
 describe('UserPresenceService', () => {
   let prismaService: PrismaService
-  let relationPresenceService: UserPresenceService
   let relationBlockedService: RelationBlockedService
   let relationRequestsService: RelationRequestsService
   let relationFriendService: RelationFriendService
@@ -31,8 +29,6 @@ describe('UserPresenceService', () => {
     }).compile()
 
     prismaService = module.get<PrismaService>(PrismaService)
-    relationPresenceService =
-      module.get<UserPresenceService>(UserPresenceService)
     relationBlockedService = module.get<RelationBlockedService>(
       RelationBlockedService
     )
@@ -93,12 +89,15 @@ describe('UserPresenceService', () => {
   it('relationFriend should be defined', () => {
     expect(relationFriendService).toBeDefined()
   })
+
   it('relationBlocked should be defined', () => {
     expect(relationBlockedService).toBeDefined()
   })
+
   it('relationRequest should be defined', () => {
     expect(relationRequestsService).toBeDefined()
   })
+
   it('prismaService be define', () => {
     expect(prismaService).toBeDefined()
   })
@@ -116,6 +115,7 @@ describe('UserPresenceService', () => {
       expect(resBlock).toStrictEqual(expectedRes)
     })
   })
+
   describe('Test Query', () => {
     it('should return isBlocked - false - unknown userA', async () => {
       const result = await relationBlockedService.isBlocked(
@@ -124,6 +124,7 @@ describe('UserPresenceService', () => {
       )
       expect(result).toStrictEqual(false)
     })
+
     it('should return isBlocked - false - unknown userB', async () => {
       const result = await relationBlockedService.isBlocked(
         'ccccyPlUh0qtDrePkJ87t',
@@ -131,6 +132,7 @@ describe('UserPresenceService', () => {
       )
       expect(result).toStrictEqual(false)
     })
+
     it('should return isBlocked - true', async () => {
       const result = await relationBlockedService.isBlocked(
         'a2OayPlUh0qtDrePkJ87t',
@@ -138,6 +140,7 @@ describe('UserPresenceService', () => {
       )
       expect(result).toStrictEqual(true)
     })
+
     it('findAllBlockedUser - should find one user blocked by ID', async () => {
       const findUsers = await relationBlockedService.findAllBlockedByUser(
         'qci4ayPwwUh12tDrePkJ8'
@@ -145,6 +148,7 @@ describe('UserPresenceService', () => {
       const expectedRes = ['j9-X94_NVjmzVm9QL3k4r']
       expect(findUsers).toStrictEqual(expectedRes)
     })
+
     it('findAllBlockedUser - should find users blocked by ID', async () => {
       const blockedUsers = await relationBlockedService.findAllBlockedByUser(
         'eeeeyPlUh0qtDrePkJ87t'
@@ -157,6 +161,7 @@ describe('UserPresenceService', () => {
       expect(blockedUsers).toEqual(expectedBlockedUsers)
     })
   })
+
   describe('Test Error', () => {
     it('should return ExceptionBlockedYourself', async () => {
       await expect(
@@ -166,6 +171,7 @@ describe('UserPresenceService', () => {
         )
       ).rejects.toThrow(ExceptionBlockedYourself)
     })
+
     it('should return ExceptionAlreadyBlocked', async () => {
       await expect(
         relationBlockedService.create(
@@ -174,6 +180,7 @@ describe('UserPresenceService', () => {
         )
       ).rejects.toThrow(ExceptionAlreadyBlocked)
     })
+
     it('should return isBlocked - false - wrong order test', async () => {
       const result = await relationBlockedService.isBlocked(
         'baaayPlUh0qtDrePkJ87t',
@@ -181,6 +188,7 @@ describe('UserPresenceService', () => {
       )
       expect(result).toBe(false)
     })
+
     it('should fail - userA does not exist', async () => {
       await expect(
         relationBlockedService.create(
@@ -189,6 +197,7 @@ describe('UserPresenceService', () => {
         )
       ).rejects.toThrow(PrismaClientKnownRequestError)
     })
+
     it('should fail - userB does not exist', async () => {
       await expect(
         relationBlockedService.create(

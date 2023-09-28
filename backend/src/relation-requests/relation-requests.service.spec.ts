@@ -120,6 +120,7 @@ describe('RelationRequestsService', () => {
       }
       expect(resRequest).toStrictEqual(expectedRes)
     })
+
     it('should delete an user', async () => {
       const resRequest = await relationRequestsService.delete(
         '537d4ec6daffd64a2d4c-',
@@ -131,6 +132,7 @@ describe('RelationRequestsService', () => {
       }
       expect(resRequest).toStrictEqual(expectedRes)
     })
+
     it('should add userB as friend (alreadyRequested B->A)', async () => {
       const resRequest = await relationRequestsService.create(
         'ohohoff1f6cd647fc171-',
@@ -155,6 +157,7 @@ describe('RelationRequestsService', () => {
       }
       expect(findUser).toStrictEqual(expectedRes)
     })
+
     it('should exist', async () => {
       const findUser = await relationRequestsService.isRequested(
         'e28d4ff1f6cd647fc171-',
@@ -162,6 +165,7 @@ describe('RelationRequestsService', () => {
       )
       expect(findUser).toStrictEqual(true)
     })
+
     it('findAllRequestReceived - should find one request received', async () => {
       const findUsers = await relationRequestsService.findAllRequestReceived(
         '4376f06677b65d3168d6-'
@@ -169,6 +173,7 @@ describe('RelationRequestsService', () => {
       const expectedRes = ['537d4ec6daffd64a2d4c-']
       expect(findUsers).toStrictEqual(expectedRes)
     })
+
     it('findAllRequestReceived - should find multiple requests', async () => {
       const findUsers = await relationRequestsService.findAllRequestReceived(
         'f488e59aef615c5df6df-'
@@ -176,6 +181,7 @@ describe('RelationRequestsService', () => {
       const expectedRes = ['4376f06677b65d3168d6-', 'e28d4ff1f6cd647fc171-']
       expect(findUsers).toStrictEqual(expectedRes)
     })
+
     it('findAllRequestReceived - should find no requests received', async () => {
       const findUsers = await relationRequestsService.findAllRequestReceived(
         'e28d4ff1f6cd647fc171-'
@@ -183,6 +189,7 @@ describe('RelationRequestsService', () => {
       const expectedRes: string[] = []
       expect(findUsers).toStrictEqual(expectedRes)
     })
+
     it('findAllRequestSent - should find one request', async () => {
       const findUsers = await relationRequestsService.findAllRequestSent(
         '537d4ec6daffd64a2d4c-'
@@ -190,6 +197,7 @@ describe('RelationRequestsService', () => {
       const expectedRes = ['4376f06677b65d3168d6-']
       expect(findUsers).toStrictEqual(expectedRes)
     })
+
     it('findAllRequestSent - should find multiple requests', async () => {
       const findUsers = await relationRequestsService.findAllRequestSent(
         'e28d4ff1f6cd647fc171-'
@@ -197,6 +205,7 @@ describe('RelationRequestsService', () => {
       const expectedRes = ['f488e59aef615c5df6df-', 'df87734d323ac71c6efb-']
       expect(findUsers).toStrictEqual(expectedRes)
     })
+
     it('findAllRequestSent - should find no requests', async () => {
       const findUsers = await relationRequestsService.findAllRequestSent(
         'df87734d323ac71c6efb-'
@@ -206,9 +215,7 @@ describe('RelationRequestsService', () => {
     })
   })
   describe('Test Error', () => {
-    //TODO ca marche pas, des fois ca retourne la promise PrismaClientKnownRequestError
     it('id already created', async () => {
-      //TODO ca marche pas, des fois ca retourne la promise PrismaClientKnownRequestError
       await expect(
         relationRequestsService.create(
           '537d4ec6daffd64a2d4c-',
@@ -216,6 +223,7 @@ describe('RelationRequestsService', () => {
         )
       ).rejects.toThrow(PrismaClientKnownRequestError)
     })
+
     it('trying to request yourself (miskina)', async () => {
       await expect(
         relationRequestsService.create(
@@ -224,6 +232,7 @@ describe('RelationRequestsService', () => {
         )
       ).rejects.toThrow(ExceptionRequestingYourself)
     })
+
     it('trying to request someone blocked', async () => {
       await expect(
         relationRequestsService.create(
@@ -234,7 +243,6 @@ describe('RelationRequestsService', () => {
     })
 
     it('trying to request someone who blocked you', async () => {
-      // TODO ca marche pas, renvoi pas la bonne exception
       await expect(
         relationRequestsService.create(
           'f488e59aef615c5df6df-',
@@ -242,6 +250,7 @@ describe('RelationRequestsService', () => {
         )
       ).rejects.toThrow(ExceptionUserBlockedYou)
     })
+
     it('trying to request someone you are already friend with A->B', async () => {
       await expect(
         relationRequestsService.create(
@@ -250,6 +259,7 @@ describe('RelationRequestsService', () => {
         )
       ).rejects.toThrow(ExceptionUsersAlreadyFriend)
     })
+
     it('trying to request someone you are already friend with B->A', async () => {
       await expect(
         relationRequestsService.create(

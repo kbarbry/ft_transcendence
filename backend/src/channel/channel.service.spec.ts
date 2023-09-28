@@ -65,6 +65,7 @@ describe('ChannelService', () => {
   it('channelService should be defined', () => {
     expect(channelService).toBeDefined()
   })
+
   it('prismaService should be defined', () => {
     expect(prismaService).toBeDefined()
   })
@@ -74,6 +75,7 @@ describe('ChannelService', () => {
       const newChannel = await channelService.create(channelData)
       expect(newChannel).toBeDefined
     })
+
     it('should update a channel', async () => {
       const updatedata = {
         topic: 'SadTopicName'
@@ -84,11 +86,12 @@ describe('ChannelService', () => {
       )
       expect(updatedChannel.topic).toStrictEqual(updatedata.topic)
     })
+
     it('should delete a Channel', async () => {
       const deletedChannel = await channelService.delete(
         'pihayPlUh0qtDrePkJ87t'
       )
-      expect(deletedChannel).toBeDefined
+      expect(deletedChannel).toBeDefined()
     })
   })
   describe('Test Query', () => {
@@ -97,10 +100,12 @@ describe('ChannelService', () => {
       expect(foundChannel).toBeDefined
       expect(foundChannel?.ownerId).toStrictEqual('564ayPlUh0qtDrePkJ87t')
     })
+
     it('should return the ownerID of the Channel', async () => {
       const ownerID = await channelService.findOwner('pihayPlUh0qtDrePkJ87t')
       expect(ownerID).toStrictEqual('564ayPlUh0qtDrePkJ87t')
     })
+
     it('should find all Channel owned by an User', async () => {
       const channels = await channelService.findAllChannelOfOwner(
         '564ayPlUh0qtDrePkJ87t'
@@ -108,6 +113,7 @@ describe('ChannelService', () => {
       expect(channels?.length).toBeGreaterThan(1)
     })
   })
+
   describe('Test Error', () => {
     it('trying to update channel id', async () => {
       const updatedData = { id: '555' }
@@ -115,6 +121,7 @@ describe('ChannelService', () => {
         channelService.update('pihayPlUh0qtDrePkJ87t', updatedData)
       ).rejects.toThrow(ExceptionTryingToUpdateChannelID)
     })
+
     it('Delete an already deleted channel', async () => {
       await expect(channelService.delete('98217398')).rejects.toThrow(
         PrismaClientKnownRequestError
@@ -144,12 +151,14 @@ describe('ChannelService', () => {
     //     channelService.update('pihayPlUh0qtDrePkJ87t', updatedData)
     //   ).rejects.toThrow(ExceptionTryingToUpdateOwnerID)
     // })
+
     it('update with invalid number channel limit', async () => {
       const updatedData = { maxUsers: -1 }
       await expect(
         channelService.update('pihayPlUh0qtDrePkJ87t', updatedData)
       ).rejects.toThrow(ExceptionInvalidMaxUserInChannel)
     })
+
     it('create a new Channel with invalid MaxUser', async () => {
       const channelData = {
         name: 'random name',
@@ -165,6 +174,7 @@ describe('ChannelService', () => {
         ExceptionInvalidMaxUserInChannel
       )
     })
+
     it('update Date of a Channel', async () => {
       const updatedData = { createdAt: new Date() }
       await expect(

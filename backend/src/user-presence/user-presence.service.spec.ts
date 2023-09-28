@@ -2,7 +2,6 @@ import { Test, TestingModule } from '@nestjs/testing'
 import { UserPresenceService } from './user-presence.service'
 import { PrismaService } from '../prisma/prisma.service'
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library'
-import { ExceptionTryingToUpdateID } from '../user/exceptions/user.exceptions'
 import { cleanDataBase } from '../../test/setup-environment'
 
 describe('UserPresenceService', () => {
@@ -42,16 +41,6 @@ describe('UserPresenceService', () => {
     await prismaService.$executeRaw`INSERT INTO "public"."UserPresence" VALUES ('qci4ayPwwUh12tDrePkJ8', 'j6-X94_NVjmzVm9QL3k4r', '2023-09-13 11:00:00');`
     await prismaService.$executeRaw`INSERT INTO "public"."UserPresence" VALUES ('yui1ayPwwUh12tDrePkJ8', '_U0vTLhbNpjA39Pc7wwtn', '2023-09-13 12:00:00');`
     await prismaService.$executeRaw`INSERT INTO "public"."UserPresence" VALUES ('gru1ayPwwUh12tDrePkJ8', '_U0vTLhbNpjA39Pc7wwtn', '2023-09-13 13:00:00');`
-
-    userPresenceData = {
-      id: 'drfOayWwwUh12tDrePkJ8',
-      connectedAt: new Date(),
-      user: {
-        connect: {
-          id: 'd2OayPlUh0qtDrePkJ87t'
-        }
-      }
-    }
   })
 
   afterAll(async () => {
@@ -67,6 +56,16 @@ describe('UserPresenceService', () => {
   })
 
   describe('Test Mutation', () => {
+    userPresenceData = {
+      id: 'drfOayWwwUh12tDrePkJ8',
+      connectedAt: new Date(),
+      user: {
+        connect: {
+          id: 'd2OayPlUh0qtDrePkJ87t'
+        }
+      }
+    }
+
     it('should create a new UserPresence', async () => {
       const userPresence = await userPresenceService.create(userPresenceData)
       expect(userPresence).toBeDefined()
@@ -74,50 +73,7 @@ describe('UserPresenceService', () => {
         userPresenceData.connectedAt
       )
     })
-    it('should update the UserPresence', async () => {
-      const updatedUserPresenceData = {
-        disconnectedAt: new Date(),
-        connectedAt: new Date()
-      }
-      const updatedUserPresence = await userPresenceService.update(
-        'drfOayPwwUh12tDrePkJ8',
-        updatedUserPresenceData
-      )
-      expect(updatedUserPresence.disconnectedAt).toEqual(
-        updatedUserPresenceData.disconnectedAt
-      )
-      expect(updatedUserPresence.connectedAt).toEqual(
-        updatedUserPresenceData.connectedAt
-      )
-    })
-    it('should delete the UserPresence', async () => {
-      const deletedUser = await userPresenceService.delete(
-        'drfOayPwwUh12tDrePkJ8'
-      )
-      expect(deletedUser).toBeDefined
-    })
-  })
-  describe('Test Query', () => {
-    it('should find the UserPresence', async () => {
-      const foundUserPresence = await userPresenceService.findOne(
-        'drfOayPwwUh12tDrePkJ8'
-      )
-      expect(foundUserPresence).toBeDefined
-      expect(foundUserPresence?.id).toStrictEqual('drfOayPwwUh12tDrePkJ8')
-    })
-    it('should find the UserPresence with an UserId', async () => {
-      const foundUserpresence = await userPresenceService.findOnebyUserId(
-        'd2OayPlUh0qtDrePkJ87t'
-      )
-      expect(foundUserpresence?.id).toStrictEqual('drfOayPwwUh12tDrePkJ8')
-    })
-    it('should find all UserPresence of an UserId', async () => {
-      const foundUserPresence = await userPresenceService.findAll(
-        '_U0vTLhbNpjA39Pc7wwtn'
-      )
-      expect(foundUserPresence).toBeDefined
-      expect(foundUserPresence).toHaveLength(2)
-    })
+
     it('should update disconnected value', async () => {
       const newDisconnecteddata = {
         disconnectedAt: new Date()
@@ -130,6 +86,31 @@ describe('UserPresenceService', () => {
         newUserPresence.disconnectedAt
       )
     })
+  })
+  describe('Test Query', () => {
+    it('should find the UserPresence', async () => {
+      const foundUserPresence = await userPresenceService.findOne(
+        'drfOayPwwUh12tDrePkJ8'
+      )
+      expect(foundUserPresence).toBeDefined
+      expect(foundUserPresence?.id).toStrictEqual('drfOayPwwUh12tDrePkJ8')
+    })
+
+    it('should find the last UserPresence with an UserId', async () => {
+      const foundUserpresence = await userPresenceService.findLastByUserId(
+        'd2OayPlUh0qtDrePkJ87t'
+      )
+      expect(foundUserpresence?.id).toStrictEqual('drfOayPwwUh12tDrePkJ8')
+    })
+
+    it('should find all UserPresence of an UserId', async () => {
+      const foundUserPresence = await userPresenceService.findAllByUserId(
+        '_U0vTLhbNpjA39Pc7wwtn'
+      )
+      expect(foundUserPresence).toBeDefined
+      expect(foundUserPresence).toHaveLength(2)
+    })
+
     it('should update connected value', async () => {
       const newDisconnecteddata = {
         connectedAt: new Date()
@@ -147,17 +128,6 @@ describe('UserPresenceService', () => {
     it('User presence created with already taken ID', async () => {
       expect(
         prismaService.$executeRaw`INSERT INTO "public"."UserPresence" VALUES ('drfOayPwwUh12tDrePkJ8', 'd2OayPlUh0qtDrePkJ87t', '2023-09-13 10:00:00');`
-      ).rejects.toThrow(PrismaClientKnownRequestError)
-    })
-    it('change id field', async () => {
-      const updatedData = { id: '5555' }
-      await expect(
-        userPresenceService.update('drfOayPwwUh12tDrePkJ8', updatedData)
-      ).rejects.toThrow(ExceptionTryingToUpdateID)
-    })
-    it('user presence already deleted', async () => {
-      await expect(
-        userPresenceService.delete('12fOayPwwUh12tDrePkJ8')
       ).rejects.toThrow(PrismaClientKnownRequestError)
     })
   })

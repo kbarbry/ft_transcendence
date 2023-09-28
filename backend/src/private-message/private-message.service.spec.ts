@@ -104,6 +104,7 @@ describe('PrivateMessageService', () => {
       )
       expect(newPrivateMessage).toBeDefined
     })
+
     it('should update a private message', async () => {
       const updatedData = {
         content: 'My updated message!'
@@ -114,6 +115,7 @@ describe('PrivateMessageService', () => {
       )
       expect(updatedPrivateMessage.content).toStrictEqual(updatedData.content)
     })
+
     it('should delete a privateMessage', async () => {
       const deletedMessage = await privateMessageService.delete(
         'in7ayPlUh0qtDrePkJ87t'
@@ -121,6 +123,7 @@ describe('PrivateMessageService', () => {
       expect(deletedMessage).toBeDefined
     })
   })
+
   describe('Test Query', () => {
     it('should find a PrivateMessage', async () => {
       const foundPrivateMessage = await privateMessageService.findOne(
@@ -128,6 +131,7 @@ describe('PrivateMessageService', () => {
       )
       expect(foundPrivateMessage).toBeDefined
     })
+
     it('should find all message receie or send by an user with userId', async () => {
       const allprivateMessage = await privateMessageService.findAll(
         'rtjayPlUh0qtDrePkJ87t'
@@ -135,6 +139,7 @@ describe('PrivateMessageService', () => {
       expect(allprivateMessage).toBeDefined
       expect(allprivateMessage.length).toBeGreaterThan(2)
     })
+
     it('should find all message beetween two UserIds', async () => {
       const HistoricDiscussion = await privateMessageService.findAllMessageWith(
         '42tX94_NVjmzVm9QL3k4r',
@@ -142,6 +147,7 @@ describe('PrivateMessageService', () => {
       )
       expect(HistoricDiscussion.length).toStrictEqual(22)
     })
+
     it('should find all message beetween two UserIds', async () => {
       const HistoricDiscussion =
         await privateMessageService.findAllMessageWithLiteVersion(
@@ -151,6 +157,7 @@ describe('PrivateMessageService', () => {
       expect(HistoricDiscussion.length).toStrictEqual(20)
     })
   })
+
   describe('Test Error', () => {
     it('update ID ', async () => {
       const updatedata = {
@@ -160,11 +167,13 @@ describe('PrivateMessageService', () => {
         privateMessageService.update('er11yPlUh0qtDrePkJ87t', updatedata)
       ).rejects.toThrow(ExceptionTryingToUpdatePrivateMessageID)
     })
+
     it('creating message with taken ID', async () => {
       await expect(
         prismaService.$executeRaw`INSERT INTO "public"."User" VALUES ('in17yPlUh0qtDrePkJ87t', 'random url', 'alfred@42.fr', 'Ally', 'oui', null, null, false, 'Online', 'English', 1);`
       ).rejects.toThrow(PrismaClientKnownRequestError)
     })
+
     it('Private message to yourself', async () => {
       const wrongData = {
         content: 'This is a wonderfull message',
@@ -176,11 +185,13 @@ describe('PrivateMessageService', () => {
         ExceptionPrivateMessageYourself
       )
     })
+
     it('send a message to someone who do not exist', async () => {
       await expect(
         prismaService.$executeRaw`INSERT INTO "public"."PrivateMessage" VALUES ('er12yPlUh0qtDrePkJ87t', '42tX94_NVjmzVm9QL3k4r', 'zunzGU-8QlEvmHk8rjNRI', 'Ceci est un supermessage', '2023-09-13 10:00:00');`
       ).rejects.toThrow(PrismaClientKnownRequestError)
     })
+
     it('trying to change the date of a message', async () => {
       const wrongUpdatedData = {
         createdAt: '2023-09-13 20:00:00'
@@ -189,6 +200,7 @@ describe('PrivateMessageService', () => {
         privateMessageService.update('er10yPlUh0qtDrePkJ87t', wrongUpdatedData)
       ).rejects.toThrow(ExceptionTryingToUpdateDateMessage)
     })
+
     it('trying to update senderId', async () => {
       const wrongData = {
         sender: { connect: { id: 'ttjayPlUh0qtDrePkJ87t' } }
@@ -197,6 +209,7 @@ describe('PrivateMessageService', () => {
         privateMessageService.update('er10yPlUh0qtDrePkJ87t', wrongData)
       ).rejects.toThrow(ExceptionTryingToUpdateUsersId)
     })
+
     it('trying to update receiverId', async () => {
       const wrongData = {
         receiver: { connect: { id: 'ttjayPlUh0qtDrePkJ87t' } }

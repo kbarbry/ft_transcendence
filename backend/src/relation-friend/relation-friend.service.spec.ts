@@ -154,6 +154,22 @@ describe('RelationFriendService', () => {
       )
       expect(isFriendRet).toStrictEqual(false)
     })
+
+    it("return all friend of a non existing user's id", async () => {
+      const emptytab: string[] = []
+      const friends = await relationFriendService.findAll(
+        'fffd4ff1f6cd647fc171-'
+      )
+      expect(friends).toStrictEqual(emptytab)
+    })
+
+    it('verify if an existing user is friend with a non existing user', async () => {
+      const isFriendRet = await relationFriendService.isFriend(
+        'f488e59aef615c5df6df-',
+        'ffff8ef86d29197b6ffd-'
+      )
+      expect(isFriendRet).toStrictEqual(false)
+    })
   })
 
   describe('Test Error', () => {
@@ -182,22 +198,6 @@ describe('RelationFriendService', () => {
           'fffd4ec6daffd64a2d4c-'
         )
       ).rejects.toThrow(PrismaClientKnownRequestError)
-    })
-
-    it("return all friend of a non existing user's id", async () => {
-      const emptytab: string[] = []
-      const friends = await relationFriendService.findAll(
-        'fffd4ff1f6cd647fc171-'
-      )
-      expect(friends).toStrictEqual(emptytab)
-    })
-
-    it('verify if an existing user is friend with a non existing user', async () => {
-      const isFriendRet = await relationFriendService.isFriend(
-        'f488e59aef615c5df6df-',
-        'ffff8ef86d29197b6ffd-'
-      )
-      expect(isFriendRet).toStrictEqual(false)
     })
   })
 })

@@ -58,6 +58,7 @@ describe('GameStatService', () => {
   it('gamestatService should be defined', () => {
     expect(gameStatService).toBeDefined()
   })
+
   it('PrismaSerice should be defined', () => {
     expect(prismaService).toBeDefined()
   })
@@ -77,6 +78,7 @@ describe('GameStatService', () => {
       expect(createdGameStat).toBeDefined
     })
   })
+
   describe('Test Query', () => {
     it('should fin the GameStats', async () => {
       const foundGameStat = await gameStatService.findOne(
@@ -84,6 +86,7 @@ describe('GameStatService', () => {
       )
       expect(foundGameStat).toBeDefined
     })
+
     it('should find all game on an User', async () => {
       const foundAllGameStat = await gameStatService.findAll(
         'd2OayPlUh0qtDrePkJ87t'
@@ -91,6 +94,7 @@ describe('GameStatService', () => {
       expect(foundAllGameStat).toBeDefined
       expect(foundAllGameStat.length).toBeGreaterThan(2)
     })
+
     it('should find all the wingame of an user', async () => {
       const foundAllWinGameStat = await gameStatService.findWin(
         'd2OayPlUh0qtDrePkJ87t'
@@ -98,6 +102,7 @@ describe('GameStatService', () => {
       expect(foundAllWinGameStat).toBeDefined
       expect(foundAllWinGameStat.length).toBeGreaterThan(1)
     })
+
     it('should find all the losegame of an user', async () => {
       const foundAllLoseGameStat = await gameStatService.findLose(
         'd2OayPlUh0qtDrePkJ87t'
@@ -105,12 +110,14 @@ describe('GameStatService', () => {
       expect(foundAllLoseGameStat).toBeDefined
       expect(foundAllLoseGameStat.length).toBeGreaterThan(1)
     })
+
     it('should find all classic game of an user', async () => {
       const foundAllClassicGameStat = await gameStatService.findClassic(
         'd2OayPlUh0qtDrePkJ87t'
       )
       expect(foundAllClassicGameStat).toBeDefined
     })
+
     it('should find all special game of an user', async () => {
       const foundAllSpecialGameStat = await gameStatService.findClassic(
         'd2OayPlUh0qtDrePkJ87t'
@@ -146,7 +153,6 @@ describe('GameStatService', () => {
         winner: { connect: { id: 'd2OayPlUh0qtDrePkJ87t' } },
         looser: { connect: { id: 'd2OayPlUh0qtDrePkJ87t' } }
       }
-
       await expect(gameStatService.create(invalidplayersdata)).rejects.toThrow(
         ExceptionSamePlayerInGame
       )

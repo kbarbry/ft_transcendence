@@ -87,10 +87,12 @@ describe('Test UserService', () => {
       const findUser = await userService.findOne('d2OayPlUh0qtDrePkJ87t')
       expect(findUser).toBeDefined()
     })
+
     it('should find user by email', async () => {
       const findUser = await userService.findOnebyMail('charlie@42.fr')
       expect(findUser).toBeDefined()
     })
+
     it('should find user by username', async () => {
       const findUser = await userService.findOneByUsername('Bobby')
       expect(findUser).toBeDefined()
@@ -127,18 +129,21 @@ describe('Test UserService', () => {
         userService.update('d2OayPlUh0qtDrePkJ87t', updatedData)
       ).rejects.toThrow(ExceptionTryingToUpdateID)
     })
+
     it('update already taken username', async () => {
       const updatedData = { username: 'Ally' }
       await expect(
         (newUser = userService.update('j6-X94_NVjmzVm9QL3k4r', updatedData))
       ).rejects.toThrow(PrismaClientKnownRequestError)
     })
+
     it('update already taken email', async () => {
       const updatedData = { mail: 'alfred@42.fr' }
       await expect(
         (newUser = userService.update('j6-X94_NVjmzVm9QL3k4r', updatedData))
       ).rejects.toThrow(PrismaClientKnownRequestError)
     })
+
     it('user already deleted', async () => {
       await expect(userService.delete('j12X94_NVjmzVm9QL3k4r')).rejects.toThrow(
         PrismaClientKnownRequestError

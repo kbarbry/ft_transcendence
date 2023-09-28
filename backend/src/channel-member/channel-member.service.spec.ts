@@ -69,6 +69,7 @@ describe('ChannelMemberService', () => {
   it('channelMemberService should be defined', () => {
     expect(channelMemberService).toBeDefined()
   })
+
   it('prismaService should be defined', () => {
     expect(prismaService).toBeDefined()
   })
@@ -80,6 +81,7 @@ describe('ChannelMemberService', () => {
       )
       expect(newChannelMember).toBeDefined
     })
+
     it('should update Channel-Member', async () => {
       const updatedData = {
         nickname: 'Un_beau_Nickame'
@@ -91,6 +93,7 @@ describe('ChannelMemberService', () => {
       )
       expect(updatedChannelMember.nickname).toStrictEqual(updatedData.nickname)
     })
+
     it('should delete a Channel-Member', async () => {
       const deleteChannelMember = await channelMemberService.delete(
         '765ayPlUh0qtDrePkJ87t',
@@ -107,6 +110,7 @@ describe('ChannelMemberService', () => {
       )
       expect(foundChannelMember).toBeDefined
     })
+
     it('should find all Channel', async () => {
       const channelUsers = await channelMemberService.findAllInChannel(
         'pihayPlUh0qtDrePkJ87t'
@@ -121,6 +125,7 @@ describe('ChannelMemberService', () => {
         prismaService.$executeRaw`INSERT INTO "public"."ChannelMember" VALUES ('NewAvatarURL', 'WonderfullNickname', 'ftrX94_NVjmzVm9QL3k4r', 'pihayPlUh0qtDrePkJ87t', 'Member', 'true', '2023-09-13 20:00:00', '2023-09-13 10:00:00');`
       ).rejects.toThrow(PrismaClientKnownRequestError)
     })
+
     it('create with invalid channel data', async () => {
       const invalidData = {
         avatarUrl: 'Nice_AVATAAAAR',
@@ -136,6 +141,7 @@ describe('ChannelMemberService', () => {
         PrismaClientKnownRequestError
       )
     })
+
     it('create with invalid channel data', async () => {
       const invalidData = {
         avatarUrl: 'Nice_AVATAAAAR',
