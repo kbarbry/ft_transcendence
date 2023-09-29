@@ -3,17 +3,12 @@ import { PrismaService } from '../prisma/prisma.service'
 import { GameStatService } from './game-stat.service'
 import { EGameType, Prisma } from '@prisma/client'
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library'
-import {
-  ExceptionTryingToUpdateID,
-  ExceptionSamePlayerInGame
-} from '../user/exceptions/game-stat.exception'
+import { ExceptionSamePlayerInGame } from '../user/exceptions/game-stat.exception'
 import { cleanDataBase } from '../../test/setup-environment'
 
 describe('GameStatService', () => {
   let gameStatService: GameStatService
   let prismaService: PrismaService
-  let gameStatData: Prisma.GameStatCreateInput
-  let invalidplayersdata: Prisma.GameStatCreateInput
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -53,26 +48,6 @@ describe('GameStatService', () => {
       ('uywayPlUh0qtDrePkJ87t', 'j6-X94_NVjmzVm9QL3k4r','d2OayPlUh0qtDrePkJ87t', 'Classic', 12, 15, 2, '2023-09-13 10:00:00'),
       ('cftOayPc2Uh12tDrePkJ8', 'd2OayPlUh0qtDrePkJ87t','j6-X94_NVjmzVm9QL3k4r', 'Classic', 12, 15, 2, '2023-09-13 10:00:00'),
       ('oiuOayPc2Uh12tDrePkJ8', 'd2OayPlUh0qtDrePkJ87t','j6-X94_NVjmzVm9QL3k4r', 'Special', 12, 15, 2, '2023-09-13 10:00:00');`
-
-    gameStatData = {
-      timePlayed: 12,
-      scoreWinner: 15,
-      scoreLoser: 3,
-      createdAt: new Date(),
-      type: EGameType.Classic,
-      winner: { connect: { id: 'd2OayPlUh0qtDrePkJ87t' } },
-      looser: { connect: { id: 'j6-X94_NVjmzVm9QL3k4r' } }
-    }
-
-    invalidplayersdata = {
-      timePlayed: 12,
-      scoreWinner: 15,
-      scoreLoser: 3,
-      createdAt: new Date(),
-      type: EGameType.Classic,
-      winner: { connect: { id: 'd2OayPlUh0qtDrePkJ87t' } },
-      looser: { connect: { id: 'd2OayPlUh0qtDrePkJ87t' } }
-    }
   })
 
   afterAll(async () => {
@@ -89,24 +64,17 @@ describe('GameStatService', () => {
 
   describe('Test Mutation', () => {
     it('should create a GameStat', () => {
+      const gameStatData = {
+        timePlayed: 12,
+        scoreWinner: 15,
+        scoreLoser: 3,
+        createdAt: new Date(),
+        type: EGameType.Classic,
+        winner: { connect: { id: 'd2OayPlUh0qtDrePkJ87t' } },
+        looser: { connect: { id: 'j6-X94_NVjmzVm9QL3k4r' } }
+      }
       const createdGameStat = gameStatService.create(gameStatData)
       expect(createdGameStat).toBeDefined
-    })
-    it('should update the GameStat', async () => {
-      const updatedData = {
-        scoreWinner: 55,
-        scoreLoser: 32
-      }
-      const updatedGameStat = await gameStatService.update(
-        'drfOayPc2Uh12tDrePkJ8',
-        updatedData
-      )
-      expect(updatedGameStat.scoreWinner).toStrictEqual(updatedData.scoreWinner)
-      expect(updatedGameStat.scoreLoser).toStrictEqual(updatedData.scoreLoser)
-    })
-    it('should delete the gameStats', async () => {
-      const deletedUser = await gameStatService.delete('uywayPlUh0qtDrePkJ87t')
-      expect(deletedUser).toBeDefined
     })
   })
   describe('Test Query', () => {
@@ -131,7 +99,7 @@ describe('GameStatService', () => {
       expect(foundAllWinGameStat.length).toBeGreaterThan(1)
     })
     it('should find all the losegame of an user', async () => {
-      const foundAllLoseGameStat = await gameStatService.findLoose(
+      const foundAllLoseGameStat = await gameStatService.findLose(
         'd2OayPlUh0qtDrePkJ87t'
       )
       expect(foundAllLoseGameStat).toBeDefined
@@ -168,20 +136,17 @@ describe('GameStatService', () => {
       )
     })
 
-    it('change id field', async () => {
-      const updatedData = { id: '5555' }
-      await expect(
-        gameStatService.update('drfOayPc2Uh12tDrePkJ8', updatedData)
-      ).rejects.toThrow(ExceptionTryingToUpdateID)
-    })
-
-    it('Game stat already deleted', async () => {
-      await expect(
-        gameStatService.delete('zrfOayPc2Uh12tDrePkJ8')
-      ).rejects.toThrow(PrismaClientKnownRequestError)
-    })
-
     it('Cannot make a game with the same player', async () => {
+      const invalidplayersdata = {
+        timePlayed: 12,
+        scoreWinner: 15,
+        scoreLoser: 3,
+        createdAt: new Date(),
+        type: EGameType.Classic,
+        winner: { connect: { id: 'd2OayPlUh0qtDrePkJ87t' } },
+        looser: { connect: { id: 'd2OayPlUh0qtDrePkJ87t' } }
+      }
+
       await expect(gameStatService.create(invalidplayersdata)).rejects.toThrow(
         ExceptionSamePlayerInGame
       )

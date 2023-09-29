@@ -9,19 +9,10 @@ import {
 @Injectable()
 export class RelationBlockedService {
   constructor(private prisma: PrismaService) {}
-
-  // if no relations
-  // if already blocked
-  // if blocked by the other user
-  // if friend
-  // if requestFriendSent
-  // if requestFriendReceived
-
   //**************************************************//
   //  MUTATION
   //**************************************************//
 
-  //A block B
   async create(
     userAId: string,
     userBId: string
@@ -39,27 +30,21 @@ export class RelationBlockedService {
     })
   }
 
-  //A unlock B
   async delete(userAId: string, userBId: string) {
-    if (await this.isBlocked(userAId, userBId)) {
-      return await this.prisma.relationBlocked.delete({
-        where: {
-          userBlockingId_userBlockedId: {
-            userBlockingId: userAId,
-            userBlockedId: userBId
-          }
+    return await this.prisma.relationBlocked.delete({
+      where: {
+        userBlockingId_userBlockedId: {
+          userBlockingId: userAId,
+          userBlockedId: userBId
         }
-      })
-    }
-    //Pas de return, donc la fonction renvoie 'undefined' si 'isBlocked'
-    //est évalué à 'false'..
+      }
+    })
   }
 
   //**************************************************//
   //  QUERY
   //**************************************************//
 
-  // A blocked by B?
   async isBlocked(userAId: string, userBId: string): Promise<boolean> {
     const relation = await this.prisma.relationBlocked.findUnique({
       where: {
@@ -83,18 +68,5 @@ export class RelationBlockedService {
         }
       })
     ).map((elem) => elem.userBlockedId)
-  }
-
-  async findAllBlockingByUser(id: string): Promise<string[]> {
-    return (
-      await this.prisma.relationBlocked.findMany({
-        where: {
-          userBlockedId: id
-        },
-        select: {
-          userBlockingId: true
-        }
-      })
-    ).map((elem) => elem.userBlockingId)
   }
 }

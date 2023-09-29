@@ -9,7 +9,6 @@ export class RelationFriendService {
   //**************************************************//
   //  MUTATION
   //**************************************************//
-
   async create(userAId: string, userBId: string): Promise<RelationFriend> {
     if (userAId > userBId) [userAId, userBId] = [userBId, userAId]
     return this.prisma.relationFriend.create({

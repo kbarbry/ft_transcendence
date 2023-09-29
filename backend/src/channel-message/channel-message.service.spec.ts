@@ -58,7 +58,7 @@ describe('ChannelMessageService', () => {
   })
 
   describe('Test channel-message Mutation', () => {
-    it('insert a new message in DB', async () => {
+    it('should create a ChannelMessage', async () => {
       const newMessageInput: Prisma.ChannelMessageCreateInput = {
         content: 'New Message from au7d4',
         createdAt: new Date(Date.UTC(2023, 8, 13, 11, 30, 42)),
@@ -80,7 +80,7 @@ describe('ChannelMessageService', () => {
       expect(dbret.createdAt).toStrictEqual(messageDB.createdAt)
     })
 
-    it('update a message in DB', async () => {
+    it('should update a ChannelMessage', async () => {
       const messageUpdateInput: Prisma.ChannelMessageUpdateInput = {
         content: 'You all are nice'
       }
@@ -100,7 +100,7 @@ describe('ChannelMessageService', () => {
       expect(dbret).toStrictEqual(messageUpdated)
     })
 
-    it('delete a message from DB', async () => {
+    it('should delete a ChannelMessage', async () => {
       const delMessage = {
         id: 'em7d4ec6daffd64a2d4cc',
         senderId: 'du87734d323ac71c6efbd',
@@ -116,7 +116,7 @@ describe('ChannelMessageService', () => {
   })
 
   describe('Test Query', () => {
-    it("return a message by it's id", async () => {
+    it("should find a message by it's id", async () => {
       const compMessage = {
         id: 'am7d4ec6daffd64a2d4ca',
         senderId: 'au7d4ec6daffd64a2d4ca',
@@ -130,14 +130,23 @@ describe('ChannelMessageService', () => {
       expect(message).toStrictEqual(compMessage)
     })
 
-    it('return a list of messages from a channel', async () => {
+    it('should find an empty ChannelMessage list by finding ChannelMessage of a user in a Channel where he is not', async () => {
+      const msgList =
+        await channelMessageService.findAllFromChannelIdsAndUserId(
+          'bc88e59aef615c5df6dfb',
+          'au7d4ec6daffd64a2d4ca'
+        )
+      expect(msgList.length).toStrictEqual(0)
+    })
+
+    it('should find all ChannelMessage from a Channel', async () => {
       const msgList = await channelMessageService.findAllFromChannel(
         'ac7d4ec6daffd64a2d4ca'
       )
       expect(msgList).toBeDefined()
     })
 
-    it('return a list of messages from a user in a specified channel', async () => {
+    it('should find all ChannelMessage of a user in a Channel', async () => {
       const msgList =
         await channelMessageService.findAllFromChannelIdsAndUserId(
           'ac7d4ec6daffd64a2d4ca',
@@ -148,16 +157,7 @@ describe('ChannelMessageService', () => {
   })
 
   describe('Test Error', () => {
-    it('return an empty list of messages from a user in a specified channel where he is not', async () => {
-      const msgList =
-        await channelMessageService.findAllFromChannelIdsAndUserId(
-          'bc88e59aef615c5df6dfb',
-          'au7d4ec6daffd64a2d4ca'
-        )
-      expect(msgList.length).toStrictEqual(0)
-    })
-
-    it('throw an error after trying to try to update a message id', async () => {
+    it('should update a ChannelMessage id and throw error', async () => {
       const messageUpdateInput: Prisma.ChannelMessageUpdateInput = {
         id: 'random id'
       }
@@ -169,7 +169,7 @@ describe('ChannelMessageService', () => {
       ).rejects.toThrow(ExceptionTryingToUpdateID)
     })
 
-    it('throw an error after trying to delete non existing id', async () => {
+    it('should delete non existing ChannelMessage and throw error', async () => {
       await expect(
         channelMessageService.delete('zzzd4ec6daffd64a2d4cc')
       ).rejects.toThrow(PrismaClientKnownRequestError)

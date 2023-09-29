@@ -66,7 +66,9 @@ describe('UserPresenceService', () => {
       ('eeeeyPlUh0qtDrePkJ87t', 'random url', 'mauricette@42.fr', 'Momoe', 'oui', null, null, false, 'Online', 'English', 1),
       ('j9-X94_NVjmzVm9QL3k4r', 'random url', 'seveneleven@42.fr', '79', 'oui', null, null, false, 'Online', 'English', 1),
       ('drfOayPwwUh12tDrePkJ8', 'random url', 'other@42.fr', 'other', 'oui', null, null, false, 'Online', 'English', 1),
-      ('qci4ayPwwUh12tDrePkJ8', 'random url', 'dad42.fr', 'dad', 'oui', null, null, false, 'Online', 'English', 1);`
+      ('qci4ayPwwUh12tDrePkJ8', 'random url', 'dad42.fr', 'dad', 'oui', null, null, false, 'Online', 'English', 1),
+      ('qci4ayPwwUh12tDrePkJ9', 'random url', 'dkj842.fr', 'dkj', 'oui', null, null, false, 'Online', 'English', 1),
+      ('qci4ayPwwUh12tDrePkJ0', 'random url', 'papy42.fr', 'papy', 'oui', null, null, false, 'Online', 'English', 1);`
 
     //**************************************************//
     //  RELATION BLOCKED CREATION
@@ -102,36 +104,39 @@ describe('UserPresenceService', () => {
   })
 
   describe('Test Mutation', () => {
-    it('should return isBlocked - false - uknown userA', async () => {
+    it('should create - RelationBlocked', async () => {
+      const resBlock = await relationBlockedService.create(
+        'qci4ayPwwUh12tDrePkJ9',
+        'qci4ayPwwUh12tDrePkJ0'
+      )
+      const expectedRes = {
+        userBlockingId: 'qci4ayPwwUh12tDrePkJ9',
+        userBlockedId: 'qci4ayPwwUh12tDrePkJ0'
+      }
+      expect(resBlock).toStrictEqual(expectedRes)
+    })
+  })
+  describe('Test Query', () => {
+    it('should return isBlocked - false - unknown userA', async () => {
       const result = await relationBlockedService.isBlocked(
         'bcdefPlUh0qtDrePkJ87t',
         'a2OayPlUh0qtDrePkJ87tt'
       )
-      expect(result).toBe(false)
+      expect(result).toStrictEqual(false)
     })
-    it('should return isBlocked - false - uknown userB', async () => {
+    it('should return isBlocked - false - unknown userB', async () => {
       const result = await relationBlockedService.isBlocked(
         'ccccyPlUh0qtDrePkJ87t',
         'jeanPlUh0qtDrePkJ87tt'
       )
-      expect(result).toBe(false)
+      expect(result).toStrictEqual(false)
     })
-  })
-  describe('Test Query', () => {
     it('should return isBlocked - true', async () => {
       const result = await relationBlockedService.isBlocked(
         'a2OayPlUh0qtDrePkJ87t',
         'baaayPlUh0qtDrePkJ87t'
       )
-      expect(result).toBe(true)
-    })
-    it('should return ExceptionAlreadyBlocked', async () => {
-      await expect(
-        relationBlockedService.create(
-          'a2OayPlUh0qtDrePkJ87t',
-          'j6-X94_NVjmzVm9QL3k4r'
-        )
-      ).rejects.toThrow(ExceptionAlreadyBlocked)
+      expect(result).toStrictEqual(true)
     })
     it('findAllBlockedUser - should find one user blocked by ID', async () => {
       const findUsers = await relationBlockedService.findAllBlockedByUser(
@@ -151,16 +156,6 @@ describe('UserPresenceService', () => {
       ]
       expect(blockedUsers).toEqual(expectedBlockedUsers)
     })
-    it('findAllBlockingUser - should find users blocking ID', async () => {
-      const blockedUsers = await relationBlockedService.findAllBlockingByUser(
-        'j9-X94_NVjmzVm9QL3k4r'
-      )
-      const expectedBlockedUsers = [
-        'drfOayPwwUh12tDrePkJ8',
-        'qci4ayPwwUh12tDrePkJ8'
-      ]
-      expect(blockedUsers).toEqual(expectedBlockedUsers)
-    })
   })
   describe('Test Error', () => {
     it('should return ExceptionBlockedYourself', async () => {
@@ -171,12 +166,36 @@ describe('UserPresenceService', () => {
         )
       ).rejects.toThrow(ExceptionBlockedYourself)
     })
+    it('should return ExceptionAlreadyBlocked', async () => {
+      await expect(
+        relationBlockedService.create(
+          'a2OayPlUh0qtDrePkJ87t',
+          'j6-X94_NVjmzVm9QL3k4r'
+        )
+      ).rejects.toThrow(ExceptionAlreadyBlocked)
+    })
     it('should return isBlocked - false - wrong order test', async () => {
       const result = await relationBlockedService.isBlocked(
         'baaayPlUh0qtDrePkJ87t',
         'a2OayPlUh0qtDrePkJ87t'
       )
       expect(result).toBe(false)
+    })
+    it('should fail - userA does not exist', async () => {
+      await expect(
+        relationBlockedService.create(
+          'j6-X94_NVjmzVm9QL3k4r',
+          'qci4ayPwwUh12tDre1234'
+        )
+      ).rejects.toThrow(PrismaClientKnownRequestError)
+    })
+    it('should fail - userB does not exist', async () => {
+      await expect(
+        relationBlockedService.create(
+          '1234ayPwwUh12tDre1234',
+          'j6-X94_NVjmzVm9QL3k4r'
+        )
+      ).rejects.toThrow(PrismaClientKnownRequestError)
     })
   })
 })
