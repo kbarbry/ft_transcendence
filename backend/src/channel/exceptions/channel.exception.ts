@@ -29,3 +29,9 @@ export class ExceptionInvalidDataMaxUsers extends HttpException {
     super('Invalid data sent for maxUser', HttpStatus.CONFLICT)
   }
 }
+
+export class ExceptionUnknowUser extends HttpException {
+  constructor() {
+    super('User does not exists', HttpStatus.FORBIDDEN)
+  }
+}
