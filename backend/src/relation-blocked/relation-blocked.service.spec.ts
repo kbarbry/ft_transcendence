@@ -1,5 +1,4 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { UserPresenceService } from '../user-presence/user-presence.service'
 import { RelationRequestsService } from '../relation-requests/relation-requests.service'
 import { RelationFriendService } from '../relation-friend/relation-friend.service'
 import { RelationBlockedService } from './relation-blocked.service'
@@ -11,7 +10,7 @@ import {
   ExceptionBlockedYourself
 } from '../user/exceptions/blocked.exceptions'
 
-describe('UserPresenceService', () => {
+describe('RelationBlockedService', () => {
   let prismaService: PrismaService
   let relationBlockedService: RelationBlockedService
   let relationRequestsService: RelationRequestsService
@@ -20,24 +19,23 @@ describe('UserPresenceService', () => {
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        UserPresenceService,
+        RelationBlockedService,
         PrismaService,
         RelationFriendService,
-        RelationRequestsService,
-        RelationBlockedService
+        RelationRequestsService
       ]
     }).compile()
 
-    prismaService = module.get<PrismaService>(PrismaService)
-    relationBlockedService = module.get<RelationBlockedService>(
-      RelationBlockedService
-    )
     relationRequestsService = module.get<RelationRequestsService>(
       RelationRequestsService
+    )
+    relationBlockedService = module.get<RelationBlockedService>(
+      RelationBlockedService
     )
     relationFriendService = module.get<RelationFriendService>(
       RelationFriendService
     )
+    prismaService = module.get<PrismaService>(PrismaService)
   })
 
   beforeEach(async () => {
@@ -79,6 +77,18 @@ describe('UserPresenceService', () => {
       ('eeeeyPlUh0qtDrePkJ87t', 'bbbbyPlUh0qtDrePkJ87t'),
       ('drfOayPwwUh12tDrePkJ8', 'j9-X94_NVjmzVm9QL3k4r'),
       ('qci4ayPwwUh12tDrePkJ8', 'j9-X94_NVjmzVm9QL3k4r');`
+    await prismaService.$executeRaw`INSERT INTO
+      "public"."RelationRequests"
+      VALUES
+      ('a10ayPlUh0qtDrePkJ87t', 'j6-X94_NVjmzVm9QL3k4r'),
+      ('a10ayPlUh0qtDrePkJ87t', 'baaayPlUh0qtDrePkJ87t'),
+      ('e10eyPlUh0qtDrePkJ87t', 'ddddyPlUh0qtDrePkJ87t');`
+
+    await prismaService.$executeRaw`INSERT INTO
+      "public"."RelationFriend"
+      VALUES
+      ('e10eyPlUh0qtDrePkJ87t', 'ccccyPlUh0qtDrePkJ87t'),
+      ('e10eyPlUh0qtDrePkJ87t', 'bbbbyPlUh0qtDrePkJ87t');`
   })
 
   afterAll(async () => {
