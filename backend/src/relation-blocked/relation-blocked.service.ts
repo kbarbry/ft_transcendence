@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common'
-import { RelationBlocked } from '@prisma/client'
 import { PrismaService } from '../prisma/prisma.service'
+import { RelationFriend, RelationBlocked } from '@prisma/client'
 import { RelationFriendService } from '../relation-friend/relation-friend.service'
 import { RelationRequestsService } from '../relation-requests/relation-requests.service'
 import {

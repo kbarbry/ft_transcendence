@@ -1,9 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { RelationRequestsService } from '../relation-requests/relation-requests.service'
-import { RelationFriendService } from '../relation-friend/relation-friend.service'
 import { RelationBlockedService } from './relation-blocked.service'
 import { PrismaService } from '../prisma/prisma.service'
 import { cleanDataBase } from '../../test/setup-environment'
+import { RelationRequestsService } from '../relation-requests/relation-requests.service'
+import { RelationFriendService } from '../relation-friend/relation-friend.service'
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library'
 import {
   ExceptionAlreadyBlocked,
@@ -11,10 +11,10 @@ import {
 } from '../user/exceptions/blocked.exceptions'
 
 describe('RelationBlockedService', () => {
-  let prismaService: PrismaService
   let relationBlockedService: RelationBlockedService
   let relationRequestsService: RelationRequestsService
   let relationFriendService: RelationFriendService
+  let prismaService: PrismaService
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -26,11 +26,11 @@ describe('RelationBlockedService', () => {
       ]
     }).compile()
 
-    relationRequestsService = module.get<RelationRequestsService>(
-      RelationRequestsService
-    )
     relationBlockedService = module.get<RelationBlockedService>(
       RelationBlockedService
+    )
+    relationRequestsService = module.get<RelationRequestsService>(
+      RelationRequestsService
     )
     relationFriendService = module.get<RelationFriendService>(
       RelationFriendService
