@@ -39,6 +39,16 @@ export class ChannelMessageService {
     })
   }
 
+  findContain(channelId: string, containingText: string) {
+    return this.prisma.channelMessage.findMany({
+      where: {
+        content: {
+          contains: containingText
+        }
+      }
+    })
+  }
+
   async update(
     id: string,
     data: Prisma.ChannelMessageUpdateInput
