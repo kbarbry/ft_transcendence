@@ -104,6 +104,7 @@ describe('ChannelMessageService', () => {
       const delMessage = {
         id: 'em7d4ec6daffd64a2d4cc',
         senderId: 'du87734d323ac71c6efbd',
+        updatedAt: null,
         channelId: 'ac7d4ec6daffd64a2d4ca',
         content: 'To be deleted',
         createdAt: new Date(Date.UTC(2023, 8, 13, 11, 30, 42))
@@ -120,6 +121,7 @@ describe('ChannelMessageService', () => {
       const compMessage = {
         id: 'am7d4ec6daffd64a2d4ca',
         senderId: 'au7d4ec6daffd64a2d4ca',
+        updatedAt: null,
         channelId: 'ac7d4ec6daffd64a2d4ca',
         content: 'Hello',
         createdAt: new Date(Date.UTC(2023, 8, 13, 11, 30, 42))
@@ -131,28 +133,136 @@ describe('ChannelMessageService', () => {
     })
 
     it('should find an empty ChannelMessage list by finding ChannelMessage of a user in a Channel where he is not', async () => {
-      const msgList =
-        await channelMessageService.findAllFromChannelIdsAndUserId(
-          'bc88e59aef615c5df6dfb',
-          'au7d4ec6daffd64a2d4ca'
-        )
+      const msgList = await channelMessageService.findInChannelIdsAndUserId(
+        'bc88e59aef615c5df6dfb',
+        'au7d4ec6daffd64a2d4ca'
+      )
       expect(msgList.length).toStrictEqual(0)
     })
 
     it('should find all ChannelMessage from a Channel', async () => {
-      const msgList = await channelMessageService.findAllFromChannel(
+      const msgComp = [
+        {
+          id: 'am7d4ec6daffd64a2d4ca',
+          senderId: 'au7d4ec6daffd64a2d4ca',
+          updatedAt: null,
+          channelId: 'ac7d4ec6daffd64a2d4ca',
+          content: 'Hello',
+          createdAt: new Date(Date.UTC(2023, 8, 13, 11, 30, 42))
+        },
+        {
+          id: 'bm7d4ec6daffd64a2d4cb',
+          senderId: 'bu88e59aef615c5df6dfb',
+          updatedAt: null,
+          channelId: 'ac7d4ec6daffd64a2d4ca',
+          content: 'Hello you too',
+          createdAt: new Date(Date.UTC(2023, 8, 13, 11, 30, 42))
+        },
+        {
+          id: 'cm7d4ec6daffd64a2d4cc',
+          senderId: 'cu76f06677b65d3168d6c',
+          updatedAt: null,
+          channelId: 'ac7d4ec6daffd64a2d4ca',
+          content: 'Hi lol',
+          createdAt: new Date(Date.UTC(2023, 8, 13, 11, 30, 42))
+        },
+        {
+          id: 'em7d4ec6daffd64a2d4cc',
+          senderId: 'du87734d323ac71c6efbd',
+          updatedAt: null,
+          channelId: 'ac7d4ec6daffd64a2d4ca',
+          content: 'To be deleted',
+          createdAt: new Date(Date.UTC(2023, 8, 13, 11, 30, 42))
+        },
+        {
+          id: 'fm7d4ec6daffd64a2d4cd',
+          senderId: 'au7d4ec6daffd64a2d4ca',
+          updatedAt: null,
+          channelId: 'ac7d4ec6daffd64a2d4ca',
+          content: 'You all are dumb',
+          createdAt: new Date(Date.UTC(2023, 8, 13, 11, 30, 42))
+        },
+        {
+          id: 'gm7d4ec6daffd64a2d4cg',
+          senderId: 'du87734d323ac71c6efbd',
+          updatedAt: null,
+          channelId: 'ac7d4ec6daffd64a2d4ca',
+          content: 'For id update test',
+          createdAt: new Date(Date.UTC(2023, 8, 13, 11, 30, 42))
+        }
+      ]
+      const msgList = await channelMessageService.findAllInChannel(
         'ac7d4ec6daffd64a2d4ca'
       )
-      expect(msgList).toBeDefined()
+      expect(msgList).toStrictEqual(msgComp)
     })
 
     it('should find all ChannelMessage of a user in a Channel', async () => {
-      const msgList =
-        await channelMessageService.findAllFromChannelIdsAndUserId(
-          'ac7d4ec6daffd64a2d4ca',
-          'au7d4ec6daffd64a2d4ca'
-        )
-      expect(msgList).toBeDefined()
+      const msgComp = [
+        {
+          id: 'am7d4ec6daffd64a2d4ca',
+          senderId: 'au7d4ec6daffd64a2d4ca',
+          updatedAt: null,
+          channelId: 'ac7d4ec6daffd64a2d4ca',
+          content: 'Hello',
+          createdAt: new Date(Date.UTC(2023, 8, 13, 11, 30, 42))
+        },
+        {
+          id: 'fm7d4ec6daffd64a2d4cd',
+          senderId: 'au7d4ec6daffd64a2d4ca',
+          updatedAt: null,
+          channelId: 'ac7d4ec6daffd64a2d4ca',
+          content: 'You all are dumb',
+          createdAt: new Date(Date.UTC(2023, 8, 13, 11, 30, 42))
+        }
+      ]
+      const msgList = await channelMessageService.findInChannelIdsAndUserId(
+        'ac7d4ec6daffd64a2d4ca',
+        'au7d4ec6daffd64a2d4ca'
+      )
+      expect(msgList).toStrictEqual(msgComp)
+    })
+
+    it('should find all ChannelMessage that contain specified text in a given Channel', async () => {
+      const msgComp = [
+        {
+          id: 'am7d4ec6daffd64a2d4ca',
+          senderId: 'au7d4ec6daffd64a2d4ca',
+          updatedAt: null,
+          channelId: 'ac7d4ec6daffd64a2d4ca',
+          content: 'Hello',
+          createdAt: new Date(Date.UTC(2023, 8, 13, 11, 30, 42))
+        },
+        {
+          id: 'bm7d4ec6daffd64a2d4cb',
+          senderId: 'bu88e59aef615c5df6dfb',
+          updatedAt: null,
+          channelId: 'ac7d4ec6daffd64a2d4ca',
+          content: 'Hello you too',
+          createdAt: new Date(Date.UTC(2023, 8, 13, 11, 30, 42))
+        }
+      ]
+      const findRes = await channelMessageService.findAllThatContain(
+        'ac7d4ec6daffd64a2d4ca',
+        'Hello'
+      )
+      expect(findRes).toStrictEqual(msgComp)
+    })
+
+    it('should not find ChannelMessage that contain specified text in a given Channel', async () => {
+      const findRes = await channelMessageService.findAllThatContain(
+        'ac7d4ec6daffd64a2d4ca',
+        't3xt'
+      )
+      expect(findRes.length).toStrictEqual(0)
+    })
+
+    it('should not find ChannelMessage that contain specified text in a given Channel without messages', async () => {
+      const findRes = await channelMessageService.findAllThatContain(
+        'bc88e59aef615c5df6dfb',
+        'Hello'
+      )
+      expect(findRes.length).toStrictEqual(0)
     })
   })
 

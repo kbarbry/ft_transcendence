@@ -101,13 +101,14 @@ model ChannelMember {
 }
 
 model ChannelMessage {
-  id        String   @id @default(nanoid())
+  id        String    @id @default(nanoid())
   senderId  String
   channelId String
   content   String
-  createdAt DateTime @default(now())
-  channel   Channel  @relation(fields: [channelId], references: [id], onDelete: Cascade)
-  user      User     @relation(fields: [senderId], references: [id])
+  createdAt DateTime  @default(now())
+  updatedAt DateTime?
+  channel   Channel   @relation(fields: [channelId], references: [id], onDelete: Cascade)
+  user      User      @relation(fields: [senderId], references: [id])
 }
 
 model PrivateMessage {
