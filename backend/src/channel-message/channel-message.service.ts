@@ -1,7 +1,13 @@
 import { Injectable } from '@nestjs/common'
 import { ChannelMessage, Prisma } from '@prisma/client'
 import { PrismaService } from '../prisma/prisma.service'
-import { ExceptionTryingToUpdateID } from '../user/exceptions/channel-message.exception'
+import {
+  ChannelMessageExceptionEmptyMessage,
+  ChannelMessageExceptionTryingToUpdateChannelID,
+  ChannelMessageExceptionTryingToUpdateCreationDate,
+  ChannelMessageExceptionTryingToUpdateID,
+  ChannelMessageExceptionTryingToUpdateSenderID
+} from '../user/exceptions/channel-message.exception'
 
 @Injectable()
 export class ChannelMessageService {
@@ -23,7 +29,7 @@ export class ChannelMessageService {
     })
   }
 
-  async findAllFromChannel(channelId: string) {
+  async findAllInChannel(channelId: string): Promise<ChannelMessage[]> {
     return this.prisma.channelMessage.findMany({
       where: {
         channelId
@@ -31,7 +37,10 @@ export class ChannelMessageService {
     })
   }
 
-  async findAllFromChannelIdsAndUserId(channelId: string, senderId: string) {
+  async findInChannelIdsAndUserId(
+    channelId: string,
+    senderId: string
+  ): Promise<ChannelMessage[]> {
     return this.prisma.channelMessage.findMany({
       where: {
         AND: [{ channelId, senderId }]
@@ -39,12 +48,18 @@ export class ChannelMessageService {
     })
   }
 
-  findContain(channelId: string, containingText: string) {
+  async findAllThatContain(
+    channelId: string,
+    containingText: string
+  ): Promise<ChannelMessage[]> {
     return this.prisma.channelMessage.findMany({
       where: {
-        content: {
-          contains: containingText
-        }
+        AND: [
+          {
+            channelId,
+            content: { contains: containingText }
+          }
+        ]
       }
     })
   }
@@ -53,7 +68,24 @@ export class ChannelMessageService {
     id: string,
     data: Prisma.ChannelMessageUpdateInput
   ): Promise<ChannelMessage> {
-    if (data.id) throw new ExceptionTryingToUpdateID()
+    if (data.id) {
+      throw new ChannelMessageExceptionTryingToUpdateID()
+    }
+    if (data.channel) {
+      throw new ChannelMessageExceptionTryingToUpdateChannelID()
+    }
+    if (!data.content || data.content?.toString().length == 0) {
+      throw new ChannelMessageExceptionEmptyMessage()
+    }
+    if (data.createdAt) {
+      throw new ChannelMessageExceptionTryingToUpdateCreationDate()
+    }
+    if (data.user) {
+      throw new ChannelMessageExceptionTryingToUpdateSenderID()
+    }
+    if (!data.updatedAt) {
+      data.updatedAt = new Date()
+    }
     return this.prisma.channelMessage.update({
       where: {
         id
