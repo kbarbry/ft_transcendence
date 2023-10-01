@@ -110,7 +110,7 @@ model ChannelMember {
   nickname  String
   userId    String
   channelId String
-  type      EMemeberType @default(Member)
+  type      EMemberType @default(Member)
   muted     Boolean      @default(false)
   juskakan  DateTime?
   createdAt DateTime     @default(now())
@@ -172,7 +172,7 @@ enum EChannelType {
   Private
 }
 
-enum EMemeberType {
+enum EMemberType {
   Admin
   Member
 }

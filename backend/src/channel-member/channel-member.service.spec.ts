@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { ChannelMemberService } from './channel-member.service'
 import { PrismaService } from '../prisma/prisma.service'
-import { EMemeberType, Prisma } from '@prisma/client'
+import { EMemberType, Prisma } from '@prisma/client'
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library'
 import { cleanDataBase } from '../../test/setup-environment'
 
@@ -53,7 +53,7 @@ describe('ChannelMemberService', () => {
       avatarUrl: 'Nice_AVATAAAAR',
       nickname: 'Nick_la_vie',
       createdAt: new Date(),
-      type: EMemeberType.Member,
+      type: EMemberType.Member,
       muted: false,
       juskakan: null,
       user: { connect: { id: '567ayPlUh0qtDrePkJ87t' } },
@@ -131,7 +131,7 @@ describe('ChannelMemberService', () => {
         avatarUrl: 'Nice_AVATAAAAR',
         nickname: 'Nick_la_vie',
         createdAt: new Date(),
-        type: EMemeberType.Member,
+        type: EMemberType.Member,
         muted: false,
         juskakan: null,
         user: { connect: { id: '567ayPlUh0qtDrePkJ87t' } },
@@ -147,7 +147,7 @@ describe('ChannelMemberService', () => {
         avatarUrl: 'Nice_AVATAAAAR',
         nickname: 'Nick_la_vie',
         createdAt: new Date(),
-        type: EMemeberType.Member,
+        type: EMemberType.Member,
         muted: false,
         juskakan: null,
         user: { connect: { id: '666' } },
