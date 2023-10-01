@@ -1,8 +1,11 @@
 import { Inject, Injectable } from '@nestjs/common'
 import { PrismaService } from '../prisma/prisma.service'
-import { Prisma, ChannelMember } from '@prisma/client'
+import { Prisma, ChannelMember, EChannelType } from '@prisma/client'
 import { ChannelBlockedService } from '../channel-blocked/channel-blocked.service'
 import { ChannelInvitedService } from '../channel-invited/channel-invited.service'
+import { ExceptionUserBlockedInChannel } from '../channel/exceptions/blocked.exception'
+import { ExceptionUserNotInvited } from '../channel/exceptions/invited.exception'
+import { ChannelService } from '../channel/channel.service'
 
 @Injectable()
 export class ChannelMemberService {
@@ -14,16 +17,32 @@ export class ChannelMemberService {
   @Inject(ChannelInvitedService)
   private readonly channelInvitedService: ChannelInvitedService
 
+  @Inject(ChannelService)
+  private readonly channelService: ChannelService
+
   //**************************************************//
   //  MUTATION
   //**************************************************//
   async create(data: Prisma.ChannelMemberCreateInput): Promise<ChannelMember> {
+    const userId = data.user.connect?.id as string
+    const channelId = data.channel.connect?.id as string
+    const channel = await this.channelService.findOne(channelId)
     const userBlocked = await this.channelBlockedService.findOne(
-      'ftrX94_NVjmzVm9QL3k4r',
-      // data.user.connect?.id as string,
-      data.channel.connect?.id as string
+      userId,
+      channelId
     )
-    console.log(userBlocked, 'user is blocked')
+    const userInvited = await this.channelInvitedService.findOne(
+      userId,
+      channelId
+    )
+    if (userBlocked) {
+      throw new ExceptionUserBlockedInChannel()
+    }
+    if (channel?.type === EChannelType.Protected) {
+      if (userInvited)
+        await this.channelInvitedService.delete(userId, channelId)
+      else throw new ExceptionUserNotInvited()
+    }
     return this.prisma.channelMember.create({
       data
     })

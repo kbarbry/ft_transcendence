@@ -169,7 +169,6 @@ enum ELanguage {
 enum EChannelType {
   Public
   Protected
-  Private
 }
 
 enum EMemberType {

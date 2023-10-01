@@ -6,11 +6,15 @@ import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library'
 import { cleanDataBase } from '../../test/setup-environment'
 import { ChannelBlockedService } from '../channel-blocked/channel-blocked.service'
 import { ChannelInvitedService } from '../channel-invited/channel-invited.service'
+import { ExceptionUserBlockedInChannel } from '../channel/exceptions/blocked.exception'
+import { ChannelService } from '../channel/channel.service'
+import { ExceptionUserNotInvited } from '../channel/exceptions/invited.exception'
 
 describe('ChannelMemberService', () => {
   let channelMemberService: ChannelMemberService
   let channelBlockedService: ChannelBlockedService
   let channelInvitedService: ChannelInvitedService
+  let channelService: ChannelService
   let prismaService: PrismaService
 
   beforeAll(async () => {
@@ -19,7 +23,8 @@ describe('ChannelMemberService', () => {
         ChannelMemberService,
         PrismaService,
         ChannelBlockedService,
-        ChannelInvitedService
+        ChannelInvitedService,
+        ChannelService
       ]
     }).compile()
 
@@ -31,6 +36,7 @@ describe('ChannelMemberService', () => {
     channelInvitedService = module.get<ChannelInvitedService>(
       ChannelInvitedService
     )
+    channelService = module.get<ChannelService>(ChannelService)
     prismaService = module.get<PrismaService>(PrismaService)
   })
 
@@ -56,6 +62,7 @@ describe('ChannelMemberService', () => {
     //  CHANNEL CREATION
     //**************************************************//
     await prismaService.$executeRaw`INSERT INTO "public"."Channel" VALUES ('pihayPlUh0qtDrePkJ87t', 'random name', 'randomURL', 'TopicName', 'Password123', '567ayPlUh0qtDrePkJ87t', 50, 'Public', '2023-09-13 10:00:00');`
+    await prismaService.$executeRaw`INSERT INTO "public"."Channel" VALUES ('RDaquZM1MRu7A1btyFiNb', 'random name2', 'randomURL', 'TopicName', 'Password123', '567ayPlUh0qtDrePkJ87t', 50, 'Protected', '2023-09-13 10:00:00');`
 
     //**************************************************//
     //  CHANNEL MEMBER CREATION
@@ -66,7 +73,12 @@ describe('ChannelMemberService', () => {
     //**************************************************//
     //  CHANNEL BLOCKED CREATION
     //**************************************************//
-    await prismaService.$executeRaw`INSERT INTO "public"."ChannelInvited" VALUES ('ftrX94_NVjmzVm9QL3k4r', 'pihayPlUh0qtDrePkJ87t');`
+    await prismaService.$executeRaw`INSERT INTO "public"."ChannelBlocked" VALUES ('fdpvTLhbNpjA39Pc7wwtn', 'pihayPlUh0qtDrePkJ87t');`
+
+    //**************************************************//
+    //  CHANNEL INVITED CREATION
+    //**************************************************//
+    await prismaService.$executeRaw`INSERT INTO "public"."ChannelInvited" VALUES ('fdpvTLhbNpjA39Pc7wwtn', 'RDaquZM1MRu7A1btyFiNb');`
   })
 
   afterAll(async () => {
@@ -78,22 +90,52 @@ describe('ChannelMemberService', () => {
     expect(channelMemberService).toBeDefined()
   })
 
+  it('channelBlockedService should be defined', () => {
+    expect(channelBlockedService).toBeDefined()
+  })
+
+  it('channelInvitedService should be defined', () => {
+    expect(channelInvitedService).toBeDefined()
+  })
+
+  it('channelService should be defined', () => {
+    expect(channelService).toBeDefined()
+  })
+
   it('prismaService should be defined', () => {
     expect(prismaService).toBeDefined()
   })
 
   describe('Test Mutation', () => {
-    const channelMemberData = {
-      avatarUrl: 'Nice_AVATAAAAR',
-      nickname: 'Nick_la_vie',
-      createdAt: new Date(),
-      type: EMemberType.Member,
-      muted: false,
-      juskakan: null,
-      user: { connect: { id: '567ayPlUh0qtDrePkJ87t' } },
-      channel: { connect: { id: 'pihayPlUh0qtDrePkJ87t' } }
-    }
     it('should create ChannelMember', async () => {
+      const channelMemberData = {
+        avatarUrl: 'Nice_AVATAAAAR',
+        nickname: 'Nick_la_vie',
+        createdAt: new Date(),
+        type: EMemberType.Member,
+        muted: false,
+        juskakan: null,
+        user: { connect: { id: '567ayPlUh0qtDrePkJ87t' } },
+        channel: { connect: { id: 'pihayPlUh0qtDrePkJ87t' } }
+      }
+      const newChannelMember = await channelMemberService.create(
+        channelMemberData
+      )
+      console.log(newChannelMember, 'channelmember')
+      expect(newChannelMember).toBeDefined
+    })
+
+    it('should create ChannelMember in protected channel', async () => {
+      const channelMemberData = {
+        avatarUrl: 'Nice_AVATAAAAR',
+        nickname: 'Nick_la_vie',
+        createdAt: new Date(),
+        type: EMemberType.Member,
+        muted: false,
+        juskakan: null,
+        user: { connect: { id: 'fdpvTLhbNpjA39Pc7wwtn' } },
+        channel: { connect: { id: 'RDaquZM1MRu7A1btyFiNb' } }
+      }
       const newChannelMember = await channelMemberService.create(
         channelMemberData
       )
@@ -173,6 +215,38 @@ describe('ChannelMemberService', () => {
       }
       await expect(channelMemberService.create(invalidData)).rejects.toThrow(
         PrismaClientKnownRequestError
+      )
+    })
+
+    it('trying to add a blocked member', async () => {
+      const invalidData = {
+        avatarUrl: 'Nice_AVATAAAAR',
+        nickname: 'Nick_la_vie',
+        createdAt: new Date(),
+        type: EMemberType.Member,
+        muted: false,
+        juskakan: null,
+        user: { connect: { id: 'fdpvTLhbNpjA39Pc7wwtn' } },
+        channel: { connect: { id: 'pihayPlUh0qtDrePkJ87t' } }
+      }
+      await expect(channelMemberService.create(invalidData)).rejects.toThrow(
+        ExceptionUserBlockedInChannel
+      )
+    })
+
+    it('trying to add a non invited member', async () => {
+      const invalidData = {
+        avatarUrl: 'Nice_AVATAAAAR',
+        nickname: 'Nick_la_vie',
+        createdAt: new Date(),
+        type: EMemberType.Member,
+        muted: false,
+        juskakan: null,
+        user: { connect: { id: 'ftrX94_NVjmzVm9QL3k4r' } },
+        channel: { connect: { id: 'RDaquZM1MRu7A1btyFiNb' } }
+      }
+      await expect(channelMemberService.create(invalidData)).rejects.toThrow(
+        ExceptionUserNotInvited
       )
     })
   })
