@@ -21,6 +21,8 @@ model User {
   level            Float
   ChannelOwners    Channel[]
   ChannelMembers   ChannelMember[]
+  ChannelBlockeds  ChannelBlocked[]
+  ChannelInviteds  ChannelInvited[]
   Messages         ChannelMessage[]
   looser           GameStat[]         @relation("looserUser")
   winner           GameStat[]         @relation("winnerUser")
@@ -71,18 +73,36 @@ model RelationBlocked {
 }
 
 model Channel {
-  id        String           @id @default(nanoid())
-  name      String           @unique
-  avatarUrl String?
-  topic     String?
-  password  String?
-  ownerId   String
-  maxUsers  Int              @default(50)
-  type      EChannelType     @default(Public)
-  createdAt DateTime         @default(now())
-  owner     User             @relation(fields: [ownerId], references: [id])
-  members   ChannelMember[]
+  id          String           @id @default(nanoid())
+  name        String           @unique
+  avatarUrl   String?
+  topic       String?
+  password    String?
+  ownerId     String
+  maxUsers    Int              @default(50)
+  type        EChannelType     @default(Public)
+  createdAt   DateTime         @default(now())
+  owner       User             @relation(fields: [ownerId], references: [id])
+  members     ChannelMember[]
+  blockedUser ChannelBlocked[]
+  invitedUser ChannelInvited[]
   messages  ChannelMessage[]
+}
+
+model ChannelBlocked {
+  userId    String
+  channelId String
+  channel   Channel      @relation(fields: [channelId], references: [id], onDelete: Cascade)
+  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@id([userId, channelId])
+}
+
+model ChannelInvited {
+  userId    String
+  channelId String
+  channel   Channel      @relation(fields: [channelId], references: [id], onDelete: Cascade)
+  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@id([userId, channelId])
 }
 
 model ChannelMember {
