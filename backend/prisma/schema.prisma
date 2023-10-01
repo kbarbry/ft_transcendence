@@ -175,8 +175,6 @@ enum EChannelType {
 enum EMemeberType {
   Admin
   Member
-  Banned
-  Invited
 }
 
 enum EGameType {
