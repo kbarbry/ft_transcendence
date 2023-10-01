@@ -1,22 +1,36 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { ChannelMemberService } from './channel-member.service'
 import { PrismaService } from '../prisma/prisma.service'
-import { EMemberType, Prisma } from '@prisma/client'
+import { EMemberType } from '@prisma/client'
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library'
 import { cleanDataBase } from '../../test/setup-environment'
+import { ChannelBlockedService } from '../channel-blocked/channel-blocked.service'
+import { ChannelInvitedService } from '../channel-invited/channel-invited.service'
 
 describe('ChannelMemberService', () => {
   let channelMemberService: ChannelMemberService
+  let channelBlockedService: ChannelBlockedService
+  let channelInvitedService: ChannelInvitedService
   let prismaService: PrismaService
-  let channelMemberData: Prisma.ChannelMemberCreateInput
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [ChannelMemberService, PrismaService]
+      providers: [
+        ChannelMemberService,
+        PrismaService,
+        ChannelBlockedService,
+        ChannelInvitedService
+      ]
     }).compile()
 
     channelMemberService =
       module.get<ChannelMemberService>(ChannelMemberService)
+    channelBlockedService = module.get<ChannelBlockedService>(
+      ChannelBlockedService
+    )
+    channelInvitedService = module.get<ChannelInvitedService>(
+      ChannelInvitedService
+    )
     prismaService = module.get<PrismaService>(PrismaService)
   })
 
@@ -49,16 +63,10 @@ describe('ChannelMemberService', () => {
     await prismaService.$executeRaw`INSERT INTO "public"."ChannelMember" VALUES ('NewAvatarURL', 'WonderfullNickname', '765ayPlUh0qtDrePkJ87t', 'pihayPlUh0qtDrePkJ87t', 'Member', 'true', '2023-09-13 20:00:00', '2023-09-13 10:00:00');`
     await prismaService.$executeRaw`INSERT INTO "public"."ChannelMember" VALUES ('NewAvatarURL', 'WonderfullNickname', 'ftrX94_NVjmzVm9QL3k4r', 'pihayPlUh0qtDrePkJ87t', 'Member', 'true', '2023-09-13 20:00:00', '2023-09-13 10:00:00');`
 
-    channelMemberData = {
-      avatarUrl: 'Nice_AVATAAAAR',
-      nickname: 'Nick_la_vie',
-      createdAt: new Date(),
-      type: EMemberType.Member,
-      muted: false,
-      juskakan: null,
-      user: { connect: { id: '567ayPlUh0qtDrePkJ87t' } },
-      channel: { connect: { id: 'pihayPlUh0qtDrePkJ87t' } }
-    }
+    //**************************************************//
+    //  CHANNEL BLOCKED CREATION
+    //**************************************************//
+    await prismaService.$executeRaw`INSERT INTO "public"."ChannelInvited" VALUES ('ftrX94_NVjmzVm9QL3k4r', 'pihayPlUh0qtDrePkJ87t');`
   })
 
   afterAll(async () => {
@@ -75,6 +83,16 @@ describe('ChannelMemberService', () => {
   })
 
   describe('Test Mutation', () => {
+    const channelMemberData = {
+      avatarUrl: 'Nice_AVATAAAAR',
+      nickname: 'Nick_la_vie',
+      createdAt: new Date(),
+      type: EMemberType.Member,
+      muted: false,
+      juskakan: null,
+      user: { connect: { id: '567ayPlUh0qtDrePkJ87t' } },
+      channel: { connect: { id: 'pihayPlUh0qtDrePkJ87t' } }
+    }
     it('should create ChannelMember', async () => {
       const newChannelMember = await channelMemberService.create(
         channelMemberData
@@ -82,7 +100,7 @@ describe('ChannelMemberService', () => {
       expect(newChannelMember).toBeDefined
     })
 
-    it('should update Channel-Member', async () => {
+    it('should update ChannelMember', async () => {
       const updatedData = {
         nickname: 'Un_beau_Nickame'
       }
@@ -102,7 +120,7 @@ describe('ChannelMemberService', () => {
       expect(deleteChannelMember).toBeDefined
     })
   })
-  describe('Test Query', () => {
+  describe('Test query', () => {
     it('should find a ChannelMember', async () => {
       const foundChannelMember = await channelMemberService.findOne(
         '765ayPlUh0qtDrePkJ87t',
@@ -142,7 +160,7 @@ describe('ChannelMemberService', () => {
       )
     })
 
-    it('create with invalid channel data', async () => {
+    it('create with invalid user data', async () => {
       const invalidData = {
         avatarUrl: 'Nice_AVATAAAAR',
         nickname: 'Nick_la_vie',
