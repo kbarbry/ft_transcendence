@@ -22,6 +22,8 @@ model User {
   createdAt        DateTime           @default(now())
   ChannelOwners    Channel[]
   ChannelMembers   ChannelMember[]
+  ChannelBlockeds  ChannelBlocked[]
+  ChannelInviteds  ChannelInvited[]
   Messages         ChannelMessage[]
   looser           GameStat[]         @relation("looserUser")
   winner           GameStat[]         @relation("winnerUser")
@@ -73,18 +75,36 @@ model RelationBlocked {
 }
 
 model Channel {
-  id        String           @id @default(nanoid())
-  name      String           @unique
-  avatarUrl String?
-  topic     String?
-  password  String?
-  ownerId   String
-  maxUsers  Int              @default(50)
-  type      EChannelType     @default(Public)
-  createdAt DateTime         @default(now())
-  owner     User             @relation(fields: [ownerId], references: [id])
-  members   ChannelMember[]
+  id          String           @id @default(nanoid())
+  name        String           @unique
+  avatarUrl   String?
+  topic       String?
+  password    String?
+  ownerId     String
+  maxUsers    Int              @default(50)
+  type        EChannelType     @default(Public)
+  createdAt   DateTime         @default(now())
+  owner       User             @relation(fields: [ownerId], references: [id])
+  members     ChannelMember[]
+  blockedUser ChannelBlocked[]
+  invitedUser ChannelInvited[]
   messages  ChannelMessage[]
+}
+
+model ChannelBlocked {
+  userId    String
+  channelId String
+  channel   Channel      @relation(fields: [channelId], references: [id], onDelete: Cascade)
+  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@id([userId, channelId])
+}
+
+model ChannelInvited {
+  userId    String
+  channelId String
+  channel   Channel      @relation(fields: [channelId], references: [id], onDelete: Cascade)
+  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@id([userId, channelId])
 }
 
 model ChannelMember {
@@ -92,7 +112,7 @@ model ChannelMember {
   nickname  String
   userId    String
   channelId String
-  type      EMemeberType @default(Member)
+  type      EMemberType @default(Member)
   muted     Boolean      @default(false)
   juskakan  DateTime?
   createdAt DateTime     @default(now())
@@ -153,14 +173,11 @@ enum ELanguage {
 enum EChannelType {
   Public
   Protected
-  Private
 }
 
-enum EMemeberType {
+enum EMemberType {
   Admin
   Member
-  Banned
-  Invited
 }
 
 enum EGameType {
