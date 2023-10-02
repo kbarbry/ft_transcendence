@@ -106,4 +106,31 @@ export class PrivateMessageService {
       take: 20
     })
   }
+
+  async findPrivateMessageContain(
+    idSender: string,
+    idReceiv: string,
+    needle: string
+  ): Promise<PrivateMessage[] | null> {
+    return this.prisma.privateMessage.findMany({
+      where: {
+        AND: [
+          {
+            content: {
+              contains: needle
+            }
+          },
+          {
+            OR: [
+              { AND: [{ senderId: idSender }, { receiverId: idReceiv }] },
+              { AND: [{ senderId: idReceiv }, { receiverId: idSender }] }
+            ]
+          }
+        ]
+      },
+      orderBy: {
+        createdAt: 'desc'
+      }
+    })
+  }
 }

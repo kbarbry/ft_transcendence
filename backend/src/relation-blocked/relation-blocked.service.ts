@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common'
-import { RelationBlocked } from '@prisma/client'
 import { PrismaService } from '../prisma/prisma.service'
+import { RelationBlocked } from '@prisma/client'
 import {
   ExceptionAlreadyBlocked,
   ExceptionBlockedYourself
@@ -21,6 +21,61 @@ export class RelationBlockedService {
     const userAlreadyBlocked = await this.isBlocked(userAId, userBId)
     if (userAlreadyBlocked) {
       throw new ExceptionAlreadyBlocked()
+    }
+    const BHasMadeRequest = await this.prisma.relationRequests.findUnique({
+      where: {
+        userSenderId_userReceiverId: {
+          userSenderId: userBId,
+          userReceiverId: userAId
+        }
+      }
+    })
+    if (BHasMadeRequest) {
+      await this.prisma.relationRequests.delete({
+        where: {
+          userSenderId_userReceiverId: {
+            userSenderId: userBId,
+            userReceiverId: userAId
+          }
+        }
+      })
+    }
+    const AHasMadeRequest = await this.prisma.relationRequests.findUnique({
+      where: {
+        userSenderId_userReceiverId: {
+          userSenderId: userAId,
+          userReceiverId: userBId
+        }
+      }
+    })
+    if (AHasMadeRequest) {
+      await this.prisma.relationRequests.delete({
+        where: {
+          userSenderId_userReceiverId: {
+            userSenderId: userAId,
+            userReceiverId: userBId
+          }
+        }
+      })
+    }
+
+    const BIsFriend = await this.prisma.relationFriend.findUnique({
+      where: {
+        userAId_userBId: {
+          userAId,
+          userBId
+        }
+      }
+    })
+    if (BIsFriend) {
+      await this.prisma.relationFriend.delete({
+        where: {
+          userAId_userBId: {
+            userAId,
+            userBId
+          }
+        }
+      })
     }
     return this.prisma.relationBlocked.create({
       data: {

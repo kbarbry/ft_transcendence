@@ -4,6 +4,8 @@ import { AppService } from './app.service'
 
 import { PrismaModule } from './prisma/prisma.module'
 import { ChannelModule } from './channel/channel.module'
+import { ChannelBlockedModule } from './channel-blocked/channel-blocked.module'
+import { ChannelInvitedModule } from './channel-invited/channel-invited.module'
 import { ChannelMemberModule } from './channel-member/channel-member.module'
 import { ChannelMessageModule } from './channel-message/channel-message.module'
 import { GameStatModule } from './game-stat/game-stat.module'
@@ -19,6 +21,8 @@ import { UserController } from './user/user.controller'
   imports: [
     PrismaModule,
     ChannelModule,
+    ChannelBlockedModule,
+    ChannelInvitedModule,
     ChannelMemberModule,
     ChannelMessageModule,
     GameStatModule,

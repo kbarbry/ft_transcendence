@@ -18,9 +18,12 @@ model User {
   doubleA          Boolean            @default(false)
   status           EStatus            @default(Online)
   languages        ELanguage          @default(English)
-  level            Float
+  level            Float              @default(0)
+  createdAt        DateTime           @default(now())
   ChannelOwners    Channel[]
   ChannelMembers   ChannelMember[]
+  ChannelBlockeds  ChannelBlocked[]
+  ChannelInviteds  ChannelInvited[]
   Messages         ChannelMessage[]
   looser           GameStat[]         @relation("looserUser")
   winner           GameStat[]         @relation("winnerUser")
@@ -40,6 +43,7 @@ model UserPresence {
   userId         String
   connectedAt    DateTime  @default(now())
   disconnectedAt DateTime?
+  isConnected    Boolean   @default(true)
   user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
@@ -71,18 +75,36 @@ model RelationBlocked {
 }
 
 model Channel {
-  id        String           @id @default(nanoid())
-  name      String           @unique
-  avatarUrl String?
-  topic     String?
-  password  String?
-  ownerId   String
-  maxUsers  Int              @default(50)
-  type      EChannelType     @default(Public)
-  createdAt DateTime         @default(now())
-  owner     User             @relation(fields: [ownerId], references: [id])
-  members   ChannelMember[]
+  id          String           @id @default(nanoid())
+  name        String           @unique
+  avatarUrl   String?
+  topic       String?
+  password    String?
+  ownerId     String
+  maxUsers    Int              @default(50)
+  type        EChannelType     @default(Public)
+  createdAt   DateTime         @default(now())
+  owner       User             @relation(fields: [ownerId], references: [id])
+  members     ChannelMember[]
+  blockedUser ChannelBlocked[]
+  invitedUser ChannelInvited[]
   messages  ChannelMessage[]
+}
+
+model ChannelBlocked {
+  userId    String
+  channelId String
+  channel   Channel      @relation(fields: [channelId], references: [id], onDelete: Cascade)
+  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@id([userId, channelId])
+}
+
+model ChannelInvited {
+  userId    String
+  channelId String
+  channel   Channel      @relation(fields: [channelId], references: [id], onDelete: Cascade)
+  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@id([userId, channelId])
 }
 
 model ChannelMember {
@@ -90,7 +112,7 @@ model ChannelMember {
   nickname  String
   userId    String
   channelId String
-  type      EMemeberType @default(Member)
+  type      EMemberType @default(Member)
   muted     Boolean      @default(false)
   juskakan  DateTime?
   createdAt DateTime     @default(now())
@@ -101,13 +123,14 @@ model ChannelMember {
 }
 
 model ChannelMessage {
-  id        String   @id @default(nanoid())
+  id        String      @id @default(nanoid())
   senderId  String
   channelId String
   content   String
-  createdAt DateTime @default(now())
-  channel   Channel  @relation(fields: [channelId], references: [id], onDelete: Cascade)
-  user      User     @relation(fields: [senderId], references: [id])
+  createdAt DateTime    @default(now())
+  updatedAt DateTime?   @updatedAt
+  channel   Channel     @relation(fields: [channelId], references: [id], onDelete: Cascade)
+  user      User        @relation(fields: [senderId], references: [id])
 }
 
 model PrivateMessage {
@@ -115,6 +138,7 @@ model PrivateMessage {
   senderId   String
   receiverId String
   content    String
+  updatedAt  DateTime? @updatedAt
   createdAt  DateTime @default(now())
   receiver   User     @relation("userReceiver", fields: [receiverId], references: [id])
   sender     User     @relation("userSender", fields: [senderId], references: [id])
@@ -149,14 +173,11 @@ enum ELanguage {
 enum EChannelType {
   Public
   Protected
-  Private
 }
 
-enum EMemeberType {
+enum EMemberType {
   Admin
   Member
-  Banned
-  Invited
 }
 
 enum EGameType {

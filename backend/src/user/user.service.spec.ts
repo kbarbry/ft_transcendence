@@ -2,7 +2,11 @@ import { Test, TestingModule } from '@nestjs/testing'
 import { PrismaService } from '../prisma/prisma.service'
 import { UserService } from './user.service'
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library'
-import { ExceptionTryingToUpdateID } from './exceptions/user.exceptions'
+import {
+  ExceptionUserTryingToUpdateCreationDate,
+  ExceptionUserTryingToUpdateEmail,
+  ExceptionUserTryingToUpdateID
+} from './exceptions/user.exceptions'
 import { Prisma } from '@prisma/client'
 import { cleanDataBase } from '../../test/setup-environment'
 
@@ -56,6 +60,7 @@ describe('Test UserService', () => {
   it('userService should be defined', () => {
     expect(userService).toBeDefined()
   })
+
   it('prismaService should be defined', () => {
     expect(prismaService).toBeDefined()
   })
@@ -67,14 +72,14 @@ describe('Test UserService', () => {
     })
 
     it('should update an existing user', async () => {
-      const updateUserData = {
-        mail: 'updatedmail@exemple.com'
+      const updateUserInput: Prisma.UserUpdateInput = {
+        username: 'Bob'
       }
       const updatedUser = await userService.update(
         'd2OayPlUh0qtDrePkJ87t',
-        updateUserData
+        updateUserInput
       )
-      expect(updatedUser.mail).toStrictEqual(updateUserData.mail)
+      expect(updatedUser.username).toStrictEqual(updateUserInput.username)
     })
 
     it('should delete an user', async () => {
@@ -82,22 +87,51 @@ describe('Test UserService', () => {
       expect(deletedUser).toBeDefined()
     })
   })
+
   describe('Test Query', () => {
-    it('should find user by id', async () => {
+    it('should find user by id and return the user', async () => {
       const findUser = await userService.findOne('d2OayPlUh0qtDrePkJ87t')
       expect(findUser).toBeDefined()
     })
 
-    it('should find user by email', async () => {
+    it('should find user by id and return null', async () => {
+      const findUser = await userService.findOne('invalid id')
+      expect(findUser).toStrictEqual(null)
+    })
+
+    it('should find user by email and return the user', async () => {
       const findUser = await userService.findOnebyMail('charlie@42.fr')
       expect(findUser).toBeDefined()
     })
 
-    it('should find user by username', async () => {
+    it('should find user by email and return null', async () => {
+      const findUser = await userService.findOnebyMail('invalid email')
+      expect(findUser).toStrictEqual(null)
+    })
+
+    it('should find user by username and return the user', async () => {
       const findUser = await userService.findOneByUsername('Bobby')
       expect(findUser).toBeDefined()
     })
+
+    it('should find user by username and return the user', async () => {
+      const findUser = await userService.findOneByUsername(
+        'Non existing Username'
+      )
+      expect(findUser).toStrictEqual(null)
+    })
+
+    it('should check if a user exist and return true', async () => {
+      const bool = await userService.isUsernameUsed('Chacha')
+      expect(bool).toStrictEqual(true)
+    })
+
+    it('should check if a user exist and return false', async () => {
+      const bool = await userService.isUsernameUsed('UsernameNotTaken')
+      expect(bool).toStrictEqual(false)
+    })
   })
+
   describe('Test Error', () => {
     it('user already created - same mail', async () => {
       const userDataSameEmail = {
@@ -123,28 +157,52 @@ describe('Test UserService', () => {
       )
     })
 
-    it('change id field', async () => {
-      const updatedData = { id: '55555' }
+    it('update id field and throw error', async () => {
+      const updatedData = {
+        id: '55555'
+      }
       await expect(
         userService.update('d2OayPlUh0qtDrePkJ87t', updatedData)
-      ).rejects.toThrow(ExceptionTryingToUpdateID)
+      ).rejects.toThrow(ExceptionUserTryingToUpdateID)
     })
 
-    it('update already taken username', async () => {
-      const updatedData = { username: 'Ally' }
+    it('update creation date and trow error', async () => {
+      const updatedData: Prisma.UserUpdateInput = {
+        createdAt: new Date(Date.now())
+      }
+      await expect(
+        (newUser = userService.update('j6-X94_NVjmzVm9QL3k4r', updatedData))
+      ).rejects.toThrow(ExceptionUserTryingToUpdateCreationDate)
+    })
+
+    it('update not taken email and trow error', async () => {
+      const updatedData: Prisma.UserUpdateInput = {
+        mail: 'noTTakenMail@mail.com'
+      }
+      await expect(
+        (newUser = userService.update('j6-X94_NVjmzVm9QL3k4r', updatedData))
+      ).rejects.toThrow(ExceptionUserTryingToUpdateEmail)
+    })
+
+    it('update already taken email and throw error', async () => {
+      const updatedData: Prisma.UserUpdateInput = {
+        mail: 'alfred@42.fr'
+      }
+      await expect(
+        (newUser = userService.update('j6-X94_NVjmzVm9QL3k4r', updatedData))
+      ).rejects.toThrow(ExceptionUserTryingToUpdateEmail)
+    })
+
+    it('update already taken username and trow error', async () => {
+      const updatedData: Prisma.UserUpdateInput = {
+        username: 'Ally'
+      }
       await expect(
         (newUser = userService.update('j6-X94_NVjmzVm9QL3k4r', updatedData))
       ).rejects.toThrow(PrismaClientKnownRequestError)
     })
 
-    it('update already taken email', async () => {
-      const updatedData = { mail: 'alfred@42.fr' }
-      await expect(
-        (newUser = userService.update('j6-X94_NVjmzVm9QL3k4r', updatedData))
-      ).rejects.toThrow(PrismaClientKnownRequestError)
-    })
-
-    it('user already deleted', async () => {
+    it('deleted non existing user and throw error', async () => {
       await expect(userService.delete('j12X94_NVjmzVm9QL3k4r')).rejects.toThrow(
         PrismaClientKnownRequestError
       )
