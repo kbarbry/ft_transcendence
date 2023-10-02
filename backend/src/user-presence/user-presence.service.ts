@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common'
 import { Prisma, UserPresence } from '@prisma/client'
 import { PrismaService } from '../prisma/prisma.service'
+import { ExceptionIsConnectedShouldBeTrue } from '../user/exceptions/user-presence.exception'
 
 @Injectable()
 export class UserPresenceService {
@@ -10,6 +11,7 @@ export class UserPresenceService {
   //  MUTATION
   //**************************************************//
   async create(data: Prisma.UserPresenceCreateInput): Promise<UserPresence> {
+    if (data.isConnected == false) throw new ExceptionIsConnectedShouldBeTrue()
     return this.prisma.userPresence.create({
       data
     })

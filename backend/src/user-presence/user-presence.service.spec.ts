@@ -3,6 +3,7 @@ import { UserPresenceService } from './user-presence.service'
 import { PrismaService } from '../prisma/prisma.service'
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library'
 import { cleanDataBase } from '../../test/setup-environment'
+import { ExceptionIsConnectedShouldBeTrue } from '../user/exceptions/user-presence.exception'
 
 describe('UserPresenceService', () => {
   let userPresenceService: UserPresenceService
@@ -115,13 +116,13 @@ describe('UserPresenceService', () => {
 
     it('should update connected value', async () => {
       const newDisconnecteddata = {
-        connectedAt: new Date()
+        disconnectedAt: new Date()
       }
       const newUserPresence = await userPresenceService.disconnected(
         'drfOayPwwUh12tDrePkJ8',
-        newDisconnecteddata.connectedAt
+        newDisconnecteddata.disconnectedAt
       )
-      expect(newDisconnecteddata.connectedAt).toStrictEqual(
+      expect(newDisconnecteddata.disconnectedAt).toStrictEqual(
         newUserPresence.disconnectedAt
       )
     })
@@ -131,6 +132,21 @@ describe('UserPresenceService', () => {
       expect(
         prismaService.$executeRaw`INSERT INTO "public"."UserPresence" VALUES ('drfOayPwwUh12tDrePkJ8', 'd2OayPlUh0qtDrePkJ87t', '2023-09-13 10:00:00', null, true);`
       ).rejects.toThrow(PrismaClientKnownRequestError)
+    })
+    it('should not be able to create a Userpresence with isConnected set to false', async () => {
+      const wrongUserPresenceData = {
+        id: 'drfOayWwwUh12tDrePkJ8',
+        connectedAt: new Date(),
+        isConnected: false,
+        user: {
+          connect: {
+            id: 'd2OayPlUh0qtDrePkJ87t'
+          }
+        }
+      }
+      await expect(
+        userPresenceService.create(wrongUserPresenceData)
+      ).rejects.toThrow(ExceptionIsConnectedShouldBeTrue)
     })
   })
 })
