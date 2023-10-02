@@ -37,10 +37,10 @@ describe('UserPresenceService', () => {
     //**************************************************//
     //  USER PRESENCE CREATION
     //**************************************************//
-    await prismaService.$executeRaw`INSERT INTO "public"."UserPresence" VALUES ('drfOayPwwUh12tDrePkJ8', 'd2OayPlUh0qtDrePkJ87t', '2023-09-13 10:00:00');`
-    await prismaService.$executeRaw`INSERT INTO "public"."UserPresence" VALUES ('qci4ayPwwUh12tDrePkJ8', 'j6-X94_NVjmzVm9QL3k4r', '2023-09-13 11:00:00');`
-    await prismaService.$executeRaw`INSERT INTO "public"."UserPresence" VALUES ('yui1ayPwwUh12tDrePkJ8', '_U0vTLhbNpjA39Pc7wwtn', '2023-09-13 12:00:00');`
-    await prismaService.$executeRaw`INSERT INTO "public"."UserPresence" VALUES ('gru1ayPwwUh12tDrePkJ8', '_U0vTLhbNpjA39Pc7wwtn', '2023-09-13 13:00:00');`
+    await prismaService.$executeRaw`INSERT INTO "public"."UserPresence" VALUES ('drfOayPwwUh12tDrePkJ8', 'd2OayPlUh0qtDrePkJ87t', '2023-09-13 10:00:00', null, true);`
+    await prismaService.$executeRaw`INSERT INTO "public"."UserPresence" VALUES ('qci4ayPwwUh12tDrePkJ8', 'j6-X94_NVjmzVm9QL3k4r', '2023-09-13 11:00:00', null, true);`
+    await prismaService.$executeRaw`INSERT INTO "public"."UserPresence" VALUES ('yui1ayPwwUh12tDrePkJ8', '_U0vTLhbNpjA39Pc7wwtn', '2023-09-13 12:00:00', null, true);`
+    await prismaService.$executeRaw`INSERT INTO "public"."UserPresence" VALUES ('gru1ayPwwUh12tDrePkJ8', '_U0vTLhbNpjA39Pc7wwtn', '2023-09-13 13:00:00', null, true);`
   })
 
   afterAll(async () => {
@@ -66,15 +66,16 @@ describe('UserPresenceService', () => {
       }
     }
 
-    it('should create a new UserPresence', async () => {
+    it('should create a new UserPresence and isConnected should be true', async () => {
       const userPresence = await userPresenceService.create(userPresenceData)
       expect(userPresence).toBeDefined()
       expect(userPresence.connectedAt).toStrictEqual(
         userPresenceData.connectedAt
       )
+      expect(userPresence.isConnected).toStrictEqual(true)
     })
 
-    it('should update disconnected value', async () => {
+    it('should update disconnected value and update isConnected to false', async () => {
       const newDisconnecteddata = {
         disconnectedAt: new Date()
       }
@@ -85,6 +86,7 @@ describe('UserPresenceService', () => {
       expect(newDisconnecteddata.disconnectedAt).toStrictEqual(
         newUserPresence.disconnectedAt
       )
+      expect(newUserPresence.isConnected).toStrictEqual(false)
     })
   })
   describe('Test Query', () => {
@@ -127,7 +129,7 @@ describe('UserPresenceService', () => {
   describe('Test Error', () => {
     it('User presence created with already taken ID', async () => {
       expect(
-        prismaService.$executeRaw`INSERT INTO "public"."UserPresence" VALUES ('drfOayPwwUh12tDrePkJ8', 'd2OayPlUh0qtDrePkJ87t', '2023-09-13 10:00:00');`
+        prismaService.$executeRaw`INSERT INTO "public"."UserPresence" VALUES ('drfOayPwwUh12tDrePkJ8', 'd2OayPlUh0qtDrePkJ87t', '2023-09-13 10:00:00', null, true);`
       ).rejects.toThrow(PrismaClientKnownRequestError)
     })
   })

@@ -21,7 +21,8 @@ export class UserPresenceService {
         id
       },
       data: {
-        disconnectedAt
+        disconnectedAt,
+        isConnected: false
       }
     })
   }
