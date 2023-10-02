@@ -91,6 +91,7 @@ model Channel {
   messages  ChannelMessage[]
 }
 
+
 model ChannelBlocked {
   userId    String
   channelId String
@@ -112,7 +113,7 @@ model ChannelMember {
   nickname  String
   userId    String
   channelId String
-  type      EMemberType @default(Member)
+  type      EMemberType  @default(Member)
   muted     Boolean      @default(false)
   juskakan  DateTime?
   createdAt DateTime     @default(now())
