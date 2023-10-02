@@ -116,6 +116,7 @@ model PrivateMessage {
   senderId   String
   receiverId String
   content    String
+  updatedAt  DateTime? @updatedAt
   createdAt  DateTime @default(now())
   receiver   User     @relation("userReceiver", fields: [receiverId], references: [id])
   sender     User     @relation("userSender", fields: [senderId], references: [id])
