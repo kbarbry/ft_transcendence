@@ -2,8 +2,6 @@ import { Test, TestingModule } from '@nestjs/testing'
 import { RelationBlockedService } from './relation-blocked.service'
 import { PrismaService } from '../prisma/prisma.service'
 import { cleanDataBase } from '../../test/setup-environment'
-import { RelationRequestsService } from '../relation-requests/relation-requests.service'
-import { RelationFriendService } from '../relation-friend/relation-friend.service'
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library'
 import {
   ExceptionAlreadyBlocked,
@@ -12,28 +10,15 @@ import {
 
 describe('RelationBlockedService', () => {
   let relationBlockedService: RelationBlockedService
-  let relationRequestsService: RelationRequestsService
-  let relationFriendService: RelationFriendService
   let prismaService: PrismaService
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        RelationBlockedService,
-        PrismaService,
-        RelationFriendService,
-        RelationRequestsService
-      ]
+      providers: [RelationBlockedService, PrismaService]
     }).compile()
 
     relationBlockedService = module.get<RelationBlockedService>(
       RelationBlockedService
-    )
-    relationRequestsService = module.get<RelationRequestsService>(
-      RelationRequestsService
-    )
-    relationFriendService = module.get<RelationFriendService>(
-      RelationFriendService
     )
     prismaService = module.get<PrismaService>(PrismaService)
   })
@@ -52,6 +37,7 @@ describe('RelationBlockedService', () => {
       "public"."User"
       VALUES
       ('a2OayPlUh0qtDrePkJ87t', 'random url', 'alfred@42.fr', 'Ally', 'oui', null, null, false, 'Online', 'English', 1),
+      ('a10ayPlUh0qtDrePkJ87t', 'random url', 'boulette@42.fr', 'Boul', 'oui', null, null, false, 'Online', 'English', 1),
       ('baaayPlUh0qtDrePkJ87t', 'random url', 'adel@42.fr', 'Adelou', 'oui', null, null, false, 'Online', 'English', 1),
       ('j6-X94_NVjmzVm9QL3k4r', 'random url', 'charlie@42.fr', 'Chacha', 'oui', null, null, false, 'Invisble', 'French', 12),
       ('bbbbyPlUh0qtDrePkJ87t', 'random url', 'mama@42.fr', 'mama', 'oui', null, null, false, 'Online', 'English', 1),
@@ -62,6 +48,7 @@ describe('RelationBlockedService', () => {
       ('drfOayPwwUh12tDrePkJ8', 'random url', 'other@42.fr', 'other', 'oui', null, null, false, 'Online', 'English', 1),
       ('qci4ayPwwUh12tDrePkJ8', 'random url', 'dad42.fr', 'dad', 'oui', null, null, false, 'Online', 'English', 1),
       ('qci4ayPwwUh12tDrePkJ9', 'random url', 'dkj842.fr', 'dkj', 'oui', null, null, false, 'Online', 'English', 1),
+      ('e10eyPlUh0qtDrePkJ87t', 'random url', 'edix42.fr', 'Eddy', 'oui', null, null, false, 'Online', 'English', 1),
       ('qci4ayPwwUh12tDrePkJ0', 'random url', 'papy42.fr', 'papy', 'oui', null, null, false, 'Online', 'English', 1);`
 
     //**************************************************//
@@ -96,16 +83,8 @@ describe('RelationBlockedService', () => {
     await prismaService.$disconnect()
   })
 
-  it('relationFriend should be defined', () => {
-    expect(relationFriendService).toBeDefined()
-  })
-
   it('relationBlocked should be defined', () => {
     expect(relationBlockedService).toBeDefined()
-  })
-
-  it('relationRequest should be defined', () => {
-    expect(relationRequestsService).toBeDefined()
   })
 
   it('prismaService be define', () => {
@@ -170,6 +149,83 @@ describe('RelationBlockedService', () => {
       ]
       expect(blockedUsers).toEqual(expectedBlockedUsers)
     })
+
+    it('should return isRequest - true', async () => {
+      const result = await prismaService.relationRequests.findUnique({
+        where: {
+          userSenderId_userReceiverId: {
+            userSenderId: 'a10ayPlUh0qtDrePkJ87t',
+            userReceiverId: 'baaayPlUh0qtDrePkJ87t'
+          }
+        }
+      })
+      const expected = {
+        userSenderId: 'a10ayPlUh0qtDrePkJ87t',
+        userReceiverId: 'baaayPlUh0qtDrePkJ87t'
+      }
+      expect(result).toStrictEqual(expected)
+    })
+
+    it('should create - RelationBlocked and delete request A to B', async () => {
+      const resBlock = await relationBlockedService.create(
+        'a10ayPlUh0qtDrePkJ87t',
+        'j6-X94_NVjmzVm9QL3k4r'
+      )
+      const expectedRes = {
+        userBlockingId: 'a10ayPlUh0qtDrePkJ87t',
+        userBlockedId: 'j6-X94_NVjmzVm9QL3k4r'
+      }
+      expect(resBlock).toStrictEqual(expectedRes)
+    })
+    // it('should return isRequest - false', async () => {
+    //   const result = await prismaService.relationRequests.findUnique({
+    //     where: {
+    //       userSenderId_userReceiverId: {
+    //         userSenderId: 'a10ayPlUh0qtDrePkJ87t',
+    //         userReceiverId: 'baaayPlUh0qtDrePkJ87t'
+    //       }
+    //     }
+    //   })
+    //   expect(result).toStrictEqual(null)
+    // })
+
+    it('should return isFriend - true', async () => {
+      const result = await prismaService.relationFriend.findUnique({
+        where: {
+          userAId_userBId: {
+            userAId: 'e10eyPlUh0qtDrePkJ87t',
+            userBId: 'ccccyPlUh0qtDrePkJ87t'
+          }
+        }
+      })
+      const expected = {
+        userAId: 'e10eyPlUh0qtDrePkJ87t',
+        userBId: 'ccccyPlUh0qtDrePkJ87t'
+      }
+      expect(result).toStrictEqual(expected)
+    })
+    it('should create - RelationBlocked and delete relationFriend A to B', async () => {
+      const resBlock2 = await relationBlockedService.create(
+        'e10eyPlUh0qtDrePkJ87t',
+        'ccccyPlUh0qtDrePkJ87t'
+      )
+      const expectedRes = {
+        userBlockingId: 'e10eyPlUh0qtDrePkJ87t',
+        userBlockedId: 'ccccyPlUh0qtDrePkJ87t'
+      }
+      expect(resBlock2).toStrictEqual(expectedRes)
+    })
+    // it('should return isFriend - false', async () => {
+    //   const result = await prismaService.relationFriend.findUnique({
+    //     where: {
+    //       userAId_userBId: {
+    //         userAId: 'e10eyPlUh0qtDrePkJ87t',
+    //         userBId: 'ccccyPlUh0qtDrePkJ87t'
+    //       }
+    //     }
+    //   })
+    //   expect(result).toStrictEqual(false)
+    // })
   })
 
   describe('Test Error', () => {
