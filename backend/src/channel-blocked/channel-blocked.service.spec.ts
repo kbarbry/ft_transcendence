@@ -3,6 +3,7 @@ import { ChannelBlockedService } from './channel-blocked.service'
 import { PrismaService } from '../prisma/prisma.service'
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library'
 import { cleanDataBase } from '../../test/setup-environment'
+import { ExceptionTryingToBlockChannelOwner } from '../channel/exceptions/blocked.exception'
 
 describe('ChannelBlockedService', () => {
   let channelBlockedService: ChannelBlockedService
@@ -143,6 +144,15 @@ describe('ChannelBlockedService', () => {
           channel: { connect: { id: 'pihayPlUh0qtDrePkJ87t' } }
         })
       ).rejects.toThrow(PrismaClientKnownRequestError)
+    })
+
+    it('trying to block the owner', async () => {
+      await expect(
+        channelBlockedService.create({
+          user: { connect: { id: '567ayPlUh0qtDrePkJ87t' } },
+          channel: { connect: { id: 'pihayPlUh0qtDrePkJ87t' } }
+        })
+      ).rejects.toThrow(ExceptionTryingToBlockChannelOwner)
     })
   })
 })

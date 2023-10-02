@@ -121,7 +121,6 @@ describe('ChannelMemberService', () => {
       const newChannelMember = await channelMemberService.create(
         channelMemberData
       )
-      console.log(newChannelMember, 'channelmember')
       expect(newChannelMember).toBeDefined
     })
 

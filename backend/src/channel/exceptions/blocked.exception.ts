@@ -5,3 +5,12 @@ export class ExceptionUserBlockedInChannel extends HttpException {
     super('The user is blocked in this channel', HttpStatus.CONFLICT)
   }
 }
+
+export class ExceptionTryingToBlockChannelOwner extends HttpException {
+  constructor() {
+    super(
+      'You are trying to block the owner of the channel',
+      HttpStatus.CONFLICT
+    )
+  }
+}
