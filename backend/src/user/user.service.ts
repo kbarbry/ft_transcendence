@@ -62,4 +62,16 @@ export class UserService {
       }
     })
   }
+
+  async isUsernameUsed(username: string): Promise<boolean> {
+    const user = await this.prisma.user.findUnique({
+      where: {
+        username
+      }
+    })
+    if (user !== null) {
+      return true
+    }
+    return false
+  }
 }
