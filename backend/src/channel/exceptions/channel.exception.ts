@@ -6,6 +6,13 @@ export class ExceptionTryingToUpdateChannelID extends HttpException {
   }
 }
 
+export class ExceptionTryingToUpdateOwnerID extends HttpException {
+  constructor() {
+    super('You are trying to change the id of the Owner', HttpStatus.CONFLICT)
+  }
+}
+
+
 export class ExceptionInvalidMaxUserInChannel extends HttpException {
   constructor() {
     super('Invalid max user number', HttpStatus.CONFLICT)
@@ -27,8 +34,9 @@ export class ExceptionInvalidDataMaxUsers extends HttpException {
   }
 }
 
-export class ExceptionMaxUsersReachedInChannel extends HttpException {
+export class ExceptionUnknowUser extends HttpException {
   constructor() {
-    super('Too many users in channel, max users reached', HttpStatus.CONFLICT)
+    super('User does not exists', HttpStatus.FORBIDDEN)
+
   }
 }

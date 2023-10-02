@@ -5,7 +5,9 @@ import {
   ExceptionTryingToUpdateChannelID,
   ExceptionInvalidMaxUserInChannel,
   ExceptionTryingToUpdateDate,
-  ExceptionInvalidDataMaxUsers
+  ExceptionInvalidDataMaxUsers,
+  ExceptionUnknowUser,
+  ExceptionTryingToUpdateOwnerID
 } from './exceptions/channel.exception'
 
 @Injectable()
@@ -15,6 +17,7 @@ export class ChannelService {
   //**************************************************//
   //  MUTATION
   //**************************************************//
+
   async create(data: Prisma.ChannelCreateInput): Promise<Channel> {
     const maxUsers = data.maxUsers?.valueOf()
     if (maxUsers && (maxUsers < 2 || maxUsers > 50)) {
@@ -35,7 +38,7 @@ export class ChannelService {
     }
 
     if (data.id) throw new ExceptionTryingToUpdateChannelID()
-    //if (data.owner?.connect?.id) throw new ExceptionTryingToUpdateOwnerID()
+    if (data.owner?.connect?.id) throw new ExceptionTryingToUpdateOwnerID()
     if (data.createdAt) throw new ExceptionTryingToUpdateDate()
     return this.prisma.channel.update({
       where: {
@@ -95,5 +98,22 @@ export class ChannelService {
       }
     })
   }
-  //todoo update OwnerID
+  async updateOwner(id: string, ownerId: string): Promise<Channel | null> {
+    const userExist = await this.prisma.user.findUnique({
+      where: {
+        id: ownerId
+      }
+    })
+    if (!userExist) {
+      throw new ExceptionUnknowUser()
+    }
+    return this.prisma.channel.update({
+      where: {
+        id
+      },
+      data: {
+        ownerId
+      }
+    })
+  }
 }
