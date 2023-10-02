@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common'
 import { ChannelMessage, Prisma } from '@prisma/client'
 import { PrismaService } from '../prisma/prisma.service'
 import {
-  ChannelMessageExceptionEmptyMessage,
   ChannelMessageExceptionTryingToUpdateChannelID,
   ChannelMessageExceptionTryingToUpdateCreationDate,
   ChannelMessageExceptionTryingToUpdateID,
@@ -73,9 +72,6 @@ export class ChannelMessageService {
     }
     if (data.channel) {
       throw new ChannelMessageExceptionTryingToUpdateChannelID()
-    }
-    if (!data.content || data.content?.toString().length == 0) {
-      throw new ChannelMessageExceptionEmptyMessage()
     }
     if (data.createdAt) {
       throw new ChannelMessageExceptionTryingToUpdateCreationDate()

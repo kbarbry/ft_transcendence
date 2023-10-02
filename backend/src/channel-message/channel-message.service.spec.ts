@@ -3,7 +3,6 @@ import { ChannelMessageService } from './channel-message.service'
 import { PrismaService } from '../prisma/prisma.service'
 import { Prisma } from '@prisma/client'
 import {
-  ChannelMessageExceptionEmptyMessage,
   ChannelMessageExceptionTryingToUpdateChannelID,
   ChannelMessageExceptionTryingToUpdateCreationDate,
   ChannelMessageExceptionTryingToUpdateID,
@@ -283,18 +282,6 @@ describe('ChannelMessageService', () => {
           messageUpdateInput
         )
       ).rejects.toThrow(ChannelMessageExceptionTryingToUpdateID)
-    })
-
-    it('should update a ChannelMessage content to an empty string and throw error', async () => {
-      const messageUpdateInput: Prisma.ChannelMessageUpdateInput = {
-        content: ''
-      }
-      await expect(
-        channelMessageService.update(
-          'hm7d4ec6daffd64a2d4ch',
-          messageUpdateInput
-        )
-      ).rejects.toThrow(ChannelMessageExceptionEmptyMessage)
     })
 
     it("should update a ChannelMessage's channel and throw error", async () => {

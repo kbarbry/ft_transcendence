@@ -1,11 +1,5 @@
 import { HttpException, HttpStatus } from '@nestjs/common'
 
-export class ChannelMessageExceptionEmptyMessage extends HttpException {
-  constructor() {
-    super('The message content is empty', HttpStatus.CONFLICT)
-  }
-}
-
 export class ChannelMessageExceptionTryingToUpdateID extends HttpException {
   constructor() {
     super(
