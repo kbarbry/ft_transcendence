@@ -1,34 +1,22 @@
 import { Injectable } from '@nestjs/common'
 import { PrismaService } from '../prisma/prisma.service'
 import { Prisma, Channel } from '@prisma/client'
-// import { UserService } from '../user/user.service'
 import {
   ExceptionTryingToUpdateChannelID,
   ExceptionInvalidMaxUserInChannel,
   ExceptionTryingToUpdateDate,
   ExceptionInvalidDataMaxUsers,
-  ExceptionUnknowUser
+  ExceptionUnknowUser,
+  ExceptionTryingToUpdateOwnerID
 } from './exceptions/channel.exception'
 
 @Injectable()
 export class ChannelService {
   constructor(private prisma: PrismaService) {}
 
-  // @Inject(UserService)
-  // private readonly UserService: UserService
-
   //**************************************************//
   //  MUTATION
   //**************************************************//
-
-  //   Effectuer la mise à jour de l'ID du propriétaire (veillez à l'injection du service utilisateur)
-  // Modifiez la mise à jour pour bloquer la modification du OwnerID (et effectuez le test selon les spécifications)
-
-  // Testez que la mise à jour ne peut pas mettre à jour le OwnerID et la méthode UpdateOwner Peut mettre à jour le OwnerID
-  // Changez le nom du canal déjà supprimé et faites-le "Supprimer le canal non existant"
-  // Faites un test avec "Créer une chaîne avec un nom déjà pris"
-  // Faites un test avec "mise à jour avec nom déjà pris"
-  // Faites un test avec "mettre à jour OwnerId avec un ID incorrect"
 
   async create(data: Prisma.ChannelCreateInput): Promise<Channel> {
     const maxUsers = data.maxUsers?.valueOf()
@@ -50,7 +38,7 @@ export class ChannelService {
     }
 
     if (data.id) throw new ExceptionTryingToUpdateChannelID()
-    //if (data.owner?.connect?.id) throw new ExceptionTryingToUpdateOwnerID()
+    if (data.owner?.connect?.id) throw new ExceptionTryingToUpdateOwnerID()
     if (data.createdAt) throw new ExceptionTryingToUpdateDate()
     return this.prisma.channel.update({
       where: {
