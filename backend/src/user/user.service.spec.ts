@@ -3,9 +3,9 @@ import { PrismaService } from '../prisma/prisma.service'
 import { UserService } from './user.service'
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library'
 import {
-  UserExceptionTryingToUpdateCreationDate,
-  UserExceptionTryingToUpdateEmail,
-  UserExceptionTryingToUpdateID
+  ExceptionUserTryingToUpdateCreationDate,
+  ExceptionUserTryingToUpdateEmail,
+  ExceptionUserTryingToUpdateID
 } from './exceptions/user.exceptions'
 import { Prisma } from '@prisma/client'
 import { cleanDataBase } from '../../test/setup-environment'
@@ -163,7 +163,7 @@ describe('Test UserService', () => {
       }
       await expect(
         userService.update('d2OayPlUh0qtDrePkJ87t', updatedData)
-      ).rejects.toThrow(UserExceptionTryingToUpdateID)
+      ).rejects.toThrow(ExceptionUserTryingToUpdateID)
     })
 
     it('update creation date and trow error', async () => {
@@ -172,7 +172,7 @@ describe('Test UserService', () => {
       }
       await expect(
         (newUser = userService.update('j6-X94_NVjmzVm9QL3k4r', updatedData))
-      ).rejects.toThrow(UserExceptionTryingToUpdateCreationDate)
+      ).rejects.toThrow(ExceptionUserTryingToUpdateCreationDate)
     })
 
     it('update not taken email and trow error', async () => {
@@ -181,7 +181,7 @@ describe('Test UserService', () => {
       }
       await expect(
         (newUser = userService.update('j6-X94_NVjmzVm9QL3k4r', updatedData))
-      ).rejects.toThrow(UserExceptionTryingToUpdateEmail)
+      ).rejects.toThrow(ExceptionUserTryingToUpdateEmail)
     })
 
     it('update already taken email and throw error', async () => {
@@ -190,7 +190,7 @@ describe('Test UserService', () => {
       }
       await expect(
         (newUser = userService.update('j6-X94_NVjmzVm9QL3k4r', updatedData))
-      ).rejects.toThrow(UserExceptionTryingToUpdateEmail)
+      ).rejects.toThrow(ExceptionUserTryingToUpdateEmail)
     })
 
     it('update already taken username and trow error', async () => {

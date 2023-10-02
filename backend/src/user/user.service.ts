@@ -2,9 +2,9 @@ import { Injectable } from '@nestjs/common'
 import { Prisma, User } from '@prisma/client'
 import { PrismaService } from '../prisma/prisma.service'
 import {
-  UserExceptionTryingToUpdateCreationDate,
-  UserExceptionTryingToUpdateEmail,
-  UserExceptionTryingToUpdateID
+  ExceptionUserTryingToUpdateCreationDate,
+  ExceptionUserTryingToUpdateEmail,
+  ExceptionUserTryingToUpdateID
 } from './exceptions/user.exceptions'
 
 @Injectable()
@@ -22,9 +22,9 @@ export class UserService {
   }
 
   async update(id: string, data: Prisma.UserUpdateInput): Promise<User> {
-    if (data.id) throw new UserExceptionTryingToUpdateID()
-    if (data.createdAt) throw new UserExceptionTryingToUpdateCreationDate()
-    if (data.mail) throw new UserExceptionTryingToUpdateEmail()
+    if (data.id) throw new ExceptionUserTryingToUpdateID()
+    if (data.createdAt) throw new ExceptionUserTryingToUpdateCreationDate()
+    if (data.mail) throw new ExceptionUserTryingToUpdateEmail()
     return this.prisma.user.update({
       where: {
         id
