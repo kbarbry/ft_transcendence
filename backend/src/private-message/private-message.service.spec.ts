@@ -176,8 +176,12 @@ describe('PrivateMessageService', () => {
     })
     it('should find all message that contains the needle', async () => {
       const foundPrivateMessage =
-        await privateMessageService.findPrivateMessageContain('Ceci')
-      expect(foundPrivateMessage?.length).toStrictEqual(24)
+        await privateMessageService.findPrivateMessageContain(
+          '42tX94_NVjmzVm9QL3k4r',
+          'rtjayPlUh0qtDrePkJ87t',
+          'Ceci'
+        )
+      expect(foundPrivateMessage?.length).toStrictEqual(22)
     })
   })
 
@@ -210,9 +214,26 @@ describe('PrivateMessageService', () => {
     })
 
     it('send a message to someone who do not exist', async () => {
-      await expect(
-        prismaService.$executeRaw`INSERT INTO "public"."PrivateMessage" VALUES ('er12yPlUh0qtDrePkJ87t', '42tX94_NVjmzVm9QL3k4r', 'zunzGU-8QlEvmHk8rjNRI', 'Ceci est un supermessage', null, '2023-09-13 10:00:00');`
-      ).rejects.toThrow(PrismaClientKnownRequestError)
+      const wrongData = {
+        content: 'This is a wonderfull message',
+        createdAt: new Date(),
+        receiver: { connect: { id: '555' } },
+        sender: { connect: { id: 'rtjayPlUh0qtDrePkJ87t' } }
+      }
+      await expect(privateMessageService.create(wrongData)).rejects.toThrow(
+        PrismaClientKnownRequestError
+      )
+    })
+    it('send a message by someone who do not exist', async () => {
+      const wrongData = {
+        content: 'This is a wonderfull message',
+        createdAt: new Date(),
+        receiver: { connect: { id: 'rtjayPlUh0qtDrePkJ87t' } },
+        sender: { connect: { id: '555' } }
+      }
+      await expect(privateMessageService.create(wrongData)).rejects.toThrow(
+        PrismaClientKnownRequestError
+      )
     })
 
     it('trying to change the date of a message', async () => {
@@ -243,7 +264,11 @@ describe('PrivateMessageService', () => {
     })
     it('trying to send an empty needle to find PrivatMessage', async () => {
       await expect(
-        privateMessageService.findPrivateMessageContain('')
+        privateMessageService.findPrivateMessageContain(
+          '42tX94_NVjmzVm9QL3k4r',
+          'rtjayPlUh0qtDrePkJ87t',
+          ''
+        )
       ).rejects.toThrow(ExceptionInvalidNeedlePrivateMessage)
     })
   })
