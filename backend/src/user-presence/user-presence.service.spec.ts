@@ -129,9 +129,19 @@ describe('UserPresenceService', () => {
   })
   describe('Test Error', () => {
     it('User presence created with already taken ID', async () => {
-      expect(
-        prismaService.$executeRaw`INSERT INTO "public"."UserPresence" VALUES ('drfOayPwwUh12tDrePkJ8', 'd2OayPlUh0qtDrePkJ87t', '2023-09-13 10:00:00', null, true);`
-      ).rejects.toThrow(PrismaClientKnownRequestError)
+      const wrongUserPresenceData = {
+        id: 'drfOayPwwUh12tDrePkJ8',
+        connectedAt: new Date(),
+        isConnected: true,
+        user: {
+          connect: {
+            id: 'd2OayPlUh0qtDrePkJ87t'
+          }
+        }
+      }
+      expect(userPresenceService.create(wrongUserPresenceData)).rejects.toThrow(
+        PrismaClientKnownRequestError
+      )
     })
     it('should not be able to create a Userpresence with isConnected set to false', async () => {
       const wrongUserPresenceData = {
