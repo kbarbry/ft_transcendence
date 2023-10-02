@@ -2,7 +2,11 @@ import { Test, TestingModule } from '@nestjs/testing'
 import { PrismaService } from '../prisma/prisma.service'
 import { UserService } from './user.service'
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library'
-import { ExceptionTryingToUpdateID } from './exceptions/user.exceptions'
+import {
+  UserExceptionTryingToUpdateCreationDate,
+  UserExceptionTryingToUpdateEmail,
+  UserExceptionTryingToUpdateID
+} from './exceptions/user.exceptions'
 import { Prisma } from '@prisma/client'
 import { cleanDataBase } from '../../test/setup-environment'
 
@@ -83,6 +87,7 @@ describe('Test UserService', () => {
       expect(deletedUser).toBeDefined()
     })
   })
+
   describe('Test Query', () => {
     it('should find user by id and return the user', async () => {
       const findUser = await userService.findOne('d2OayPlUh0qtDrePkJ87t')
@@ -126,6 +131,7 @@ describe('Test UserService', () => {
       expect(bool).toStrictEqual(false)
     })
   })
+
   describe('Test Error', () => {
     it('user already created - same mail', async () => {
       const userDataSameEmail = {
@@ -151,28 +157,52 @@ describe('Test UserService', () => {
       )
     })
 
-    it('change id field', async () => {
-      const updatedData = { id: '55555' }
+    it('update id field and throw error', async () => {
+      const updatedData = {
+        id: '55555'
+      }
       await expect(
         userService.update('d2OayPlUh0qtDrePkJ87t', updatedData)
-      ).rejects.toThrow(ExceptionTryingToUpdateID)
+      ).rejects.toThrow(UserExceptionTryingToUpdateID)
     })
 
-    it('update already taken username', async () => {
-      const updatedData = { username: 'Ally' }
+    it('update creation date and trow error', async () => {
+      const updatedData: Prisma.UserUpdateInput = {
+        createdAt: new Date(Date.now())
+      }
+      await expect(
+        (newUser = userService.update('j6-X94_NVjmzVm9QL3k4r', updatedData))
+      ).rejects.toThrow(UserExceptionTryingToUpdateCreationDate)
+    })
+
+    it('update not taken email and trow error', async () => {
+      const updatedData: Prisma.UserUpdateInput = {
+        mail: 'noTTakenMail@mail.com'
+      }
+      await expect(
+        (newUser = userService.update('j6-X94_NVjmzVm9QL3k4r', updatedData))
+      ).rejects.toThrow(UserExceptionTryingToUpdateEmail)
+    })
+
+    it('update already taken email and throw error', async () => {
+      const updatedData: Prisma.UserUpdateInput = {
+        mail: 'alfred@42.fr'
+      }
+      await expect(
+        (newUser = userService.update('j6-X94_NVjmzVm9QL3k4r', updatedData))
+      ).rejects.toThrow(UserExceptionTryingToUpdateEmail)
+    })
+
+    it('update already taken username and trow error', async () => {
+      const updatedData: Prisma.UserUpdateInput = {
+        username: 'Ally'
+      }
       await expect(
         (newUser = userService.update('j6-X94_NVjmzVm9QL3k4r', updatedData))
       ).rejects.toThrow(PrismaClientKnownRequestError)
     })
 
-    it('update already taken email', async () => {
-      const updatedData = { mail: 'alfred@42.fr' }
-      await expect(
-        (newUser = userService.update('j6-X94_NVjmzVm9QL3k4r', updatedData))
-      ).rejects.toThrow(PrismaClientKnownRequestError)
-    })
-
-    it('user already deleted', async () => {
+    it('deleted non existing user and throw error', async () => {
       await expect(userService.delete('j12X94_NVjmzVm9QL3k4r')).rejects.toThrow(
         PrismaClientKnownRequestError
       )
