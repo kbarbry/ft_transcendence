@@ -124,6 +124,9 @@ export class RelationRequestsService {
         },
         select: {
           userReceiverId: true
+        },
+        orderBy: {
+          userReceiverId: 'asc'
         }
       })
     ).map((elem) => elem.userReceiverId)
@@ -137,6 +140,9 @@ export class RelationRequestsService {
         },
         select: {
           userSenderId: true
+        },
+        orderBy: {
+          userReceiverId: 'desc'
         }
       })
     ).map((elem) => elem.userSenderId)

@@ -202,7 +202,7 @@ describe('RelationRequestsService', () => {
       const findUsers = await relationRequestsService.findAllRequestSent(
         'e28d4ff1f6cd647fc171-'
       )
-      const expectedRes = ['f488e59aef615c5df6df-', 'df87734d323ac71c6efb-']
+      const expectedRes = ['df87734d323ac71c6efb-', 'f488e59aef615c5df6df-']
       expect(findUsers).toStrictEqual(expectedRes)
     })
 
