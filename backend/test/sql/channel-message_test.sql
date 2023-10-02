@@ -43,15 +43,20 @@ VALUES
 --  channelId | text                           |           | not null |                   | extended |             |              |
 --  content   | text                           |           | not null |                   | extended |             |              |
 --  createdAt | timestamp(3) without time zone |           | not null | CURRENT_TIMESTAMP | plain    |             |              |
+--  updatedAt | timestamp(3) without time zone |           | not null |                   | plain    |             |              |
 -- Indexes:
 --     "ChannelMessage_pkey" PRIMARY KEY, btree (id)
 -- Foreign-key constraints:
 --     "ChannelMessage_channelId_fkey" FOREIGN KEY ("channelId") REFERENCES "Channel"(id) ON UPDATE CASCADE ON DELETE CASCADE
---     "ChannelMessage_senderId_fkey" FOREIGN KEY ("senderId") REFERENCES "User"(id) ON UPDATE CASCADE ON DELETE RESTRICT
+--    "ChannelMessage_senderId_fkey" FOREIGN KEY ("senderId") REFERENCES "User"(id) ON UPDATE CASCADE ON DELETE RESTRICT
 
 INSERT INTO
 "public"."ChannelMessage"
 VALUES
 ('am7d4ec6daffd64a2d4ca', 'au7d4ec6daffd64a2d4ca', 'ac7d4ec6daffd64a2d4ca', 'Hello', '2023-09-13 11:30:42'),
 ('bm7d4ec6daffd64a2d4cb', 'bu88e59aef615c5df6dfb', 'ac7d4ec6daffd64a2d4ca', 'Hello you too', '2023-09-13 11:30:42'),
-('cm7d4ec6daffd64a2d4cc', 'cu76f06677b65d3168d6c', 'ac7d4ec6daffd64a2d4ca', 'Hi lol', '2023-09-13 11:30:42');
+('cm7d4ec6daffd64a2d4cc', 'cu76f06677b65d3168d6c', 'ac7d4ec6daffd64a2d4ca', 'Hi lol', '2023-09-13 11:30:42'),
+('em7d4ec6daffd64a2d4cc', 'du87734d323ac71c6efbd', 'ac7d4ec6daffd64a2d4ca', 'To be deleted', '2023-09-13 11:30:42'),
+('fm7d4ec6daffd64a2d4cd', 'au7d4ec6daffd64a2d4ca', 'ac7d4ec6daffd64a2d4ca', 'You all are dumb', '2023-09-13 11:30:42'),
+('gm7d4ec6daffd64a2d4cg', 'du87734d323ac71c6efbd', 'ac7d4ec6daffd64a2d4ca', 'For id update test', '2023-09-13 11:30:42'),
+('hm7d4ec6daffd64a2d4ch', 'du87734d323ac71c6efbd', 'ac7d4ec6daffd64a2d4ca', 'For empty content update test', '2023-09-13 11:30:42');`
