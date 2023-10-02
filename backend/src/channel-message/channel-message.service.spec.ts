@@ -43,8 +43,8 @@ describe('ChannelMessageService', () => {
       "public"."Channel"
       VALUES
       ('ac7d4ec6daffd64a2d4ca', 'public one', 'avatar url', 'pubic things', null, 'au7d4ec6daffd64a2d4ca', 5, 'Public', '2023-09-13 11:30:42'),
-      ('bc88e59aef615c5df6dfb', 'protected one', 'avatar url', 'protected things', null, 'bu88e59aef615c5df6dfb', 5, 'Private', '2023-09-13 11:30:42'),
-      ('cc76f06677b65d3168d6c', 'private one', 'avatar url', 'private things', null, 'cu76f06677b65d3168d6c', 5, 'Protected', '2023-09-13 11:30:42');`
+      ('bc88e59aef615c5df6dfb', 'protected one', 'avatar url', 'protected things', null, 'bu88e59aef615c5df6dfb', 5, 'Public', '2023-09-13 11:30:42'),
+      ('cc76f06677b65d3168d6c', 'private one', 'avatar url', 'private things', null, 'cu76f06677b65d3168d6c', 5, 'Public',  '2023-09-13 11:30:42');`
 
     await prismaService.$executeRaw`INSERT INTO
       "public"."ChannelMessage"

@@ -12,7 +12,6 @@ export class ExceptionTryingToUpdateOwnerID extends HttpException {
   }
 }
 
-
 export class ExceptionInvalidMaxUserInChannel extends HttpException {
   constructor() {
     super('Invalid max user number', HttpStatus.CONFLICT)
@@ -37,6 +36,5 @@ export class ExceptionInvalidDataMaxUsers extends HttpException {
 export class ExceptionUnknowUser extends HttpException {
   constructor() {
     super('User does not exists', HttpStatus.FORBIDDEN)
-
   }
 }

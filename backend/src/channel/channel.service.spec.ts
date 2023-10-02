@@ -6,10 +6,10 @@ import { cleanDataBase } from '../../test/setup-environment'
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library'
 import {
   ExceptionTryingToUpdateChannelID,
-  ExceptionInvalidMaxUserInChannel,
   ExceptionTryingToUpdateDate,
   ExceptionTryingToUpdateOwnerID,
-  ExceptionUnknowUser
+  ExceptionUnknowUser,
+  ExceptionInvalidMaxUserInChannel
 } from './exceptions/channel.exception'
 
 describe('ChannelService', () => {

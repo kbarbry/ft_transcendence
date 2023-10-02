@@ -11,7 +11,7 @@ import { ChannelInvitedService } from '../channel-invited/channel-invited.servic
 import { ExceptionUserBlockedInChannel } from '../channel/exceptions/blocked.exception'
 import { ExceptionUserNotInvited } from '../channel/exceptions/invited.exception'
 import { ChannelService } from '../channel/channel.service'
-import { ExceptionMaxUsersReachedInChannel } from '../channel/exceptions/channel.exception'
+import { ExceptionInvalidMaxUserInChannel } from '../channel/exceptions/channel.exception'
 import {
   ExceptionTryingToUpdateChannelMemberChannelId,
   ExceptionTryingToUpdateChannelMemberCreatedAt,
@@ -59,7 +59,7 @@ export class ChannelMemberService {
       else throw new ExceptionUserNotInvited()
     }
     if (channel && numberMembers >= channel.maxUsers)
-      throw new ExceptionMaxUsersReachedInChannel()
+      throw new ExceptionInvalidMaxUserInChannel()
     return this.prisma.channelMember.create({
       data
     })

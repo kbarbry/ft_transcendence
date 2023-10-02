@@ -9,7 +9,7 @@ import { ChannelInvitedService } from '../channel-invited/channel-invited.servic
 import { ExceptionUserBlockedInChannel } from '../channel/exceptions/blocked.exception'
 import { ChannelService } from '../channel/channel.service'
 import { ExceptionUserNotInvited } from '../channel/exceptions/invited.exception'
-import { ExceptionMaxUsersReachedInChannel } from '../channel/exceptions/channel.exception'
+import { ExceptionInvalidMaxUserInChannel } from '../channel/exceptions/channel.exception'
 import {
   ExceptionTryingToUpdateChannelMemberChannelId,
   ExceptionTryingToUpdateChannelMemberCreatedAt,
@@ -75,11 +75,11 @@ describe('ChannelMemberService', () => {
     //**************************************************//
     //  CHANNEL MEMBER CREATION
     //**************************************************//
-    await prismaService.$executeRaw`INSERT INTO "public"."ChannelMember" VALUES ('NewAvatarURL', 'WonderfullNickname', '765ayPlUh0qtDrePkJ87t', 'pihayPlUh0qtDrePkJ87t', 'Member', 'true', '2023-09-13 20:00:00', '2023-09-13 10:00:00');`
-    await prismaService.$executeRaw`INSERT INTO "public"."ChannelMember" VALUES ('NewAvatarURL', 'WonderfullNickname', 'ftrX94_NVjmzVm9QL3k4r', 'pihayPlUh0qtDrePkJ87t', 'Member', 'true', '2023-09-13 20:00:00', '2023-09-13 10:00:00');`
-    await prismaService.$executeRaw`INSERT INTO "public"."ChannelMember" VALUES ('NewAvatarURL', 'WonderfullNickname', '765ayPlUh0qtDrePkJ87t', 'dxb50bMlJwngXPUyc6yNX', 'Member', 'true', '2023-09-13 20:00:00', '2023-09-13 10:00:00');`
-    await prismaService.$executeRaw`INSERT INTO "public"."ChannelMember" VALUES ('NewAvatarURL', 'WonderfullNickname', 'ftrX94_NVjmzVm9QL3k4r', 'dxb50bMlJwngXPUyc6yNX', 'Member', 'true', '2023-09-13 20:00:00', '2023-09-13 10:00:00');`
-    await prismaService.$executeRaw`INSERT INTO "public"."ChannelMember" VALUES ('NewAvatarURL', 'WonderfullNickname', 'fdpvTLhbNpjA39Pc7wwtn', 'dxb50bMlJwngXPUyc6yNX', 'Member', 'true', '2023-09-13 20:00:00', '2023-09-13 10:00:00');`
+    await prismaService.$executeRaw`INSERT INTO "public"."ChannelMember" VALUES ('NewAvatarURL', 'WonderfullNickname', '765ayPlUh0qtDrePkJ87t', 'pihayPlUh0qtDrePkJ87t', false, '2023-09-13 20:00:00', '2023-09-13 10:00:00');`
+    await prismaService.$executeRaw`INSERT INTO "public"."ChannelMember" VALUES ('NewAvatarURL', 'WonderfullNickname', 'ftrX94_NVjmzVm9QL3k4r', 'pihayPlUh0qtDrePkJ87t', false, '2023-09-13 20:00:00', '2023-09-13 10:00:00');`
+    await prismaService.$executeRaw`INSERT INTO "public"."ChannelMember" VALUES ('NewAvatarURL', 'WonderfullNickname', '765ayPlUh0qtDrePkJ87t', 'dxb50bMlJwngXPUyc6yNX', false, '2023-09-13 20:00:00', '2023-09-13 10:00:00');`
+    await prismaService.$executeRaw`INSERT INTO "public"."ChannelMember" VALUES ('NewAvatarURL', 'WonderfullNickname', 'ftrX94_NVjmzVm9QL3k4r', 'dxb50bMlJwngXPUyc6yNX', false, '2023-09-13 20:00:00', '2023-09-13 10:00:00');`
+    await prismaService.$executeRaw`INSERT INTO "public"."ChannelMember" VALUES ('NewAvatarURL', 'WonderfullNickname', 'fdpvTLhbNpjA39Pc7wwtn', 'dxb50bMlJwngXPUyc6yNX', false, '2023-09-13 20:00:00', '2023-09-13 10:00:00');`
 
     //**************************************************//
     //  CHANNEL BLOCKED CREATION
@@ -320,7 +320,7 @@ describe('ChannelMemberService', () => {
         channel: { connect: { id: 'dxb50bMlJwngXPUyc6yNX' } }
       }
       await expect(channelMemberService.create(invalidData)).rejects.toThrow(
-        ExceptionMaxUsersReachedInChannel
+        ExceptionInvalidMaxUserInChannel
       )
     })
   })
