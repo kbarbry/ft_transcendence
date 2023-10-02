@@ -84,19 +84,46 @@ describe('Test UserService', () => {
     })
   })
   describe('Test Query', () => {
-    it('should find user by id', async () => {
+    it('should find user by id and return the user', async () => {
       const findUser = await userService.findOne('d2OayPlUh0qtDrePkJ87t')
       expect(findUser).toBeDefined()
     })
 
-    it('should find user by email', async () => {
+    it('should find user by id and return null', async () => {
+      const findUser = await userService.findOne('invalid id')
+      expect(findUser).toStrictEqual(null)
+    })
+
+    it('should find user by email and return the user', async () => {
       const findUser = await userService.findOnebyMail('charlie@42.fr')
       expect(findUser).toBeDefined()
     })
 
-    it('should find user by username', async () => {
+    it('should find user by email and return null', async () => {
+      const findUser = await userService.findOnebyMail('invalid email')
+      expect(findUser).toStrictEqual(null)
+    })
+
+    it('should find user by username and return the user', async () => {
       const findUser = await userService.findOneByUsername('Bobby')
       expect(findUser).toBeDefined()
+    })
+
+    it('should find user by username and return the user', async () => {
+      const findUser = await userService.findOneByUsername(
+        'Non existing Username'
+      )
+      expect(findUser).toStrictEqual(null)
+    })
+
+    it('should check if a user exist and return true', async () => {
+      const bool = await userService.isUsernameUsed('Chacha')
+      expect(bool).toStrictEqual(true)
+    })
+
+    it('should check if a user exist and return false', async () => {
+      const bool = await userService.isUsernameUsed('UsernameNotTaken')
+      expect(bool).toStrictEqual(false)
     })
   })
   describe('Test Error', () => {
