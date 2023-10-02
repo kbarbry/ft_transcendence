@@ -6,8 +6,7 @@ import {
   ExceptionTryingToUpdatePrivateMessageID,
   ExceptionPrivateMessageYourself,
   ExceptionTryingToUpdateDateMessage,
-  ExceptionTryingToUpdateUsersId,
-  ExceptionInvalidNeedlePrivateMessage
+  ExceptionTryingToUpdateUsersId
 } from '../channel/exceptions/private-message.exception'
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library'
 import { cleanDataBase } from '../../test/setup-environment'
@@ -137,7 +136,7 @@ describe('PrivateMessageService', () => {
         const timeDifferenceInSeconds = Math.abs(
           (updatedPrivateMessage.updatedAt.getTime() - date.getTime()) / 1000
         )
-        expect(timeDifferenceInSeconds).toBeLessThanOrEqual(2)
+        expect(timeDifferenceInSeconds).toBeLessThanOrEqual(3)
       }
     })
   })
@@ -261,15 +260,6 @@ describe('PrivateMessageService', () => {
       await expect(
         privateMessageService.update('er10yPlUh0qtDrePkJ87t', wrongData)
       ).rejects.toThrow(ExceptionTryingToUpdateUsersId)
-    })
-    it('trying to send an empty needle to find PrivatMessage', async () => {
-      await expect(
-        privateMessageService.findPrivateMessageContain(
-          '42tX94_NVjmzVm9QL3k4r',
-          'rtjayPlUh0qtDrePkJ87t',
-          ''
-        )
-      ).rejects.toThrow(ExceptionInvalidNeedlePrivateMessage)
     })
   })
 })

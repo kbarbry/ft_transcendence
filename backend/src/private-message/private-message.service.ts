@@ -5,8 +5,7 @@ import {
   ExceptionTryingToUpdatePrivateMessageID,
   ExceptionPrivateMessageYourself,
   ExceptionTryingToUpdateDateMessage,
-  ExceptionTryingToUpdateUsersId,
-  ExceptionInvalidNeedlePrivateMessage
+  ExceptionTryingToUpdateUsersId
 } from '../channel/exceptions/private-message.exception'
 
 @Injectable()
@@ -113,7 +112,6 @@ export class PrivateMessageService {
     idReceiv: string,
     needle: string
   ): Promise<PrivateMessage[] | null> {
-    if (needle.length <= 0) throw new ExceptionInvalidNeedlePrivateMessage()
     return this.prisma.privateMessage.findMany({
       where: {
         AND: [
