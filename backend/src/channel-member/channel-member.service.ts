@@ -6,6 +6,7 @@ import { ChannelInvitedService } from '../channel-invited/channel-invited.servic
 import { ExceptionUserBlockedInChannel } from '../channel/exceptions/blocked.exception'
 import { ExceptionUserNotInvited } from '../channel/exceptions/invited.exception'
 import { ChannelService } from '../channel/channel.service'
+import { ExceptionMaxUsersReachedInChannel } from '../channel/exceptions/channel.exception'
 
 @Injectable()
 export class ChannelMemberService {
@@ -35,14 +36,19 @@ export class ChannelMemberService {
       userId,
       channelId
     )
+    const numberMembers = (
+      await this.prisma.channelMember.findMany({ where: { channelId } })
+    ).length
     if (userBlocked) {
       throw new ExceptionUserBlockedInChannel()
     }
-    if (channel?.type === EChannelType.Protected) {
+    if (channel && channel.type === EChannelType.Protected) {
       if (userInvited)
         await this.channelInvitedService.delete(userId, channelId)
       else throw new ExceptionUserNotInvited()
     }
+    if (channel && numberMembers >= channel.maxUsers)
+      throw new ExceptionMaxUsersReachedInChannel()
     return this.prisma.channelMember.create({
       data
     })

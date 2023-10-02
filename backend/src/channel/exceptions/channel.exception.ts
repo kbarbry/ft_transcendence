@@ -29,3 +29,9 @@ export class ExceptionInvalidDataMaxUsers extends HttpException {
     super('Invalid data sent for maxUser', HttpStatus.CONFLICT)
   }
 }
+
+export class ExceptionMaxUsersReachedInChannel extends HttpException {
+  constructor() {
+    super('Too many users in channel, max users reached', HttpStatus.CONFLICT)
+  }
+}
