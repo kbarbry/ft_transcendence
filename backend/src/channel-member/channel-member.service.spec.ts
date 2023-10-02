@@ -10,6 +10,12 @@ import { ExceptionUserBlockedInChannel } from '../channel/exceptions/blocked.exc
 import { ChannelService } from '../channel/channel.service'
 import { ExceptionUserNotInvited } from '../channel/exceptions/invited.exception'
 import { ExceptionMaxUsersReachedInChannel } from '../channel/exceptions/channel.exception'
+import {
+  ExceptionTryingToUpdateChannelMemberChannelId,
+  ExceptionTryingToUpdateChannelMemberCreatedAt,
+  ExceptionTryingToUpdateChannelMemberType,
+  ExceptionTryingToUpdateChannelMemberUserID
+} from '../channel/exceptions/channel-member.exceptions'
 
 describe('ChannelMemberService', () => {
   let channelMemberService: ChannelMemberService
@@ -158,7 +164,15 @@ describe('ChannelMemberService', () => {
       expect(updatedChannelMember.nickname).toStrictEqual(updatedData.nickname)
     })
 
-    it('should delete a Channel-Member', async () => {
+    it('should upgrade ChannelMember to Admin', async () => {
+      const updatedChannelMember = await channelMemberService.makeAdmin(
+        '765ayPlUh0qtDrePkJ87t',
+        'pihayPlUh0qtDrePkJ87t'
+      )
+      expect(updatedChannelMember.type).toStrictEqual(EMemberType.Admin)
+    })
+
+    it('should delete a ChannelMember', async () => {
       const deleteChannelMember = await channelMemberService.delete(
         '765ayPlUh0qtDrePkJ87t',
         'pihayPlUh0qtDrePkJ87t'
@@ -188,6 +202,46 @@ describe('ChannelMemberService', () => {
       await expect(
         prismaService.$executeRaw`INSERT INTO "public"."ChannelMember" VALUES ('NewAvatarURL', 'WonderfullNickname', 'ftrX94_NVjmzVm9QL3k4r', 'pihayPlUh0qtDrePkJ87t', 'Member', 'true', '2023-09-13 20:00:00', '2023-09-13 10:00:00');`
       ).rejects.toThrow(PrismaClientKnownRequestError)
+    })
+
+    it('trying to update userId', async () => {
+      await expect(
+        channelMemberService.update(
+          '765ayPlUh0qtDrePkJ87t',
+          'pihayPlUh0qtDrePkJ87t',
+          { user: { connect: { id: '567ayPlUh0qtDrePkJ87t' } } }
+        )
+      ).rejects.toThrow(ExceptionTryingToUpdateChannelMemberUserID)
+    })
+
+    it('trying to update channelId', async () => {
+      await expect(
+        channelMemberService.update(
+          '765ayPlUh0qtDrePkJ87t',
+          'pihayPlUh0qtDrePkJ87t',
+          { channel: { connect: { id: 'dxb50bMlJwngXPUyc6yNX' } } }
+        )
+      ).rejects.toThrow(ExceptionTryingToUpdateChannelMemberChannelId)
+    })
+
+    it('trying to update createdAt', async () => {
+      await expect(
+        channelMemberService.update(
+          '765ayPlUh0qtDrePkJ87t',
+          'pihayPlUh0qtDrePkJ87t',
+          { createdAt: '2023-09-13 10:00:00' }
+        )
+      ).rejects.toThrow(ExceptionTryingToUpdateChannelMemberCreatedAt)
+    })
+
+    it('trying to update type', async () => {
+      await expect(
+        channelMemberService.update(
+          '765ayPlUh0qtDrePkJ87t',
+          'pihayPlUh0qtDrePkJ87t',
+          { type: EMemberType.Admin }
+        )
+      ).rejects.toThrow(ExceptionTryingToUpdateChannelMemberType)
     })
 
     it('create with invalid channel data', async () => {
