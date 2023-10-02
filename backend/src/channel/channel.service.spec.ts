@@ -33,7 +33,8 @@ describe('ChannelService', () => {
     //**************************************************//
     //  USER CREATION
     //**************************************************//
-    await prismaService.$executeRaw`INSERT INTO "public"."User" VALUES ('564ayPlUh0qtDrePkJ87t', 'random url', 'alfred@42.fr', 'Ally', 'oui', null, null, false, 'Online', 'English', 1);`
+    await prismaService.$executeRaw`INSERT INTO "public"."User" VALUES ('564ayPlUh0qtDrePkJ87t', 'random url', 'alfred@42.fr', 'Ally', 'oui', null, null, false, 'Online', 'English', 1),`
+    await prismaService.$executeRaw`INSERT INTO "public"."User" VALUES ('000ayPlUh0qtDrePkJ87t', 'random url', 'alfredo@42.fr', 'Allo', 'oui', null, null, false, 'Online', 'English', 1);`
 
     //**************************************************//
     //  CHANNEL CREATION
@@ -42,7 +43,7 @@ describe('ChannelService', () => {
       INSERT INTO
       "public"."Channel"
       VALUES
-      ('pihayPlUh0qtDrePkJ87t', 'random name', 'randomURL', 'TopicName', 'Password123', '564ayPlUh0qtDrePkJ87t', 50, 'Public', '2023-09-13 10:00:00'),
+      ('pihayPlUh0qtDrePkJ87t', 'Name', 'randomURL', 'TopicName', 'Password123', '564ayPlUh0qtDrePkJ87t', 50, 'Public', '2023-09-13 10:00:00'),
       ('333ayPlUh0qtDrePkJ87t', 'random name', 'randomURL', 'TopicName', 'Password123', '564ayPlUh0qtDrePkJ87t', 50, 'Public', '2023-09-13 10:00:00');`
 
     channelData = {
@@ -104,6 +105,17 @@ describe('ChannelService', () => {
     it('should return the ownerID of the Channel', async () => {
       const ownerID = await channelService.findOwner('pihayPlUh0qtDrePkJ87t')
       expect(ownerID).toStrictEqual('564ayPlUh0qtDrePkJ87t')
+    })
+    it('should modify ownerID', async () => {
+      const ownerID = await channelService.updateOwner(
+        'pihayPlUh0qtDrePkJ87t',
+        '000ayPlUh0qtDrePkJ87t'
+      )
+      expect(ownerID).toBeDefined
+    })
+    it('should return the ownerID of the Channel', async () => {
+      const ownerID = await channelService.findOwner('pihayPlUh0qtDrePkJ87t')
+      expect(ownerID).toStrictEqual('000ayPlUh0qtDrePkJ87t')
     })
 
     it('should find all Channel owned by an User', async () => {

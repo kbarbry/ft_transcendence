@@ -1,7 +1,7 @@
-import { Inject, Injectable } from '@nestjs/common'
+import { Injectable } from '@nestjs/common'
 import { PrismaService } from '../prisma/prisma.service'
 import { Prisma, Channel } from '@prisma/client'
-import { UserService } from '../user/user.service'
+// import { UserService } from '../user/user.service'
 import {
   ExceptionTryingToUpdateChannelID,
   ExceptionInvalidMaxUserInChannel,
@@ -14,8 +14,8 @@ import {
 export class ChannelService {
   constructor(private prisma: PrismaService) {}
 
-  @Inject(UserService)
-  private readonly UserService: UserService
+  // @Inject(UserService)
+  // private readonly UserService: UserService
 
   //**************************************************//
   //  MUTATION
@@ -111,7 +111,11 @@ export class ChannelService {
     })
   }
   async updateOwner(id: string, ownerId: string): Promise<Channel | null> {
-    const userExist = await this.UserService.findOne(ownerId)
+    const userExist = await this.prisma.user.findUnique({
+      where: {
+        id: ownerId
+      }
+    })
     if (!userExist) {
       throw new ExceptionUnknowUser()
     }

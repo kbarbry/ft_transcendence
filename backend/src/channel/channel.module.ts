@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common'
 import { ChannelService } from './channel.service'
-import { UserService } from '../user/user.service'
+// import { UserService } from '../user/user.service'
 
 @Module({
-  imports: [UserService],
+  imports: [],
   exports: [ChannelService],
   providers: [ChannelService]
 })
