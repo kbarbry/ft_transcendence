@@ -56,6 +56,7 @@ describe('Test UserService', () => {
   it('userService should be defined', () => {
     expect(userService).toBeDefined()
   })
+
   it('prismaService should be defined', () => {
     expect(prismaService).toBeDefined()
   })
@@ -67,14 +68,14 @@ describe('Test UserService', () => {
     })
 
     it('should update an existing user', async () => {
-      const updateUserData = {
-        mail: 'updatedmail@exemple.com'
+      const updateUserInput: Prisma.UserUpdateInput = {
+        username: 'Bob'
       }
       const updatedUser = await userService.update(
         'd2OayPlUh0qtDrePkJ87t',
-        updateUserData
+        updateUserInput
       )
-      expect(updatedUser.mail).toStrictEqual(updateUserData.mail)
+      expect(updatedUser.username).toStrictEqual(updateUserInput.username)
     })
 
     it('should delete an user', async () => {
