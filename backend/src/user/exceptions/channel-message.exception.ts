@@ -9,7 +9,7 @@ export class ChannelMessageExceptionTryingToUpdateID extends HttpException {
   }
 }
 
-export class ChannelMessageExceptionTryingToUpdateChannelID extends HttpException {
+export class ExceptionChannelMessageTryingToUpdateChannelID extends HttpException {
   constructor() {
     super(
       'You are trying to change the id of the channel where the message was sent',

@@ -3,7 +3,7 @@ import { ChannelMessageService } from './channel-message.service'
 import { PrismaService } from '../prisma/prisma.service'
 import { Prisma } from '@prisma/client'
 import {
-  ChannelMessageExceptionTryingToUpdateChannelID,
+  ExceptionChannelMessageTryingToUpdateChannelID,
   ChannelMessageExceptionTryingToUpdateCreationDate,
   ChannelMessageExceptionTryingToUpdateID,
   ChannelMessageExceptionTryingToUpdateSenderID
@@ -294,7 +294,7 @@ describe('ChannelMessageService', () => {
           'hm7d4ec6daffd64a2d4ch',
           messageUpdateInput
         )
-      ).rejects.toThrow(ChannelMessageExceptionTryingToUpdateChannelID)
+      ).rejects.toThrow(ExceptionChannelMessageTryingToUpdateChannelID)
     })
 
     it("should update a ChannelMessage's creation date and throw error", async () => {
