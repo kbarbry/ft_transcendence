@@ -75,11 +75,11 @@ describe('ChannelMemberService', () => {
     //**************************************************//
     //  CHANNEL MEMBER CREATION
     //**************************************************//
-    await prismaService.$executeRaw`INSERT INTO "public"."ChannelMember" VALUES ('NewAvatarURL', 'WonderfullNickname', '765ayPlUh0qtDrePkJ87t', 'pihayPlUh0qtDrePkJ87t', false, '2023-09-13 20:00:00', '2023-09-13 10:00:00');`
-    await prismaService.$executeRaw`INSERT INTO "public"."ChannelMember" VALUES ('NewAvatarURL', 'WonderfullNickname', 'ftrX94_NVjmzVm9QL3k4r', 'pihayPlUh0qtDrePkJ87t', false, '2023-09-13 20:00:00', '2023-09-13 10:00:00');`
-    await prismaService.$executeRaw`INSERT INTO "public"."ChannelMember" VALUES ('NewAvatarURL', 'WonderfullNickname', '765ayPlUh0qtDrePkJ87t', 'dxb50bMlJwngXPUyc6yNX', false, '2023-09-13 20:00:00', '2023-09-13 10:00:00');`
-    await prismaService.$executeRaw`INSERT INTO "public"."ChannelMember" VALUES ('NewAvatarURL', 'WonderfullNickname', 'ftrX94_NVjmzVm9QL3k4r', 'dxb50bMlJwngXPUyc6yNX', false, '2023-09-13 20:00:00', '2023-09-13 10:00:00');`
-    await prismaService.$executeRaw`INSERT INTO "public"."ChannelMember" VALUES ('NewAvatarURL', 'WonderfullNickname', 'fdpvTLhbNpjA39Pc7wwtn', 'dxb50bMlJwngXPUyc6yNX', false, '2023-09-13 20:00:00', '2023-09-13 10:00:00');`
+    await prismaService.$executeRaw`INSERT INTO "public"."ChannelMember" VALUES ('NewAvatarURL', 'WonderfullNickname', '765ayPlUh0qtDrePkJ87t', 'pihayPlUh0qtDrePkJ87t', 'Member', false, '2023-09-13 20:00:00', '2023-09-13 10:00:00');`
+    await prismaService.$executeRaw`INSERT INTO "public"."ChannelMember" VALUES ('NewAvatarURL', 'WonderfullNickname', 'ftrX94_NVjmzVm9QL3k4r', 'pihayPlUh0qtDrePkJ87t', 'Member', false, '2023-09-13 20:00:00', '2023-09-13 10:00:00');`
+    await prismaService.$executeRaw`INSERT INTO "public"."ChannelMember" VALUES ('NewAvatarURL', 'WonderfullNickname', '765ayPlUh0qtDrePkJ87t', 'dxb50bMlJwngXPUyc6yNX', 'Member', false, '2023-09-13 20:00:00', '2023-09-13 10:00:00');`
+    await prismaService.$executeRaw`INSERT INTO "public"."ChannelMember" VALUES ('NewAvatarURL', 'WonderfullNickname', 'ftrX94_NVjmzVm9QL3k4r', 'dxb50bMlJwngXPUyc6yNX', 'Member', false, '2023-09-13 20:00:00', '2023-09-13 10:00:00');`
+    await prismaService.$executeRaw`INSERT INTO "public"."ChannelMember" VALUES ('NewAvatarURL', 'WonderfullNickname', 'fdpvTLhbNpjA39Pc7wwtn', 'dxb50bMlJwngXPUyc6yNX', 'Member', false, '2023-09-13 20:00:00', '2023-09-13 10:00:00');`
 
     //**************************************************//
     //  CHANNEL BLOCKED CREATION
@@ -132,7 +132,7 @@ describe('ChannelMemberService', () => {
       const newChannelMember = await channelMemberService.create(
         channelMemberData
       )
-      expect(newChannelMember).toBeDefined
+      expect(newChannelMember).toBeDefined()
     })
 
     it('should create ChannelMember in protected channel', async () => {
@@ -149,7 +149,7 @@ describe('ChannelMemberService', () => {
       const newChannelMember = await channelMemberService.create(
         channelMemberData
       )
-      expect(newChannelMember).toBeDefined
+      expect(newChannelMember).toBeDefined()
     })
 
     it('should update ChannelMember', async () => {
@@ -177,7 +177,7 @@ describe('ChannelMemberService', () => {
         '765ayPlUh0qtDrePkJ87t',
         'pihayPlUh0qtDrePkJ87t'
       )
-      expect(deleteChannelMember).toBeDefined
+      expect(deleteChannelMember).toBeDefined()
     })
   })
   describe('Test query', () => {
@@ -186,14 +186,14 @@ describe('ChannelMemberService', () => {
         '765ayPlUh0qtDrePkJ87t',
         'pihayPlUh0qtDrePkJ87t'
       )
-      expect(foundChannelMember).toBeDefined
+      expect(foundChannelMember).toBeDefined()
     })
 
     it('should find all Channel', async () => {
       const channelUsers = await channelMemberService.findAllInChannel(
         'pihayPlUh0qtDrePkJ87t'
       )
-      expect(channelUsers).toBeDefined
+      expect(channelUsers).toBeDefined()
       expect(channelUsers.length).toBeGreaterThanOrEqual(1)
     })
   })

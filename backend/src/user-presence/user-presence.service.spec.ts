@@ -95,7 +95,7 @@ describe('UserPresenceService', () => {
       const foundUserPresence = await userPresenceService.findOne(
         'drfOayPwwUh12tDrePkJ8'
       )
-      expect(foundUserPresence).toBeDefined
+      expect(foundUserPresence).toBeDefined()
       expect(foundUserPresence?.id).toStrictEqual('drfOayPwwUh12tDrePkJ8')
     })
 
@@ -110,7 +110,7 @@ describe('UserPresenceService', () => {
       const foundUserPresence = await userPresenceService.findAllByUserId(
         '_U0vTLhbNpjA39Pc7wwtn'
       )
-      expect(foundUserPresence).toBeDefined
+      expect(foundUserPresence).toBeDefined()
       expect(foundUserPresence).toHaveLength(2)
     })
 

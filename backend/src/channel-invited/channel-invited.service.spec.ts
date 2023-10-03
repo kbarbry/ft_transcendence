@@ -64,7 +64,7 @@ describe('ChannelInvitedService', () => {
     //**************************************************//
     //  CHANNEL MEMBER CREATION
     //**************************************************//
-    await prismaService.$executeRaw`INSERT INTO "public"."ChannelMember" VALUES ('NewAvatarURL', 'WonderfullNickname', 'e28d4ff1f6cd647fc171-', 'pihayPlUh0qtDrePkJ87t', 'true', '2023-09-13 20:00:00', '2023-09-13 10:00:00');`
+    await prismaService.$executeRaw`INSERT INTO "public"."ChannelMember" VALUES ('NewAvatarURL', 'WonderfullNickname', 'e28d4ff1f6cd647fc171-', 'pihayPlUh0qtDrePkJ87t', 'Member', 'true', '2023-09-13 20:00:00', '2023-09-13 10:00:00');`
   })
 
   afterAll(async () => {

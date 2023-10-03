@@ -75,7 +75,7 @@ describe('GameStatService', () => {
         looser: { connect: { id: 'j6-X94_NVjmzVm9QL3k4r' } }
       }
       const createdGameStat = gameStatService.create(gameStatData)
-      expect(createdGameStat).toBeDefined
+      expect(createdGameStat).toBeDefined()
     })
   })
 
@@ -84,14 +84,14 @@ describe('GameStatService', () => {
       const foundGameStat = await gameStatService.findOne(
         'drfOayPc2Uh12tDrePkJ8'
       )
-      expect(foundGameStat).toBeDefined
+      expect(foundGameStat).toBeDefined()
     })
 
     it('should find all game on an User', async () => {
       const foundAllGameStat = await gameStatService.findAll(
         'd2OayPlUh0qtDrePkJ87t'
       )
-      expect(foundAllGameStat).toBeDefined
+      expect(foundAllGameStat).toBeDefined()
       expect(foundAllGameStat.length).toBeGreaterThan(2)
     })
 
@@ -99,7 +99,7 @@ describe('GameStatService', () => {
       const foundAllWinGameStat = await gameStatService.findWin(
         'd2OayPlUh0qtDrePkJ87t'
       )
-      expect(foundAllWinGameStat).toBeDefined
+      expect(foundAllWinGameStat).toBeDefined()
       expect(foundAllWinGameStat.length).toBeGreaterThan(1)
     })
 
@@ -107,7 +107,7 @@ describe('GameStatService', () => {
       const foundAllLoseGameStat = await gameStatService.findLose(
         'd2OayPlUh0qtDrePkJ87t'
       )
-      expect(foundAllLoseGameStat).toBeDefined
+      expect(foundAllLoseGameStat).toBeDefined()
       expect(foundAllLoseGameStat.length).toBeGreaterThan(1)
     })
 
@@ -115,14 +115,14 @@ describe('GameStatService', () => {
       const foundAllClassicGameStat = await gameStatService.findClassic(
         'd2OayPlUh0qtDrePkJ87t'
       )
-      expect(foundAllClassicGameStat).toBeDefined
+      expect(foundAllClassicGameStat).toBeDefined()
     })
 
     it('should find all special game of an user', async () => {
       const foundAllSpecialGameStat = await gameStatService.findClassic(
         'd2OayPlUh0qtDrePkJ87t'
       )
-      expect(foundAllSpecialGameStat).toBeDefined
+      expect(foundAllSpecialGameStat).toBeDefined()
     })
   })
 

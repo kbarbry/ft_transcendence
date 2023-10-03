@@ -27,8 +27,14 @@ describe('ChannelMessageService', () => {
   })
 
   beforeEach(async () => {
+    //**************************************************//
+    //  MAKE IT CLEAN
+    //**************************************************//
     await cleanDataBase(prismaService)
 
+    //**************************************************//
+    //  USER CREATION
+    //**************************************************//
     await prismaService.$executeRaw`INSERT INTO 
       "public"."User" 
       VALUES 
@@ -39,6 +45,9 @@ describe('ChannelMessageService', () => {
       ('eu178ef86d29197b6ffde', 'random url', 'evan@42.fr', 'evee', 'oui', null, null, false, 'Idle', 'Spanish', 36),
       ('fu8d4ff1f6cd647fc171f', 'random url', 'frank@42.fr', 'punisher', 'oui', null, null, false, 'DoNotDisturb', 'Spanish', 9000);`
 
+    //**************************************************//
+    //  CHANNEL CREATION
+    //**************************************************//
     await prismaService.$executeRaw`INSERT INTO
       "public"."Channel"
       VALUES
@@ -46,6 +55,9 @@ describe('ChannelMessageService', () => {
       ('bc88e59aef615c5df6dfb', 'protected one', 'avatar url', 'protected things', null, 'bu88e59aef615c5df6dfb', 5, 'Public', '2023-09-13 11:30:42'),
       ('cc76f06677b65d3168d6c', 'private one', 'avatar url', 'private things', null, 'cu76f06677b65d3168d6c', 5, 'Public',  '2023-09-13 11:30:42');`
 
+    //**************************************************//
+    //  CHANNEL MESSAGE CREATION
+    //**************************************************//
     await prismaService.$executeRaw`INSERT INTO
       "public"."ChannelMessage"
       VALUES
