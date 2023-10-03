@@ -1,58 +1,105 @@
 import { Injectable } from '@nestjs/common'
+import { PrismaService } from '../prisma/prisma.service'
 import { RelationBlocked } from '@prisma/client'
-import { PrismaService } from 'src/prisma/prisma.service'
-import { UserAlreadyBlockedException } from 'src/user/exceptions/user-already-blocked.exception'
+import {
+  ExceptionAlreadyBlocked,
+  ExceptionBlockedYourself
+} from '../user/exceptions/blocked.exceptions'
+
 @Injectable()
 export class RelationBlockedService {
   constructor(private prisma: PrismaService) {}
-
   //**************************************************//
   //  MUTATION
   //**************************************************//
 
-  //A block B
   async create(
     userAId: string,
     userBId: string
   ): Promise<RelationBlocked | null> {
-    // if no relations
-    // if already blocked
-    // if blocked by the other user
-    // if friend
-    // if requestFriendSent
-    // if requestFriendReceived
-    if (await this.isBlocked(userAId, userBId))
-      throw new UserAlreadyBlockedException()
+    if (userAId == userBId) throw new ExceptionBlockedYourself()
+    const userAlreadyBlocked = await this.isBlocked(userAId, userBId)
+    if (userAlreadyBlocked) {
+      throw new ExceptionAlreadyBlocked()
+    }
+    const BHasMadeRequest = await this.prisma.relationRequests.findUnique({
+      where: {
+        userSenderId_userReceiverId: {
+          userSenderId: userBId,
+          userReceiverId: userAId
+        }
+      }
+    })
+    if (BHasMadeRequest) {
+      await this.prisma.relationRequests.delete({
+        where: {
+          userSenderId_userReceiverId: {
+            userSenderId: userBId,
+            userReceiverId: userAId
+          }
+        }
+      })
+    }
+    const AHasMadeRequest = await this.prisma.relationRequests.findUnique({
+      where: {
+        userSenderId_userReceiverId: {
+          userSenderId: userAId,
+          userReceiverId: userBId
+        }
+      }
+    })
+    if (AHasMadeRequest) {
+      await this.prisma.relationRequests.delete({
+        where: {
+          userSenderId_userReceiverId: {
+            userSenderId: userAId,
+            userReceiverId: userBId
+          }
+        }
+      })
+    }
+
+    const BIsFriend = await this.prisma.relationFriend.findUnique({
+      where: {
+        userAId_userBId: {
+          userAId,
+          userBId
+        }
+      }
+    })
+    if (BIsFriend) {
+      await this.prisma.relationFriend.delete({
+        where: {
+          userAId_userBId: {
+            userAId,
+            userBId
+          }
+        }
+      })
+    }
     return this.prisma.relationBlocked.create({
       data: {
         userBlockingId: userAId,
         userBlockedId: userBId
       }
     })
-    return Promise.resolve(null)
   }
 
-  //A unlock B
   async delete(userAId: string, userBId: string) {
-    if (await this.isBlocked(userAId, userBId)) {
-      return await this.prisma.relationBlocked.delete({
-        where: {
-          userBlockingId_userBlockedId: {
-            userBlockingId: userAId,
-            userBlockedId: userBId
-          }
+    return await this.prisma.relationBlocked.delete({
+      where: {
+        userBlockingId_userBlockedId: {
+          userBlockingId: userAId,
+          userBlockedId: userBId
         }
-      })
-    }
-    //Pas de return, donc la fonction renvoie 'undefined' si 'isBlocked'
-    //est évalué à 'false'..
+      }
+    })
   }
 
   //**************************************************//
   //  QUERY
   //**************************************************//
 
-  // A blocked by B?
   async isBlocked(userAId: string, userBId: string): Promise<boolean> {
     const relation = await this.prisma.relationBlocked.findUnique({
       where: {
@@ -62,7 +109,7 @@ export class RelationBlockedService {
         }
       }
     })
-    return !!relation
+    return relation !== null
   }
 
   async findAllBlockedByUser(id: string): Promise<string[]> {
@@ -76,18 +123,5 @@ export class RelationBlockedService {
         }
       })
     ).map((elem) => elem.userBlockedId)
-  }
-
-  async findAllBlockingByUser(id: string): Promise<string[]> {
-    return (
-      await this.prisma.relationBlocked.findMany({
-        where: {
-          userBlockedId: id
-        },
-        select: {
-          userBlockingId: true
-        }
-      })
-    ).map((elem) => elem.userBlockingId)
   }
 }
