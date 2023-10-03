@@ -103,7 +103,7 @@ describe('PrivateMessageService', () => {
       const newPrivateMessage = await privateMessageService.create(
         privateMessageData
       )
-      expect(newPrivateMessage).toBeDefined
+      expect(newPrivateMessage).toBeDefined()
     })
 
     it('should update a private message', async () => {
@@ -121,7 +121,7 @@ describe('PrivateMessageService', () => {
       const deletedMessage = await privateMessageService.delete(
         'in7ayPlUh0qtDrePkJ87t'
       )
-      expect(deletedMessage).toBeDefined
+      expect(deletedMessage).toBeDefined()
     })
     it('should update the updatedAt', async () => {
       const updatedata = {
@@ -146,14 +146,14 @@ describe('PrivateMessageService', () => {
       const foundPrivateMessage = await privateMessageService.findOne(
         'in7ayPlUh0qtDrePkJ87t'
       )
-      expect(foundPrivateMessage).toBeDefined
+      expect(foundPrivateMessage).toBeDefined()
     })
 
     it('should find all message receie or send by an user with userId', async () => {
       const allprivateMessage = await privateMessageService.findAll(
         'rtjayPlUh0qtDrePkJ87t'
       )
-      expect(allprivateMessage).toBeDefined
+      expect(allprivateMessage).toBeDefined()
       expect(allprivateMessage.length).toBeGreaterThan(2)
     })
 

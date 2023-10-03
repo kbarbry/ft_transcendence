@@ -76,7 +76,7 @@ describe('ChannelService', () => {
   describe('Test Mutation', () => {
     it('should create a channel', async () => {
       const newChannel = await channelService.create(channelData)
-      expect(newChannel).toBeDefined
+      expect(newChannel).toBeDefined()
     })
 
     it('should update a channel', async () => {
@@ -100,7 +100,7 @@ describe('ChannelService', () => {
   describe('Test Query', () => {
     it('should find a Channel', async () => {
       const foundChannel = await channelService.findOne('pihayPlUh0qtDrePkJ87t')
-      expect(foundChannel).toBeDefined
+      expect(foundChannel).toBeDefined()
       expect(foundChannel?.ownerId).toStrictEqual('564ayPlUh0qtDrePkJ87t')
     })
 
@@ -113,7 +113,7 @@ describe('ChannelService', () => {
         'pihayPlUh0qtDrePkJ87t',
         '000ayPlUh0qtDrePkJ87t'
       )
-      expect(ownerID).toBeDefined
+      expect(ownerID).toBeDefined()
     })
     it('should return the ownerID of the Channel', async () => {
       const ownerID = await channelService.findOwner('pihayPlUh0qtDrePkJ87t')
