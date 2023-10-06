@@ -61,13 +61,13 @@ describe('ChannelMessageService', () => {
     await prismaService.$executeRaw`INSERT INTO
       "public"."ChannelMessage"
       VALUES
-      ('am7d4ec6daffd64a2d4ca', 'au7d4ec6daffd64a2d4ca', 'ac7d4ec6daffd64a2d4ca', 'Hello', '2023-09-13 11:30:42'),
-      ('bm7d4ec6daffd64a2d4cb', 'bu88e59aef615c5df6dfb', 'ac7d4ec6daffd64a2d4ca', 'Hello you too', '2023-09-13 11:30:42'),
-      ('cm7d4ec6daffd64a2d4cc', 'cu76f06677b65d3168d6c', 'ac7d4ec6daffd64a2d4ca', 'Hi lol', '2023-09-13 11:30:42'),
-      ('em7d4ec6daffd64a2d4cc', 'du87734d323ac71c6efbd', 'ac7d4ec6daffd64a2d4ca', 'To be deleted', '2023-09-13 11:30:42'),
-      ('fm7d4ec6daffd64a2d4cd', 'au7d4ec6daffd64a2d4ca', 'ac7d4ec6daffd64a2d4ca', 'You all are dumb', '2023-09-13 11:30:42'),
-      ('gm7d4ec6daffd64a2d4cg', 'du87734d323ac71c6efbd', 'ac7d4ec6daffd64a2d4ca', 'For id update test', '2023-09-13 11:30:42'),
-      ('hm7d4ec6daffd64a2d4ch', 'du87734d323ac71c6efbd', 'ac7d4ec6daffd64a2d4ca', 'For empty content update test', '2023-09-13 11:30:42');`
+      ('am7d4ec6daffd64a2d4ca', 'au7d4ec6daffd64a2d4ca', 'ac7d4ec6daffd64a2d4ca', 'Hello', null, '2023-09-13 11:30:42'),
+      ('bm7d4ec6daffd64a2d4cb', 'bu88e59aef615c5df6dfb', 'ac7d4ec6daffd64a2d4ca', 'Hello you too', null, '2023-09-13 11:30:42'),
+      ('cm7d4ec6daffd64a2d4cc', 'cu76f06677b65d3168d6c', 'ac7d4ec6daffd64a2d4ca', 'Hi lol', null, '2023-09-13 11:30:42'),
+      ('em7d4ec6daffd64a2d4cc', 'du87734d323ac71c6efbd', 'ac7d4ec6daffd64a2d4ca', 'To be deleted', null, '2023-09-13 11:30:42'),
+      ('fm7d4ec6daffd64a2d4cd', 'au7d4ec6daffd64a2d4ca', 'ac7d4ec6daffd64a2d4ca', 'You all are dumb', null, '2023-09-13 11:30:42'),
+      ('gm7d4ec6daffd64a2d4cg', 'du87734d323ac71c6efbd', 'ac7d4ec6daffd64a2d4ca', 'For id update test', null, '2023-09-13 11:30:42'),
+      ('hm7d4ec6daffd64a2d4ch', 'du87734d323ac71c6efbd', 'ac7d4ec6daffd64a2d4ca', 'For empty content update test', null, '2023-09-13 11:30:42');`
   })
 
   afterAll(async () => {
@@ -90,7 +90,6 @@ describe('ChannelMessageService', () => {
         content: 'New Message from au7d4',
         createdAt: new Date(Date.UTC(2023, 8, 13, 11, 30, 42))
       }
-
       const dbret = await channelMessageService.create(newMessageInput)
       expect(dbret.senderId).toStrictEqual(messageDB.senderId)
       expect(dbret.channelId).toStrictEqual(messageDB.channelId)
@@ -110,12 +109,15 @@ describe('ChannelMessageService', () => {
     })
 
     it('should delete a ChannelMessage', async () => {
+      const message = await channelMessageService.findOne(
+        'em7d4ec6daffd64a2d4cc'
+      )
       const delMessage = {
         id: 'em7d4ec6daffd64a2d4cc',
         senderId: 'du87734d323ac71c6efbd',
-        updatedAt: null,
         channelId: 'ac7d4ec6daffd64a2d4ca',
         content: 'To be deleted',
+        updatedAt: null,
         createdAt: new Date(Date.UTC(2023, 8, 13, 11, 30, 42))
       }
       const dbmessage = await channelMessageService.delete(

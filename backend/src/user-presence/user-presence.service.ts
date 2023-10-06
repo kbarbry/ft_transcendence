@@ -11,20 +11,18 @@ export class UserPresenceService {
   //  MUTATION
   //**************************************************//
   async create(data: Prisma.UserPresenceCreateInput): Promise<UserPresence> {
-    if (data.isConnected == false) throw new ExceptionIsConnectedShouldBeTrue()
     return this.prisma.userPresence.create({
       data
     })
   }
 
-  async disconnected(id: string, disconnectedAt: Date): Promise<UserPresence> {
+  async disconnected(id: string): Promise<UserPresence> {
     return this.prisma.userPresence.update({
       where: {
         id
       },
       data: {
-        disconnectedAt,
-        isConnected: false
+        disconnectedAt: new Date()
       }
     })
   }
@@ -32,6 +30,16 @@ export class UserPresenceService {
   //**************************************************//
   //  QUERY
   //**************************************************//
+  async isConnected(id: string): Promise<boolean> {
+    const userPresence = await this.prisma.userPresence.findUnique({
+      where: {
+        id
+      }
+    })
+    if (userPresence?.disconnectedAt) return false
+    return true
+  }
+
   async findOne(id: string): Promise<UserPresence | null> {
     return this.prisma.userPresence.findUnique({
       where: {
