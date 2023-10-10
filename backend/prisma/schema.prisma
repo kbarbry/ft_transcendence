@@ -8,43 +8,51 @@ datasource db {
 }
 
 model User {
-  id               String             @id @default(nanoid())
-  avatarUrl        String
-  mail             String             @unique
-  username         String             @unique
-  password         String?
-  googleId         String?
-  school42Id       String?
-  doubleA          Boolean            @default(false)
-  status           EStatus            @default(Online)
-  languages        ELanguage          @default(English)
-  level            Float              @default(0)
-  createdAt        DateTime           @default(now())
-  ChannelOwners    Channel[]
-  ChannelMembers   ChannelMember[]
-  ChannelBlockeds  ChannelBlocked[]
-  ChannelInviteds  ChannelInvited[]
-  Messages         ChannelMessage[]
-  looser           GameStat[]         @relation("looserUser")
-  winner           GameStat[]         @relation("winnerUser")
-  userReceiver     PrivateMessage[]   @relation("userReceiver")
-  userSender       PrivateMessage[]   @relation("userSender")
-  userBlockeds     RelationBlocked[]  @relation("userBlocked")
-  userBlocks       RelationBlocked[]  @relation("userBlock")
-  relationFriendAs RelationFriend[]   @relation("relationFriendA")
-  relationFriendBs RelationFriend[]   @relation("relationFriendB")
-  requestReceivers RelationRequests[] @relation("requestReceiver")
-  requestSenders   RelationRequests[] @relation("requestSender")
-  userPresences    UserPresence[]
+  id                String            @id @default(nanoid())
+  avatarUrl         String
+  mail              String            @unique
+  username          String            @unique
+
+  password          String?
+  googleId          String?
+  school42Id        String?
+  doubleA           Boolean            @default(false)
+
+  status            EStatus            @default(Online)
+  languages         ELanguage          @default(English)
+  level             Float              @default(0)
+  userPresences     UserPresence[]
+
+  ChannelOwners     Channel[]
+  ChannelMembers    ChannelMember[]
+  ChannelBlockeds   ChannelBlocked[]
+  ChannelInviteds   ChannelInvited[]
+  ChannelMessages   ChannelMessage[]
+
+  userReceiver      PrivateMessage[]    @relation("userReceiver")
+  userSender        PrivateMessage[]    @relation("userSender")
+  userBlockeds      RelationBlocked[]   @relation("userBlocked")
+  userBlocks        RelationBlocked[]   @relation("userBlock")
+
+  relationFriendAs  RelationFriend[]    @relation("relationFriendA")
+  relationFriendBs  RelationFriend[]    @relation("relationFriendB")
+  requestReceivers  RelationRequests[]  @relation("requestReceiver")
+  requestSenders    RelationRequests[]  @relation("requestSender")
+
+  loser             GameStat[]          @relation("loserUser")
+  winner            GameStat[]          @relation("winnerUser")
+
+  createdAt         DateTime            @default(now())
 }
 
 model UserPresence {
-  id             String    @id @default(nanoid())
-  userId         String
-  connectedAt    DateTime  @default(now())
-  disconnectedAt DateTime?
-  isConnected    Boolean   @default(true)
-  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id              String    @id @default(nanoid())
+
+  userId          String
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  connectedAt     DateTime  @default(now())
+  disconnectedAt  DateTime?
 }
 
 model RelationFriend {
@@ -75,87 +83,105 @@ model RelationBlocked {
 }
 
 model Channel {
-  id          String           @id @default(nanoid())
-  name        String           @unique
+  id          String          @id @default(nanoid())
+  name        String          @unique
   avatarUrl   String?
   topic       String?
   password    String?
+
   ownerId     String
-  maxUsers    Int              @default(50)
-  type        EChannelType     @default(Public)
-  createdAt   DateTime         @default(now())
-  owner       User             @relation(fields: [ownerId], references: [id])
+  owner       User            @relation(fields: [ownerId], references: [id])
+
+  maxUsers    Int             @default(50)
+  type        EChannelType    @default(Public)
+
   members     ChannelMember[]
   blockedUser ChannelBlocked[]
   invitedUser ChannelInvited[]
-  messages  ChannelMessage[]
+  messages    ChannelMessage[]
+
+  createdAt   DateTime        @default(now())
 }
 
 
 model ChannelBlocked {
   userId    String
   channelId String
-  channel   Channel      @relation(fields: [channelId], references: [id], onDelete: Cascade)
-  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  channel   Channel     @relation(fields: [channelId], references: [id], onDelete: Cascade)
+  user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   @@id([userId, channelId])
 }
 
 model ChannelInvited {
   userId    String
   channelId String
-  channel   Channel      @relation(fields: [channelId], references: [id], onDelete: Cascade)
-  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  channel   Channel     @relation(fields: [channelId], references: [id], onDelete: Cascade)
+  user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   @@id([userId, channelId])
 }
 
 model ChannelMember {
   avatarUrl String
   nickname  String
+
   userId    String
   channelId String
+  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  channel   Channel      @relation(fields: [channelId], references: [id], onDelete: Cascade)
+
   type      EMemberType  @default(Member)
   muted     Boolean      @default(false)
   juskakan  DateTime?
+
   createdAt DateTime     @default(now())
-  channel   Channel      @relation(fields: [channelId], references: [id], onDelete: Cascade)
-  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@id([userId, channelId])
 }
 
 model ChannelMessage {
   id        String      @id @default(nanoid())
+
   senderId  String
   channelId String
-  content   String
-  createdAt DateTime    @default(now())
-  updatedAt DateTime?   @updatedAt
-  channel   Channel     @relation(fields: [channelId], references: [id], onDelete: Cascade)
   user      User        @relation(fields: [senderId], references: [id])
+  channel   Channel     @relation(fields: [channelId], references: [id], onDelete: Cascade)
+
+  content   String
+
+  updatedAt DateTime?   @updatedAt
+  createdAt DateTime    @default(now())
 }
 
 model PrivateMessage {
-  id         String   @id @default(nanoid())
-  senderId   String
-  receiverId String
+  id          String    @id @default(nanoid())
+
+  senderId    String
+  receiverId  String
+  sender      User      @relation("userSender", fields: [senderId], references: [id])
+  receiver    User      @relation("userReceiver", fields: [receiverId], references: [id])
+
   content    String
-  updatedAt  DateTime? @updatedAt
-  createdAt  DateTime @default(now())
-  receiver   User     @relation("userReceiver", fields: [receiverId], references: [id])
-  sender     User     @relation("userSender", fields: [senderId], references: [id])
+
+  updatedAt  DateTime?  @updatedAt
+  createdAt  DateTime   @default(now())
 }
 
 model GameStat {
   id          String    @id @default(nanoid())
+
   winnerId    String?
-  looserId    String?
+  loserId     String?
+  winner      User?     @relation("winnerUser", fields: [winnerId], references: [id], onDelete: SetNull)
+  loser       User?      @relation("loserUser", fields: [loserId], references: [id], onDelete: SetNull)
+
   type        EGameType
   timePlayed  Int
   scoreWinner Int
   scoreLoser  Int
+
   createdAt   DateTime  @default(now())
-  looser      User?      @relation("looserUser", fields: [looserId], references: [id], onDelete: SetNull)
-  winner      User?      @relation("winnerUser", fields: [winnerId], references: [id], onDelete: SetNull)
 }
 
 enum EStatus {
