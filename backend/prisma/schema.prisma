@@ -39,7 +39,7 @@ model User {
   requestReceivers  RelationRequests[]  @relation("requestReceiver")
   requestSenders    RelationRequests[]  @relation("requestSender")
 
-  looser            GameStat[]          @relation("looserUser")
+  loser             GameStat[]          @relation("loserUser")
   winner            GameStat[]          @relation("winnerUser")
 
   createdAt         DateTime            @default(now())
@@ -172,9 +172,9 @@ model GameStat {
   id          String    @id @default(nanoid())
 
   winnerId    String?
-  looserId    String?
+  loserId     String?
   winner      User?     @relation("winnerUser", fields: [winnerId], references: [id], onDelete: SetNull)
-  looser      User?     @relation("looserUser", fields: [looserId], references: [id], onDelete: SetNull)
+  loser       User?      @relation("loserUser", fields: [loserId], references: [id], onDelete: SetNull)
 
   type        EGameType
   timePlayed  Int
