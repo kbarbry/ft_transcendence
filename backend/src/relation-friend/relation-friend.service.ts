@@ -20,6 +20,18 @@ export class RelationFriendService {
     })
   }
 
+  async delete(userAId: string, userBId: string): Promise<RelationFriend> {
+    if (userAId > userBId) [userAId, userBId] = [userBId, userAId]
+    return this.prisma.relationFriend.delete({
+      where: {
+        userAId_userBId: {
+          userAId,
+          userBId
+        }
+      }
+    })
+  }
+
   //**************************************************//
   //  QUERY
   //**************************************************//
@@ -59,17 +71,5 @@ export class RelationFriendService {
       }
     })
     return relation !== null
-  }
-
-  async delete(userAId: string, userBId: string): Promise<RelationFriend> {
-    if (userAId > userBId) [userAId, userBId] = [userBId, userAId]
-    return this.prisma.relationFriend.delete({
-      where: {
-        userAId_userBId: {
-          userAId,
-          userBId
-        }
-      }
-    })
   }
 }
