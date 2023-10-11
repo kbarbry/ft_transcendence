@@ -8,7 +8,7 @@ import {
   ExceptionUserAlreadyInChannel
 } from '../channel/exceptions/invited.exception'
 import { ExceptionUserBlockedInChannel } from '../channel/exceptions/blocked.exception'
-import { ChannelInvitedInput } from './dto/create-channel-invited.input'
+import { CreateChannelInvitedInput } from './dto/create-channel-invited.input'
 
 describe('ChannelInvitedService', () => {
   let channelInvitedService: ChannelInvitedService
@@ -83,10 +83,10 @@ describe('ChannelInvitedService', () => {
 
   describe('Test Mutation', () => {
     it('should create ChannelInvited', async () => {
-      const resRequest = await channelInvitedService.create({
-        user: { connect: { id: 'fdpvTLhbNpjA39Pc7wwtn' } },
-        channel: { connect: { id: 'pihayPlUh0qtDrePkJ87t' } }
-      })
+      const channelInvitedInput = new CreateChannelInvitedInput()
+      channelInvitedInput.userId = 'fdpvTLhbNpjA39Pc7wwtn'
+      channelInvitedInput.channelId = 'pihayPlUh0qtDrePkJ87t'
+      const resRequest = await channelInvitedService.create(channelInvitedInput)
       const expectedRes = {
         userId: 'fdpvTLhbNpjA39Pc7wwtn',
         channelId: 'pihayPlUh0qtDrePkJ87t'
@@ -136,12 +136,13 @@ describe('ChannelInvitedService', () => {
       expect(resRequest).toStrictEqual(expectedRes)
     })
   })
+
   describe('Test Error', () => {
     it('id already created', async () => {
       await expect(
         channelInvitedService.create({
-          user: { connect: { id: '765ayPlUh0qtDrePkJ87t' } },
-          channel: { connect: { id: 'pihayPlUh0qtDrePkJ87t' } }
+          userId: '765ayPlUh0qtDrePkJ87t',
+          channelId: 'pihayPlUh0qtDrePkJ87t'
         })
       ).rejects.toThrow(PrismaClientKnownRequestError)
     })
@@ -149,8 +150,8 @@ describe('ChannelInvitedService', () => {
     it('create with invalid channel data', async () => {
       await expect(
         channelInvitedService.create({
-          user: { connect: { id: 'fdpvTLhbNpjA39Pc7wwtn' } },
-          channel: { connect: { id: '666' } }
+          userId: 'fdpvTLhbNpjA39Pc7wwtn',
+          channelId: '666'
         })
       ).rejects.toThrow(PrismaClientKnownRequestError)
     })
@@ -158,8 +159,8 @@ describe('ChannelInvitedService', () => {
     it('create with invalid user data', async () => {
       await expect(
         channelInvitedService.create({
-          user: { connect: { id: '666' } },
-          channel: { connect: { id: 'pihayPlUh0qtDrePkJ87t' } }
+          userId: '666',
+          channelId: 'pihayPlUh0qtDrePkJ87t'
         })
       ).rejects.toThrow(PrismaClientKnownRequestError)
     })
@@ -167,8 +168,8 @@ describe('ChannelInvitedService', () => {
     it('trying to invite in a non protected channel', async () => {
       await expect(
         channelInvitedService.create({
-          user: { connect: { id: '765ayPlUh0qtDrePkJ87t' } },
-          channel: { connect: { id: 'RDaquZM1MRu7A1btyFiNb' } }
+          userId: '765ayPlUh0qtDrePkJ87t',
+          channelId: 'RDaquZM1MRu7A1btyFiNb'
         })
       ).rejects.toThrow(ExceptionChannelIsNotInProtectedMode)
     })
@@ -176,8 +177,8 @@ describe('ChannelInvitedService', () => {
     it('trying to invite a user already in the channel', async () => {
       await expect(
         channelInvitedService.create({
-          user: { connect: { id: 'e28d4ff1f6cd647fc171-' } },
-          channel: { connect: { id: 'pihayPlUh0qtDrePkJ87t' } }
+          userId: 'e28d4ff1f6cd647fc171-',
+          channelId: 'pihayPlUh0qtDrePkJ87t'
         })
       ).rejects.toThrow(ExceptionUserAlreadyInChannel)
     })
@@ -185,8 +186,8 @@ describe('ChannelInvitedService', () => {
     it('trying to invite a user blocked in the channel', async () => {
       await expect(
         channelInvitedService.create({
-          user: { connect: { id: 'ec178ef86d29197b6ffd-' } },
-          channel: { connect: { id: 'pihayPlUh0qtDrePkJ87t' } }
+          userId: 'ec178ef86d29197b6ffd-',
+          channelId: 'pihayPlUh0qtDrePkJ87t'
         })
       ).rejects.toThrow(ExceptionUserBlockedInChannel)
     })
