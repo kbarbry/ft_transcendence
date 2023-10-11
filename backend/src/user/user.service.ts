@@ -1,11 +1,8 @@
 import { Injectable } from '@nestjs/common'
-import { Prisma, User } from '@prisma/client'
+import { User } from '@prisma/client'
 import { PrismaService } from '../prisma/prisma.service'
-import {
-  ExceptionUserTryingToUpdateCreationDate,
-  ExceptionUserTryingToUpdateEmail,
-  ExceptionUserTryingToUpdateID
-} from './exceptions/user.exceptions'
+import { CreateUserInput } from './dto/create-user.input'
+import { UpdateUserInput } from './dto/update-user.input'
 
 @Injectable()
 export class UserService {
@@ -15,16 +12,13 @@ export class UserService {
   //  MUTATION
   //**************************************************//
 
-  async create(data: Prisma.UserCreateInput): Promise<User> {
+  async create(data: CreateUserInput): Promise<User> {
     return this.prisma.user.create({
       data
     })
   }
 
-  async update(id: string, data: Prisma.UserUpdateInput): Promise<User> {
-    if (data.id) throw new ExceptionUserTryingToUpdateID()
-    if (data.createdAt) throw new ExceptionUserTryingToUpdateCreationDate()
-    if (data.mail) throw new ExceptionUserTryingToUpdateEmail()
+  async update(id: string, data: UpdateUserInput): Promise<User> {
     return this.prisma.user.update({
       where: {
         id
