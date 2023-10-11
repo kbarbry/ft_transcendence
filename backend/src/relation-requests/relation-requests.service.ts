@@ -47,28 +47,23 @@ export class RelationRequestsService {
       throw new ExceptionRequestingYourself()
     }
 
-    // if blocked
     if (userBlocked) {
       throw new ExceptionUserBlocked()
     }
 
-    // if blocked by the other user
     if (userBlockedYou) {
       throw new ExceptionUserBlockedYou()
     }
 
-    // if friend
     if (userFriend) {
       throw new ExceptionUsersAlreadyFriend()
     }
 
-    // if requestFriendReceived
     if (userRequestReceived) {
       await this.delete(userReceiverId, userSenderId)
       return this.relationFriendService.create(userSenderId, userReceiverId)
     }
 
-    // if no relations
     return this.prisma.relationRequests.create({
       data: {
         userSenderId,
