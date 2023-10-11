@@ -8,15 +8,9 @@ import { UpdateChannelMessageInput } from './dto/update-channel-message.input'
 export class ChannelMessageService {
   constructor(private prisma: PrismaService) {}
 
-  async create(
-    createChannelMessageInput: CreateChannelMessageInput
-  ): Promise<ChannelMessage> {
+  async create(data: CreateChannelMessageInput): Promise<ChannelMessage> {
     return this.prisma.channelMessage.create({
-      data: {
-        content: createChannelMessageInput.content,
-        user: { connect: { id: createChannelMessageInput.userId } },
-        channel: { connect: { id: createChannelMessageInput.channelId } }
-      }
+      data
     })
   }
 
@@ -65,15 +59,13 @@ export class ChannelMessageService {
 
   async update(
     id: string,
-    updateChannelMessageInput: UpdateChannelMessageInput
+    data: UpdateChannelMessageInput
   ): Promise<ChannelMessage> {
     return this.prisma.channelMessage.update({
       where: {
         id
       },
-      data: {
-        content: updateChannelMessageInput.content
-      }
+      data
     })
   }
 
