@@ -68,14 +68,6 @@ describe('RelationFriendService', () => {
 
   describe('Test Mutation', () => {
     it('create a new relaton in DB with id in the right order', async () => {
-      // const creatRet = await relationFriendService.create(
-      //   '4376f06677b65d3168d6-',
-      //   'f488e59aef615c5df6df-'
-      // )
-      // expect(creatRet).toStrictEqual({
-      //   userAId: '4376f06677b65d3168d6-',
-      //   userBId: 'f488e59aef615c5df6df-'
-      // })
       const input: RelationFriendInput = {
         userA: '4376f06677b65d3168d6-',
         userB: 'f488e59aef615c5df6df-'
