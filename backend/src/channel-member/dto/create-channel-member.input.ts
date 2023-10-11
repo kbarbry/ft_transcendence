@@ -1,24 +1,17 @@
 import { Field, InputType } from '@nestjs/graphql'
-import {
-  IsOptional,
-  IsString,
-  IsUrl,
-  MaxLength,
-  IsUUID,
-  Length
-} from 'class-validator'
+import { IsOptional, IsString, IsUrl, IsUUID, Length } from 'class-validator'
 
 @InputType()
 export class CreateChannelMemberCreateInput {
   @Field(() => String)
   @IsOptional()
   @IsUrl()
-  @MaxLength(2083)
-  avatarUrl: string
+  @Length(1, 2083)
+  avatarUrl?: string
 
   @Field(() => String)
-  @IsString({ always: true })
-  @MaxLength(30)
+  @IsString()
+  @Length(1, 30)
   nickname: string
 
   @Field(() => String)

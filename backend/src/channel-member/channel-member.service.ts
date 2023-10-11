@@ -11,7 +11,8 @@ import { ExceptionInvalidMaxUserInChannel } from '../channel/exceptions/channel.
 import {
   ExceptionTryingToMakeAdminAnAdmin,
   ExceptionTryingToMuteAMuted,
-  ExceptionTryingToUnmuteAnUnmuted
+  ExceptionTryingToUnmuteAnUnmuted,
+  ExceptionTryingToUnmakeAdminAMember
 } from '../channel/exceptions/channel-member.exceptions'
 import { UpdateChannelMemberCreateInput } from './dto/update-channel-member.input'
 @Injectable()
@@ -76,6 +77,28 @@ export class ChannelMemberService {
     })
   }
 
+  async unmakeAdmin(userId: string, channelId: string): Promise<ChannelMember> {
+    const channelMember = await this.prisma.channelMember.findUnique({
+      where: {
+        userId_channelId: {
+          userId,
+          channelId
+        }
+      }
+    })
+    if (channelMember?.type === EMemberType.Member)
+      throw new ExceptionTryingToUnmakeAdminAMember()
+    return this.prisma.channelMember.update({
+      where: {
+        userId_channelId: {
+          userId,
+          channelId
+        }
+      },
+      data: { type: EMemberType.Member }
+    })
+  }
+
   async makeAdmin(userId: string, channelId: string): Promise<ChannelMember> {
     const channelMember = await this.prisma.channelMember.findUnique({
       where: {
@@ -85,7 +108,7 @@ export class ChannelMemberService {
         }
       }
     })
-    if (channelMember?.type == EMemberType.Admin)
+    if (channelMember?.type === EMemberType.Admin)
       throw new ExceptionTryingToMakeAdminAnAdmin()
     return this.prisma.channelMember.update({
       where: {
@@ -107,7 +130,7 @@ export class ChannelMemberService {
         }
       }
     })
-    if (channelMember?.muted == true) throw new ExceptionTryingToMuteAMuted()
+    if (channelMember?.muted === true) throw new ExceptionTryingToMuteAMuted()
     return this.prisma.channelMember.update({
       where: {
         userId_channelId: {
@@ -128,7 +151,7 @@ export class ChannelMemberService {
         }
       }
     })
-    if (channelMember?.muted == false)
+    if (channelMember?.muted === false)
       throw new ExceptionTryingToUnmuteAnUnmuted()
     return this.prisma.channelMember.update({
       where: {

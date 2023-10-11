@@ -13,7 +13,8 @@ import { ExceptionInvalidMaxUserInChannel } from '../channel/exceptions/channel.
 import {
   ExceptionTryingToMakeAdminAnAdmin,
   ExceptionTryingToMuteAMuted,
-  ExceptionTryingToUnmuteAnUnmuted
+  ExceptionTryingToUnmuteAnUnmuted,
+  ExceptionTryingToUnmakeAdminAMember
 } from '../channel/exceptions/channel-member.exceptions'
 
 describe('ChannelMemberService', () => {
@@ -74,11 +75,11 @@ describe('ChannelMemberService', () => {
     //**************************************************//
     //  CHANNEL MEMBER CREATION
     //**************************************************//
-    await prismaService.$executeRaw`INSERT INTO "public"."ChannelMember" VALUES ('NewAvatarURL', 'WonderfullNickname', '765ayPlUh0qtDrePkJ87t', 'pihayPlUh0qtDrePkJ87t', 'Member', false, '2023-09-13 20:00:00', '2023-09-13 10:00:00');`
-    await prismaService.$executeRaw`INSERT INTO "public"."ChannelMember" VALUES ('NewAvatarURL', 'WonderfullNickname', 'ftrX94_NVjmzVm9QL3k4r', 'pihayPlUh0qtDrePkJ87t', 'Member', false, '2023-09-13 20:00:00', '2023-09-13 10:00:00');`
-    await prismaService.$executeRaw`INSERT INTO "public"."ChannelMember" VALUES ('NewAvatarURL', 'WonderfullNickname', '765ayPlUh0qtDrePkJ87t', 'dxb50bMlJwngXPUyc6yNX', 'Member', false, '2023-09-13 20:00:00', '2023-09-13 10:00:00');`
-    await prismaService.$executeRaw`INSERT INTO "public"."ChannelMember" VALUES ('NewAvatarURL', 'WonderfullNickname', 'ftrX94_NVjmzVm9QL3k4r', 'dxb50bMlJwngXPUyc6yNX', 'Member', true, '2023-09-13 20:00:00', '2023-09-13 10:00:00');`
-    await prismaService.$executeRaw`INSERT INTO "public"."ChannelMember" VALUES ('NewAvatarURL', 'WonderfullNickname', 'fdpvTLhbNpjA39Pc7wwtn', 'dxb50bMlJwngXPUyc6yNX', 'Admin', false, '2023-09-13 20:00:00', '2023-09-13 10:00:00');`
+    await prismaService.$executeRaw`INSERT INTO "public"."ChannelMember" VALUES ('NewAvatarURL', 'WonderfullNickname', '765ayPlUh0qtDrePkJ87t', 'pihayPlUh0qtDrePkJ87t', 'Member', false, '2023-09-13 20:00:00');`
+    await prismaService.$executeRaw`INSERT INTO "public"."ChannelMember" VALUES ('NewAvatarURL', 'WonderfullNickname', 'ftrX94_NVjmzVm9QL3k4r', 'pihayPlUh0qtDrePkJ87t', 'Member', false, '2023-09-13 20:00:00');`
+    await prismaService.$executeRaw`INSERT INTO "public"."ChannelMember" VALUES ('NewAvatarURL', 'WonderfullNickname', '765ayPlUh0qtDrePkJ87t', 'dxb50bMlJwngXPUyc6yNX', 'Member', false, '2023-09-13 20:00:00');`
+    await prismaService.$executeRaw`INSERT INTO "public"."ChannelMember" VALUES ('NewAvatarURL', 'WonderfullNickname', 'ftrX94_NVjmzVm9QL3k4r', 'dxb50bMlJwngXPUyc6yNX', 'Member', true, '2023-09-13 20:00:00');`
+    await prismaService.$executeRaw`INSERT INTO "public"."ChannelMember" VALUES ('NewAvatarURL', 'WonderfullNickname', 'fdpvTLhbNpjA39Pc7wwtn', 'dxb50bMlJwngXPUyc6yNX', 'Admin', false, '2023-09-13 20:00:00');`
 
     //**************************************************//
     //  CHANNEL BLOCKED CREATION
@@ -162,6 +163,13 @@ describe('ChannelMemberService', () => {
       )
       expect(updatedChannelMember.type).toStrictEqual(EMemberType.Admin)
     })
+    it('should unmake an admin to member', async () => {
+      const updatedChannelMember = await channelMemberService.unmakeAdmin(
+        'fdpvTLhbNpjA39Pc7wwtn',
+        'dxb50bMlJwngXPUyc6yNX'
+      )
+      expect(updatedChannelMember.type).toStrictEqual(EMemberType.Member)
+    })
 
     it('should mute an ChannelMember', async () => {
       const updatedChannelMember = await channelMemberService.mute(
@@ -211,6 +219,14 @@ describe('ChannelMemberService', () => {
           'dxb50bMlJwngXPUyc6yNX'
         )
       ).rejects.toThrow(ExceptionTryingToMakeAdminAnAdmin)
+    })
+    it('trying to unmakeAdmin a member', async () => {
+      await expect(
+        channelMemberService.unmakeAdmin(
+          '765ayPlUh0qtDrePkJ87t',
+          'pihayPlUh0qtDrePkJ87t'
+        )
+      ).rejects.toThrow(ExceptionTryingToUnmakeAdminAMember)
     })
 
     it('trying to mute an already muted user', async () => {
