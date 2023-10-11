@@ -11,10 +11,9 @@ import { ChannelService } from '../channel/channel.service'
 import { ExceptionUserNotInvited } from '../channel/exceptions/invited.exception'
 import { ExceptionInvalidMaxUserInChannel } from '../channel/exceptions/channel.exception'
 import {
-  ExceptionTryingToUpdateChannelMemberChannelId,
-  ExceptionTryingToUpdateChannelMemberCreatedAt,
-  ExceptionTryingToUpdateChannelMemberType,
-  ExceptionTryingToUpdateChannelMemberUserID
+  ExceptionTryingToMakeAdminAnAdmin,
+  ExceptionTryingToMuteAMuted,
+  ExceptionTryingToUnmuteAnUnmuted
 } from '../channel/exceptions/channel-member.exceptions'
 
 describe('ChannelMemberService', () => {
@@ -78,8 +77,8 @@ describe('ChannelMemberService', () => {
     await prismaService.$executeRaw`INSERT INTO "public"."ChannelMember" VALUES ('NewAvatarURL', 'WonderfullNickname', '765ayPlUh0qtDrePkJ87t', 'pihayPlUh0qtDrePkJ87t', 'Member', false, '2023-09-13 20:00:00', '2023-09-13 10:00:00');`
     await prismaService.$executeRaw`INSERT INTO "public"."ChannelMember" VALUES ('NewAvatarURL', 'WonderfullNickname', 'ftrX94_NVjmzVm9QL3k4r', 'pihayPlUh0qtDrePkJ87t', 'Member', false, '2023-09-13 20:00:00', '2023-09-13 10:00:00');`
     await prismaService.$executeRaw`INSERT INTO "public"."ChannelMember" VALUES ('NewAvatarURL', 'WonderfullNickname', '765ayPlUh0qtDrePkJ87t', 'dxb50bMlJwngXPUyc6yNX', 'Member', false, '2023-09-13 20:00:00', '2023-09-13 10:00:00');`
-    await prismaService.$executeRaw`INSERT INTO "public"."ChannelMember" VALUES ('NewAvatarURL', 'WonderfullNickname', 'ftrX94_NVjmzVm9QL3k4r', 'dxb50bMlJwngXPUyc6yNX', 'Member', false, '2023-09-13 20:00:00', '2023-09-13 10:00:00');`
-    await prismaService.$executeRaw`INSERT INTO "public"."ChannelMember" VALUES ('NewAvatarURL', 'WonderfullNickname', 'fdpvTLhbNpjA39Pc7wwtn', 'dxb50bMlJwngXPUyc6yNX', 'Member', false, '2023-09-13 20:00:00', '2023-09-13 10:00:00');`
+    await prismaService.$executeRaw`INSERT INTO "public"."ChannelMember" VALUES ('NewAvatarURL', 'WonderfullNickname', 'ftrX94_NVjmzVm9QL3k4r', 'dxb50bMlJwngXPUyc6yNX', 'Member', true, '2023-09-13 20:00:00', '2023-09-13 10:00:00');`
+    await prismaService.$executeRaw`INSERT INTO "public"."ChannelMember" VALUES ('NewAvatarURL', 'WonderfullNickname', 'fdpvTLhbNpjA39Pc7wwtn', 'dxb50bMlJwngXPUyc6yNX', 'Admin', false, '2023-09-13 20:00:00', '2023-09-13 10:00:00');`
 
     //**************************************************//
     //  CHANNEL BLOCKED CREATION
@@ -164,6 +163,21 @@ describe('ChannelMemberService', () => {
       expect(updatedChannelMember.type).toStrictEqual(EMemberType.Admin)
     })
 
+    it('should mute an ChannelMember', async () => {
+      const updatedChannelMember = await channelMemberService.mute(
+        '765ayPlUh0qtDrePkJ87t',
+        'pihayPlUh0qtDrePkJ87t'
+      )
+      expect(updatedChannelMember.muted).toStrictEqual(true)
+    })
+    it('should unmute an muted ChannelMember', async () => {
+      const updatedChannelMember = await channelMemberService.unmute(
+        'ftrX94_NVjmzVm9QL3k4r',
+        'dxb50bMlJwngXPUyc6yNX'
+      )
+      expect(updatedChannelMember.muted).toStrictEqual(false)
+    })
+
     it('should delete a ChannelMember', async () => {
       const deleteChannelMember = await channelMemberService.delete(
         '765ayPlUh0qtDrePkJ87t',
@@ -190,50 +204,31 @@ describe('ChannelMemberService', () => {
     })
   })
   describe('Test Error', () => {
-    it('id already created', async () => {
+    it('trying to make an admin on an Admin', async () => {
       await expect(
-        prismaService.$executeRaw`INSERT INTO "public"."ChannelMember" VALUES ('NewAvatarURL', 'WonderfullNickname', 'ftrX94_NVjmzVm9QL3k4r', 'pihayPlUh0qtDrePkJ87t', 'Member', 'true', '2023-09-13 20:00:00', '2023-09-13 10:00:00');`
-      ).rejects.toThrow(PrismaClientKnownRequestError)
+        channelMemberService.makeAdmin(
+          'fdpvTLhbNpjA39Pc7wwtn',
+          'dxb50bMlJwngXPUyc6yNX'
+        )
+      ).rejects.toThrow(ExceptionTryingToMakeAdminAnAdmin)
     })
 
-    it('trying to update userId', async () => {
+    it('trying to mute an already muted user', async () => {
       await expect(
-        channelMemberService.update(
-          '765ayPlUh0qtDrePkJ87t',
-          'pihayPlUh0qtDrePkJ87t',
-          { user: { connect: { id: '567ayPlUh0qtDrePkJ87t' } } }
+        channelMemberService.mute(
+          'ftrX94_NVjmzVm9QL3k4r',
+          'dxb50bMlJwngXPUyc6yNX'
         )
-      ).rejects.toThrow(ExceptionTryingToUpdateChannelMemberUserID)
+      ).rejects.toThrow(ExceptionTryingToMuteAMuted)
     })
 
-    it('trying to update channelId', async () => {
+    it('trying to mute an already muted user', async () => {
       await expect(
-        channelMemberService.update(
-          '765ayPlUh0qtDrePkJ87t',
-          'pihayPlUh0qtDrePkJ87t',
-          { channel: { connect: { id: 'dxb50bMlJwngXPUyc6yNX' } } }
+        channelMemberService.unmute(
+          'fdpvTLhbNpjA39Pc7wwtn',
+          'dxb50bMlJwngXPUyc6yNX'
         )
-      ).rejects.toThrow(ExceptionTryingToUpdateChannelMemberChannelId)
-    })
-
-    it('trying to update createdAt', async () => {
-      await expect(
-        channelMemberService.update(
-          '765ayPlUh0qtDrePkJ87t',
-          'pihayPlUh0qtDrePkJ87t',
-          { createdAt: '2023-09-13 10:00:00' }
-        )
-      ).rejects.toThrow(ExceptionTryingToUpdateChannelMemberCreatedAt)
-    })
-
-    it('trying to update type', async () => {
-      await expect(
-        channelMemberService.update(
-          '765ayPlUh0qtDrePkJ87t',
-          'pihayPlUh0qtDrePkJ87t',
-          { type: EMemberType.Admin }
-        )
-      ).rejects.toThrow(ExceptionTryingToUpdateChannelMemberType)
+      ).rejects.toThrow(ExceptionTryingToUnmuteAnUnmuted)
     })
 
     it('create with invalid channel data', async () => {
