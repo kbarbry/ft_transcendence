@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common'
 import { PrismaService } from '../prisma/prisma.service'
-import { ChannelBlocked, Prisma } from '@prisma/client'
+import { ChannelBlocked } from '@prisma/client'
 import { ExceptionTryingToBlockChannelOwner } from '../channel/exceptions/blocked.exception'
+import { CreateChannelBlockedInput } from './dto/create-channel-blocked.input'
 
 @Injectable()
 export class ChannelBlockedService {
@@ -10,11 +11,9 @@ export class ChannelBlockedService {
   //  MUTATION
   //**************************************************//
 
-  async create(
-    data: Prisma.ChannelBlockedCreateInput
-  ): Promise<ChannelBlocked> {
-    const userId = data.user.connect?.id as string
-    const channelId = data.channel.connect?.id as string
+  async create(data: CreateChannelBlockedInput): Promise<ChannelBlocked> {
+    const userId = data.userId
+    const channelId = data.channelId
     const channel = await this.prisma.channel.findUnique({
       where: { id: channelId }
     })

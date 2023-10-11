@@ -4,7 +4,7 @@ import { PrismaService } from '../prisma/prisma.service'
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library'
 import { cleanDataBase } from '../../test/setup-environment'
 import { ExceptionTryingToBlockChannelOwner } from '../channel/exceptions/blocked.exception'
-
+import { CreateChannelBlockedInput } from './dto/create-channel-blocked.input'
 describe('ChannelBlockedService', () => {
   let channelBlockedService: ChannelBlockedService
   let prismaService: PrismaService
@@ -65,15 +65,15 @@ describe('ChannelBlockedService', () => {
 
   describe('Test Mutation', () => {
     it('should create ChannelBlocked', async () => {
-      const resRequest = await channelBlockedService.create({
-        user: { connect: { id: 'fdpvTLhbNpjA39Pc7wwtn' } },
-        channel: { connect: { id: 'pihayPlUh0qtDrePkJ87t' } }
-      })
+      const channelBlockedInput = new CreateChannelBlockedInput()
+      channelBlockedInput.userId = 'fdpvTLhbNpjA39Pc7wwtn'
+      channelBlockedInput.channelId = 'pihayPlUh0qtDrePkJ87t'
+      const res = await channelBlockedService.create(channelBlockedInput)
       const expectedRes = {
         userId: 'fdpvTLhbNpjA39Pc7wwtn',
         channelId: 'pihayPlUh0qtDrePkJ87t'
       }
-      expect(resRequest).toStrictEqual(expectedRes)
+      expect(res).toStrictEqual(expectedRes)
     })
 
     it('should delete a ChannelBlocked', async () => {
@@ -122,8 +122,8 @@ describe('ChannelBlockedService', () => {
     it('id already created', async () => {
       await expect(
         channelBlockedService.create({
-          user: { connect: { id: '765ayPlUh0qtDrePkJ87t' } },
-          channel: { connect: { id: 'pihayPlUh0qtDrePkJ87t' } }
+          userId: '765ayPlUh0qtDrePkJ87t',
+          channelId: 'pihayPlUh0qtDrePkJ87t'
         })
       ).rejects.toThrow(PrismaClientKnownRequestError)
     })
@@ -131,8 +131,8 @@ describe('ChannelBlockedService', () => {
     it('create with invalid channel data', async () => {
       await expect(
         channelBlockedService.create({
-          user: { connect: { id: 'fdpvTLhbNpjA39Pc7wwtn' } },
-          channel: { connect: { id: '666' } }
+          userId: 'fdpvTLhbNpjA39Pc7wwtn',
+          channelId: '666'
         })
       ).rejects.toThrow(PrismaClientKnownRequestError)
     })
@@ -140,8 +140,8 @@ describe('ChannelBlockedService', () => {
     it('create with invalid user data', async () => {
       await expect(
         channelBlockedService.create({
-          user: { connect: { id: '666' } },
-          channel: { connect: { id: 'pihayPlUh0qtDrePkJ87t' } }
+          userId: '666',
+          channelId: 'pihayPlUh0qtDrePkJ87t'
         })
       ).rejects.toThrow(PrismaClientKnownRequestError)
     })
@@ -149,8 +149,8 @@ describe('ChannelBlockedService', () => {
     it('trying to block the owner', async () => {
       await expect(
         channelBlockedService.create({
-          user: { connect: { id: '567ayPlUh0qtDrePkJ87t' } },
-          channel: { connect: { id: 'pihayPlUh0qtDrePkJ87t' } }
+          userId: '567ayPlUh0qtDrePkJ87t',
+          channelId: 'pihayPlUh0qtDrePkJ87t'
         })
       ).rejects.toThrow(ExceptionTryingToBlockChannelOwner)
     })
