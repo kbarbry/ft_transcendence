@@ -69,24 +69,24 @@ describe('RelationFriendService', () => {
   describe('Test Mutation', () => {
     it('create a new relaton in DB with id in the right order', async () => {
       const input: RelationFriendInput = {
-        userA: '4376f06677b65d3168d6-',
-        userB: 'f488e59aef615c5df6df-'
+        userAId: '4376f06677b65d3168d6-',
+        userBId: 'f488e59aef615c5df6df-'
       }
       const expectedRes = {
-        userA: '4376f06677b65d3168d6-',
-        userB: 'f488e59aef615c5df6df-'
+        userAId: '4376f06677b65d3168d6-',
+        userBId: 'f488e59aef615c5df6df-'
       }
       expect(input).toStrictEqual(expectedRes)
     })
 
     it('create a new relaton in DB with id in the wrong order', async () => {
       const input: RelationFriendInput = {
-        userA: 'e28d4ff1f6cd647fc171-',
-        userB: '4376f06677b65d3168d6-'
+        userAId: 'e28d4ff1f6cd647fc171-',
+        userBId: '4376f06677b65d3168d6-'
       }
       const expectedRes = {
-        userA: '4376f06677b65d3168d6-',
-        userB: 'e28d4ff1f6cd647fc171-'
+        userAId: '4376f06677b65d3168d6-',
+        userBId: 'e28d4ff1f6cd647fc171-'
       }
       await relationFriendService.create(input)
       expect(input).toStrictEqual(expectedRes)
@@ -179,8 +179,8 @@ describe('RelationFriendService', () => {
   describe('Test Error', () => {
     it('throw an error after trying to create a new relaton in DB with an already existing id', async () => {
       const input: RelationFriendInput = {
-        userA: '4376f06677b65d3168d6-',
-        userB: '537d4ec6daffd64a2d4c-'
+        userAId: '4376f06677b65d3168d6-',
+        userBId: '537d4ec6daffd64a2d4c-'
       }
       await expect(async () => {
         await relationFriendService.create(input)
@@ -189,8 +189,8 @@ describe('RelationFriendService', () => {
 
     it("throw an error after trying to create a new relaton in DB with id's of non existing user", async () => {
       const input: RelationFriendInput = {
-        userA: 'fff6f06677b65d3168d6-',
-        userB: 'fffd4ec6daffd64a2d4c-'
+        userAId: 'fff6f06677b65d3168d6-',
+        userBId: 'fffd4ec6daffd64a2d4c-'
       }
       await expect(async () => {
         await relationFriendService.create(input)

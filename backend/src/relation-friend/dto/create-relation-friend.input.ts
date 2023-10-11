@@ -6,10 +6,10 @@ export class RelationFriendInput {
   @Field(() => String)
   @IsUUID('4')
   @Length(21, 21)
-  userA: string
+  userAId: string
 
   @Field(() => String)
   @IsUUID('4')
   @Length(21, 21)
-  userB: string
+  userBId: string
 }

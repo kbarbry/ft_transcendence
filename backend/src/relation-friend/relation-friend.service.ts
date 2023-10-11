@@ -10,12 +10,12 @@ export class RelationFriendService {
   //  MUTATION
   //**************************************************//
   async create(data: RelationFriendInput): Promise<RelationFriend> {
-    if (data.userA > data.userB)
-      [data.userA, data.userB] = [data.userB, data.userA]
+    if (data.userAId > data.userBId)
+      [data.userAId, data.userBId] = [data.userBId, data.userAId]
     return this.prisma.relationFriend.create({
       data: {
-        userAId: data.userA,
-        userBId: data.userB
+        userAId: data.userAId,
+        userBId: data.userBId
       }
     })
   }
