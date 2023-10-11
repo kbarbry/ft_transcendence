@@ -74,7 +74,7 @@ describe('ChannelMessageService', () => {
     it('should create a ChannelMessage', async () => {
       const newMessageInput: CreateChannelMessageInput = {
         content: 'New Message from au7d4',
-        userId: 'au7d4ec6daffd64a2d4ca',
+        senderId: 'au7d4ec6daffd64a2d4ca',
         channelId: 'ac7d4ec6daffd64a2d4ca'
       }
 
@@ -285,7 +285,7 @@ describe('ChannelMessageService', () => {
     it('should create a ChannelMessage with wrong channel Id', async () => {
       const newMessageInput: CreateChannelMessageInput = {
         content: 'New Message from au7d4',
-        userId: 'au7d4ec6daffd64a2d4ca',
+        senderId: 'au7d4ec6daffd64a2d4ca',
         channelId: 'wrong channel id'
       }
 
@@ -297,7 +297,7 @@ describe('ChannelMessageService', () => {
     it('should create a ChannelMessage with wrong sender Id', async () => {
       const newMessageInput: CreateChannelMessageInput = {
         content: 'New Message from au7d4',
-        userId: 'wrong sender id',
+        senderId: 'wrong sender id',
         channelId: 'ac7d4ec6daffd64a2d4ca'
       }
 
