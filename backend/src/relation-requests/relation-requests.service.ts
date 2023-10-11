@@ -68,10 +68,7 @@ export class RelationRequestsService {
     }
 
     return this.prisma.relationRequests.create({
-      data: {
-        userSenderId: data.userSenderId,
-        userReceiverId: data.userReceiverId
-      }
+      data
     })
   }
 

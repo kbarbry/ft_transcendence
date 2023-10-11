@@ -137,19 +137,6 @@ describe('RelationRequestsService', () => {
     expect(resRequest).toStrictEqual(expectedRes)
   })
 
-  //   it('should add userB as friend (alreadyRequested B->A)', async () => {
-  //     const resRequest = await relationRequestsService.create(
-  //       'ohohoff1f6cd647fc171-',
-  //       'bababff1f6cd647fc171-'
-  //     )
-  //     const expectedRes = {
-  //       userAId: 'bababff1f6cd647fc171-',
-  //       userBId: 'ohohoff1f6cd647fc171-'
-  //     }
-  //     expect(resRequest).toStrictEqual(expectedRes)
-  //   })
-  // })
-
   it('should add userB as friend (alreadyRequested B->A)', async () => {
     const input: RelationRequestsInput = {
       userSenderId: 'ohohoff1f6cd647fc171-',
