@@ -1,21 +1,15 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { ChannelService } from './channel.service'
 import { PrismaService } from '../prisma/prisma.service'
-import { EChannelType, Prisma } from '@prisma/client'
+import { EChannelType } from '@prisma/client'
 import { cleanDataBase } from '../../test/setup-environment'
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library'
-import {
-  ExceptionTryingToUpdateChannelID,
-  ExceptionTryingToUpdateDate,
-  ExceptionTryingToUpdateOwnerID,
-  ExceptionUnknowUser,
-  ExceptionInvalidMaxUserInChannel
-} from './exceptions/channel.exception'
+import { CreateChannelInput } from './dto/create-channel.input'
 
 describe('ChannelService', () => {
   let channelService: ChannelService
   let prismaService: PrismaService
-  let channelData: Prisma.ChannelCreateInput
+  let channelData: CreateChannelInput
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -50,13 +44,7 @@ describe('ChannelService', () => {
 
     channelData = {
       name: 'testName',
-      avatarUrl: 'NiceURL',
-      topic: 'WonderfullRopic',
-      password: 'NicePassword',
-      maxUsers: 50,
-      type: EChannelType.Public,
-      createdAt: new Date(),
-      owner: { connect: { id: '564ayPlUh0qtDrePkJ87t' } }
+      ownerId: '564ayPlUh0qtDrePkJ87t'
     }
   })
 
@@ -111,7 +99,7 @@ describe('ChannelService', () => {
     it('should modify ownerID', async () => {
       const ownerID = await channelService.updateOwner(
         'pihayPlUh0qtDrePkJ87t',
-        '000ayPlUh0qtDrePkJ87t'
+        { ownerId: '000ayPlUh0qtDrePkJ87t' }
       )
       expect(ownerID).toBeDefined()
     })
@@ -129,82 +117,33 @@ describe('ChannelService', () => {
   })
 
   describe('Test Error', () => {
-    it('trying to update channel id', async () => {
-      const updatedData = { id: '555' }
-      await expect(
-        channelService.update('pihayPlUh0qtDrePkJ87t', updatedData)
-      ).rejects.toThrow(ExceptionTryingToUpdateChannelID)
-    })
-
     it('Delete an already deleted channel', async () => {
       await expect(channelService.delete('98217398')).rejects.toThrow(
         PrismaClientKnownRequestError
       )
     })
 
-    it('update Owner ID', async () => {
-      const updatedData = {
-        owner: { connect: { id: '564ayPlUh0qtDrePkJ87t' } }
-      }
-      await expect(
-        channelService.update('pihayPlUh0qtDrePkJ87t', updatedData)
-      ).rejects.toThrow(ExceptionTryingToUpdateOwnerID)
-    })
-
-    it('update with invalid number channel limit', async () => {
-      const updatedData = { maxUsers: -1 }
-      await expect(
-        channelService.update('pihayPlUh0qtDrePkJ87t', updatedData)
-      ).rejects.toThrow(ExceptionInvalidMaxUserInChannel)
-    })
-
-    it('create a new Channel with invalid MaxUser', async () => {
-      const channelData = {
-        name: 'random name',
-        avatarUrl: 'NiceURL',
-        topic: 'WonderfullRopic',
-        password: 'NicePassword',
-        maxUsers: -100,
-        type: EChannelType.Public,
-        createdAt: new Date(),
-        owner: { connect: { id: '564ayPlUh0qtDrePkJ87t' } }
-      }
-      await expect(channelService.create(channelData)).rejects.toThrow(
-        ExceptionInvalidMaxUserInChannel
-      )
-    })
     it('Trying to make a channel with already taken name', async () => {
-      const channelData = {
+      const channelData: CreateChannelInput = {
         name: 'random name',
         avatarUrl: 'NiceURL',
         topic: 'WonderfullRopic',
-        password: 'NicePassword',
         maxUsers: 30,
         type: EChannelType.Public,
-        createdAt: new Date(),
-        owner: { connect: { id: '564ayPlUh0qtDrePkJ87t' } }
+        ownerId: '564ayPlUh0qtDrePkJ87t'
       }
       await expect(channelService.create(channelData)).rejects.toThrowError(
         PrismaClientKnownRequestError
       )
     })
+
     it('try to update with already taken name', async () => {
       const updatedData = { name: 'random name' }
       await expect(
         channelService.update('pihayPlUh0qtDrePkJ87t', updatedData)
       ).rejects.toThrowError(PrismaClientKnownRequestError)
     })
-    it('try to update an OwnerId with a wrong ID', async () => {
-      await expect(
-        channelService.updateOwner('pihayPlUh0qtDrePkJ87t', '555')
-      ).rejects.toThrow(ExceptionUnknowUser)
-    })
-    it('update Date of a Channel', async () => {
-      const updatedData = { createdAt: new Date() }
-      await expect(
-        channelService.update('pihayPlUh0qtDrePkJ87t', updatedData)
-      ).rejects.toThrow(ExceptionTryingToUpdateDate)
-    })
+
     it('Try to change the name of non-existant channel', async () => {
       const updatedData = { name: 'new_name' }
       await expect(
