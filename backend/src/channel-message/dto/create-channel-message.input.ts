@@ -1,11 +1,11 @@
 import { Field, InputType } from '@nestjs/graphql'
-import { IsString, IsUUID, Length, MaxLength } from 'class-validator'
+import { IsString, IsUUID, Length } from 'class-validator'
 
 @InputType()
 export class CreateChannelMessageInput {
   @Field(() => String)
   @IsString()
-  @MaxLength(2000)
+  @Length(1, 2000)
   content: string
 
   @Field(() => String)
