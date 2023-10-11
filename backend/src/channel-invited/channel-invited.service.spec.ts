@@ -8,6 +8,7 @@ import {
   ExceptionUserAlreadyInChannel
 } from '../channel/exceptions/invited.exception'
 import { ExceptionUserBlockedInChannel } from '../channel/exceptions/blocked.exception'
+import { ChannelInvitedInput } from './dto/create-channel-invited.input'
 
 describe('ChannelInvitedService', () => {
   let channelInvitedService: ChannelInvitedService

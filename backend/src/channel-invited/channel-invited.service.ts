@@ -1,11 +1,12 @@
 import { Injectable } from '@nestjs/common'
 import { PrismaService } from '../prisma/prisma.service'
-import { ChannelInvited, EChannelType, Prisma } from '@prisma/client'
+import { ChannelInvited, EChannelType } from '@prisma/client'
 import {
   ExceptionChannelIsNotInProtectedMode,
   ExceptionUserAlreadyInChannel
 } from '../channel/exceptions/invited.exception'
 import { ExceptionUserBlockedInChannel } from '../channel/exceptions/blocked.exception'
+import { ChannelInvitedInput } from './dto/create-channel-invited.input'
 
 @Injectable()
 export class ChannelInvitedService {
@@ -14,11 +15,13 @@ export class ChannelInvitedService {
   //**************************************************//
   //  MUTATION
   //**************************************************//
-  async create(
-    data: Prisma.ChannelInvitedCreateInput
-  ): Promise<ChannelInvited> {
-    const userId = data.user.connect?.id as string
-    const channelId = data.channel.connect?.id as string
+  async create(data: ChannelInvitedInput): Promise<ChannelInvited> {
+    // const userId = data.user.connect?.id as string
+    // const channelId = data.channel.connect?.id as string
+    const { userId, channelId } = data
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId }
+    })
     const channel = await this.prisma.channel.findUnique({
       where: { id: channelId }
     })
