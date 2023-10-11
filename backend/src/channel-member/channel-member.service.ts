@@ -6,6 +6,7 @@ import {
   EChannelType,
   EMemberType
 } from '@prisma/client'
+import { CreateChannelMemberCreateInput } from './dto/create-channel-member.input'
 import { ChannelBlockedService } from '../channel-blocked/channel-blocked.service'
 import { ChannelInvitedService } from '../channel-invited/channel-invited.service'
 import { ExceptionUserBlockedInChannel } from '../channel/exceptions/blocked.exception'
@@ -35,9 +36,9 @@ export class ChannelMemberService {
   //**************************************************//
   //  MUTATION
   //**************************************************//
-  async create(data: Prisma.ChannelMemberCreateInput): Promise<ChannelMember> {
-    const userId = data.user.connect?.id as string
-    const channelId = data.channel.connect?.id as string
+  async create(data: CreateChannelMemberCreateInput): Promise<ChannelMember> {
+    const userId = data.userId as string
+    const channelId = data.channelId as string
     const channel = await this.channelService.findOne(channelId)
     const userBlocked = await this.channelBlockedService.findOne(
       userId,

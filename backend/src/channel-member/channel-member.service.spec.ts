@@ -122,12 +122,8 @@ describe('ChannelMemberService', () => {
       const channelMemberData = {
         avatarUrl: 'Nice_AVATAAAAR',
         nickname: 'Nick_la_vie',
-        createdAt: new Date(),
-        type: EMemberType.Member,
-        muted: false,
-        juskakan: null,
-        user: { connect: { id: '567ayPlUh0qtDrePkJ87t' } },
-        channel: { connect: { id: 'pihayPlUh0qtDrePkJ87t' } }
+        userId: '567ayPlUh0qtDrePkJ87t',
+        channelId: 'pihayPlUh0qtDrePkJ87t'
       }
       const newChannelMember = await channelMemberService.create(
         channelMemberData
@@ -139,12 +135,8 @@ describe('ChannelMemberService', () => {
       const channelMemberData = {
         avatarUrl: 'Nice_AVATAAAAR',
         nickname: 'Nick_la_vie',
-        createdAt: new Date(),
-        type: EMemberType.Member,
-        muted: false,
-        juskakan: null,
-        user: { connect: { id: 'fdpvTLhbNpjA39Pc7wwtn' } },
-        channel: { connect: { id: 'RDaquZM1MRu7A1btyFiNb' } }
+        userId: 'fdpvTLhbNpjA39Pc7wwtn',
+        channelId: 'RDaquZM1MRu7A1btyFiNb'
       }
       const newChannelMember = await channelMemberService.create(
         channelMemberData
@@ -248,12 +240,8 @@ describe('ChannelMemberService', () => {
       const invalidData = {
         avatarUrl: 'Nice_AVATAAAAR',
         nickname: 'Nick_la_vie',
-        createdAt: new Date(),
-        type: EMemberType.Member,
-        muted: false,
-        juskakan: null,
-        user: { connect: { id: '567ayPlUh0qtDrePkJ87t' } },
-        channel: { connect: { id: '666' } }
+        userId: '567ayPlUh0qtDrePkJ87t',
+        channelId: '666'
       }
       await expect(channelMemberService.create(invalidData)).rejects.toThrow(
         PrismaClientKnownRequestError
@@ -264,12 +252,8 @@ describe('ChannelMemberService', () => {
       const invalidData = {
         avatarUrl: 'Nice_AVATAAAAR',
         nickname: 'Nick_la_vie',
-        createdAt: new Date(),
-        type: EMemberType.Member,
-        muted: false,
-        juskakan: null,
-        user: { connect: { id: '666' } },
-        channel: { connect: { id: 'pihayPlUh0qtDrePkJ87t' } }
+        userId: '666',
+        channelId: 'pihayPlUh0qtDrePkJ87t'
       }
       await expect(channelMemberService.create(invalidData)).rejects.toThrow(
         PrismaClientKnownRequestError
@@ -280,12 +264,8 @@ describe('ChannelMemberService', () => {
       const invalidData = {
         avatarUrl: 'Nice_AVATAAAAR',
         nickname: 'Nick_la_vie',
-        createdAt: new Date(),
-        type: EMemberType.Member,
-        muted: false,
-        juskakan: null,
-        user: { connect: { id: 'fdpvTLhbNpjA39Pc7wwtn' } },
-        channel: { connect: { id: 'pihayPlUh0qtDrePkJ87t' } }
+        userId: 'fdpvTLhbNpjA39Pc7wwtn',
+        channelId: 'pihayPlUh0qtDrePkJ87t'
       }
       await expect(channelMemberService.create(invalidData)).rejects.toThrow(
         ExceptionUserBlockedInChannel
@@ -296,12 +276,8 @@ describe('ChannelMemberService', () => {
       const invalidData = {
         avatarUrl: 'Nice_AVATAAAAR',
         nickname: 'Nick_la_vie',
-        createdAt: new Date(),
-        type: EMemberType.Member,
-        muted: false,
-        juskakan: null,
-        user: { connect: { id: 'ftrX94_NVjmzVm9QL3k4r' } },
-        channel: { connect: { id: 'RDaquZM1MRu7A1btyFiNb' } }
+        userId: 'ftrX94_NVjmzVm9QL3k4r',
+        channelId: 'RDaquZM1MRu7A1btyFiNb'
       }
       await expect(channelMemberService.create(invalidData)).rejects.toThrow(
         ExceptionUserNotInvited
@@ -312,12 +288,8 @@ describe('ChannelMemberService', () => {
       const invalidData = {
         avatarUrl: 'Nice_AVATAAAAR',
         nickname: 'Nick_la_vie',
-        createdAt: new Date(),
-        type: EMemberType.Member,
-        muted: false,
-        juskakan: null,
-        user: { connect: { id: '567ayPlUh0qtDrePkJ87t' } },
-        channel: { connect: { id: 'dxb50bMlJwngXPUyc6yNX' } }
+        userId: '567ayPlUh0qtDrePkJ87t',
+        channelId: 'dxb50bMlJwngXPUyc6yNX'
       }
       await expect(channelMemberService.create(invalidData)).rejects.toThrow(
         ExceptionInvalidMaxUserInChannel
