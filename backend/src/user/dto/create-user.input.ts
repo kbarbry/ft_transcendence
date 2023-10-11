@@ -1,6 +1,7 @@
 import { InputType, Field, Float } from '@nestjs/graphql'
-import { EStatus } from '@prisma/client'
+import { ELanguage, EStatus } from '@prisma/client'
 import {
+  IsBoolean,
   IsEmail,
   IsEnum,
   IsNumber,
@@ -19,7 +20,7 @@ export class CreateUserInput {
   avatarUrl?: string
 
   @Field(() => String)
-  @IsEmail()
+  @IsEmail({})
   mail: string
 
   @Field(() => String)
@@ -27,11 +28,41 @@ export class CreateUserInput {
   @MaxLength(30)
   username: string
 
+  @Field(() => String)
+  @IsOptional()
+  @IsString({ always: true })
+  @MaxLength(30)
+  password?: string
+
+  @Field(() => String)
+  @IsOptional()
+  @IsString({ always: true })
+  @MaxLength(255)
+  googleId?: string
+
+  @Field(() => String)
+  @IsOptional()
+  @IsString({ always: true })
+  @MaxLength(255)
+  school42Id?: string
+
+  @Field(() => String)
+  @IsOptional()
+  @IsBoolean()
+  doubleA?: boolean
+
   @Field(() => EStatus)
+  @IsOptional()
   @IsEnum(EStatus)
-  status: EStatus
+  status?: EStatus
+
+  @Field(() => ELanguage)
+  @IsOptional()
+  @IsEnum(ELanguage)
+  languages?: ELanguage
 
   @Field(() => Float)
+  @IsOptional()
   @IsNumber({ allowInfinity: false, allowNaN: false })
-  level: number
+  level?: number
 }
