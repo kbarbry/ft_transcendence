@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common'
 import { RelationFriend } from '@prisma/client'
 import { PrismaService } from '../prisma/prisma.service'
-
+import { RelationFriendInput } from './dto/create-relation-friend.input'
 @Injectable()
 export class RelationFriendService {
   constructor(private prisma: PrismaService) {}
@@ -9,12 +9,13 @@ export class RelationFriendService {
   //**************************************************//
   //  MUTATION
   //**************************************************//
-  async create(userAId: string, userBId: string): Promise<RelationFriend> {
-    if (userAId > userBId) [userAId, userBId] = [userBId, userAId]
+  async create(data: RelationFriendInput): Promise<RelationFriend> {
+    if (data.userA > data.userB)
+      [data.userA, data.userB] = [data.userB, data.userA]
     return this.prisma.relationFriend.create({
       data: {
-        userAId,
-        userBId
+        userAId: data.userA,
+        userBId: data.userB
       }
     })
   }

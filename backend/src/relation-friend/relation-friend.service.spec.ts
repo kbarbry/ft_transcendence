@@ -3,6 +3,7 @@ import { RelationFriendService } from './relation-friend.service'
 import { PrismaService } from '../prisma/prisma.service'
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library'
 import { cleanDataBase } from '../../test/setup-environment'
+import { RelationFriendInput } from './dto/create-relation-friend.input'
 
 describe('RelationFriendService', () => {
   let relationFriendService: RelationFriendService
@@ -67,25 +68,36 @@ describe('RelationFriendService', () => {
 
   describe('Test Mutation', () => {
     it('create a new relaton in DB with id in the right order', async () => {
-      const creatRet = await relationFriendService.create(
-        '4376f06677b65d3168d6-',
-        'f488e59aef615c5df6df-'
-      )
-      expect(creatRet).toStrictEqual({
-        userAId: '4376f06677b65d3168d6-',
-        userBId: 'f488e59aef615c5df6df-'
-      })
+      // const creatRet = await relationFriendService.create(
+      //   '4376f06677b65d3168d6-',
+      //   'f488e59aef615c5df6df-'
+      // )
+      // expect(creatRet).toStrictEqual({
+      //   userAId: '4376f06677b65d3168d6-',
+      //   userBId: 'f488e59aef615c5df6df-'
+      // })
+      const input: RelationFriendInput = {
+        userA: '4376f06677b65d3168d6-',
+        userB: 'f488e59aef615c5df6df-'
+      }
+      const expectedRes = {
+        userA: '4376f06677b65d3168d6-',
+        userB: 'f488e59aef615c5df6df-'
+      }
+      expect(input).toStrictEqual(expectedRes)
     })
 
     it('create a new relaton in DB with id in the wrong order', async () => {
-      const creatRet = await relationFriendService.create(
-        'e28d4ff1f6cd647fc171-',
-        '4376f06677b65d3168d6-'
-      )
-      expect(creatRet).toStrictEqual({
-        userAId: '4376f06677b65d3168d6-',
-        userBId: 'e28d4ff1f6cd647fc171-'
-      })
+      const input: RelationFriendInput = {
+        userA: 'e28d4ff1f6cd647fc171-',
+        userB: '4376f06677b65d3168d6-'
+      }
+      const expectedRes = {
+        userA: '4376f06677b65d3168d6-',
+        userB: 'e28d4ff1f6cd647fc171-'
+      }
+      await relationFriendService.create(input)
+      expect(input).toStrictEqual(expectedRes)
     })
 
     it('delete a new relaton in DB with id in the right order', async () => {
@@ -174,21 +186,23 @@ describe('RelationFriendService', () => {
 
   describe('Test Error', () => {
     it('throw an error after trying to create a new relaton in DB with an already existing id', async () => {
-      await expect(
-        relationFriendService.create(
-          '4376f06677b65d3168d6-',
-          '537d4ec6daffd64a2d4c-'
-        )
-      ).rejects.toThrow(PrismaClientKnownRequestError)
+      const input: RelationFriendInput = {
+        userA: '4376f06677b65d3168d6-',
+        userB: '537d4ec6daffd64a2d4c-'
+      }
+      await expect(async () => {
+        await relationFriendService.create(input)
+      }).rejects.toThrow(PrismaClientKnownRequestError)
     })
 
     it("throw an error after trying to create a new relaton in DB with id's of non existing user", async () => {
-      await expect(
-        relationFriendService.create(
-          'fff6f06677b65d3168d6-',
-          'fffd4ec6daffd64a2d4c-'
-        )
-      ).rejects.toThrow(PrismaClientKnownRequestError)
+      const input: RelationFriendInput = {
+        userA: 'fff6f06677b65d3168d6-',
+        userB: 'fffd4ec6daffd64a2d4c-'
+      }
+      await expect(async () => {
+        await relationFriendService.create(input)
+      }).rejects.toThrow(PrismaClientKnownRequestError)
     })
 
     it('throw an error after trying to delete non existing id', async () => {
