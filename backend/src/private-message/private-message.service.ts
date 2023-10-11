@@ -1,12 +1,9 @@
 import { Injectable } from '@nestjs/common'
-import { Prisma, PrivateMessage } from '@prisma/client'
+import { PrivateMessage } from '@prisma/client'
 import { PrismaService } from '../prisma/prisma.service'
-import {
-  ExceptionTryingToUpdatePrivateMessageID,
-  ExceptionPrivateMessageYourself,
-  ExceptionTryingToUpdateDateMessage,
-  ExceptionTryingToUpdateUsersId
-} from '../channel/exceptions/private-message.exception'
+import { ExceptionPrivateMessageYourself } from '../channel/exceptions/private-message.exception'
+import { CreatePrivateMessageInput } from './dto/create-private-message.input'
+import { UpdatePrivateMessageInput } from './dto/update-private-message.input'
 
 @Injectable()
 export class PrivateMessageService {
@@ -16,10 +13,8 @@ export class PrivateMessageService {
   //  MUTATION
   //**************************************************//
 
-  async create(
-    data: Prisma.PrivateMessageCreateInput
-  ): Promise<PrivateMessage> {
-    if (data.receiver.connect?.id == data.sender.connect?.id) {
+  async create(data: CreatePrivateMessageInput): Promise<PrivateMessage> {
+    if (data.senderId === data.receiverId) {
       throw new ExceptionPrivateMessageYourself()
     }
     return this.prisma.privateMessage.create({
@@ -29,12 +24,8 @@ export class PrivateMessageService {
 
   async update(
     id: string,
-    data: Prisma.PrivateMessageUpdateInput
+    data: UpdatePrivateMessageInput
   ): Promise<PrivateMessage> {
-    if (data.id) throw new ExceptionTryingToUpdatePrivateMessageID()
-    if (data.createdAt) throw new ExceptionTryingToUpdateDateMessage()
-    if (data.receiver?.connect?.id || data.sender?.connect?.id)
-      throw new ExceptionTryingToUpdateUsersId()
     return this.prisma.privateMessage.update({
       where: {
         id
