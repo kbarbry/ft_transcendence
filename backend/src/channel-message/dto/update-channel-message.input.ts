@@ -1,11 +1,7 @@
-import { Field, InputType } from '@nestjs/graphql'
-import { IsNotEmpty, IsString, MaxLength } from 'class-validator'
+import { InputType, OmitType, PartialType } from '@nestjs/graphql'
+import { CreateChannelMessageInput } from './create-channel-message.input'
 
 @InputType()
-export class UpdateChannelMessageInput {
-  @Field(() => String)
-  @IsString({ always: true })
-  @IsNotEmpty()
-  @MaxLength(2000)
-  content: string
-}
+export class UpdateChannelMessageInput extends PartialType(
+  OmitType(CreateChannelMessageInput, ['senderId', 'channelId'])
+) {}
