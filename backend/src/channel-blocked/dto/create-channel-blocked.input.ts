@@ -2,7 +2,7 @@ import { InputType, Field } from '@nestjs/graphql'
 import { IsUUID, Length } from 'class-validator'
 
 @InputType()
-export class ChannelBlockedInput {
+export class CreateChannelBlockedInput {
   @Field(() => String)
   @IsUUID('4')
   @Length(21, 21)
