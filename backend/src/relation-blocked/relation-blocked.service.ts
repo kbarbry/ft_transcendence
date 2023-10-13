@@ -5,6 +5,7 @@ import {
   ExceptionAlreadyBlocked,
   ExceptionBlockedYourself
 } from '../user/exceptions/blocked.exceptions'
+import { RelationBlockedInput } from './dto/create-relation-blocked.input'
 
 @Injectable()
 export class RelationBlockedService {
@@ -13,20 +14,21 @@ export class RelationBlockedService {
   //  MUTATION
   //**************************************************//
 
-  async create(
-    userAId: string,
-    userBId: string
-  ): Promise<RelationBlocked | null> {
-    if (userAId == userBId) throw new ExceptionBlockedYourself()
-    const userAlreadyBlocked = await this.isBlocked(userAId, userBId)
+  async create(data: RelationBlockedInput): Promise<RelationBlocked | null> {
+    if (data.userBlockingId == data.userBlockedId)
+      throw new ExceptionBlockedYourself()
+    const userAlreadyBlocked = await this.isBlocked(
+      data.userBlockingId,
+      data.userBlockedId
+    )
     if (userAlreadyBlocked) {
       throw new ExceptionAlreadyBlocked()
     }
     const BHasMadeRequest = await this.prisma.relationRequests.findUnique({
       where: {
         userSenderId_userReceiverId: {
-          userSenderId: userBId,
-          userReceiverId: userAId
+          userSenderId: data.userBlockedId,
+          userReceiverId: data.userBlockingId
         }
       }
     })
@@ -34,8 +36,8 @@ export class RelationBlockedService {
       await this.prisma.relationRequests.delete({
         where: {
           userSenderId_userReceiverId: {
-            userSenderId: userBId,
-            userReceiverId: userAId
+            userSenderId: data.userBlockedId,
+            userReceiverId: data.userBlockingId
           }
         }
       })
@@ -43,8 +45,8 @@ export class RelationBlockedService {
     const AHasMadeRequest = await this.prisma.relationRequests.findUnique({
       where: {
         userSenderId_userReceiverId: {
-          userSenderId: userAId,
-          userReceiverId: userBId
+          userSenderId: data.userBlockingId,
+          userReceiverId: data.userBlockedId
         }
       }
     })
@@ -52,8 +54,8 @@ export class RelationBlockedService {
       await this.prisma.relationRequests.delete({
         where: {
           userSenderId_userReceiverId: {
-            userSenderId: userAId,
-            userReceiverId: userBId
+            userSenderId: data.userBlockingId,
+            userReceiverId: data.userBlockedId
           }
         }
       })
@@ -62,8 +64,8 @@ export class RelationBlockedService {
     const BIsFriend = await this.prisma.relationFriend.findUnique({
       where: {
         userAId_userBId: {
-          userAId,
-          userBId
+          userAId: data.userBlockingId,
+          userBId: data.userBlockedId
         }
       }
     })
@@ -71,16 +73,16 @@ export class RelationBlockedService {
       await this.prisma.relationFriend.delete({
         where: {
           userAId_userBId: {
-            userAId,
-            userBId
+            userAId: data.userBlockingId,
+            userBId: data.userBlockedId
           }
         }
       })
     }
     return this.prisma.relationBlocked.create({
       data: {
-        userBlockingId: userAId,
-        userBlockedId: userBId
+        userBlockingId: data.userBlockingId,
+        userBlockedId: data.userBlockedId
       }
     })
   }

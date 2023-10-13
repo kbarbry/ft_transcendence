@@ -75,8 +75,6 @@ describe('RelationRequestsService', () => {
       ('bababff1f6cd647fc171-', 'ohohoff1f6cd647fc171-'),
       ('e28d4ff1f6cd647fc171-', 'df87734d323ac71c6efb-');`
 
-    //'537d4ec6daffd64a2d4c', '4376f06677b65d3168d6'
-
     await prismaService.$executeRaw`INSERT INTO
       "public"."RelationBlocked"
       VALUES
