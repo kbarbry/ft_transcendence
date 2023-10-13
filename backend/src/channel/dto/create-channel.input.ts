@@ -15,42 +15,59 @@ import {
 @InputType()
 export class CreateChannelInput {
   @Field(() => String)
-  @IsString()
-  @Length(1, 30)
+  @IsString({ message: '$property must be a string.' })
+  @Length(1, 30, {
+    message:
+      '$property must be between $constraint1 and $constraint2 characters long.'
+  })
   name: string
 
   @Field(() => String)
   @IsOptional()
-  @IsUrl()
-  @Length(1, 2083)
+  @IsUrl({}, { message: '$property must be a valid URL.' })
+  @Length(1, 2083, {
+    message:
+      '$property must be between $constraint1 and $constraint2 characters long.'
+  })
   avatarUrl?: string
 
   @Field(() => String)
   @IsOptional()
-  @IsString()
-  @Length(1, 1024)
+  @IsString({ message: '$property must be a string.' })
+  @Length(1, 1024, {
+    message:
+      '$property must be between $constraint1 and $constraint2 characters long.'
+  })
   topic?: string
 
   @Field(() => String)
   @IsOptional()
-  @IsString()
-  @Length(1, 30)
+  @IsString({ message: '$property must be a string.' })
+  @Length(1, 30, {
+    message:
+      '$property must be between $constraint1 and $constraint2 characters long.'
+  })
   password?: string
 
   @Field(() => String)
-  @IsUUID('4', { message: 'User ID must be a valid nanoid.' })
-  @Length(21, 21, { message: 'User ID must be exactly 21 characters long.' })
+  @IsUUID('4', { message: '$property must be a valid nanoid.' })
+  @Length(21, 21, {
+    message: '$property must be exactly $constraint1 characters long.'
+  })
   ownerId: string
 
   @Field(() => Int)
   @IsOptional()
-  @IsNumber({ allowInfinity: false, allowNaN: false })
-  @Min(1)
-  @Max(50)
+  @IsNumber(
+    { allowInfinity: false, allowNaN: false },
+    { message: '$property must be a number.' }
+  )
+  @Min(1, { message: '$property must not be less than $constraint1.' })
+  @Max(50, { message: '$property must not be greater than $constraint1.' })
   maxUsers?: number
 
   @Field(() => EChannelType)
   @IsOptional()
-  @IsEnum(EChannelType)
+  @IsEnum(EChannelType, { message: '$property must be a valid $constraint1.' })
   type?: EChannelType
 }

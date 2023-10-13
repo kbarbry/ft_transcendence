@@ -5,44 +5,57 @@ import {
   IsNotEmpty,
   IsNumber,
   IsOptional,
-  IsPositive,
   IsUUID,
-  Length
+  Length,
+  Min
 } from 'class-validator'
 
 @InputType()
 export class CreateGameStatInput {
   @Field(() => EGameType)
-  @IsEnum(EGameType)
+  @IsEnum(EGameType, { message: '$property must be a valid $constraint1.' })
   type: EGameType
 
   @Field(() => Int)
   @IsNotEmpty()
-  @IsNumber({ allowInfinity: false, allowNaN: false })
-  @IsPositive()
+  @IsNumber(
+    { allowInfinity: false, allowNaN: false },
+    { message: '$property must be a number.' }
+  )
+  @Min(0, { message: '$property must not be less than $constraint1.' })
   timePlayed: number
 
   @Field(() => Int)
   @IsNotEmpty()
-  @IsNumber({ allowInfinity: false, allowNaN: false })
-  @IsPositive()
+  @IsNumber(
+    { allowInfinity: false, allowNaN: false },
+    { message: '$property must be a number.' }
+  )
+  @Min(0, { message: '$property must not be less than $constraint1.' })
   scoreWinner: number
 
   @Field(() => Int)
   @IsNotEmpty()
-  @IsNumber({ allowInfinity: false, allowNaN: false })
-  @IsPositive()
+  @IsNumber(
+    { allowInfinity: false, allowNaN: false },
+    { message: '$property must be a number.' }
+  )
+  @Min(0, { message: '$property must not be less than $constraint1.' })
   scoreLoser: number
 
   @Field(() => String)
   @IsOptional()
-  @IsUUID('4')
-  @Length(21, 21)
+  @IsUUID('4', { message: '$property must be a valid nanoid.' })
+  @Length(21, 21, {
+    message: '$property must be exactly $constraint1 characters long.'
+  })
   winnerId?: string
 
   @Field(() => String)
   @IsOptional()
-  @IsUUID('4')
-  @Length(21, 21)
+  @IsUUID('4', { message: '$property must be a valid nanoid.' })
+  @Length(21, 21, {
+    message: '$property must be exactly $constraint1 characters long.'
+  })
   loserId?: string
 }
