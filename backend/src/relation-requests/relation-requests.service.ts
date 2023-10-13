@@ -61,10 +61,10 @@ export class RelationRequestsService {
 
     if (userRequestReceived) {
       await this.delete(data.userReceiverId, data.userSenderId)
-      return this.relationFriendService.create(
-        data.userSenderId,
-        data.userReceiverId
-      )
+      return this.relationFriendService.create({
+        userAId: data.userSenderId,
+        userBId: data.userReceiverId
+      })
     }
 
     return this.prisma.relationRequests.create({

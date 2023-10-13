@@ -8,7 +8,7 @@ import {
   IsOptional,
   IsString,
   IsUrl,
-  MaxLength
+  Length
 } from 'class-validator'
 
 @InputType()
@@ -16,34 +16,34 @@ export class CreateUserInput {
   @Field(() => String)
   @IsOptional()
   @IsUrl()
-  @MaxLength(2083)
+  @Length(1, 2083)
   avatarUrl?: string
 
   @Field(() => String)
-  @IsEmail({})
+  @IsEmail()
   mail: string
 
   @Field(() => String)
-  @IsString({ always: true })
-  @MaxLength(30)
+  @IsString()
+  @Length(1, 30)
   username: string
 
   @Field(() => String)
   @IsOptional()
-  @IsString({ always: true })
-  @MaxLength(30)
+  @IsString()
+  @Length(1, 30)
   password?: string
 
   @Field(() => String)
   @IsOptional()
-  @IsString({ always: true })
-  @MaxLength(255)
+  @IsString()
+  @Length(1, 255)
   googleId?: string
 
   @Field(() => String)
   @IsOptional()
-  @IsString({ always: true })
-  @MaxLength(255)
+  @IsString()
+  @Length(1, 255)
   school42Id?: string
 
   @Field(() => String)

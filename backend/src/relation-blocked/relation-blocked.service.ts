@@ -42,6 +42,7 @@ export class RelationBlockedService {
         }
       })
     }
+
     const AHasMadeRequest = await this.prisma.relationRequests.findUnique({
       where: {
         userSenderId_userReceiverId: {
