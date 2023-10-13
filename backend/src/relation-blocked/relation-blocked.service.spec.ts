@@ -179,17 +179,6 @@ describe('RelationBlockedService', () => {
       }
       expect(input).toStrictEqual(expectedRes)
     })
-    // it('should return isRequest - false', async () => {
-    //   const result = await prismaService.relationRequests.findUnique({
-    //     where: {
-    //       userSenderId_userReceiverId: {
-    //         userSenderId: 'a10ayPlUh0qtDrePkJ87t',
-    //         userReceiverId: 'baaayPlUh0qtDrePkJ87t'
-    //       }
-    //     }
-    //   })
-    //   expect(result).toStrictEqual(null)
-    // })
 
     it('should return isFriend - true', async () => {
       const result = await prismaService.relationFriend.findUnique({
@@ -217,17 +206,6 @@ describe('RelationBlockedService', () => {
       }
       expect(input).toStrictEqual(expectedRes)
     })
-    // it('should return isFriend - false', async () => {
-    //   const result = await prismaService.relationFriend.findUnique({
-    //     where: {
-    //       userAId_userBId: {
-    //         userAId: 'e10eyPlUh0qtDrePkJ87t',
-    //         userBId: 'ccccyPlUh0qtDrePkJ87t'
-    //       }
-    //     }
-    //   })
-    //   expect(result).toStrictEqual(false)
-    // })
   })
 
   describe('Test Error', () => {
