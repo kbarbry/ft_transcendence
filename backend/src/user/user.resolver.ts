@@ -1,8 +1,10 @@
 import { Resolver, Query, Mutation, Args } from '@nestjs/graphql'
 import { UserService } from './user.service'
 import { User } from './entities/user.entity'
+import { CreateUserInput } from './dto/create-user.input'
+import { ValidationPipe } from '@nestjs/common'
 // import { CreateUserInput } from './dto/create-user.input'
-// import { UpdateUserInput } from './dto/update-user.input'
+import { UpdateUserInput } from './dto/update-user.input'
 
 @Resolver(() => User)
 export class UserResolver {
@@ -12,32 +14,51 @@ export class UserResolver {
   //  MUTATION
   //**************************************************//
 
-  // @Mutation(() => User)
-  // createUser(@Args('createUserInput') createUserInput: CreateUserInput) {
-  //   return this.userService.create(createUserInput)
-  // }
-
-  // @Mutation(() => User)
-  // updateUser(@Args('updateUserInput') updateUserInput: UpdateUserInput) {
-  //   return this.userService.update(updateUserInput.id, updateUserInput)
-  // }
+  @Mutation(() => User)
+  async createUser(
+    @Args('data', { type: () => CreateUserInput }, ValidationPipe)
+    createUserDto: CreateUserInput
+  ): Promise<User> {
+    return this.userService.create(createUserDto)
+  }
 
   @Mutation(() => User)
-  removeUser(@Args('id', { type: () => String }) id: string) {
+  async updateUser(
+    @Args('id', { type: () => String }) id: string,
+    @Args('data', { type: () => UpdateUserInput }) data: UpdateUserInput
+  ): Promise<User> {
+    return this.userService.update(id, data)
+  }
+
+  @Mutation(() => User)
+  async deleteUser(
+    @Args('id', { type: () => String }) id: string
+  ): Promise<User> {
     return this.userService.delete(id)
   }
 
   //**************************************************//
   //  QUERY
   //**************************************************//
-
-  // @Query(() => [User], { name: 'user' })
-  // findAll() {
-  //   return this.userService.findAll()
-  // }
-
-  @Query(() => User, { name: 'user' })
+  @Query(() => User)
   findOne(@Args('id', { type: () => String }) id: string) {
     return this.userService.findOne(id)
+  }
+
+  @Query(() => User)
+  findOnebyMail(@Args('mail', { type: () => String }) mail: string) {
+    return this.userService.findOnebyMail(mail)
+  }
+
+  @Query(() => User)
+  findOneByUsername(
+    @Args('username', { type: () => String }) username: string
+  ) {
+    return this.userService.findOneByUsername(username)
+  }
+
+  @Query(() => User)
+  isUsernameUsed(@Args('username', { type: () => String }) username: string) {
+    return this.userService.isUsernameUsed(username)
   }
 }

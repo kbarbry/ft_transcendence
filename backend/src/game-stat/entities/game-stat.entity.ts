@@ -1,4 +1,4 @@
-import { ObjectType, Field, Int } from '@nestjs/graphql'
+import { ObjectType, Field, Int, registerEnumType } from '@nestjs/graphql'
 import { EGameType } from '@prisma/client'
 
 @ObjectType()
@@ -13,7 +13,7 @@ export class GameStat {
   loserId: string
 
   @Field(() => EGameType)
-  type: EGameType
+  types: EGameType
 
   @Field(() => Int)
   timePlayed: number
@@ -27,3 +27,5 @@ export class GameStat {
   @Field(() => Date)
   createdAt: Date
 }
+
+registerEnumType(EGameType, { name: 'EGameType' })

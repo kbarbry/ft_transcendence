@@ -17,6 +17,7 @@ import { UserPresenceModule } from './user-presence/user-presence.module'
 import { GraphQLModule } from '@nestjs/graphql'
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo'
 import { join } from 'path'
+import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin/landingPage/default'
 
 @Module({
   imports: [
@@ -37,7 +38,8 @@ import { join } from 'path'
       driver: ApolloDriver,
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
       sortSchema: true,
-      playground: false
+      playground: false,
+      plugins: [ApolloServerPluginLandingPageLocalDefault()]
     })
   ],
   controllers: [],
