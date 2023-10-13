@@ -1,10 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { UserPresenceService } from './user-presence.service'
 import { PrismaService } from '../prisma/prisma.service'
-import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library'
 import { cleanDataBase } from '../../test/setup-environment'
 import { UserPresenceCreateInput } from './dto/create-user-presence.input'
-import { ExceptionIsConnectedShouldBeTrue } from '../user/exceptions/user-presence.exception'
 
 describe('UserPresenceService', () => {
   let userPresenceService: UserPresenceService
@@ -13,7 +11,7 @@ describe('UserPresenceService', () => {
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [UserPresenceService, PrismaService] // Incluez le PrismaService dans les providers
+      providers: [UserPresenceService, PrismaService]
     }).compile()
 
     userPresenceService = module.get<UserPresenceService>(UserPresenceService)

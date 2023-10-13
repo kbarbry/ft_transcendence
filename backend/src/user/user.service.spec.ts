@@ -14,7 +14,7 @@ describe('Test UserService', () => {
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [UserService, PrismaService] // Incluez le PrismaService dans les providers
+      providers: [UserService, PrismaService]
     }).compile()
 
     userService = module.get<UserService>(UserService)
@@ -41,8 +41,7 @@ describe('Test UserService', () => {
 
     userData = {
       mail: 'CreateUser@example.com',
-      username: 'CreateUser_user',
-      password: 'password123'
+      username: 'CreateUser_user'
     }
   })
 
