@@ -1,34 +1,31 @@
 import { HttpException, HttpStatus } from '@nestjs/common'
 
-export class ExceptionTryingToUpdateChannelMemberUserID extends HttpException {
+export class ExceptionTryingToMakeAdminAnAdmin extends HttpException {
+  constructor() {
+    super('You are trying to make an admin with an Admin', HttpStatus.CONFLICT)
+  }
+}
+
+export class ExceptionTryingToUnmakeAdminAMember extends HttpException {
+  constructor() {
+    super('You are trying to demote admin in a Member', HttpStatus.CONFLICT)
+  }
+}
+
+export class ExceptionTryingToMuteAMuted extends HttpException {
   constructor() {
     super(
-      'You are trying to change the userId of a channelMember',
+      'You are trying mute an already muted ChannelMember',
       HttpStatus.CONFLICT
     )
   }
 }
 
-export class ExceptionTryingToUpdateChannelMemberChannelId extends HttpException {
+export class ExceptionTryingToUnmuteAnUnmuted extends HttpException {
   constructor() {
     super(
-      'You are trying to change the channelId of a channelMember',
+      'You are trying to unmute an already unmuted channel member',
       HttpStatus.CONFLICT
     )
-  }
-}
-
-export class ExceptionTryingToUpdateChannelMemberCreatedAt extends HttpException {
-  constructor() {
-    super(
-      'You are trying to change the createdAt of a Channel',
-      HttpStatus.CONFLICT
-    )
-  }
-}
-
-export class ExceptionTryingToUpdateChannelMemberType extends HttpException {
-  constructor() {
-    super('You are trying to change the Type of a Channel', HttpStatus.CONFLICT)
   }
 }

@@ -1,10 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { PrismaService } from '../prisma/prisma.service'
 import { GameStatService } from './game-stat.service'
-import { EGameType, Prisma } from '@prisma/client'
-import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library'
+import { EGameType } from '@prisma/client'
 import { ExceptionSamePlayerInGame } from '../user/exceptions/game-stat.exception'
 import { cleanDataBase } from '../../test/setup-environment'
+import { CreateGameStatInput } from './dto/create-game-stat.input'
 
 describe('GameStatService', () => {
   let gameStatService: GameStatService
@@ -65,14 +65,13 @@ describe('GameStatService', () => {
 
   describe('Test Mutation', () => {
     it('should create a GameStat', () => {
-      const gameStatData = {
+      const gameStatData: CreateGameStatInput = {
+        type: EGameType.Classic,
         timePlayed: 12,
         scoreWinner: 15,
         scoreLoser: 3,
-        createdAt: new Date(),
-        type: EGameType.Classic,
-        winner: { connect: { id: 'd2OayPlUh0qtDrePkJ87t' } },
-        looser: { connect: { id: 'j6-X94_NVjmzVm9QL3k4r' } }
+        winnerId: 'd2OayPlUh0qtDrePkJ87t',
+        loserId: 'j6-X94_NVjmzVm9QL3k4r'
       }
       const createdGameStat = gameStatService.create(gameStatData)
       expect(createdGameStat).toBeDefined()
@@ -80,7 +79,7 @@ describe('GameStatService', () => {
   })
 
   describe('Test Query', () => {
-    it('should fin the GameStats', async () => {
+    it('should find the GameStats', async () => {
       const foundGameStat = await gameStatService.findOne(
         'drfOayPc2Uh12tDrePkJ8'
       )
@@ -127,33 +126,16 @@ describe('GameStatService', () => {
   })
 
   describe('Test Error', () => {
-    it('Gamestat created with already taken ID', async () => {
-      const createInput: Prisma.GameStatCreateInput = {
-        id: 'drfOayPc2Uh12tDrePkJ8',
-        type: 'Classic',
+    it('Cannot make a game with the same player', async () => {
+      const createInput: CreateGameStatInput = {
+        type: EGameType.Classic,
         timePlayed: 12,
         scoreWinner: 15,
         scoreLoser: 2,
-        createdAt: undefined,
-        winner: { connect: { id: 'd2OayPlUh0qtDrePkJ87t' } },
-        looser: { connect: { id: 'j6-X94_NVjmzVm9QL3k4r' } }
+        winnerId: 'd2OayPlUh0qtDrePkJ87t',
+        loserId: 'd2OayPlUh0qtDrePkJ87t'
       }
       await expect(gameStatService.create(createInput)).rejects.toThrow(
-        PrismaClientKnownRequestError
-      )
-    })
-
-    it('Cannot make a game with the same player', async () => {
-      const invalidplayersdata = {
-        timePlayed: 12,
-        scoreWinner: 15,
-        scoreLoser: 3,
-        createdAt: new Date(),
-        type: EGameType.Classic,
-        winner: { connect: { id: 'd2OayPlUh0qtDrePkJ87t' } },
-        looser: { connect: { id: 'd2OayPlUh0qtDrePkJ87t' } }
-      }
-      await expect(gameStatService.create(invalidplayersdata)).rejects.toThrow(
         ExceptionSamePlayerInGame
       )
     })

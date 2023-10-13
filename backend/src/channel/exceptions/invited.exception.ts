@@ -8,6 +8,7 @@ export class ExceptionUserNotInvited extends HttpException {
     )
   }
 }
+
 export class ExceptionChannelIsNotInProtectedMode extends HttpException {
   constructor() {
     super(

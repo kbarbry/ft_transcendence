@@ -46,22 +46,3 @@ export class Channel {
   @Field(() => Date)
   createdAt: Date
 }
-
-//   id          String          @id @default(nanoid())
-//   name        String          @unique
-//   avatarUrl   String?
-//   topic       String?
-//   password    String?
-
-//   ownerId     String
-//   owner       User            @relation(fields: [ownerId], references: [id])
-
-//   maxUsers    Int             @default(50)
-//   type        EChannelType    @default(Public)
-
-//   members     ChannelMember[]
-//   blockedUser ChannelBlocked[]
-//   invitedUser ChannelInvited[]
-//   messages    ChannelMessage[]
-
-//   createdAt   DateTime        @default(now())

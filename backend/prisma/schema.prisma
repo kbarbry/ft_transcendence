@@ -9,7 +9,7 @@ datasource db {
 
 model User {
   id                String            @id @default(nanoid())
-  avatarUrl         String
+  avatarUrl         String?
   mail              String            @unique
   username          String            @unique
 
@@ -123,7 +123,7 @@ model ChannelInvited {
 }
 
 model ChannelMember {
-  avatarUrl String
+  avatarUrl String?
   nickname  String
 
   userId    String
@@ -133,7 +133,6 @@ model ChannelMember {
 
   type      EMemberType  @default(Member)
   muted     Boolean      @default(false)
-  juskakan  DateTime?
 
   createdAt DateTime     @default(now())
 
