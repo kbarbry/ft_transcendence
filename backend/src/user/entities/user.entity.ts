@@ -24,8 +24,8 @@ export class User {
   @Field(() => Float, { nullable: true })
   level?: number
 
-  @Field(() => Date)
-  createdAt: Date
+  @Field(() => Date, { nullable: true })
+  createdAt?: Date
 }
 
 registerEnumType(EStatus, { name: 'EStatus' })
