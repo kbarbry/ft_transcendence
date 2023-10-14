@@ -12,7 +12,6 @@ export class UserResolver {
   //**************************************************//
   //  MUTATION
   //**************************************************//
-
   @Mutation(() => User)
   async createUser(
     @Args('data', { type: () => CreateUserInput }, ValidationPipe)
@@ -24,7 +23,8 @@ export class UserResolver {
   @Mutation(() => User)
   async updateUser(
     @Args('id', { type: () => String }) id: string,
-    @Args('data', { type: () => UpdateUserInput }) data: UpdateUserInput
+    @Args('data', { type: () => UpdateUserInput }, ValidationPipe)
+    data: UpdateUserInput
   ): Promise<User> {
     return this.userService.update(id, data)
   }
