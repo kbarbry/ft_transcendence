@@ -143,3 +143,29 @@ export class RelationRequestsService {
     ).map((elem) => elem.userSenderId)
   }
 }
+
+//   //**************************************************//
+//   //  QUERY
+//   //**************************************************//
+//   @Query(() => User)
+//   findOne(@Args('id', { type: () => String }) id: string) {
+//     return this.userService.findOne(id)
+//   }
+
+//   @Query(() => User)
+//   findOnebyMail(@Args('mail', { type: () => String }) mail: string) {
+//     return this.userService.findOnebyMail(mail)
+//   }
+
+//   @Query(() => User)
+//   findOneByUsername(
+//     @Args('username', { type: () => String }) username: string
+//   ) {
+//     return this.userService.findOneByUsername(username)
+//   }
+
+//   @Query(() => User)
+//   isUsernameUsed(@Args('username', { type: () => String }) username: string) {
+//     return this.userService.isUsernameUsed(username)
+//   }
+// }
