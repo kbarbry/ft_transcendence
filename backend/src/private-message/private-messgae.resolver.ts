@@ -40,7 +40,9 @@ export class PrivateMessageResolver {
   //  QUERY
   //**************************************************//
   @Query(() => PrivateMessage)
-  findOne(@Args('id', { type: () => String }) id: string) {
+  findOne(
+    @Args('id', { type: () => String }) id: string
+  ): Promise<PrivateMessage | null> {
     return this.privateMessageService.findOne(id)
   }
 
@@ -48,7 +50,7 @@ export class PrivateMessageResolver {
   findAllMessageWith(
     @Args('idSender', { type: () => String }) idSender: string,
     @Args('idReceiv', { type: () => String }) idReceiv: string
-  ) {
+  ): Promise<PrivateMessage[]> {
     return this.privateMessageService.findAllMessageWith(idSender, idReceiv)
   }
 
@@ -56,7 +58,7 @@ export class PrivateMessageResolver {
   findAllMessageWithLiteVersion(
     @Args('idSender', { type: () => String }) idSender: string,
     @Args('idReceiv', { type: () => String }) idReceiv: string
-  ) {
+  ): Promise<PrivateMessage[]> {
     return this.privateMessageService.findAllMessageWithLiteVersion(
       idSender,
       idReceiv
@@ -68,7 +70,7 @@ export class PrivateMessageResolver {
     @Args('idSender', { type: () => String }) idSender: string,
     @Args('idReceiv', { type: () => String }) idReceiv: string,
     @Args('needle', { type: () => String }) needle: string
-  ) {
+  ): Promise<PrivateMessage[]> {
     return this.privateMessageService.findPrivateMessageContain(
       idSender,
       idReceiv,

@@ -92,7 +92,7 @@ export class PrivateMessageService {
     idSender: string,
     idReceiv: string,
     needle: string
-  ): Promise<PrivateMessage[] | null> {
+  ): Promise<PrivateMessage[]> {
     return this.prisma.privateMessage.findMany({
       where: {
         AND: [
