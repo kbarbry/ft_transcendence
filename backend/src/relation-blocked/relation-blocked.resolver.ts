@@ -15,7 +15,7 @@ export class RelationBlockedResolver {
   //**************************************************//
 
   @Mutation(() => RelationBlocked)
-  async createBlocked(
+  async createRelationBlocked(
     @Args('data', { type: () => RelationBlockedInput }, ValidationPipe)
     createRelationBlockedDto: RelationBlockedInput
   ): Promise<RelationBlocked | null> {
