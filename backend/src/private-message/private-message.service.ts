@@ -53,16 +53,6 @@ export class PrivateMessageService {
     })
   }
 
-  async findAll(id: string): Promise<PrivateMessage[]> {
-    return this.prisma.privateMessage.findMany({
-      where: {
-        OR: [{ senderId: id }, { receiverId: id }]
-      },
-      orderBy: {
-        createdAt: 'desc'
-      }
-    })
-  }
   async findAllMessageWith(
     idSender: string,
     idReceiv: string
