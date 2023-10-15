@@ -8,12 +8,38 @@ import { UpdateChannelMessageInput } from './dto/update-channel-message.input'
 export class ChannelMessageService {
   constructor(private prisma: PrismaService) {}
 
+  //**************************************************//
+  //  MUTATION
+  //**************************************************//
   async create(data: CreateChannelMessageInput): Promise<ChannelMessage> {
     return this.prisma.channelMessage.create({
       data
     })
   }
 
+  async update(
+    id: string,
+    data: UpdateChannelMessageInput
+  ): Promise<ChannelMessage> {
+    return this.prisma.channelMessage.update({
+      where: {
+        id
+      },
+      data
+    })
+  }
+
+  async delete(id: string): Promise<ChannelMessage> {
+    return this.prisma.channelMessage.delete({
+      where: {
+        id
+      }
+    })
+  }
+
+  //**************************************************//
+  //  QUERY
+  //**************************************************//
   async findOne(id: string): Promise<ChannelMessage | null> {
     return this.prisma.channelMessage.findUnique({
       where: {
@@ -30,7 +56,7 @@ export class ChannelMessageService {
     })
   }
 
-  async findInChannelIdsAndUserId(
+  async findAllInChannelByUser(
     channelId: string,
     senderId: string
   ): Promise<ChannelMessage[]> {
@@ -53,26 +79,6 @@ export class ChannelMessageService {
             content: { contains: containingText }
           }
         ]
-      }
-    })
-  }
-
-  async update(
-    id: string,
-    data: UpdateChannelMessageInput
-  ): Promise<ChannelMessage> {
-    return this.prisma.channelMessage.update({
-      where: {
-        id
-      },
-      data
-    })
-  }
-
-  async delete(id: string): Promise<ChannelMessage> {
-    return this.prisma.channelMessage.delete({
-      where: {
-        id
       }
     })
   }
