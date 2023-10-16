@@ -40,14 +40,14 @@ export class PrivateMessageResolver {
   //  QUERY
   //**************************************************//
   @Query(() => PrivateMessage)
-  findOne(
+  findOnePrivateMessage(
     @Args('id', { type: () => String }) id: string
   ): Promise<PrivateMessage | null> {
     return this.privateMessageService.findOne(id)
   }
 
   @Query(() => [PrivateMessage])
-  findAllMessageWith(
+  findAllPrivateMessageWith(
     @Args('idSender', { type: () => String }) idSender: string,
     @Args('idReceiv', { type: () => String }) idReceiv: string
   ): Promise<PrivateMessage[]> {
@@ -55,7 +55,7 @@ export class PrivateMessageResolver {
   }
 
   @Query(() => [PrivateMessage])
-  findAllMessageWithLiteVersion(
+  findAllPrivateMessageWithLiteVersion(
     @Args('idSender', { type: () => String }) idSender: string,
     @Args('idReceiv', { type: () => String }) idReceiv: string
   ): Promise<PrivateMessage[]> {
