@@ -1,9 +1,5 @@
 import { ObjectType, Field, Int, registerEnumType } from '@nestjs/graphql'
 import { EChannelType } from '@prisma/client'
-import { ChannelInvited } from 'src/channel-invited/entities/channel-invited.entity'
-import { ChannelMessage } from 'src/channel-message/entities/channel-message.entity'
-import { ChannelMember } from 'src/channel-member/entities/channel-member.entity'
-import { ChannelBlocked } from 'src/channel-blocked/entities/channel-blocked.entity'
 
 @ObjectType()
 export class Channel {
@@ -13,14 +9,14 @@ export class Channel {
   @Field(() => String)
   name: string
 
-  @Field(() => String)
-  avatarUrl: string
+  @Field(() => String, { nullable: true })
+  avatarUrl?: string | null
 
-  @Field(() => String)
-  topic: string
+  @Field(() => String, { nullable: true })
+  topic?: string | null
 
-  @Field(() => String)
-  password: string
+  @Field(() => String, { nullable: true })
+  password?: string | null
 
   @Field(() => String)
   ownerId: string
@@ -30,18 +26,6 @@ export class Channel {
 
   @Field(() => EChannelType)
   type: EChannelType
-
-  @Field(() => [ChannelMember])
-  members: ChannelMember[]
-
-  @Field(() => [ChannelBlocked])
-  blockedUser: ChannelBlocked[]
-
-  @Field(() => [ChannelInvited])
-  invitedUser: ChannelInvited[]
-
-  @Field(() => [ChannelMessage])
-  messages: ChannelMessage[]
 
   @Field(() => Date)
   createdAt: Date

@@ -4,12 +4,12 @@ import {
   IsOptional,
   IsString,
   IsUrl,
-  IsUUID,
   Length,
   IsNumber,
   IsEnum,
   Min,
-  Max
+  Max,
+  Matches
 } from 'class-validator'
 
 @InputType()
@@ -22,7 +22,7 @@ export class CreateChannelInput {
   })
   name: string
 
-  @Field(() => String)
+  @Field(() => String, { nullable: true })
   @IsOptional()
   @IsUrl({}, { message: '$property must be a valid URL.' })
   @Length(1, 2083, {
@@ -31,7 +31,7 @@ export class CreateChannelInput {
   })
   avatarUrl?: string
 
-  @Field(() => String)
+  @Field(() => String, { nullable: true })
   @IsOptional()
   @IsString({ message: '$property must be a string.' })
   @Length(1, 1024, {
@@ -40,7 +40,7 @@ export class CreateChannelInput {
   })
   topic?: string
 
-  @Field(() => String)
+  @Field(() => String, { nullable: true })
   @IsOptional()
   @IsString({ message: '$property must be a string.' })
   @Length(1, 30, {
@@ -50,13 +50,15 @@ export class CreateChannelInput {
   password?: string
 
   @Field(() => String)
-  @IsUUID('4', { message: '$property must be a valid nanoid.' })
+  @Matches(/^[0-9a-zA-Z_-]+$/, {
+    message: 'Invalid nanoid characters.'
+  })
   @Length(21, 21, {
     message: '$property must be exactly $constraint1 characters long.'
   })
   ownerId: string
 
-  @Field(() => Int)
+  @Field(() => Int, { nullable: true })
   @IsOptional()
   @IsNumber(
     { allowInfinity: false, allowNaN: false },
@@ -66,7 +68,7 @@ export class CreateChannelInput {
   @Max(50, { message: '$property must not be greater than $constraint1.' })
   maxUsers?: number
 
-  @Field(() => EChannelType)
+  @Field(() => EChannelType, { nullable: true })
   @IsOptional()
   @IsEnum(EChannelType, { message: '$property must be a valid $constraint1.' })
   type?: EChannelType
