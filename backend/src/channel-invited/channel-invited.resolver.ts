@@ -33,7 +33,7 @@ export class ChannelInvitedResolver {
   //  QUERY
   //**************************************************//
   @Query(() => ChannelInvited)
-  async findOneChannel(
+  async findOneChannelInvited(
     @Args('userId', { type: () => String }, ValidationPipe)
     userId: string,
     @Args('channelId', { type: () => String }, ValidationPipe)
@@ -43,10 +43,10 @@ export class ChannelInvitedResolver {
   }
 
   @Query(() => [ChannelInvited])
-  async findAllInChannel(
+  async findAllInChannelInvited(
     @Args('channelId', { type: () => String }, ValidationPipe)
     channelId: string
   ): Promise<ChannelInvited[]> {
-    return this.channelInvitedServie.findAllInChannel(channelId)
+    return this.channelInvitedServie.findAllInChannelInvited(channelId)
   }
 }
