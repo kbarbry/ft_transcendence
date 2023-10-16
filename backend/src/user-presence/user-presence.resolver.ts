@@ -21,7 +21,7 @@ export class UserPresenceResolver {
   }
 
   @Mutation(() => UserPresence)
-  async disconnected(
+  async disconnectedUserPresence(
     @Args('id', { type: () => String }) id: string
   ): Promise<UserPresence> {
     return this.userpresenceService.disconnected(id)
@@ -32,7 +32,7 @@ export class UserPresenceResolver {
   //**************************************************//
 
   @Query(() => Boolean)
-  async isConnected(
+  async isUserPresenceConnected(
     @Args('id', { type: () => String }) id: string
   ): Promise<boolean> {
     return this.userpresenceService.isConnected(id)
