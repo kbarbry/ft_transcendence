@@ -11,6 +11,6 @@ export class UserPresence {
   @Field(() => Date)
   connectedAt: Date
 
-  @Field(() => Date)
-  disconnectedAt: Date
+  @Field(() => Date, { nullable: true })
+  disconnectedAt: Date | null
 }
