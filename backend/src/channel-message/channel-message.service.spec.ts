@@ -134,7 +134,7 @@ describe('ChannelMessageService', () => {
     })
 
     it('should find an empty ChannelMessage list by finding ChannelMessage of a user in a Channel where he is not', async () => {
-      const msgList = await channelMessageService.findInChannelIdsAndUserId(
+      const msgList = await channelMessageService.findAllInChannelByUser(
         'bc88e59aef615c5df6dfb',
         'au7d4ec6daffd64a2d4ca'
       )
@@ -225,7 +225,7 @@ describe('ChannelMessageService', () => {
           createdAt: new Date(Date.UTC(2023, 8, 13, 11, 30, 42))
         }
       ]
-      const msgList = await channelMessageService.findInChannelIdsAndUserId(
+      const msgList = await channelMessageService.findAllInChannelByUser(
         'ac7d4ec6daffd64a2d4ca',
         'au7d4ec6daffd64a2d4ca'
       )
