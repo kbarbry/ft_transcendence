@@ -38,25 +38,27 @@ export class GameStatResolver {
   }
 
   @Query(() => [GameStat])
-  findWin(@Args('id', { type: () => String }) id: string): Promise<GameStat[]> {
+  findGameStatWin(
+    @Args('id', { type: () => String }) id: string
+  ): Promise<GameStat[]> {
     return this.gamestatService.findWin(id)
   }
   @Query(() => [GameStat])
-  findLose(
+  findGameStatLose(
     @Args('id', { type: () => String }) id: string
   ): Promise<GameStat[]> {
     return this.gamestatService.findLose(id)
   }
 
   @Query(() => [GameStat])
-  findClassic(
+  findGameStatClassic(
     @Args('id', { type: () => String }) id: string
   ): Promise<GameStat[]> {
     return this.gamestatService.findClassic(id)
   }
 
   @Query(() => [GameStat])
-  findSpecial(
+  findGameStatSpecial(
     @Args('id', { type: () => String }) id: string
   ): Promise<GameStat[]> {
     return this.gamestatService.findSpecial(id)

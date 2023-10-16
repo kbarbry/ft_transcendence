@@ -6,7 +6,7 @@ import { GameStatResolver } from './game-stat.resolver'
 
 @Module({
   imports: [PrismaModule],
-  exports: [GameStatService, GameStat],
+  exports: [GameStatService],
   providers: [GameStatService, GameStatResolver, GameStat]
 })
 export class GameStatModule {}
