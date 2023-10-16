@@ -6,14 +6,14 @@ export class GameStat {
   @Field(() => String)
   id: string
 
-  @Field(() => String)
-  winnerId: string
+  @Field(() => String, { nullable: true })
+  winnerId?: string | null
 
-  @Field(() => String)
-  loserId: string
+  @Field(() => String, { nullable: true })
+  loserId?: string | null
 
   @Field(() => EGameType)
-  types: EGameType
+  type?: EGameType
 
   @Field(() => Int)
   timePlayed: number

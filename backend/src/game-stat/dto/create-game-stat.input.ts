@@ -43,7 +43,7 @@ export class CreateGameStatInput {
   @Min(0, { message: '$property must not be less than $constraint1.' })
   scoreLoser: number
 
-  @Field(() => String)
+  @Field(() => String, { nullable: true })
   @IsOptional()
   @IsUUID('4', { message: '$property must be a valid nanoid.' })
   @Length(21, 21, {
@@ -51,7 +51,7 @@ export class CreateGameStatInput {
   })
   winnerId?: string
 
-  @Field(() => String)
+  @Field(() => String, { nullable: true })
   @IsOptional()
   @IsUUID('4', { message: '$property must be a valid nanoid.' })
   @Length(21, 21, {
