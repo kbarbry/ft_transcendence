@@ -40,24 +40,30 @@ export class UserResolver {
   //  QUERY
   //**************************************************//
   @Query(() => User)
-  findOne(@Args('id', { type: () => String }) id: string) {
+  findOneUser(
+    @Args('id', { type: () => String }) id: string
+  ): Promise<User | null> {
     return this.userService.findOne(id)
   }
 
   @Query(() => User)
-  findOnebyMail(@Args('mail', { type: () => String }) mail: string) {
+  findOneUserbyMail(
+    @Args('mail', { type: () => String }) mail: string
+  ): Promise<User | null> {
     return this.userService.findOnebyMail(mail)
   }
 
   @Query(() => User)
-  findOneByUsername(
+  findOneUserByUsername(
     @Args('username', { type: () => String }) username: string
-  ) {
+  ): Promise<User | null> {
     return this.userService.findOneByUsername(username)
   }
 
-  @Query(() => User)
-  isUsernameUsed(@Args('username', { type: () => String }) username: string) {
+  @Query(() => Boolean)
+  isUserUsernameUsed(
+    @Args('username', { type: () => String }) username: string
+  ): Promise<boolean> {
     return this.userService.isUsernameUsed(username)
   }
 }

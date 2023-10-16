@@ -16,4 +16,9 @@ describe('UserResolver', () => {
   it('should be defined', () => {
     expect(resolver).toBeDefined()
   })
+
+  // Test all resolver
+  // Test creation without email or without username
+  // Test deletion of non existing user
+  // update with a non valid format ex: avatarurl with invalid url
 })
