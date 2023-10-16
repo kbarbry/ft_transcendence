@@ -14,8 +14,8 @@ export class ChannelMessage {
   @Field(() => String)
   content: string
 
-  @Field(() => Date)
-  updatedAt: Date
+  @Field(() => Date, { nullable: true })
+  updatedAt?: Date | null
 
   @Field(() => Date)
   createdAt: Date
