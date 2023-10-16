@@ -32,22 +32,30 @@ export class UserPresenceResolver {
   //**************************************************//
 
   @Query(() => Boolean)
-  async isConnected(@Args('id', { type: () => String }) id: string) {
+  async isConnected(
+    @Args('id', { type: () => String }) id: string
+  ): Promise<boolean> {
     return this.userpresenceService.isConnected(id)
   }
 
   @Query(() => UserPresence)
-  async findOne(@Args('id', { type: () => String }) id: string) {
+  async findOneUserPresence(
+    @Args('id', { type: () => String }) id: string
+  ): Promise<UserPresence | null> {
     return this.userpresenceService.findOne(id)
   }
 
   @Query(() => UserPresence)
-  async findLastByUserId(@Args('id', { type: () => String }) id: string) {
+  async findLastUserPresenceByUserId(
+    @Args('id', { type: () => String }) id: string
+  ): Promise<UserPresence | null> {
     return this.userpresenceService.findLastByUserId(id)
   }
 
-  @Query(() => UserPresence)
-  async findAllByUserId(@Args('id', { type: () => String }) id: string) {
+  @Query(() => [UserPresence])
+  async findAllUserPresenceByUserId(
+    @Args('id', { type: () => String }) id: string
+  ): Promise<UserPresence[]> {
     return this.userpresenceService.findAllByUserId(id)
   }
 }
