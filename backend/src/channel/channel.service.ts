@@ -61,7 +61,7 @@ export class ChannelService {
     })
   }
 
-  async findAllThatContain(str: string): Promise<Channel[] | null> {
+  async findAllThatContain(str: string): Promise<Channel[]> {
     return await this.prisma.channel.findMany({
       where: {
         name: { contains: str }
@@ -82,7 +82,7 @@ export class ChannelService {
     return channel ? channel.ownerId : null
   }
 
-  async findAllChannelOfOwner(id: string): Promise<Channel[] | null> {
+  async findAllChannelOfOwner(id: string): Promise<Channel[]> {
     return this.prisma.channel.findMany({
       where: {
         ownerId: id

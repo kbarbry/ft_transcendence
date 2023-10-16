@@ -49,7 +49,7 @@ describe('ChannelService', () => {
   })
 
   afterAll(async () => {
-    await cleanDataBase(prismaService)
+    // await cleanDataBase(prismaService)
     await prismaService.$disconnect()
   })
 
