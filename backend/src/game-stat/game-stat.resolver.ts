@@ -24,31 +24,41 @@ export class GameStatResolver {
   //**************************************************//
 
   @Query(() => GameStat)
-  findOne(@Args('id', { type: () => String }) id: string) {
+  findOneGameStat(
+    @Args('id', { type: () => String }) id: string
+  ): Promise<GameStat | null> {
     return this.gamestatService.findOne(id)
   }
 
-  @Query(() => GameStat)
-  findAll(@Args('id', { type: () => String }) id: string) {
+  @Query(() => [GameStat])
+  findAllGameStat(
+    @Args('id', { type: () => String }) id: string
+  ): Promise<GameStat[]> {
     return this.gamestatService.findAll(id)
   }
 
-  @Query(() => GameStat)
-  findWin(@Args('id', { type: () => String }) id: string) {
+  @Query(() => [GameStat])
+  findWin(@Args('id', { type: () => String }) id: string): Promise<GameStat[]> {
     return this.gamestatService.findWin(id)
   }
-  @Query(() => GameStat)
-  findLose(@Args('id', { type: () => String }) id: string) {
+  @Query(() => [GameStat])
+  findLose(
+    @Args('id', { type: () => String }) id: string
+  ): Promise<GameStat[]> {
     return this.gamestatService.findLose(id)
   }
 
-  @Query(() => GameStat)
-  findClassic(@Args('id', { type: () => String }) id: string) {
+  @Query(() => [GameStat])
+  findClassic(
+    @Args('id', { type: () => String }) id: string
+  ): Promise<GameStat[]> {
     return this.gamestatService.findClassic(id)
   }
 
-  @Query(() => GameStat)
-  findSpecial(@Args('id', { type: () => String }) id: string) {
+  @Query(() => [GameStat])
+  findSpecial(
+    @Args('id', { type: () => String }) id: string
+  ): Promise<GameStat[]> {
     return this.gamestatService.findSpecial(id)
   }
 }
