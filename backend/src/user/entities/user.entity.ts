@@ -15,17 +15,17 @@ export class User {
   @Field(() => String)
   username: string
 
-  @Field(() => EStatus, { nullable: true })
-  status?: EStatus
+  @Field(() => EStatus)
+  status: EStatus
 
-  @Field(() => ELanguage, { nullable: true })
-  languages?: ELanguage
+  @Field(() => ELanguage)
+  languages: ELanguage
 
-  @Field(() => Float, { nullable: true })
-  level?: number
+  @Field(() => Float)
+  level: number
 
-  @Field(() => Date, { nullable: true })
-  createdAt?: Date
+  @Field(() => Date)
+  createdAt: Date
 }
 
 registerEnumType(EStatus, { name: 'EStatus' })
