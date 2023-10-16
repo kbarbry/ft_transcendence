@@ -5,7 +5,7 @@ import {
   IsNotEmpty,
   IsNumber,
   IsOptional,
-  IsUUID,
+  Matches,
   Length,
   Min
 } from 'class-validator'
@@ -44,18 +44,20 @@ export class CreateGameStatInput {
   scoreLoser: number
 
   @Field(() => String)
-  @IsOptional()
-  @IsUUID('4', { message: '$property must be a valid nanoid.' })
+  @Matches(/^[0-9a-zA-Z_-]+$/, {
+    message: 'Invalid nanoid characters.'
+  })
   @Length(21, 21, {
     message: '$property must be exactly $constraint1 characters long.'
   })
-  winnerId?: string
+  winnerId: string
 
   @Field(() => String)
-  @IsOptional()
-  @IsUUID('4', { message: '$property must be a valid nanoid.' })
+  @Matches(/^[0-9a-zA-Z_-]+$/, {
+    message: 'Invalid nanoid characters.'
+  })
   @Length(21, 21, {
     message: '$property must be exactly $constraint1 characters long.'
   })
-  loserId?: string
+  loserId: string
 }

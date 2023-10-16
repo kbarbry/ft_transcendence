@@ -7,13 +7,13 @@ export class GameStat {
   id: string
 
   @Field(() => String)
-  winnerId: string
+  winnerId: string | null
 
   @Field(() => String)
-  loserId: string
+  loserId: string | null
 
   @Field(() => EGameType)
-  types: EGameType
+  type: EGameType
 
   @Field(() => Int)
   timePlayed: number
