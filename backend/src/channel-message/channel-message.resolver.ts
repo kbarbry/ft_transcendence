@@ -40,21 +40,21 @@ export class ChannelMessageResolver {
   //  QUERY
   //**************************************************//
   @Query(() => ChannelMessage)
-  findOne(
+  findOneChannelMessage(
     @Args('id', { type: () => String }) id: string
   ): Promise<ChannelMessage | null> {
     return this.channelMessageService.findOne(id)
   }
 
   @Query(() => [ChannelMessage])
-  findAllInChannel(
+  findAllChannelMessageInChannel(
     @Args('channelId', { type: () => String }) channelId: string
   ): Promise<ChannelMessage[]> {
     return this.channelMessageService.findAllInChannel(channelId)
   }
 
   @Query(() => [ChannelMessage])
-  findAllInChannelByUser(
+  findAllChannelMessageInChannelByUser(
     @Args('channelId', { type: () => String }) channelId: string,
     @Args('senderId', { type: () => String }) senderId: string
   ): Promise<ChannelMessage[]> {
@@ -65,7 +65,7 @@ export class ChannelMessageResolver {
   }
 
   @Query(() => [ChannelMessage])
-  findAllThatContain(
+  findAllChannelMessageThatContain(
     @Args('channelId', { type: () => String }) channelId: string,
     @Args('containingText', { type: () => String }) containingText: string
   ): Promise<ChannelMessage[]> {
