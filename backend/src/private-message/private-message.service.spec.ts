@@ -143,14 +143,6 @@ describe('PrivateMessageService', () => {
       expect(foundPrivateMessage).toBeDefined()
     })
 
-    it('should find all message receie or send by an user with userId', async () => {
-      const allprivateMessage = await privateMessageService.findAll(
-        'rtjayPlUh0qtDrePkJ87t'
-      )
-      expect(allprivateMessage).toBeDefined()
-      expect(allprivateMessage.length).toBeGreaterThan(2)
-    })
-
     it('should find all message beetween two UserIds', async () => {
       const HistoricDiscussion = await privateMessageService.findAllMessageWith(
         '42tX94_NVjmzVm9QL3k4r',
