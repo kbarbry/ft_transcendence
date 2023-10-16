@@ -21,9 +21,9 @@ export class ChannelInvitedResolver {
 
   @Mutation(() => ChannelInvited)
   async deleteChannelInvited(
-    @Args('userId', { type: () => String }, ValidationPipe)
+    @Args('userId', { type: () => String })
     userId: string,
-    @Args('channelId', { type: () => String }, ValidationPipe)
+    @Args('channelId', { type: () => String })
     channelId: string
   ): Promise<ChannelInvited> {
     return this.channelInvitedServie.delete(userId, channelId)
@@ -34,19 +34,19 @@ export class ChannelInvitedResolver {
   //**************************************************//
   @Query(() => ChannelInvited)
   async findOneChannelInvited(
-    @Args('userId', { type: () => String }, ValidationPipe)
+    @Args('userId', { type: () => String })
     userId: string,
-    @Args('channelId', { type: () => String }, ValidationPipe)
+    @Args('channelId', { type: () => String })
     channelId: string
   ): Promise<ChannelInvited | null> {
     return this.channelInvitedServie.findOne(userId, channelId)
   }
 
   @Query(() => [ChannelInvited])
-  async findAllInChannelInvited(
-    @Args('channelId', { type: () => String }, ValidationPipe)
+  async findAllChannelInvitedInChannel(
+    @Args('channelId', { type: () => String })
     channelId: string
   ): Promise<ChannelInvited[]> {
-    return this.channelInvitedServie.findAllInChannelInvited(channelId)
+    return this.channelInvitedServie.findAllInChannel(channelId)
   }
 }

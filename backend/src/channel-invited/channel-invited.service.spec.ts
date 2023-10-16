@@ -73,11 +73,6 @@ describe('ChannelInvitedService', () => {
     await prismaService.$disconnect()
   })
 
-  afterAll(async () => {
-    await cleanDataBase(prismaService)
-    await prismaService.$disconnect()
-  })
-
   it('channelInvitedService should be defined', () => {
     expect(channelInvitedService).toBeDefined()
   })
@@ -125,7 +120,7 @@ describe('ChannelInvitedService', () => {
     })
 
     it('should find all ChannelInvited', async () => {
-      const resRequest = await channelInvitedService.findAllInChannelInvited(
+      const resRequest = await channelInvitedService.findAllInChannel(
         'pihayPlUh0qtDrePkJ87t'
       )
       const expectedRes = [
