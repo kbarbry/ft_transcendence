@@ -33,7 +33,7 @@ export class ChannelInvitedResolver {
   //  QUERY
   //**************************************************//
   @Query(() => ChannelInvited)
-  async findOne(
+  async findOneChannel(
     @Args('userId', { type: () => String }, ValidationPipe)
     userId: string,
     @Args('channelId', { type: () => String }, ValidationPipe)
