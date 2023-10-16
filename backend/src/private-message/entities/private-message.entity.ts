@@ -2,7 +2,7 @@ import { ObjectType, Field } from '@nestjs/graphql'
 
 @ObjectType()
 export class PrivateMessage {
-  @Field(() => String, { description: 'Id Private Message', nullable: true })
+  @Field(() => String, { description: 'Id Private Message' })
   id?: string
 
   @Field(() => String)
@@ -17,6 +17,6 @@ export class PrivateMessage {
   @Field(() => Date, { nullable: true })
   updatedAt?: Date | null
 
-  @Field(() => Date, { nullable: true })
-  createddAt?: Date
+  @Field(() => Date)
+  createdAt: Date
 }
