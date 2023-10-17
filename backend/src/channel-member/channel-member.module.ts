@@ -4,6 +4,8 @@ import { ChannelBlockedModule } from '../channel-blocked/channel-blocked.module'
 import { ChannelInvitedModule } from '../channel-invited/channel-invited.module'
 import { ChannelModule } from '../channel/channel.module'
 import { PrismaModule } from 'src/prisma/prisma.module'
+import { ChannelMemberResolver } from './channel-member.resolver'
+import { ChannelMember } from './entities/channel-member.entity'
 
 @Module({
   imports: [
@@ -13,6 +15,6 @@ import { PrismaModule } from 'src/prisma/prisma.module'
     PrismaModule
   ],
   exports: [ChannelMemberService],
-  providers: [ChannelMemberService]
+  providers: [ChannelMemberService, ChannelMemberResolver, ChannelMember]
 })
 export class ChannelMemberModule {}
