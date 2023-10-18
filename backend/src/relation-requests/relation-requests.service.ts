@@ -111,11 +111,11 @@ export class RelationRequestsService {
     return res !== null
   }
 
-  async findAllRequestSent(id: string): Promise<string[]> {
+  async findAllRequestSent(userSenderId: string): Promise<string[]> {
     return (
       await this.prisma.relationRequests.findMany({
         where: {
-          userSenderId: id
+          userSenderId
         },
         select: {
           userReceiverId: true
@@ -127,11 +127,11 @@ export class RelationRequestsService {
     ).map((elem) => elem.userReceiverId)
   }
 
-  async findAllRequestReceived(id: string): Promise<string[]> {
+  async findAllRequestReceived(userReceiverId: string): Promise<string[]> {
     return (
       await this.prisma.relationRequests.findMany({
         where: {
-          userReceiverId: id
+          userReceiverId
         },
         select: {
           userSenderId: true
