@@ -15,9 +15,9 @@ export class UserResolver {
   @Mutation(() => User)
   async createUser(
     @Args('data', { type: () => CreateUserInput }, ValidationPipe)
-    createUserDto: CreateUserInput
+    data: CreateUserInput
   ): Promise<User> {
-    return this.userService.create(createUserDto)
+    return this.userService.create(data)
   }
 
   @Mutation(() => User)
@@ -65,5 +65,12 @@ export class UserResolver {
     @Args('username', { type: () => String }) username: string
   ): Promise<boolean> {
     return this.userService.isUsernameUsed(username)
+  }
+
+  @Query(() => [User])
+  findUsersByUserIds(
+    @Args('userIds', { type: () => [String] }) userIds: string[]
+  ): Promise<User[]> {
+    return this.userService.findUsersByUserIds(userIds)
   }
 }

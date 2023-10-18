@@ -11,13 +11,12 @@ export class RelationFriendResolver {
   //**************************************************//
   //  MUTATION
   //**************************************************//
-
   @Mutation(() => RelationFriend)
   async createRelationFriend(
     @Args('data', { type: () => RelationFriendInput }, ValidationPipe)
-    createRelationFriendDto: RelationFriendInput
+    data: RelationFriendInput
   ): Promise<RelationFriend> {
-    return this.relationFriendService.create(createRelationFriendDto)
+    return this.relationFriendService.create(data)
   }
 
   @Mutation(() => RelationFriend)

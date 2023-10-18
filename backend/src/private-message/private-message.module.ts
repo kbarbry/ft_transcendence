@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common'
 import { PrivateMessageService } from './private-message.service'
 import { PrismaModule } from 'src/prisma/prisma.module'
-import { PrivateMessageResolver } from './private-messgae.resolver'
+import { PrivateMessageResolver } from './private-message.resolver'
 import { PrivateMessage } from './entities/private-message.entity'
 
 @Module({

@@ -11,13 +11,12 @@ export class UserPresenceResolver {
   //**************************************************//
   //  MUTATION
   //**************************************************//
-
   @Mutation(() => UserPresence)
   async createUserPresence(
     @Args('data', { type: () => UserPresenceCreateInput }, ValidationPipe)
-    createUserPresenceDto: UserPresenceCreateInput
+    data: UserPresenceCreateInput
   ): Promise<UserPresence> {
-    return this.userpresenceService.create(createUserPresenceDto)
+    return this.userpresenceService.create(data)
   }
 
   @Mutation(() => UserPresence)
@@ -30,7 +29,6 @@ export class UserPresenceResolver {
   //**************************************************//
   //  QUERY
   //**************************************************//
-
   @Query(() => Boolean)
   async isUserPresenceConnected(
     @Args('id', { type: () => String }) id: string

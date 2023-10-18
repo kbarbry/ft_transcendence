@@ -2,9 +2,9 @@ import { ObjectType, Field } from '@nestjs/graphql'
 
 @ObjectType()
 export class ChannelInvited {
-  @Field(() => String, { description: 'userId' })
+  @Field(() => String)
   userId: string
 
-  @Field(() => String, { description: 'channelId' })
+  @Field(() => String)
   channelId: string
 }

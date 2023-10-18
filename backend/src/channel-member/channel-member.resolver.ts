@@ -9,6 +9,9 @@ import { ValidationPipe } from '@nestjs/common'
 export class ChannelMemberResolver {
   constructor(private readonly channelMemberService: ChannelMemberService) {}
 
+  //**************************************************//
+  //  MUTATION
+  //**************************************************//
   @Mutation(() => ChannelMember)
   async createChannelMember(
     @Args(
@@ -47,7 +50,7 @@ export class ChannelMemberResolver {
     return this.channelMemberService.delete(userId, channelId)
   }
 
-  @Query(() => ChannelMember)
+  @Mutation(() => ChannelMember)
   async unmakeChannelMemberAdmin(
     @Args('userId', { type: () => String })
     userId: string,
@@ -57,7 +60,7 @@ export class ChannelMemberResolver {
     return this.channelMemberService.unmakeAdmin(userId, channelId)
   }
 
-  @Query(() => ChannelMember)
+  @Mutation(() => ChannelMember)
   async makeChannelMemberAdmin(
     @Args('userId', { type: () => String })
     userId: string,
@@ -67,7 +70,7 @@ export class ChannelMemberResolver {
     return this.channelMemberService.makeAdmin(userId, channelId)
   }
 
-  @Query(() => ChannelMember)
+  @Mutation(() => ChannelMember)
   async muteChannelMember(
     @Args('userId', { type: () => String })
     userId: string,
@@ -77,7 +80,7 @@ export class ChannelMemberResolver {
     return this.channelMemberService.mute(userId, channelId)
   }
 
-  @Query(() => ChannelMember)
+  @Mutation(() => ChannelMember)
   async unmuteChannelMember(
     @Args('userId', { type: () => String })
     userId: string,
@@ -87,6 +90,9 @@ export class ChannelMemberResolver {
     return this.channelMemberService.unmute(userId, channelId)
   }
 
+  //**************************************************//
+  //  QUERY
+  //**************************************************//
   @Query(() => ChannelMember)
   async findOneChannelMember(
     @Args('userId', { type: () => String })

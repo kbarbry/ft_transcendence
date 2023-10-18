@@ -14,9 +14,9 @@ export class ChannelInvitedResolver {
   @Mutation(() => ChannelInvited)
   async createChannelInvited(
     @Args('data', { type: () => CreateChannelInvitedInput }, ValidationPipe)
-    createChannelInvitedDto: CreateChannelInvitedInput
+    data: CreateChannelInvitedInput
   ): Promise<ChannelInvited> {
-    return this.channelInvitedServie.create(createChannelInvitedDto)
+    return this.channelInvitedServie.create(data)
   }
 
   @Mutation(() => ChannelInvited)

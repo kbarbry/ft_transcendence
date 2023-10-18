@@ -14,15 +14,14 @@ export class GameStatResolver {
   @Mutation(() => GameStat)
   async createGameStat(
     @Args('data', { type: () => CreateGameStatInput }, ValidationPipe)
-    createGamestatDto: CreateGameStatInput
+    data: CreateGameStatInput
   ): Promise<GameStat> {
-    return this.gamestatService.create(createGamestatDto)
+    return this.gamestatService.create(data)
   }
 
   //**************************************************//
   //  QUERY
   //**************************************************//
-
   @Query(() => GameStat)
   findOneGameStat(
     @Args('id', { type: () => String }) id: string

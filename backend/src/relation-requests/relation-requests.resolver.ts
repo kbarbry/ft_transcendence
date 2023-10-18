@@ -14,13 +14,12 @@ export class RelationRequestsResolver {
   //**************************************************//
   //  MUTATION
   //**************************************************//
-
   @Mutation(() => RelationRequests)
   async createRelationRequests(
     @Args('data', { type: () => RelationRequestsInput }, ValidationPipe)
-    createRelationRequestsDto: RelationRequestsInput
+    data: RelationRequestsInput
   ): Promise<RelationRequests | RelationFriend> {
-    return this.relationRequestsService.create(createRelationRequestsDto)
+    return this.relationRequestsService.create(data)
   }
 
   @Mutation(() => RelationRequests)

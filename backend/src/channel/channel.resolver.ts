@@ -15,14 +15,15 @@ export class ChannelResolver {
   @Mutation(() => Channel)
   async createChannel(
     @Args('data', { type: () => CreateChannelInput }, ValidationPipe)
-    createChannelDto: CreateChannelInput
+    data: CreateChannelInput
   ): Promise<Channel> {
-    return this.channelService.create(createChannelDto)
+    return this.channelService.create(data)
   }
 
   @Mutation(() => Channel)
   async updateChannel(
-    @Args('id', { type: () => String }) id: string,
+    @Args('id', { type: () => String })
+    id: string,
     @Args('data', { type: () => UpdateChannelInput }, ValidationPipe)
     data: UpdateChannelInput
   ): Promise<Channel> {
@@ -48,12 +49,12 @@ export class ChannelResolver {
 
   @Query(() => [Channel])
   findAllChannelThatContain(
-    @Args('str', { type: () => String }) str: string
+    @Args('needle', { type: () => String }) needle: string
   ): Promise<Channel[]> {
-    return this.channelService.findAllThatContain(str)
+    return this.channelService.findAllThatContain(needle)
   }
 
-  @Query(() => [Channel])
+  @Query(() => String)
   findChannelOwner(
     @Args('channelId', { type: () => String }) channelId: string
   ): Promise<string | null> {

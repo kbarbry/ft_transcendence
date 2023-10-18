@@ -11,7 +11,6 @@ export class ChannelBlockedResolver {
   //**************************************************//
   //  MUTATION
   //**************************************************//
-
   @Mutation(() => ChannelBlocked)
   async createChannelBlocked(
     @Args('data', { type: () => CreateChannelBlockedInput }, ValidationPipe)
@@ -31,7 +30,6 @@ export class ChannelBlockedResolver {
   //**************************************************//
   //  QUERY
   //**************************************************//
-
   @Query(() => ChannelBlocked)
   async findOneChannelBlocked(
     @Args('userId', { type: () => String }) userId: string,
@@ -40,7 +38,7 @@ export class ChannelBlockedResolver {
     return this.channelBlockedService.findOne(userId, channelId)
   }
 
-  @Query(() => ChannelBlocked)
+  @Query(() => [ChannelBlocked])
   async findAllInChannelBlocked(
     @Args('channelId', { type: () => String }) channelId: string
   ): Promise<ChannelBlocked[]> {

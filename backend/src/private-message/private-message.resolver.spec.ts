@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { PrivateMessageService } from './private-message.service'
-import { PrivateMessageResolver } from './private-messgae.resolver'
+import { PrivateMessageResolver } from './private-message.resolver'
 
 describe('PrivateMessageResolver', () => {
   let resolver: PrivateMessageResolver

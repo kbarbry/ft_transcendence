@@ -2,9 +2,9 @@ import { ObjectType, Field } from '@nestjs/graphql'
 
 @ObjectType()
 export class RelationRequests {
-  @Field(() => String, { description: 'userSenderId' })
+  @Field(() => String)
   userSenderId: string
 
-  @Field(() => String, { description: 'userReceiverId' })
+  @Field(() => String)
   userReceiverId: string
 }

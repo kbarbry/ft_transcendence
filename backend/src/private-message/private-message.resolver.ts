@@ -15,14 +15,15 @@ export class PrivateMessageResolver {
   @Mutation(() => PrivateMessage)
   async createPrivateMessage(
     @Args('data', { type: () => CreatePrivateMessageInput }, ValidationPipe)
-    createPrivateMessageDto: CreatePrivateMessageInput
+    data: CreatePrivateMessageInput
   ): Promise<PrivateMessage> {
-    return this.privateMessageService.create(createPrivateMessageDto)
+    return this.privateMessageService.create(data)
   }
 
   @Mutation(() => PrivateMessage)
   async updatePrivateMessage(
-    @Args('id', { type: () => String }) id: string,
+    @Args('id', { type: () => String })
+    id: string,
     @Args('data', { type: () => UpdatePrivateMessageInput }, ValidationPipe)
     data: UpdatePrivateMessageInput
   ): Promise<PrivateMessage> {
@@ -48,32 +49,32 @@ export class PrivateMessageResolver {
 
   @Query(() => [PrivateMessage])
   findAllPrivateMessageWith(
-    @Args('idSender', { type: () => String }) idSender: string,
-    @Args('idReceiv', { type: () => String }) idReceiv: string
+    @Args('senderId', { type: () => String }) senderId: string,
+    @Args('receiverId', { type: () => String }) receiverId: string
   ): Promise<PrivateMessage[]> {
-    return this.privateMessageService.findAllMessageWith(idSender, idReceiv)
+    return this.privateMessageService.findAllMessageWith(senderId, receiverId)
   }
 
   @Query(() => [PrivateMessage])
   findAllPrivateMessageWithLiteVersion(
-    @Args('idSender', { type: () => String }) idSender: string,
-    @Args('idReceiv', { type: () => String }) idReceiv: string
+    @Args('senderId', { type: () => String }) senderId: string,
+    @Args('receiverId', { type: () => String }) receiverId: string
   ): Promise<PrivateMessage[]> {
     return this.privateMessageService.findAllMessageWithLiteVersion(
-      idSender,
-      idReceiv
+      senderId,
+      receiverId
     )
   }
 
   @Query(() => [PrivateMessage])
   findPrivateMessageContain(
-    @Args('idSender', { type: () => String }) idSender: string,
-    @Args('idReceiv', { type: () => String }) idReceiv: string,
+    @Args('senderId', { type: () => String }) senderId: string,
+    @Args('receiverId', { type: () => String }) receiverId: string,
     @Args('needle', { type: () => String }) needle: string
   ): Promise<PrivateMessage[]> {
     return this.privateMessageService.findPrivateMessageContain(
-      idSender,
-      idReceiv,
+      senderId,
+      receiverId,
       needle
     )
   }

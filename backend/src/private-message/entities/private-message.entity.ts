@@ -2,8 +2,8 @@ import { ObjectType, Field } from '@nestjs/graphql'
 
 @ObjectType()
 export class PrivateMessage {
-  @Field(() => String, { description: 'Id Private Message' })
-  id?: string
+  @Field(() => String)
+  id: string
 
   @Field(() => String)
   senderId: string

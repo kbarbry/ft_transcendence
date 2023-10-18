@@ -3,7 +3,7 @@ import { ELanguage, EStatus } from '@prisma/client'
 
 @ObjectType()
 export class User {
-  @Field(() => String, { description: 'Id field from user' })
+  @Field(() => String)
   id: string
 
   @Field(() => String, { nullable: true })

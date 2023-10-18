@@ -3,7 +3,7 @@ import { EChannelType } from '@prisma/client'
 
 @ObjectType()
 export class Channel {
-  @Field(() => String, { description: 'Id field from user' })
+  @Field(() => String)
   id: string
 
   @Field(() => String)

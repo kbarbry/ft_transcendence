@@ -14,7 +14,7 @@ export class RelationBlockedService {
   //  MUTATION
   //**************************************************//
 
-  async create(data: RelationBlockedInput): Promise<RelationBlocked | null> {
+  async create(data: RelationBlockedInput): Promise<RelationBlocked> {
     if (data.userBlockingId == data.userBlockedId)
       throw new ExceptionBlockedYourself()
     const userAlreadyBlocked = await this.isBlocked(

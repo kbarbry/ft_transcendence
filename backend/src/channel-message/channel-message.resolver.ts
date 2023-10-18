@@ -15,14 +15,15 @@ export class ChannelMessageResolver {
   @Mutation(() => ChannelMessage)
   async createChannelMessage(
     @Args('data', { type: () => CreateChannelMessageInput }, ValidationPipe)
-    createChannelMessageDto: CreateChannelMessageInput
+    data: CreateChannelMessageInput
   ): Promise<ChannelMessage> {
-    return this.channelMessageService.create(createChannelMessageDto)
+    return this.channelMessageService.create(data)
   }
 
   @Mutation(() => ChannelMessage)
   async updateChannelMessage(
-    @Args('id', { type: () => String }) id: string,
+    @Args('id', { type: () => String })
+    id: string,
     @Args('data', { type: () => UpdateChannelMessageInput }, ValidationPipe)
     data: UpdateChannelMessageInput
   ): Promise<ChannelMessage> {
@@ -67,11 +68,8 @@ export class ChannelMessageResolver {
   @Query(() => [ChannelMessage])
   findAllChannelMessageThatContain(
     @Args('channelId', { type: () => String }) channelId: string,
-    @Args('containingText', { type: () => String }) containingText: string
+    @Args('needle', { type: () => String }) needle: string
   ): Promise<ChannelMessage[]> {
-    return this.channelMessageService.findAllInChannelByUser(
-      channelId,
-      containingText
-    )
+    return this.channelMessageService.findAllThatContain(channelId, needle)
   }
 }

@@ -54,14 +54,14 @@ export class PrivateMessageService {
   }
 
   async findAllMessageWith(
-    idSender: string,
-    idReceiv: string
+    senderId: string,
+    receiverId: string
   ): Promise<PrivateMessage[]> {
     return this.prisma.privateMessage.findMany({
       where: {
         OR: [
-          { AND: [{ senderId: idSender }, { receiverId: idReceiv }] },
-          { AND: [{ senderId: idReceiv }, { receiverId: idSender }] }
+          { AND: [{ senderId }, { receiverId }] },
+          { AND: [{ senderId: receiverId }, { receiverId: senderId }] }
         ]
       },
       orderBy: {
@@ -71,14 +71,14 @@ export class PrivateMessageService {
   }
 
   async findAllMessageWithLiteVersion(
-    idSender: string,
-    idReceiv: string
+    senderId: string,
+    receiverId: string
   ): Promise<PrivateMessage[]> {
     return this.prisma.privateMessage.findMany({
       where: {
         OR: [
-          { AND: [{ senderId: idSender }, { receiverId: idReceiv }] },
-          { AND: [{ senderId: idReceiv }, { receiverId: idSender }] }
+          { AND: [{ senderId }, { receiverId }] },
+          { AND: [{ senderId: receiverId }, { receiverId: senderId }] }
         ]
       },
       orderBy: {
@@ -89,8 +89,8 @@ export class PrivateMessageService {
   }
 
   async findPrivateMessageContain(
-    idSender: string,
-    idReceiv: string,
+    senderId: string,
+    receiverId: string,
     needle: string
   ): Promise<PrivateMessage[]> {
     return this.prisma.privateMessage.findMany({
@@ -103,8 +103,8 @@ export class PrivateMessageService {
           },
           {
             OR: [
-              { AND: [{ senderId: idSender }, { receiverId: idReceiv }] },
-              { AND: [{ senderId: idReceiv }, { receiverId: idSender }] }
+              { AND: [{ senderId }, { receiverId }] },
+              { AND: [{ senderId: receiverId }, { receiverId: senderId }] }
             ]
           }
         ]
