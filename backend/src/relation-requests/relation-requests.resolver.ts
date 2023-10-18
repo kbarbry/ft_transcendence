@@ -16,7 +16,7 @@ export class RelationRequestsResolver {
   //**************************************************//
 
   @Mutation(() => RelationRequests)
-  async createUser(
+  async createRelationRequests(
     @Args('data', { type: () => RelationRequestsInput }, ValidationPipe)
     createRelationRequestsDto: RelationRequestsInput
   ): Promise<RelationRequests | RelationFriend> {
@@ -35,7 +35,7 @@ export class RelationRequestsResolver {
   //  QUERY
   //**************************************************//
   @Query(() => RelationRequests)
-  findOne(
+  findOneRelationRequests(
     @Args('userSenderId', { type: () => String }) userSenderId: string,
     @Args('userReceiverId', { type: () => String }) userReceiverId: string
   ): Promise<RelationRequests | null> {
@@ -43,7 +43,7 @@ export class RelationRequestsResolver {
   }
 
   @Query(() => Boolean)
-  async isRequested(
+  async isRelationRequestsRequested(
     @Args('userSenderId', { type: () => String }) userSenderId: string,
     @Args('userReceiverId', { type: () => String }) userReceiverId: string
   ): Promise<boolean> {
@@ -54,14 +54,14 @@ export class RelationRequestsResolver {
   }
 
   @Query(() => [String])
-  async findAllRequestsSent(
+  async findAllRelationRequestsSent(
     @Args('id', { type: () => String }) id: string
   ): Promise<string[]> {
     return this.relationRequestsService.findAllRequestSent(id)
   }
 
   @Query(() => [String])
-  async findAllRequestsReceived(
+  async findAllRelationRequestsReceived(
     @Args('id', { type: () => String }) id: string
   ): Promise<string[]> {
     return this.relationRequestsService.findAllRequestReceived(id)
