@@ -8,6 +8,10 @@ import { ChannelBlockedService } from './channel-blocked.service'
 export class ChannelBlockedResolver {
   constructor(private readonly channelBlockedService: ChannelBlockedService) {}
 
+  //**************************************************//
+  //  MUTATION
+  //**************************************************//
+
   @Mutation(() => ChannelBlocked)
   async createChannelBlocked(
     @Args('data', { type: () => CreateChannelBlockedInput }, ValidationPipe)
@@ -23,6 +27,10 @@ export class ChannelBlockedResolver {
   ): Promise<ChannelBlocked> {
     return this.channelBlockedService.delete(userId, channelId)
   }
+
+  //**************************************************//
+  //  QUERY
+  //**************************************************//
 
   @Query(() => ChannelBlocked)
   async findOneChannelBlocked(
