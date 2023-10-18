@@ -10,7 +10,7 @@ export class ChannelMemberResolver {
   constructor(private readonly channelMemberService: ChannelMemberService) {}
 
   @Mutation(() => ChannelMember)
-  async create(
+  async createChannelMember(
     @Args(
       'data',
       { type: () => CreateChannelMemberCreateInput },
@@ -22,7 +22,7 @@ export class ChannelMemberResolver {
   }
 
   @Mutation(() => ChannelMember)
-  async update(
+  async updateChannelMember(
     @Args('userId', { type: () => String })
     userId: string,
     @Args('channelId', { type: () => String })
@@ -38,7 +38,7 @@ export class ChannelMemberResolver {
   }
 
   @Mutation(() => ChannelMember)
-  async delete(
+  async deleteChannelMember(
     @Args('userId', { type: () => String })
     userId: string,
     @Args('channelId', { type: () => String })
@@ -48,7 +48,7 @@ export class ChannelMemberResolver {
   }
 
   @Query(() => ChannelMember)
-  async unmakeAdmin(
+  async unmakeAdminChannelMember(
     @Args('userId', { type: () => String })
     userId: string,
     @Args('channelId', { type: () => String })
@@ -58,7 +58,7 @@ export class ChannelMemberResolver {
   }
 
   @Query(() => ChannelMember)
-  async makeAdmin(
+  async makeAdminChannelMember(
     @Args('userId', { type: () => String })
     userId: string,
     @Args('channelId', { type: () => String })
@@ -68,7 +68,7 @@ export class ChannelMemberResolver {
   }
 
   @Query(() => ChannelMember)
-  async mute(
+  async muteChannelMember(
     @Args('userId', { type: () => String })
     userId: string,
     @Args('channelId', { type: () => String })
@@ -78,7 +78,7 @@ export class ChannelMemberResolver {
   }
 
   @Query(() => ChannelMember)
-  async unmute(
+  async unmuteChannelMember(
     @Args('userId', { type: () => String })
     userId: string,
     @Args('channelId', { type: () => String })
@@ -88,7 +88,7 @@ export class ChannelMemberResolver {
   }
 
   @Query(() => ChannelMember)
-  async findOne(
+  async findOneChannelMember(
     @Args('userId', { type: () => String })
     userId: string,
     @Args('channelId', { type: () => String })
@@ -98,7 +98,7 @@ export class ChannelMemberResolver {
   }
 
   @Query(() => [ChannelMember])
-  async findAllInChannel(
+  async findAllChannelMemberInChannel(
     @Args('channelId', { type: () => String })
     channelId: string
   ): Promise<ChannelMember[]> {
