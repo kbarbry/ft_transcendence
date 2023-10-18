@@ -17,3 +17,10 @@ describe('UserResolver', () => {
     expect(resolver).toBeDefined()
   })
 })
+/*
+    tested all methods
+    tested wrong id for findall => Return an empty array
+    tested create Relation with wrong id => PrismaError
+    tested iFriend with wrong Id => Return false(no error is that ok ?)
+    Delete with wrong id return PrismaError
+*/

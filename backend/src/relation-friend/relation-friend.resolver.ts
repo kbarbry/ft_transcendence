@@ -13,7 +13,7 @@ export class RelationFriendResolver {
   //**************************************************//
 
   @Mutation(() => RelationFriend)
-  async createUser(
+  async createRelationFriend(
     @Args('data', { type: () => RelationFriendInput }, ValidationPipe)
     createRelationFriendDto: RelationFriendInput
   ): Promise<RelationFriend> {
@@ -31,8 +31,10 @@ export class RelationFriendResolver {
   //**************************************************//
   //  QUERY
   //**************************************************//
-  @Query(() => RelationFriend)
-  findAll(@Args('id', { type: () => String }) id: string): Promise<string[]> {
+  @Query(() => [String])
+  findAllRelationFriend(
+    @Args('id', { type: () => String }) id: string
+  ): Promise<string[]> {
     return this.relationFriendService.findAll(id)
   }
 
