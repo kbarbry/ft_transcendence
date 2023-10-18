@@ -35,14 +35,14 @@ export class RelationBlockedResolver {
   //**************************************************//
 
   @Query(() => Boolean)
-  async isBlocked(
+  async isRelationBlocked(
     @Args('userAId', { type: () => String }) userAId: string,
     @Args('userBId', { type: () => String }) userBId: string
   ): Promise<boolean> {
     return this.relationBlockedService.isBlocked(userAId, userBId)
   }
 
-  @Query(() => RelationBlocked)
+  @Query(() => [String])
   findAllBlockedByUser(
     @Args('id', { type: () => String }) id: string
   ): Promise<string[]> {
