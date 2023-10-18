@@ -48,7 +48,7 @@ export class ChannelMemberResolver {
   }
 
   @Query(() => ChannelMember)
-  async unmakeAdminChannelMember(
+  async unmakeChannelMemberAdmin(
     @Args('userId', { type: () => String })
     userId: string,
     @Args('channelId', { type: () => String })
@@ -58,7 +58,7 @@ export class ChannelMemberResolver {
   }
 
   @Query(() => ChannelMember)
-  async makeAdminChannelMember(
+  async makeChannelMemberAdmin(
     @Args('userId', { type: () => String })
     userId: string,
     @Args('channelId', { type: () => String })
