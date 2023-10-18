@@ -74,4 +74,14 @@ export class UserService {
     }
     return false
   }
+
+  async findUsersByUserIds(userIds: string[]): Promise<User[]> {
+    return this.prisma.user.findMany({
+      where: {
+        id: {
+          in: userIds
+        }
+      }
+    })
+  }
 }

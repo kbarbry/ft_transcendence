@@ -123,6 +123,34 @@ describe('Test UserService', () => {
       const bool = await userService.isUsernameUsed('UsernameNotTaken')
       expect(bool).toStrictEqual(false)
     })
+
+    it('should return an array of user from userIds', async () => {
+      const requestData: string[] = [
+        'd2OayPlUh0qtDrePkJ87t',
+        'j6-X94_NVjmzVm9QL3k4r',
+        '_U0vTLhbNpjA39Pc7wwtn',
+        '_smvTLhbNpjA39Pc7wwtn'
+      ]
+      const findUsers = await userService.findUsersByUserIds(requestData)
+      expect(findUsers).toHaveLength(4)
+    })
+
+    it('should return an array of user from userIds - with one incorrect id', async () => {
+      const requestData: string[] = [
+        'd2OayPlUh0qtDrePkJ87t',
+        'j6-X94_NVjmzVm9QL3k4r',
+        '_U0vTLhbNpjA39Pc7wwtn',
+        'lala'
+      ]
+      const findUsers = await userService.findUsersByUserIds(requestData)
+      expect(findUsers).toHaveLength(3)
+    })
+
+    it('should return an array of user from userIds - with all incorrect id', async () => {
+      const requestData: string[] = ['bebo', 'bubu', 'nono', 'lala']
+      const findUsers = await userService.findUsersByUserIds(requestData)
+      expect(findUsers).toHaveLength(0)
+    })
   })
 
   describe('Test Error', () => {
