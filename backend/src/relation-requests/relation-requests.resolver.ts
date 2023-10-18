@@ -25,10 +25,10 @@ export class RelationRequestsResolver {
 
   @Mutation(() => RelationRequests)
   async deleteRelationRequests(
-    @Args('senderId', { type: () => String }) SenderId: string,
-    @Args('ReceiverId', { type: () => String }) ReceiverId: string
+    @Args('userSenderId', { type: () => String }) userSenderId: string,
+    @Args('userReceiverId', { type: () => String }) userReceiverId: string
   ): Promise<RelationRequests> {
-    return this.relationRequestsService.delete(SenderId, ReceiverId)
+    return this.relationRequestsService.delete(userSenderId, userReceiverId)
   }
 
   //**************************************************//
@@ -55,15 +55,15 @@ export class RelationRequestsResolver {
 
   @Query(() => [String])
   async findAllRelationRequestsSent(
-    @Args('id', { type: () => String }) id: string
+    @Args('userSenderId', { type: () => String }) userSenderId: string
   ): Promise<string[]> {
-    return this.relationRequestsService.findAllRequestSent(id)
+    return this.relationRequestsService.findAllRequestSent(userSenderId)
   }
 
   @Query(() => [String])
   async findAllRelationRequestsReceived(
-    @Args('id', { type: () => String }) id: string
+    @Args('userReceiverId', { type: () => String }) userReceiverId: string
   ): Promise<string[]> {
-    return this.relationRequestsService.findAllRequestReceived(id)
+    return this.relationRequestsService.findAllRequestReceived(userReceiverId)
   }
 }
