@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { RelationRequestsResolver } from './relation-request.resolver'
+import { RelationRequestsResolver } from './relation-requests.resolver'
 import { RelationRequestsService } from './relation-requests.service'
 
 describe('UserResolver', () => {
