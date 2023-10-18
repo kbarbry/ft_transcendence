@@ -39,7 +39,7 @@ export class RelationFriendResolver {
   }
 
   @Query(() => Boolean)
-  async isFriend(
+  async isRelationFriendExist(
     @Args('userAId', { type: () => String }) userAId: string,
     @Args('userBId', { type: () => String }) userBId: string
   ): Promise<boolean> {
