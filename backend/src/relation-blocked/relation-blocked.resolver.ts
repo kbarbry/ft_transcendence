@@ -46,6 +46,6 @@ export class RelationBlockedResolver {
   findAllBlockedByUser(
     @Args('id', { type: () => String }) id: string
   ): Promise<string[]> {
-    return this.relationBlockedService.findAllBlockedByUser(id)
+    return this.relationBlockedService.findAllRelationBlockedByUser(id)
   }
 }

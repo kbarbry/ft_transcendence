@@ -115,7 +115,7 @@ export class RelationBlockedService {
     return relation !== null
   }
 
-  async findAllBlockedByUser(id: string): Promise<string[]> {
+  async findAllRelationBlockedByUser(id: string): Promise<string[]> {
     return (
       await this.prisma.relationBlocked.findMany({
         where: {
