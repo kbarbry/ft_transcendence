@@ -1,5 +1,5 @@
 import { Field, InputType } from '@nestjs/graphql'
-import { IsOptional, IsString, IsUrl, IsUUID, Length } from 'class-validator'
+import { IsOptional, IsString, IsUrl, Length, Matches } from 'class-validator'
 
 @InputType()
 export class CreateChannelMemberCreateInput {
@@ -21,14 +21,14 @@ export class CreateChannelMemberCreateInput {
   nickname: string
 
   @Field(() => String)
-  @IsUUID('4', { message: '$property must be a valid nanoid.' })
+  @Matches(/^[0-9a-zA-Z_-]+$/, { message: 'Invalid nanoid characters.' })
   @Length(21, 21, {
     message: '$property must be exactly $constraint1 characters long.'
   })
   userId: string
 
   @Field(() => String)
-  @IsUUID('4', { message: '$property must be a valid nanoid.' })
+  @Matches(/^[0-9a-zA-Z_-]+$/, { message: 'Invalid nanoid characters.' })
   @Length(21, 21, {
     message: '$property must be exactly $constraint1 characters long.'
   })
