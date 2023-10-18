@@ -4,7 +4,7 @@ import { EMemberType } from '@prisma/client'
 @ObjectType()
 export class ChannelMember {
   @Field(() => String, { nullable: true })
-  avatarUrl: string | null
+  avatarUrl?: string | null
 
   @Field(() => String)
   nickname: string
