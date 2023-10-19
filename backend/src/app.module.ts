@@ -18,6 +18,8 @@ import { GraphQLModule } from '@nestjs/graphql'
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo'
 import { join } from 'path'
 import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin/landingPage/default'
+import { APP_FILTER } from '@nestjs/core'
+import { PrismaExceptionFilter } from './common/filters/prisma-exception.filter'
 
 @Module({
   imports: [
@@ -43,6 +45,9 @@ import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin
     })
   ],
   controllers: [],
-  providers: [AppService]
+  providers: [
+    AppService,
+    { provide: APP_FILTER, useClass: PrismaExceptionFilter }
+  ]
 })
 export class AppModule {}
