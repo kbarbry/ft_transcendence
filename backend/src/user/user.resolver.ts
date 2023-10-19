@@ -4,6 +4,10 @@ import { User } from './entities/user.entity'
 import { CreateUserInput } from './dto/create-user.input'
 import { ValidationPipe } from '@nestjs/common'
 import { UpdateUserInput } from './dto/update-user.input'
+import { NanoidValidationPipe } from 'src/common/pipes/nanoid.pipe'
+import { NanoidsValidationPipe } from 'src/common/pipes/nanoids.pipe'
+import { EmailValidationPipe } from 'src/common/pipes/email.pipe'
+import { UsernameValidationPipe } from 'src/common/pipes/username.pipe'
 
 @Resolver(() => User)
 export class UserResolver {
@@ -22,7 +26,7 @@ export class UserResolver {
 
   @Mutation(() => User)
   async updateUser(
-    @Args('id', { type: () => String }) id: string,
+    @Args('id', { type: () => String }, NanoidValidationPipe) id: string,
     @Args('data', { type: () => UpdateUserInput }, ValidationPipe)
     data: UpdateUserInput
   ): Promise<User> {
@@ -31,7 +35,7 @@ export class UserResolver {
 
   @Mutation(() => User)
   async deleteUser(
-    @Args('id', { type: () => String }) id: string
+    @Args('id', { type: () => String }, NanoidValidationPipe) id: string
   ): Promise<User> {
     return this.userService.delete(id)
   }
@@ -41,35 +45,38 @@ export class UserResolver {
   //**************************************************//
   @Query(() => User)
   findOneUser(
-    @Args('id', { type: () => String }) id: string
+    @Args('id', { type: () => String }, NanoidValidationPipe) id: string
   ): Promise<User | null> {
     return this.userService.findOne(id)
   }
 
   @Query(() => User)
   findOneUserbyMail(
-    @Args('mail', { type: () => String }) mail: string
+    @Args('mail', { type: () => String }, EmailValidationPipe) mail: string
   ): Promise<User | null> {
     return this.userService.findOnebyMail(mail)
   }
 
   @Query(() => User)
   findOneUserByUsername(
-    @Args('username', { type: () => String }) username: string
+    @Args('username', { type: () => String }, UsernameValidationPipe)
+    username: string
   ): Promise<User | null> {
     return this.userService.findOneByUsername(username)
   }
 
   @Query(() => Boolean)
   isUserUsernameUsed(
-    @Args('username', { type: () => String }) username: string
+    @Args('username', { type: () => String }, UsernameValidationPipe)
+    username: string
   ): Promise<boolean> {
     return this.userService.isUsernameUsed(username)
   }
 
   @Query(() => [User])
   findUsersByUserIds(
-    @Args('userIds', { type: () => [String] }) userIds: string[]
+    @Args('userIds', { type: () => [String] }, NanoidsValidationPipe)
+    userIds: string[]
   ): Promise<User[]> {
     return this.userService.findUsersByUserIds(userIds)
   }

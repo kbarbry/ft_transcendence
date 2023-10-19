@@ -3,6 +3,7 @@ import { CreateChannelBlockedInput } from './dto/create-channel-blocked.input'
 import { ChannelBlocked } from './entities/channel-blocked.entity'
 import { ValidationPipe } from '@nestjs/common'
 import { ChannelBlockedService } from './channel-blocked.service'
+import { NanoidValidationPipe } from 'src/common/pipes/nanoid.pipe'
 
 @Resolver()
 export class ChannelBlockedResolver {
@@ -21,8 +22,10 @@ export class ChannelBlockedResolver {
 
   @Mutation(() => ChannelBlocked)
   async deleteChannelBlocked(
-    @Args('userId', { type: () => String }) userId: string,
-    @Args('channelId', { type: () => String }) channelId: string
+    @Args('userId', { type: () => String }, NanoidValidationPipe)
+    userId: string,
+    @Args('channelId', { type: () => String }, NanoidValidationPipe)
+    channelId: string
   ): Promise<ChannelBlocked> {
     return this.channelBlockedService.delete(userId, channelId)
   }
@@ -32,15 +35,18 @@ export class ChannelBlockedResolver {
   //**************************************************//
   @Query(() => ChannelBlocked)
   async findOneChannelBlocked(
-    @Args('userId', { type: () => String }) userId: string,
-    @Args('channelId', { type: () => String }) channelId: string
+    @Args('userId', { type: () => String }, NanoidValidationPipe)
+    userId: string,
+    @Args('channelId', { type: () => String }, NanoidValidationPipe)
+    channelId: string
   ): Promise<ChannelBlocked | null> {
     return this.channelBlockedService.findOne(userId, channelId)
   }
 
   @Query(() => [ChannelBlocked])
   async findAllInChannelBlocked(
-    @Args('channelId', { type: () => String }) channelId: string
+    @Args('channelId', { type: () => String }, NanoidValidationPipe)
+    channelId: string
   ): Promise<ChannelBlocked[]> {
     return this.channelBlockedService.findAllInChannel(channelId)
   }

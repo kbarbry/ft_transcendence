@@ -3,6 +3,7 @@ import { RelationBlockedService } from './relation-blocked.service'
 import { RelationBlocked } from './entities/relation-blocked.entity'
 import { RelationBlockedInput } from './dto/create-relation-blocked.input'
 import { ValidationPipe } from '@nestjs/common'
+import { NanoidValidationPipe } from 'src/common/pipes/nanoid.pipe'
 
 @Resolver(() => RelationBlocked)
 export class RelationBlockedResolver {
@@ -23,8 +24,10 @@ export class RelationBlockedResolver {
 
   @Mutation(() => RelationBlocked)
   async deleteRelationBlocked(
-    @Args('userAId', { type: () => String }) userAId: string,
-    @Args('userBId', { type: () => String }) userBId: string
+    @Args('userAId', { type: () => String }, NanoidValidationPipe)
+    userAId: string,
+    @Args('userBId', { type: () => String }, NanoidValidationPipe)
+    userBId: string
   ): Promise<RelationBlocked> {
     return this.relationBlockedService.delete(userAId, userBId)
   }
@@ -34,15 +37,17 @@ export class RelationBlockedResolver {
   //**************************************************//
   @Query(() => Boolean)
   async isRelationBlocked(
-    @Args('userAId', { type: () => String }) userAId: string,
-    @Args('userBId', { type: () => String }) userBId: string
+    @Args('userAId', { type: () => String }, NanoidValidationPipe)
+    userAId: string,
+    @Args('userBId', { type: () => String }, NanoidValidationPipe)
+    userBId: string
   ): Promise<boolean> {
     return this.relationBlockedService.isBlocked(userAId, userBId)
   }
 
   @Query(() => [String])
   findAllRelationBlockedByUser(
-    @Args('id', { type: () => String }) id: string
+    @Args('id', { type: () => String }, NanoidValidationPipe) id: string
   ): Promise<string[]> {
     return this.relationBlockedService.findAllBlockedByUser(id)
   }
