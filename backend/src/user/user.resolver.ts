@@ -4,10 +4,10 @@ import { User } from './entities/user.entity'
 import { CreateUserInput } from './dto/create-user.input'
 import { ValidationPipe } from '@nestjs/common'
 import { UpdateUserInput } from './dto/update-user.input'
-import { NanoidValidationPipe } from 'src/common/pipes/nanoid.pipe'
-import { NanoidsValidationPipe } from 'src/common/pipes/nanoids.pipe'
-import { EmailValidationPipe } from 'src/common/pipes/email.pipe'
-import { UsernameValidationPipe } from 'src/common/pipes/username.pipe'
+import { NanoidValidationPipe } from '../common/pipes/nanoid.pipe'
+import { NanoidsValidationPipe } from '../common/pipes/nanoids.pipe'
+import { EmailValidationPipe } from '../common/pipes/email.pipe'
+import { UsernameValidationPipe } from '../common/pipes/username.pipe'
 
 @Resolver(() => User)
 export class UserResolver {
@@ -21,6 +21,7 @@ export class UserResolver {
     @Args('data', { type: () => CreateUserInput }, ValidationPipe)
     data: CreateUserInput
   ): Promise<User> {
+    console.log('here => ', data.mail)
     return this.userService.create(data)
   }
 
