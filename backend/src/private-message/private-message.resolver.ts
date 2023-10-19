@@ -4,6 +4,8 @@ import { PrivateMessage } from './entities/private-message.entity'
 import { CreatePrivateMessageInput } from './dto/create-private-message.input'
 import { ValidationPipe } from '@nestjs/common'
 import { UpdatePrivateMessageInput } from './dto/update-private-message.input'
+import { NanoidValidationPipe } from 'src/common/pipes/nanoid.pipe'
+import { StringValidationPipe } from 'src/common/pipes/string.pipe'
 
 @Resolver(() => PrivateMessage)
 export class PrivateMessageResolver {
@@ -22,7 +24,7 @@ export class PrivateMessageResolver {
 
   @Mutation(() => PrivateMessage)
   async updatePrivateMessage(
-    @Args('id', { type: () => String })
+    @Args('id', { type: () => String }, NanoidValidationPipe)
     id: string,
     @Args('data', { type: () => UpdatePrivateMessageInput }, ValidationPipe)
     data: UpdatePrivateMessageInput
@@ -32,7 +34,7 @@ export class PrivateMessageResolver {
 
   @Mutation(() => PrivateMessage)
   async deletePrivateMessage(
-    @Args('id', { type: () => String }) id: string
+    @Args('id', { type: () => String }, NanoidValidationPipe) id: string
   ): Promise<PrivateMessage> {
     return this.privateMessageService.delete(id)
   }
@@ -42,23 +44,27 @@ export class PrivateMessageResolver {
   //**************************************************//
   @Query(() => PrivateMessage)
   findOnePrivateMessage(
-    @Args('id', { type: () => String }) id: string
+    @Args('id', { type: () => String }, NanoidValidationPipe) id: string
   ): Promise<PrivateMessage | null> {
     return this.privateMessageService.findOne(id)
   }
 
   @Query(() => [PrivateMessage])
   findAllPrivateMessageWith(
-    @Args('senderId', { type: () => String }) senderId: string,
-    @Args('receiverId', { type: () => String }) receiverId: string
+    @Args('senderId', { type: () => String }, NanoidValidationPipe)
+    senderId: string,
+    @Args('receiverId', { type: () => String }, NanoidValidationPipe)
+    receiverId: string
   ): Promise<PrivateMessage[]> {
     return this.privateMessageService.findAllMessageWith(senderId, receiverId)
   }
 
   @Query(() => [PrivateMessage])
   findAllPrivateMessageWithLiteVersion(
-    @Args('senderId', { type: () => String }) senderId: string,
-    @Args('receiverId', { type: () => String }) receiverId: string
+    @Args('senderId', { type: () => String }, NanoidValidationPipe)
+    senderId: string,
+    @Args('receiverId', { type: () => String }, NanoidValidationPipe)
+    receiverId: string
   ): Promise<PrivateMessage[]> {
     return this.privateMessageService.findAllMessageWithLiteVersion(
       senderId,
@@ -68,9 +74,12 @@ export class PrivateMessageResolver {
 
   @Query(() => [PrivateMessage])
   findPrivateMessageContain(
-    @Args('senderId', { type: () => String }) senderId: string,
-    @Args('receiverId', { type: () => String }) receiverId: string,
-    @Args('needle', { type: () => String }) needle: string
+    @Args('senderId', { type: () => String }, NanoidValidationPipe)
+    senderId: string,
+    @Args('receiverId', { type: () => String }, NanoidValidationPipe)
+    receiverId: string,
+    @Args('needle', { type: () => String }, StringValidationPipe)
+    needle: string
   ): Promise<PrivateMessage[]> {
     return this.privateMessageService.findPrivateMessageContain(
       senderId,
