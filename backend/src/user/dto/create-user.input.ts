@@ -36,12 +36,12 @@ export class CreateUserInput {
 
   @Field(() => EStatus, { nullable: true })
   @IsOptional()
-  @IsEnum(EStatus, { message: '$property must be a valid $constraint1.' })
+  @IsEnum(EStatus, { message: '$property must be a valid EStatus.' })
   status?: EStatus
 
   @Field(() => ELanguage, { nullable: true })
   @IsOptional()
-  @IsEnum(ELanguage, { message: '$property must be a valid $constraint1.' })
+  @IsEnum(ELanguage, { message: '$property must be a valid ELanguage.' })
   languages?: ELanguage
 
   @Field(() => Float, { nullable: true })
