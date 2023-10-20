@@ -18,7 +18,7 @@ describe('UserPresenceResolver', () => {
       module.get<UserPresenceResolver>(UserPresenceResolver)
   })
 
-  it('should be defined', () => {
+  it('userPresence resolver should be defined', () => {
     expect(userpresenceresolver).toBeDefined()
   })
 
@@ -68,7 +68,7 @@ describe('UserPresenceResolver', () => {
           .catch((error) => error)
         expect(thrownError.getResponse()).toStrictEqual(res)
       })
-      it('invalid nanoid - too short', async () => {
+      it('too short nanoid', async () => {
         const data = {
           userId: 'drfOayPww2tDrePkqqqJ'
         }
@@ -88,7 +88,7 @@ describe('UserPresenceResolver', () => {
           .catch((error) => error)
         expect(thrownError.getResponse()).toStrictEqual(res)
       })
-      it('invalid nanoid - too long', async () => {
+      it('too long nanoid', async () => {
         const data = {
           userId: 'drfOayPww2qqtDrePkqqqwJ'
         }
@@ -108,7 +108,7 @@ describe('UserPresenceResolver', () => {
           .catch((error) => error)
         expect(thrownError.getResponse()).toStrictEqual(res)
       })
-      it('invalid nanoid - invalid char', async () => {
+      it('invalid char in nanoid', async () => {
         const data = {
           userId: 'drfOayPww 2tDrePkqqqJ'
         }
