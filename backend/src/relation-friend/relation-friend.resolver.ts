@@ -3,7 +3,7 @@ import { RelationFriendService } from './relation-friend.service'
 import { RelationFriend } from './entities/relation-friend.entity'
 import { RelationFriendInput } from './dto/create-relation-friend.input'
 import { ValidationPipe } from '@nestjs/common'
-import { NanoidValidationPipe } from 'src/common/pipes/nanoid.pipe'
+import { NanoidValidationPipe } from '../common/pipes/nanoid.pipe'
 
 @Resolver(() => RelationFriend)
 export class RelationFriendResolver {

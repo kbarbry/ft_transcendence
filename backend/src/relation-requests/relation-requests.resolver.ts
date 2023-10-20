@@ -4,7 +4,7 @@ import { RelationRequests } from './entities/relation-requests.entity'
 import { RelationFriend } from '../relation-friend/entities/relation-friend.entity'
 import { RelationRequestsInput } from './dto/create-relation-requests.input'
 import { ValidationPipe } from '@nestjs/common'
-import { NanoidValidationPipe } from 'src/common/pipes/nanoid.pipe'
+import { NanoidValidationPipe } from '../common/pipes/nanoid.pipe'
 
 @Resolver(() => RelationRequests)
 export class RelationRequestsResolver {

@@ -4,8 +4,8 @@ import { Channel } from './entities/channel.entity'
 import { CreateChannelInput } from './dto/create-channel.input'
 import { ValidationPipe } from '@nestjs/common'
 import { UpdateChannelInput } from './dto/update-channel.input'
-import { NanoidValidationPipe } from 'src/common/pipes/nanoid.pipe'
-import { StringValidationPipe } from 'src/common/pipes/string.pipe'
+import { NanoidValidationPipe } from '../common/pipes/nanoid.pipe'
+import { StringValidationPipe } from '../common/pipes/string.pipe'
 
 @Resolver(() => Channel)
 export class ChannelResolver {

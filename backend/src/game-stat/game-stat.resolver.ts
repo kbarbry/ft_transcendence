@@ -3,7 +3,7 @@ import { GameStatService } from './game-stat.service'
 import { GameStat } from './entities/game-stat.entity'
 import { CreateGameStatInput } from './dto/create-game-stat.input'
 import { ValidationPipe } from '@nestjs/common'
-import { NanoidValidationPipe } from 'src/common/pipes/nanoid.pipe'
+import { NanoidValidationPipe } from '../common/pipes/nanoid.pipe'
 
 @Resolver(() => GameStat)
 export class GameStatResolver {

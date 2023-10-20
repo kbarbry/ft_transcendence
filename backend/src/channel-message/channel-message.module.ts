@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common'
 import { ChannelMessageService } from './channel-message.service'
-import { PrismaModule } from 'src/prisma/prisma.module'
+import { PrismaModule } from '../prisma/prisma.module'
 import { ChannelMessageResolver } from './channel-message.resolver'
 import { ChannelMessage } from './entities/channel-message.entity'
 

@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common'
 import { RelationBlockedService } from './relation-blocked.service'
-import { PrismaModule } from 'src/prisma/prisma.module'
+import { PrismaModule } from '../prisma/prisma.module'
 import { RelationBlocked } from './entities/relation-blocked.entity'
 import { RelationBlockedResolver } from './relation-blocked.resolver'
 

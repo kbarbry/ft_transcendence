@@ -4,8 +4,8 @@ import { PrivateMessage } from './entities/private-message.entity'
 import { CreatePrivateMessageInput } from './dto/create-private-message.input'
 import { ValidationPipe } from '@nestjs/common'
 import { UpdatePrivateMessageInput } from './dto/update-private-message.input'
-import { NanoidValidationPipe } from 'src/common/pipes/nanoid.pipe'
-import { StringValidationPipe } from 'src/common/pipes/string.pipe'
+import { NanoidValidationPipe } from '../common/pipes/nanoid.pipe'
+import { StringValidationPipe } from '../common/pipes/string.pipe'
 
 @Resolver(() => PrivateMessage)
 export class PrivateMessageResolver {

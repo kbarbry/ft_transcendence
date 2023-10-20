@@ -3,7 +3,7 @@ import { UserPresenceService } from './user-presence.service'
 import { UserPresence } from './entities/user-presence.entity'
 import { UserPresenceCreateInput } from './dto/create-user-presence.input'
 import { ValidationPipe } from '@nestjs/common'
-import { NanoidValidationPipe } from 'src/common/pipes/nanoid.pipe'
+import { NanoidValidationPipe } from '../common/pipes/nanoid.pipe'
 
 @Resolver(() => UserPresence)
 export class UserPresenceResolver {

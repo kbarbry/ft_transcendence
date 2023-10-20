@@ -3,7 +3,7 @@ import { RelationBlockedService } from './relation-blocked.service'
 import { RelationBlocked } from './entities/relation-blocked.entity'
 import { RelationBlockedInput } from './dto/create-relation-blocked.input'
 import { ValidationPipe } from '@nestjs/common'
-import { NanoidValidationPipe } from 'src/common/pipes/nanoid.pipe'
+import { NanoidValidationPipe } from '../common/pipes/nanoid.pipe'
 
 @Resolver(() => RelationBlocked)
 export class RelationBlockedResolver {
