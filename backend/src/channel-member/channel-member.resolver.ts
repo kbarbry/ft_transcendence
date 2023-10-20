@@ -4,7 +4,7 @@ import { ChannelMemberService } from './channel-member.service'
 import { CreateChannelMemberCreateInput } from './dto/create-channel-member.input'
 import { UpdateChannelMemberCreateInput } from './dto/update-channel-member.input'
 import { ValidationPipe } from '@nestjs/common'
-import { NanoidValidationPipe } from 'src/common/pipes/nanoid.pipe'
+import { NanoidValidationPipe } from '../common/pipes/nanoid.pipe'
 
 @Resolver(() => ChannelMember)
 export class ChannelMemberResolver {

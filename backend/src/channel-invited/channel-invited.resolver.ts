@@ -3,7 +3,7 @@ import { ChannelInvited } from './entities/channel-invited.entity'
 import { ChannelInvitedService } from './channel-invited.service'
 import { CreateChannelInvitedInput } from './dto/create-channel-invited.input'
 import { ValidationPipe } from '@nestjs/common'
-import { NanoidValidationPipe } from 'src/common/pipes/nanoid.pipe'
+import { NanoidValidationPipe } from '../common/pipes/nanoid.pipe'
 
 @Resolver(() => ChannelInvited)
 export class ChannelInvitedResolver {

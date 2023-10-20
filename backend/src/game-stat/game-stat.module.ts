@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common'
 import { GameStatService } from './game-stat.service'
-import { PrismaModule } from 'src/prisma/prisma.module'
+import { PrismaModule } from '../prisma/prisma.module'
 import { GameStat } from './entities/game-stat.entity'
 import { GameStatResolver } from './game-stat.resolver'
 

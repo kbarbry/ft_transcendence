@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common'
 import { ChannelInvitedService } from './channel-invited.service'
-import { PrismaModule } from 'src/prisma/prisma.module'
+import { PrismaModule } from '../prisma/prisma.module'
 import { ChannelInvitedResolver } from './channel-invited.resolver'
 import { ChannelInvited } from './entities/channel-invited.entity'
 
