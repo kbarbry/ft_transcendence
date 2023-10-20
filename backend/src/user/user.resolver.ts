@@ -21,7 +21,6 @@ export class UserResolver {
     @Args('data', { type: () => CreateUserInput }, ValidationPipe)
     data: CreateUserInput
   ): Promise<User> {
-    console.log('here => ', data.mail)
     return this.userService.create(data)
   }
 
