@@ -6,7 +6,7 @@ import { UserPresenceResolver } from './user-presence.resolver'
 
 @Module({
   imports: [PrismaModule],
-  exports: [UserPresenceService],
+  exports: [UserPresenceService, UserPresence],
   providers: [UserPresenceService, UserPresenceResolver, UserPresence]
 })
 export class UserPresenceModule {}
