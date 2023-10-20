@@ -5,7 +5,7 @@ import { ArgumentMetadata, ValidationPipe } from '@nestjs/common'
 import { RelationFriendInput } from './dto/create-relation-friend.input'
 import { PrismaService } from '../prisma/prisma.service'
 
-describe('UserResolver', () => {
+describe('RelationFriendResolver', () => {
   let relationFriendResolver: RelationFriendResolver
   const validationPipe = new ValidationPipe()
 
@@ -19,7 +19,7 @@ describe('UserResolver', () => {
     )
   })
 
-  it('should be defined', () => {
+  it('RelationFriendResolver should be defined', () => {
     expect(relationFriendResolver).toBeDefined()
   })
   describe('Test Error', () => {
