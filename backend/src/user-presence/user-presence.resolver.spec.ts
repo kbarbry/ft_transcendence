@@ -56,7 +56,10 @@ describe('UserPresenceResolver', () => {
           data: ''
         }
         const res = {
-          message: ['userId must be exactly 21 characters long.'],
+          message: [
+            'userId must be exactly 21 characters long.',
+            'Invalid nanoid characters.'
+          ],
           error: 'Bad Request',
           statusCode: 400
         }
