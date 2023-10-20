@@ -45,6 +45,26 @@ describe('UserPresenceResolver', () => {
           .catch((error) => error)
         expect(thrownError.getResponse()).toStrictEqual(res)
       })
+      it('invalid nanoid - null nanoId', async () => {
+        const data = {
+          userId: null
+        }
+
+        const metadata: ArgumentMetadata = {
+          type: 'body',
+          metatype: UserPresenceCreateInput,
+          data: ''
+        }
+        const res = {
+          message: ['userId must be exactly 21 characters long.'],
+          error: 'Bad Request',
+          statusCode: 400
+        }
+        const thrownError = await validationPipe
+          .transform(data, metadata)
+          .catch((error) => error)
+        expect(thrownError.getResponse()).toStrictEqual(res)
+      })
       it('invalid nanoid - too short', async () => {
         const data = {
           userId: 'drfOayPww2tDrePkqqqJ'
