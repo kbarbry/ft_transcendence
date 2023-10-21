@@ -7,15 +7,24 @@ import { PrismaService } from '../prisma/prisma.service'
 import { RelationBlockedService } from '../relation-blocked/relation-blocked.service'
 import { RelationFriendService } from '../relation-friend/relation-friend.service'
 
-describe('UserResolver', () => {
+describe('relationRequestResolver', () => {
   let relationRequestResolver: RelationRequestsResolver
-  const validationPipe = new ValidationPipe()
+  let validationPipe = new ValidationPipe()
 
-  beforeEach(async () => {
+  const relationRequestsService = {
+    create: jest.fn(),
+    delete: jest.fn(),
+    findOne: jest.fn(),
+    isRequested: jest.fn(),
+    findAllRequestReceived: jest.fn(),
+    findAllRequestSent: jest.fn()
+  }
+
+  beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         RelationRequestsResolver,
-        RelationRequestsService,
+        { provide: RelationRequestsService, useValue: relationRequestsService },
         PrismaService,
         RelationBlockedService,
         RelationFriendService
@@ -25,6 +34,106 @@ describe('UserResolver', () => {
     relationRequestResolver = module.get<RelationRequestsResolver>(
       RelationRequestsResolver
     )
+  })
+
+  beforeEach(() => {
+    validationPipe = new ValidationPipe()
+    jest.clearAllMocks()
+    relationRequestsService.create.mockReset()
+  })
+
+  describe('Test Mutation', () => {
+    it('createRelationRequests', async () => {
+      const data: RelationRequestsInput = {
+        userSenderId: '1',
+        userReceiverId: '2'
+      }
+      const resExpected = { id: '1', ...data }
+      relationRequestsService.create.mockReturnValue(resExpected)
+
+      const result = await relationRequestResolver.createRelationRequests(data)
+
+      expect(result).toStrictEqual(resExpected)
+      expect(relationRequestsService.create).toHaveBeenCalledWith(data)
+    })
+
+    it('deleteRelationRequests', async () => {
+      const resExpected = { id: '1' }
+      relationRequestsService.delete.mockReturnValue(resExpected)
+
+      const result = await relationRequestResolver.deleteRelationRequests(
+        '1',
+        '2'
+      )
+      expect(result).toStrictEqual(resExpected)
+      expect(relationRequestsService.delete).toHaveBeenCalledWith('1', '2')
+    })
+  })
+  describe('Test Query', () => {
+    it('findOneRelationRequests', async () => {
+      const resExpected = {
+        userSenderId: '1',
+        userReceiverId: '2'
+      }
+      relationRequestsService.findOne.mockReturnValue(resExpected)
+
+      const result = await relationRequestResolver.findOneRelationRequests(
+        '1',
+        '2'
+      )
+
+      expect(result).toStrictEqual(resExpected)
+      expect(relationRequestsService.findOne).toHaveBeenCalledWith('1', '2')
+    })
+
+    it('isRelationRequestsRequested', async () => {
+      const resExpected = {
+        userSenderId: '1',
+        userReceiverId: '2'
+      }
+      relationRequestsService.isRequested.mockReturnValue(resExpected)
+
+      const result = await relationRequestResolver.isRelationRequestsRequested(
+        '1',
+        '2'
+      )
+
+      expect(result).toStrictEqual(resExpected)
+      expect(relationRequestsService.isRequested).toHaveBeenCalledWith('1', '2')
+    })
+    it('findAllRelationRequestsReceived', async () => {
+      const resExpected = {
+        userSenderId: '1',
+        userReceiverId: '2'
+      }
+      relationRequestsService.findAllRequestReceived.mockReturnValue(
+        resExpected
+      )
+
+      const result =
+        await relationRequestResolver.findAllRelationRequestsReceived('1')
+
+      expect(result).toStrictEqual(resExpected)
+      expect(
+        relationRequestsService.findAllRequestReceived
+      ).toHaveBeenCalledWith('1')
+    })
+    it('findAllRelationRequestsSent', async () => {
+      const resExpected = {
+        userSenderId: '1',
+        userReceiverId: '2'
+      }
+      relationRequestsService.findAllRequestSent.mockReturnValue(resExpected)
+
+      const result = await relationRequestResolver.findAllRelationRequestsSent(
+        '1'
+      )
+
+      expect(result).toStrictEqual(resExpected)
+      expect(relationRequestsService.findAllRequestSent).toHaveBeenCalledWith(
+        '1'
+      )
+    })
   })
 
   it('should be defined', () => {
