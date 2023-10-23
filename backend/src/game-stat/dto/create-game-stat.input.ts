@@ -13,32 +13,32 @@ import {
 @InputType()
 export class CreateGameStatInput {
   @Field(() => EGameType)
-  @IsEnum(EGameType, { message: '$property must be a valid $constraint1.' })
+  @IsEnum(EGameType, { message: '$property must be a valid EGameStat.' })
   type: EGameType
 
-  @Field(() => Int)
-  @IsNotEmpty()
+  @Field(() => Int, { nullable: true })
+  @IsOptional()
   @IsNumber(
-    { allowInfinity: false, allowNaN: false },
-    { message: '$property must be a number.' }
+    { maxDecimalPlaces: 0, allowInfinity: false, allowNaN: false },
+    { message: '$property must be an integer number.' }
   )
   @Min(0, { message: '$property must not be less than $constraint1.' })
   timePlayed: number
 
-  @Field(() => Int)
-  @IsNotEmpty()
+  @Field(() => Int, { nullable: true })
+  @IsOptional()
   @IsNumber(
-    { allowInfinity: false, allowNaN: false },
-    { message: '$property must be a number.' }
+    { maxDecimalPlaces: 0, allowInfinity: false, allowNaN: false },
+    { message: '$property must be an integer number.' }
   )
   @Min(0, { message: '$property must not be less than $constraint1.' })
   scoreWinner: number
 
-  @Field(() => Int)
-  @IsNotEmpty()
+  @Field(() => Int, { nullable: true })
+  @IsOptional()
   @IsNumber(
-    { allowInfinity: false, allowNaN: false },
-    { message: '$property must be a number.' }
+    { maxDecimalPlaces: 0, allowInfinity: false, allowNaN: false },
+    { message: '$property must be an integer number.' }
   )
   @Min(0, { message: '$property must not be less than $constraint1.' })
   scoreLoser: number

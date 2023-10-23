@@ -63,8 +63,7 @@ describe('UserResolver', () => {
     it('findOneGameStat', async () => {
       const resExpected = {
         loserId: '1',
-        winnerId: '2',
-        content: 'this is a message1'
+        winnerId: '2'
       }
       gameStatService.findOne.mockReturnValue(resExpected)
       const result = await gameStatResolver.findOneGameStat('1')
@@ -73,9 +72,14 @@ describe('UserResolver', () => {
       expect(gameStatService.findOne).toHaveBeenCalledWith('1')
     })
     it('findAllGameStat', async () => {
-      const resExpected = {
-        loserId: '1'
-      }
+      const resExpected = [
+        {
+          loserId: '1'
+        },
+        {
+          loser: '2'
+        }
+      ]
       gameStatService.findAll.mockReturnValue(resExpected)
 
       const result = await gameStatResolver.findAllGameStat('1')
@@ -86,8 +90,7 @@ describe('UserResolver', () => {
     it('findGameStatWin', async () => {
       const resExpected = {
         loserId: '1',
-        winnerId: '2',
-        content: 'this is a message'
+        winnerId: '2'
       }
 
       gameStatService.findWin.mockReturnValue(resExpected)
@@ -100,8 +103,7 @@ describe('UserResolver', () => {
     it('findGameStatLose', async () => {
       const resExpected = {
         loserId: '1',
-        winnerId: '2',
-        content: 'this is a message'
+        winnerId: '2'
       }
 
       gameStatService.findLose.mockReturnValue(resExpected)
@@ -114,8 +116,7 @@ describe('UserResolver', () => {
     it('findGameStatClassic', async () => {
       const resExpected = {
         loserId: '1',
-        winnerId: '2',
-        content: 'this is a message'
+        winnerId: '2'
       }
 
       gameStatService.findClassic.mockReturnValue(resExpected)
@@ -128,8 +129,7 @@ describe('UserResolver', () => {
     it('findGameStatSpecial', async () => {
       const resExpected = {
         loserId: '1',
-        winnerId: '2',
-        content: 'this is a message'
+        winnerId: '2'
       }
 
       gameStatService.findSpecial.mockReturnValue(resExpected)
@@ -140,6 +140,24 @@ describe('UserResolver', () => {
       expect(gameStatService.findSpecial).toHaveBeenCalledWith('1')
     })
   })
+  it('createUser', async () => {
+    const data = {
+      type: EGameType.Classic,
+      timePlayed: 1,
+      scoreWinner: 12,
+      scoreLoser: 10,
+      loserId: '111111111111111111111',
+      winnerId: '222222222222222222222'
+    }
+    const metadata: ArgumentMetadata = {
+      type: 'body',
+      metatype: CreateGameStatInput,
+      data: ''
+    }
+    const response = await validationPipe.transform(data, metadata)
+    expect(response).toStrictEqual(data)
+  })
+
   describe('Test Error', () => {
     describe('loserId - nanoid tests (mandatory)', () => {
       it('invalid nanoid - empty id', async () => {
@@ -378,7 +396,32 @@ describe('UserResolver', () => {
         expect(thrownError.getResponse()).toStrictEqual(res)
       })
     })
-    describe('scoreWinner- float tests', () => {
+    describe('scoreWinner- int tests', () => {
+      it('scoreWinner - float test', async () => {
+        const data = {
+          loserId: 'aaaValidIdToTestuId1a',
+          winnerId: 'aaaValidIdoTest1uId1a',
+          type: EGameType.Classic,
+          timePlayed: 1,
+          scoreWinner: 12.1,
+          scoreLoser: 10
+        }
+        const metadata: ArgumentMetadata = {
+          type: 'body',
+          metatype: CreateGameStatInput,
+          data: ''
+        }
+        const res = {
+          message: ['scoreWinner must be an integer number.'],
+          error: 'Bad Request',
+          statusCode: 400
+        }
+        const thrownError = await validationPipe
+          .transform(data, metadata)
+          .catch((error) => error)
+        expect(thrownError.getResponse()).toStrictEqual(res)
+      })
+
       it('invalid number - string', async () => {
         const data = {
           loserId: 'aaaValidIdToTestuId1a',
@@ -396,7 +439,7 @@ describe('UserResolver', () => {
         const res = {
           message: [
             'scoreWinner must not be less than 0.',
-            'scoreWinner must be a number.'
+            'scoreWinner must be an integer number.'
           ],
           error: 'Bad Request',
           statusCode: 400
@@ -421,7 +464,7 @@ describe('UserResolver', () => {
           data: ''
         }
         const res = {
-          message: ['scoreWinner must be a number.'],
+          message: ['scoreWinner must be an integer number.'],
           error: 'Bad Request',
           statusCode: 400
         }
@@ -447,7 +490,7 @@ describe('UserResolver', () => {
         const res = {
           message: [
             'scoreWinner must not be less than 0.',
-            'scoreWinner must be a number.'
+            'scoreWinner must be an integer number.'
           ],
           error: 'Bad Request',
           statusCode: 400
@@ -483,6 +526,30 @@ describe('UserResolver', () => {
       })
     })
     describe('scoreLoser- float tests', () => {
+      it('scoreLoser - float test', async () => {
+        const data = {
+          loserId: 'aaaValidIdToTestuId1a',
+          winnerId: 'aaaValidIdoTest1uId1a',
+          type: EGameType.Classic,
+          timePlayed: 1,
+          scoreWinner: 12,
+          scoreLoser: 10.1
+        }
+        const metadata: ArgumentMetadata = {
+          type: 'body',
+          metatype: CreateGameStatInput,
+          data: ''
+        }
+        const res = {
+          message: ['scoreLoser must be an integer number.'],
+          error: 'Bad Request',
+          statusCode: 400
+        }
+        const thrownError = await validationPipe
+          .transform(data, metadata)
+          .catch((error) => error)
+        expect(thrownError.getResponse()).toStrictEqual(res)
+      })
       it('invalid number - string', async () => {
         const data = {
           loserId: 'aaaValidIdToTestuId1a',
@@ -500,7 +567,7 @@ describe('UserResolver', () => {
         const res = {
           message: [
             'scoreLoser must not be less than 0.',
-            'scoreLoser must be a number.'
+            'scoreLoser must be an integer number.'
           ],
           error: 'Bad Request',
           statusCode: 400
@@ -525,7 +592,7 @@ describe('UserResolver', () => {
           data: ''
         }
         const res = {
-          message: ['scoreLoser must be a number.'],
+          message: ['scoreLoser must be an integer number.'],
           error: 'Bad Request',
           statusCode: 400
         }
@@ -551,7 +618,7 @@ describe('UserResolver', () => {
         const res = {
           message: [
             'scoreLoser must not be less than 0.',
-            'scoreLoser must be a number.'
+            'scoreLoser must be an integer number.'
           ],
           error: 'Bad Request',
           statusCode: 400
@@ -587,6 +654,30 @@ describe('UserResolver', () => {
       })
     })
     describe('timePlayed- float tests', () => {
+      it('timePlayed - float test', async () => {
+        const data = {
+          loserId: 'aaaValidIdToTestuId1a',
+          winnerId: 'aaaValidIdoTest1uId1a',
+          type: EGameType.Classic,
+          timePlayed: 1.1,
+          scoreWinner: 12,
+          scoreLoser: 10
+        }
+        const metadata: ArgumentMetadata = {
+          type: 'body',
+          metatype: CreateGameStatInput,
+          data: ''
+        }
+        const res = {
+          message: ['timePlayed must be an integer number.'],
+          error: 'Bad Request',
+          statusCode: 400
+        }
+        const thrownError = await validationPipe
+          .transform(data, metadata)
+          .catch((error) => error)
+        expect(thrownError.getResponse()).toStrictEqual(res)
+      })
       it('invalid number - string', async () => {
         const data = {
           loserId: 'aaaValidIdToTestuId1a',
@@ -604,7 +695,7 @@ describe('UserResolver', () => {
         const res = {
           message: [
             'timePlayed must not be less than 0.',
-            'timePlayed must be a number.'
+            'timePlayed must be an integer number.'
           ],
           error: 'Bad Request',
           statusCode: 400
@@ -629,7 +720,7 @@ describe('UserResolver', () => {
           data: ''
         }
         const res = {
-          message: ['timePlayed must be a number.'],
+          message: ['timePlayed must be an integer number.'],
           error: 'Bad Request',
           statusCode: 400
         }
@@ -655,7 +746,7 @@ describe('UserResolver', () => {
         const res = {
           message: [
             'timePlayed must not be less than 0.',
-            'timePlayed must be a number.'
+            'timePlayed must be an integer number.'
           ],
           error: 'Bad Request',
           statusCode: 400
@@ -706,7 +797,7 @@ describe('UserResolver', () => {
           data: ''
         }
         const res = {
-          message: ['type must be a valid [object Object].'],
+          message: ['type must be a valid EGameStat.'],
           error: 'Bad Request',
           statusCode: 400
         }
