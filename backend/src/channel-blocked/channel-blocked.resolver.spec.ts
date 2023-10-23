@@ -40,7 +40,7 @@ describe('ChannelBlockedResolver', () => {
   })
 
   describe('Test Mutation', () => {
-    it('createRelationRequests', async () => {
+    it('createChannelBlocked', async () => {
       const data: CreateChannelBlockedInput = {
         userId: '1',
         channelId: '2'
@@ -54,7 +54,7 @@ describe('ChannelBlockedResolver', () => {
       expect(channelBlockedService.create).toHaveBeenCalledWith(data)
     })
 
-    it('deleteRelationRequests', async () => {
+    it('deleteChannelBlocked', async () => {
       const resExpected = { id: '1' }
       channelBlockedService.delete.mockReturnValue(resExpected)
 
@@ -65,7 +65,7 @@ describe('ChannelBlockedResolver', () => {
   })
 
   describe('Test Query', () => {
-    it('findOneRelationRequests', async () => {
+    it('findOneChannelBlocked', async () => {
       const resExpected = {
         userId: '1',
         channelId: '2'
