@@ -87,12 +87,8 @@ describe('relationRequestResolver', () => {
     })
 
     it('isRelationRequestsRequested', async () => {
-      const resExpected = {
-        userSenderId: '1',
-        userReceiverId: '2'
-      }
+      const resExpected = true
       relationRequestsService.isRequested.mockReturnValue(resExpected)
-
       const result = await relationRequestResolver.isRelationRequestsRequested(
         '1',
         '2'
@@ -102,10 +98,16 @@ describe('relationRequestResolver', () => {
       expect(relationRequestsService.isRequested).toHaveBeenCalledWith('1', '2')
     })
     it('findAllRelationRequestsReceived', async () => {
-      const resExpected = {
-        userSenderId: '1',
-        userReceiverId: '2'
-      }
+      const resExpected = [
+        {
+          userSenderId: '1',
+          userReceiverId: '2'
+        },
+        {
+          userSenderId: '1',
+          userReceiverId: '3'
+        }
+      ]
       relationRequestsService.findAllRequestReceived.mockReturnValue(
         resExpected
       )
@@ -135,10 +137,22 @@ describe('relationRequestResolver', () => {
       )
     })
   })
-
-  it('should be defined', () => {
-    expect(relationRequestResolver).toBeDefined()
+  describe('Test ValidationPipe', () => {
+    it('create relationrequest', async () => {
+      const data = {
+        userSenderId: '111111111111111111111',
+        userReceiverId: '222222222222222222222'
+      }
+      const metadata: ArgumentMetadata = {
+        type: 'body',
+        metatype: RelationRequestsInput,
+        data: ''
+      }
+      const response = await validationPipe.transform(data, metadata)
+      expect(response).toStrictEqual(data)
+    })
   })
+
   describe('Test Error', () => {
     describe('userSenderId - nanoid tests (mandatory)', () => {
       it('invalid nanoid - empty id', async () => {
