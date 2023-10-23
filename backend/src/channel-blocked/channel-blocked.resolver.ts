@@ -3,7 +3,7 @@ import { CreateChannelBlockedInput } from './dto/create-channel-blocked.input'
 import { ChannelBlocked } from './entities/channel-blocked.entity'
 import { ValidationPipe } from '@nestjs/common'
 import { ChannelBlockedService } from './channel-blocked.service'
-import { NanoidValidationPipe } from '../common/pipes/nanoid.pipe'
+import { NanoidValidationPipe } from 'src/common/pipes/nanoid.pipe'
 
 @Resolver()
 export class ChannelBlockedResolver {
