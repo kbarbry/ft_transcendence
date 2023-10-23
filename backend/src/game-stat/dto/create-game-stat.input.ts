@@ -16,8 +16,7 @@ export class CreateGameStatInput {
   @IsEnum(EGameType, { message: '$property must be a valid EGameStat.' })
   type: EGameType
 
-  @Field(() => Int, { nullable: true })
-  @IsOptional()
+  @Field(() => Int)
   @IsNumber(
     { maxDecimalPlaces: 0, allowInfinity: false, allowNaN: false },
     { message: '$property must be an integer number.' }
@@ -25,8 +24,7 @@ export class CreateGameStatInput {
   @Min(0, { message: '$property must not be less than $constraint1.' })
   timePlayed: number
 
-  @Field(() => Int, { nullable: true })
-  @IsOptional()
+  @Field(() => Int)
   @IsNumber(
     { maxDecimalPlaces: 0, allowInfinity: false, allowNaN: false },
     { message: '$property must be an integer number.' }
@@ -34,8 +32,7 @@ export class CreateGameStatInput {
   @Min(0, { message: '$property must not be less than $constraint1.' })
   scoreWinner: number
 
-  @Field(() => Int, { nullable: true })
-  @IsOptional()
+  @Field(() => Int)
   @IsNumber(
     { maxDecimalPlaces: 0, allowInfinity: false, allowNaN: false },
     { message: '$property must be an integer number.' }
