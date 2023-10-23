@@ -19,7 +19,7 @@ import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo'
 import { join } from 'path'
 import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin/landingPage/default'
 import { APP_FILTER } from '@nestjs/core'
-import { GlobalExceptionFilter } from './common/filters/prisma-exception.filter'
+import { GlobalExceptionFilter } from './common/filters/general.filter'
 
 @Module({
   imports: [
