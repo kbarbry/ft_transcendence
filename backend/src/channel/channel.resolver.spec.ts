@@ -44,7 +44,7 @@ describe('ChannelResolver', () => {
   })
 
   describe('Test Error', () => {
-    it('Empty date', async () => {
+    it('Empty data', async () => {
       const data = {}
       const metadata: ArgumentMetadata = {
         type: 'body',
@@ -68,7 +68,7 @@ describe('ChannelResolver', () => {
     })
   })
 
-  describe('name', () => {
+  describe('name - string tests (mandatory)', () => {
     it('name - too long', async () => {
       const data = {
         name: 'channel name is Boooooooooooooooooob',
@@ -159,7 +159,7 @@ describe('ChannelResolver', () => {
     })
   })
 
-  describe('avatarUrl', () => {
+  describe('avatarUrl - url tests', () => {
     it('avatarUrl - no http', async () => {
       const data = {
         avatarUrl: '//www.pic.com/pic.png',
@@ -231,7 +231,7 @@ describe('ChannelResolver', () => {
     })
   })
 
-  describe('topic', () => {
+  describe('topic - string tests', () => {
     it('topic - too long', async () => {
       const data = {
         name: 'Channel Name',
@@ -278,7 +278,7 @@ describe('ChannelResolver', () => {
     })
   })
 
-  describe('password', () => {
+  describe('password - string tests', () => {
     it('password - too long', async () => {
       const data = {
         name: 'Channel Name',
@@ -324,8 +324,8 @@ describe('ChannelResolver', () => {
     })
   })
 
-  describe('ownerId', () => {
-    it('ownerId - bad characters', async () => {
+  describe('ownerId - nanoid tests (mandatory)', () => {
+    it('ownerId - invalid characters', async () => {
       const data = {
         name: 'Channel Name',
         ownerId: '564ayPlUh0qtDrePkJ87;'
@@ -460,7 +460,7 @@ describe('ChannelResolver', () => {
     })
   })
 
-  describe('maxUsers', () => {
+  describe('maxUsers - integer tests', () => {
     it('maxUser - float', async () => {
       const data = {
         name: 'Channel Name',
@@ -627,8 +627,8 @@ describe('ChannelResolver', () => {
     })
   })
 
-  describe('type', () => {
-    it('type - wrong enum', async () => {
+  describe('type - EChannelType tests', () => {
+    it('type - invalid enum', async () => {
       const data = {
         name: 'Channel Name',
         ownerId: '564ayPlUh0qtDrePkJ87t',
@@ -650,7 +650,7 @@ describe('ChannelResolver', () => {
       expect(thrownError.getResponse()).toStrictEqual(res)
     })
 
-    it('type - wrong type', async () => {
+    it('type - invalid type', async () => {
       const data = {
         name: 'Channel Name',
         ownerId: '564ayPlUh0qtDrePkJ87t',

@@ -70,6 +70,6 @@ export class CreateChannelInput {
 
   @Field(() => EChannelType, { nullable: true })
   @IsOptional()
-  @IsEnum(EChannelType, { message: 'type must be Public or Protected' })
+  @IsEnum(EChannelType, { message: '$property must be Public or Protected' })
   type?: EChannelType
 }
