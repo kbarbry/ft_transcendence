@@ -61,8 +61,8 @@ export class CreateChannelInput {
   @Field(() => Int, { nullable: true })
   @IsOptional()
   @IsNumber(
-    { maxDecimalPlaces: 0, allowInfinity: false, allowNaN: false },
-    { message: '$property must be an integer number.' }
+    { allowInfinity: false, allowNaN: false },
+    { message: '$property must be a number.' }
   )
   @Min(1, { message: '$property must not be less than $constraint1.' })
   @Max(50, { message: '$property must not be greater than $constraint1.' })
@@ -70,6 +70,6 @@ export class CreateChannelInput {
 
   @Field(() => EChannelType, { nullable: true })
   @IsOptional()
-  @IsEnum(EChannelType, { message: 'type must be Public or Protected' })
+  @IsEnum(EChannelType, { message: '$property must be a valid $constraint1.' })
   type?: EChannelType
 }
