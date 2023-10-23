@@ -19,7 +19,7 @@ import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo'
 import { join } from 'path'
 import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin/landingPage/default'
 import { APP_FILTER } from '@nestjs/core'
-import { PrismaExceptionFilter } from './common/filters/prisma-exception.filter'
+import { GlobalExceptionFilter } from './common/filters/prisma-exception.filter'
 
 @Module({
   imports: [
@@ -41,13 +41,14 @@ import { PrismaExceptionFilter } from './common/filters/prisma-exception.filter'
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
       sortSchema: true,
       playground: false,
+      includeStacktraceInErrorResponses: false,
       plugins: [ApolloServerPluginLandingPageLocalDefault()]
     })
   ],
   controllers: [],
   providers: [
     AppService,
-    { provide: APP_FILTER, useClass: PrismaExceptionFilter }
+    { provide: APP_FILTER, useClass: GlobalExceptionFilter }
   ]
 })
 export class AppModule {}
