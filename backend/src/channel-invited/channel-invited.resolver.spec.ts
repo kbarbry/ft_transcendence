@@ -1,69 +1,397 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { ChannelInvitedResolver } from './channel-invited.resolver'
 import { PrismaService } from '../prisma/prisma.service'
-import { cleanDataBase } from '../../test/setup-environment'
+import { CreateChannelInvitedInput } from './dto/create-channel-invited.input'
+import { ChannelInvitedResolver } from './channel-invited.resolver'
 import { ChannelInvitedService } from './channel-invited.service'
+import { ArgumentMetadata, ValidationPipe } from '@nestjs/common'
 
 describe('ChannelInvitedResolver', () => {
-  let resolver: ChannelInvitedResolver
-  let prismaService: PrismaService
+  let channelInvitedResolver: ChannelInvitedResolver
+  const channelInvitedService = {
+    create: jest.fn(),
+    delete: jest.fn(),
+    findOne: jest.fn(),
+    findAllInChannel: jest.fn()
+  }
+  let validationPipe: ValidationPipe
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [ChannelInvitedResolver, ChannelInvitedService, PrismaService]
+      providers: [
+        ChannelInvitedResolver,
+        {
+          provide: ChannelInvitedService,
+          useValue: channelInvitedService
+        },
+        PrismaService
+      ]
     }).compile()
 
-    resolver = module.get<ChannelInvitedResolver>(ChannelInvitedResolver)
-    prismaService = module.get<PrismaService>(PrismaService)
+    channelInvitedResolver = module.get<ChannelInvitedResolver>(
+      ChannelInvitedResolver
+    )
+  })
 
-    await cleanDataBase(prismaService)
-
-    //**************************************************//
-    //  USER CREATION
-    //**************************************************//
-    await prismaService.$executeRaw`
-      INSERT INTO
-      "public"."User"
-      VALUES
-      ('765ayPlUh0qtDrePkJ87t', 'random url', 'alscsed@42.fr', 'Ally', 'oui', null, null, false, 'Online', 'English', 1),
-      ('ftrX94_NVjmzVm9QL3k4r', 'random url', 'charlie@42.fr', 'Chacha', 'oui', null, null, false, 'Invisble', 'French', 12),
-      ('fdpvTLhbNpjA39Pc7wwtn', 'random url', 'bob@42.fr', 'Bobby', 'Babby', null, null, false, 'Online', 'English', 1),
-      ('wrtzGU-8QlEvmHk8rjNRI', 'random url', 'david@42.fr', 'dav', 'oui', null, null, false, 'Invisble', 'French', 12),
-      ('567ayPlUh0qtDrePkJ87t', 'random url', 'alfred@42.fr', 'Awdy', 'oui', null, null, false, 'Online', 'English', 1),
-      ('ec178ef86d29197b6ffd-', 'random url', 'evan@42.fr', 'evee', 'oui', null, null, false, 'Idle', 'Spanish', 36),
-      ('e28d4ff1f6cd647fc171-', 'random url', 'frank@42.fr', 'punisher', 'oui', null, null, false, 'DoNotDisturb', 'Spanish', 9000);`
-    //**************************************************//
-    //  CHANNEL CREATION
-    //**************************************************//
-    await prismaService.$executeRaw`INSERT INTO "public"."Channel" VALUES ('pihayPlUh0qtDrePkJ87t', 'random name', 'randomURL', 'TopicName', 'Password123', '567ayPlUh0qtDrePkJ87t', 50, 'Protected', '2023-09-13 10:00:00');`
-    await prismaService.$executeRaw`INSERT INTO "public"."Channel" VALUES ('RDaquZM1MRu7A1btyFiNb', 'random name2', 'randomURL', 'TopicName', 'Password123', '567ayPlUh0qtDrePkJ87t', 50, 'Public', '2023-09-13 10:00:00');`
-
-    //**************************************************//
-    //  CHANNEL INVITED CREATION
-    //**************************************************//
-    await prismaService.$executeRaw`INSERT INTO "public"."ChannelInvited" VALUES ('765ayPlUh0qtDrePkJ87t', 'pihayPlUh0qtDrePkJ87t');`
-    await prismaService.$executeRaw`INSERT INTO "public"."ChannelInvited" VALUES ('ftrX94_NVjmzVm9QL3k4r', 'pihayPlUh0qtDrePkJ87t');`
-
-    //**************************************************//
-    //  CHANNEL BLOCKED CREATION
-    //**************************************************//
-    await prismaService.$executeRaw`INSERT INTO "public"."ChannelBlocked" VALUES ('ec178ef86d29197b6ffd-', 'pihayPlUh0qtDrePkJ87t');`
-
-    //**************************************************//
-    //  CHANNEL MEMBER CREATION
-    //**************************************************//
-    await prismaService.$executeRaw`INSERT INTO "public"."ChannelMember" VALUES ('NewAvatarURL', 'WonderfullNickname', 'e28d4ff1f6cd647fc171-', 'pihayPlUh0qtDrePkJ87t', 'Member', 'true', '2023-09-13 10:00:00');`
+  beforeEach(async () => {
+    validationPipe = new ValidationPipe()
+    jest.clearAllMocks()
+    channelInvitedService.create.mockReset()
   })
 
   it('should be defined', () => {
-    expect(resolver).toBeDefined()
+    expect(channelInvitedResolver).toBeDefined()
   })
 
-  //Create with wrong user id
-  //Create with wrong channel id
+  describe('Test Mutation', () => {
+    it('createChannelInvited', async () => {
+      const data: CreateChannelInvitedInput = {
+        userId: '1',
+        channelId: '2'
+      }
+      const resExpected = { id: '1', ...data }
+      channelInvitedService.create.mockReturnValue(resExpected)
 
-  //Delete with wrong user id
-  //Delete with wrong channel id
+      const result = await channelInvitedResolver.createChannelInvited(data)
 
-  //same test for find one and find all
+      expect(result).toStrictEqual(resExpected)
+      expect(channelInvitedService.create).toHaveBeenCalledWith(data)
+    })
+
+    it('deleteChannelInvited', async () => {
+      const resExpected = { id: '1' }
+      channelInvitedService.delete.mockReturnValue(resExpected)
+
+      const result = await channelInvitedResolver.deleteChannelInvited('1', '2')
+      expect(result).toStrictEqual(resExpected)
+      expect(channelInvitedService.delete).toHaveBeenCalledWith('1', '2')
+    })
+  })
+
+  describe('Test Query', () => {
+    it('findOneChannelInvited', async () => {
+      const resExpected = {
+        userId: '1',
+        channelId: '2'
+      }
+      channelInvitedService.findOne.mockReturnValue(resExpected)
+
+      const result = await channelInvitedResolver.findOneChannelInvited(
+        '1',
+        '2'
+      )
+
+      expect(result).toStrictEqual(resExpected)
+      expect(channelInvitedService.findOne).toHaveBeenCalledWith('1', '2')
+    })
+
+    it('findAllChannelInvitedInChannel', async () => {
+      const resExpected = [
+        {
+          userId: '1',
+          channelId: '2'
+        },
+        {
+          userId: '1',
+          channelId: '3'
+        }
+      ]
+      channelInvitedService.findAllInChannel.mockReturnValue(resExpected)
+
+      const result =
+        await channelInvitedResolver.findAllChannelInvitedInChannel('1')
+
+      expect(result).toStrictEqual(resExpected)
+      expect(channelInvitedService.findAllInChannel).toHaveBeenCalledWith('1')
+    })
+  })
+
+  describe('Test ValidationPipe', () => {
+    it('createChannelInvited', async () => {
+      const data = {
+        userId: '765ayPlUh0qtDrePkJ87t',
+        channelId: 'pihayPlUh0qtDrePkJ87t'
+      }
+      const metadata: ArgumentMetadata = {
+        type: 'body',
+        metatype: CreateChannelInvitedInput,
+        data: ''
+      }
+      const response = await validationPipe.transform(data, metadata)
+      expect(response).toStrictEqual(data)
+    })
+  })
+
+  describe('Test Error', () => {
+    describe('UserId - nanoid tests (mandatory)', () => {
+      it('userId - invalid characters', async () => {
+        const data = {
+          userId: '765ayPlUh0qtDrePkJ87;',
+          channelId: 'pihayPlUh0qtDrePkJ87t'
+        }
+        const metadata: ArgumentMetadata = {
+          type: 'body',
+          metatype: CreateChannelInvitedInput,
+          data: ''
+        }
+        const res = {
+          message: ['Invalid nanoid characters.'],
+          error: 'Bad Request',
+          statusCode: 400
+        }
+        const thrownError = await validationPipe
+          .transform(data, metadata)
+          .catch((error) => error)
+        expect(thrownError.getResponse()).toStrictEqual(res)
+      })
+
+      it('userId - too short', async () => {
+        const data = {
+          userId: '765ayPlUh0qtDrePkJ87',
+          channelId: 'pihayPlUh0qtDrePkJ87t'
+        }
+        const metadata: ArgumentMetadata = {
+          type: 'body',
+          metatype: CreateChannelInvitedInput,
+          data: ''
+        }
+        const res = {
+          message: ['userId must be exactly 21 characters long.'],
+          error: 'Bad Request',
+          statusCode: 400
+        }
+        const thrownError = await validationPipe
+          .transform(data, metadata)
+          .catch((error) => error)
+        expect(thrownError.getResponse()).toStrictEqual(res)
+      })
+
+      it('userId - too long', async () => {
+        const data = {
+          userId: '765ayPlUh0qtDrePkJ87tt',
+          channelId: 'pihayPlUh0qtDrePkJ87t'
+        }
+        const metadata: ArgumentMetadata = {
+          type: 'body',
+          metatype: CreateChannelInvitedInput,
+          data: ''
+        }
+        const res = {
+          message: ['userId must be exactly 21 characters long.'],
+          error: 'Bad Request',
+          statusCode: 400
+        }
+        const thrownError = await validationPipe
+          .transform(data, metadata)
+          .catch((error) => error)
+        expect(thrownError.getResponse()).toStrictEqual(res)
+      })
+
+      it('userId - invalid type', async () => {
+        const data = {
+          userId: 75,
+          channelId: 'pihayPlUh0qtDrePkJ87t'
+        }
+        const metadata: ArgumentMetadata = {
+          type: 'body',
+          metatype: CreateChannelInvitedInput,
+          data: ''
+        }
+        const res = {
+          message: [
+            'userId must be exactly 21 characters long.',
+            'Invalid nanoid characters.'
+          ],
+          error: 'Bad Request',
+          statusCode: 400
+        }
+        const thrownError = await validationPipe
+          .transform(data, metadata)
+          .catch((error) => error)
+        expect(thrownError.getResponse()).toStrictEqual(res)
+      })
+
+      it('userId - undefined', async () => {
+        const data = {
+          channelId: 'pihayPlUh0qtDrePkJ87t'
+        }
+        const metadata: ArgumentMetadata = {
+          type: 'body',
+          metatype: CreateChannelInvitedInput,
+          data: ''
+        }
+        const res = {
+          message: [
+            'userId must be exactly 21 characters long.',
+            'Invalid nanoid characters.'
+          ],
+          error: 'Bad Request',
+          statusCode: 400
+        }
+        const thrownError = await validationPipe
+          .transform(data, metadata)
+          .catch((error) => error)
+        expect(thrownError.getResponse()).toStrictEqual(res)
+      })
+
+      it('userId - null', async () => {
+        const data = {
+          channelId: 'pihayPlUh0qtDrePkJ87t',
+          userId: null
+        }
+        const metadata: ArgumentMetadata = {
+          type: 'body',
+          metatype: CreateChannelInvitedInput,
+          data: ''
+        }
+        const res = {
+          message: [
+            'userId must be exactly 21 characters long.',
+            'Invalid nanoid characters.'
+          ],
+          error: 'Bad Request',
+          statusCode: 400
+        }
+        const thrownError = await validationPipe
+          .transform(data, metadata)
+          .catch((error) => error)
+        expect(thrownError.getResponse()).toStrictEqual(res)
+      })
+    })
+
+    describe('channelId - nanoid tests (mandatory)', () => {
+      it('channelId - invalid characters', async () => {
+        const data = {
+          userId: 'pihayPlUh0qtDrePkJ87t',
+          channelId: '765ayPlUh0qtDrePkJ87;'
+        }
+        const metadata: ArgumentMetadata = {
+          type: 'body',
+          metatype: CreateChannelInvitedInput,
+          data: ''
+        }
+        const res = {
+          message: ['Invalid nanoid characters.'],
+          error: 'Bad Request',
+          statusCode: 400
+        }
+        const thrownError = await validationPipe
+          .transform(data, metadata)
+          .catch((error) => error)
+        expect(thrownError.getResponse()).toStrictEqual(res)
+      })
+
+      it('channelId - too short', async () => {
+        const data = {
+          userId: 'pihayPlUh0qtDrePkJ87t',
+          channelId: '765ayPlUh0qtDrePkJ87'
+        }
+        const metadata: ArgumentMetadata = {
+          type: 'body',
+          metatype: CreateChannelInvitedInput,
+          data: ''
+        }
+        const res = {
+          message: ['channelId must be exactly 21 characters long.'],
+          error: 'Bad Request',
+          statusCode: 400
+        }
+        const thrownError = await validationPipe
+          .transform(data, metadata)
+          .catch((error) => error)
+        expect(thrownError.getResponse()).toStrictEqual(res)
+      })
+
+      it('channelId - too long', async () => {
+        const data = {
+          userId: 'pihayPlUh0qtDrePkJ87t',
+          channelId: '765ayPlUh0qtDrePkJ87tt'
+        }
+        const metadata: ArgumentMetadata = {
+          type: 'body',
+          metatype: CreateChannelInvitedInput,
+          data: ''
+        }
+        const res = {
+          message: ['channelId must be exactly 21 characters long.'],
+          error: 'Bad Request',
+          statusCode: 400
+        }
+        const thrownError = await validationPipe
+          .transform(data, metadata)
+          .catch((error) => error)
+        expect(thrownError.getResponse()).toStrictEqual(res)
+      })
+
+      it('channelId - invalid type', async () => {
+        const data = {
+          userId: 'pihayPlUh0qtDrePkJ87t',
+          channelId: 75
+        }
+        const metadata: ArgumentMetadata = {
+          type: 'body',
+          metatype: CreateChannelInvitedInput,
+          data: ''
+        }
+        const res = {
+          message: [
+            'channelId must be exactly 21 characters long.',
+            'Invalid nanoid characters.'
+          ],
+          error: 'Bad Request',
+          statusCode: 400
+        }
+        const thrownError = await validationPipe
+          .transform(data, metadata)
+          .catch((error) => error)
+        expect(thrownError.getResponse()).toStrictEqual(res)
+      })
+
+      it('channelId - undefined', async () => {
+        const data = {
+          userId: 'pihayPlUh0qtDrePkJ87t'
+        }
+        const metadata: ArgumentMetadata = {
+          type: 'body',
+          metatype: CreateChannelInvitedInput,
+          data: ''
+        }
+        const res = {
+          message: [
+            'channelId must be exactly 21 characters long.',
+            'Invalid nanoid characters.'
+          ],
+          error: 'Bad Request',
+          statusCode: 400
+        }
+        const thrownError = await validationPipe
+          .transform(data, metadata)
+          .catch((error) => error)
+        expect(thrownError.getResponse()).toStrictEqual(res)
+      })
+
+      it('channelId - null', async () => {
+        const data = {
+          channelId: null,
+          userId: 'pihayPlUh0qtDrePkJ87t'
+        }
+        const metadata: ArgumentMetadata = {
+          type: 'body',
+          metatype: CreateChannelInvitedInput,
+          data: ''
+        }
+        const res = {
+          message: [
+            'channelId must be exactly 21 characters long.',
+            'Invalid nanoid characters.'
+          ],
+          error: 'Bad Request',
+          statusCode: 400
+        }
+        const thrownError = await validationPipe
+          .transform(data, metadata)
+          .catch((error) => error)
+        expect(thrownError.getResponse()).toStrictEqual(res)
+      })
+    })
+  })
 })

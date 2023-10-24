@@ -4,6 +4,8 @@ import { Channel } from './entities/channel.entity'
 import { CreateChannelInput } from './dto/create-channel.input'
 import { ValidationPipe } from '@nestjs/common'
 import { UpdateChannelInput } from './dto/update-channel.input'
+import { NanoidValidationPipe } from '../common/pipes/nanoid.pipe'
+import { StringValidationPipe } from '../common/pipes/string.pipe'
 
 @Resolver(() => Channel)
 export class ChannelResolver {
@@ -22,7 +24,7 @@ export class ChannelResolver {
 
   @Mutation(() => Channel)
   async updateChannel(
-    @Args('id', { type: () => String })
+    @Args('id', { type: () => String }, NanoidValidationPipe)
     id: string,
     @Args('data', { type: () => UpdateChannelInput }, ValidationPipe)
     data: UpdateChannelInput
@@ -32,7 +34,7 @@ export class ChannelResolver {
 
   @Mutation(() => Channel)
   async deleteChannel(
-    @Args('id', { type: () => String }) id: string
+    @Args('id', { type: () => String }, NanoidValidationPipe) id: string
   ): Promise<Channel> {
     return this.channelService.delete(id)
   }
@@ -42,28 +44,29 @@ export class ChannelResolver {
   //**************************************************//
   @Query(() => Channel)
   findOneChannel(
-    @Args('id', { type: () => String }) id: string
+    @Args('id', { type: () => String }, NanoidValidationPipe) id: string
   ): Promise<Channel | null> {
     return this.channelService.findOne(id)
   }
 
   @Query(() => [Channel])
   findAllChannelThatContain(
-    @Args('needle', { type: () => String }) needle: string
+    @Args('needle', { type: () => String }, StringValidationPipe) needle: string
   ): Promise<Channel[]> {
     return this.channelService.findAllThatContain(needle)
   }
 
   @Query(() => String)
   findChannelOwner(
-    @Args('channelId', { type: () => String }) channelId: string
+    @Args('channelId', { type: () => String }, NanoidValidationPipe)
+    channelId: string
   ): Promise<string | null> {
     return this.channelService.findOwner(channelId)
   }
 
   @Query(() => [Channel])
   findAllChannelOfOwner(
-    @Args('userId', { type: () => String }) userId: string
+    @Args('userId', { type: () => String }, NanoidValidationPipe) userId: string
   ): Promise<Channel[]> {
     return this.channelService.findAllChannelOfOwner(userId)
   }

@@ -4,6 +4,8 @@ import { ChannelMessage } from './entities/channel-message.entity'
 import { CreateChannelMessageInput } from './dto/create-channel-message.input'
 import { ValidationPipe } from '@nestjs/common'
 import { UpdateChannelMessageInput } from './dto/update-channel-message.input'
+import { NanoidValidationPipe } from '../common/pipes/nanoid.pipe'
+import { StringValidationPipe } from '../common/pipes/string.pipe'
 
 @Resolver(() => ChannelMessage)
 export class ChannelMessageResolver {
@@ -22,7 +24,7 @@ export class ChannelMessageResolver {
 
   @Mutation(() => ChannelMessage)
   async updateChannelMessage(
-    @Args('id', { type: () => String })
+    @Args('id', { type: () => String }, NanoidValidationPipe)
     id: string,
     @Args('data', { type: () => UpdateChannelMessageInput }, ValidationPipe)
     data: UpdateChannelMessageInput
@@ -32,7 +34,7 @@ export class ChannelMessageResolver {
 
   @Mutation(() => ChannelMessage)
   async deleteChannelMessage(
-    @Args('id', { type: () => String }) id: string
+    @Args('id', { type: () => String }, NanoidValidationPipe) id: string
   ): Promise<ChannelMessage> {
     return this.channelMessageService.delete(id)
   }
@@ -42,22 +44,25 @@ export class ChannelMessageResolver {
   //**************************************************//
   @Query(() => ChannelMessage)
   findOneChannelMessage(
-    @Args('id', { type: () => String }) id: string
+    @Args('id', { type: () => String }, NanoidValidationPipe) id: string
   ): Promise<ChannelMessage | null> {
     return this.channelMessageService.findOne(id)
   }
 
   @Query(() => [ChannelMessage])
   findAllChannelMessageInChannel(
-    @Args('channelId', { type: () => String }) channelId: string
+    @Args('channelId', { type: () => String }, NanoidValidationPipe)
+    channelId: string
   ): Promise<ChannelMessage[]> {
     return this.channelMessageService.findAllInChannel(channelId)
   }
 
   @Query(() => [ChannelMessage])
   findAllChannelMessageInChannelByUser(
-    @Args('channelId', { type: () => String }) channelId: string,
-    @Args('senderId', { type: () => String }) senderId: string
+    @Args('channelId', { type: () => String }, NanoidValidationPipe)
+    channelId: string,
+    @Args('senderId', { type: () => String }, NanoidValidationPipe)
+    senderId: string
   ): Promise<ChannelMessage[]> {
     return this.channelMessageService.findAllInChannelByUser(
       channelId,
@@ -67,8 +72,10 @@ export class ChannelMessageResolver {
 
   @Query(() => [ChannelMessage])
   findAllChannelMessageThatContain(
-    @Args('channelId', { type: () => String }) channelId: string,
-    @Args('needle', { type: () => String }) needle: string
+    @Args('channelId', { type: () => String }, NanoidValidationPipe)
+    channelId: string,
+    @Args('needle', { type: () => String }, StringValidationPipe)
+    needle: string
   ): Promise<ChannelMessage[]> {
     return this.channelMessageService.findAllThatContain(channelId, needle)
   }

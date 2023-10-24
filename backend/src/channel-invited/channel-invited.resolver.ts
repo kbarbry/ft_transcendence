@@ -3,6 +3,7 @@ import { ChannelInvited } from './entities/channel-invited.entity'
 import { ChannelInvitedService } from './channel-invited.service'
 import { CreateChannelInvitedInput } from './dto/create-channel-invited.input'
 import { ValidationPipe } from '@nestjs/common'
+import { NanoidValidationPipe } from '../common/pipes/nanoid.pipe'
 
 @Resolver(() => ChannelInvited)
 export class ChannelInvitedResolver {
@@ -21,9 +22,9 @@ export class ChannelInvitedResolver {
 
   @Mutation(() => ChannelInvited)
   async deleteChannelInvited(
-    @Args('userId', { type: () => String })
+    @Args('userId', { type: () => String }, NanoidValidationPipe)
     userId: string,
-    @Args('channelId', { type: () => String })
+    @Args('channelId', { type: () => String }, NanoidValidationPipe)
     channelId: string
   ): Promise<ChannelInvited> {
     return this.channelInvitedServie.delete(userId, channelId)
@@ -34,9 +35,9 @@ export class ChannelInvitedResolver {
   //**************************************************//
   @Query(() => ChannelInvited)
   async findOneChannelInvited(
-    @Args('userId', { type: () => String })
+    @Args('userId', { type: () => String }, NanoidValidationPipe)
     userId: string,
-    @Args('channelId', { type: () => String })
+    @Args('channelId', { type: () => String }, NanoidValidationPipe)
     channelId: string
   ): Promise<ChannelInvited | null> {
     return this.channelInvitedServie.findOne(userId, channelId)
@@ -44,7 +45,7 @@ export class ChannelInvitedResolver {
 
   @Query(() => [ChannelInvited])
   async findAllChannelInvitedInChannel(
-    @Args('channelId', { type: () => String })
+    @Args('channelId', { type: () => String }, NanoidValidationPipe)
     channelId: string
   ): Promise<ChannelInvited[]> {
     return this.channelInvitedServie.findAllInChannel(channelId)
