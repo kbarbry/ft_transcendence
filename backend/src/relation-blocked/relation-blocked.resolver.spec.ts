@@ -9,11 +9,17 @@ describe('UserBlockedResolver', () => {
   let relationBlockedresolver: RelationBlockedResolver
   const validationPipe = new ValidationPipe()
 
-  beforeEach(async () => {
+  const relationBlockedService = {
+    create: jest.fn(),
+    delete: jest.fn(),
+    isBlocked: jest.fn(),
+    findAllBlockedByUser: jest.fn()
+  }
+  beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         RelationBlockedResolver,
-        RelationBlockedService,
+        { provide: RelationBlockedService, useValue: relationBlockedService },
         PrismaService
       ]
     }).compile()
@@ -25,6 +31,78 @@ describe('UserBlockedResolver', () => {
 
   it('UserBlocked Resolver should be defined', () => {
     expect(relationBlockedresolver).toBeDefined()
+  })
+  describe('Test Mutation', () => {
+    it('createRelationblocked', async () => {
+      const data: RelationBlockedInput = {
+        userBlockingId: '1',
+        userBlockedId: '2'
+      }
+      const resExpected = { id: '1', ...data }
+      relationBlockedService.create.mockReturnValue(resExpected)
+
+      const result = await relationBlockedresolver.createRelationBlocked(data)
+
+      expect(result).toStrictEqual(resExpected)
+    })
+    it('delete RelationBlocked', async () => {
+      const resExpected = { userBlockingId: '1' }
+      relationBlockedService.delete.mockReturnValue(resExpected)
+
+      const result = await relationBlockedresolver.deleteRelationBlocked(
+        '1',
+        '2'
+      )
+
+      expect(result).toStrictEqual(resExpected)
+    })
+  })
+  describe('Test Query', () => {
+    it('isRelationBlocked', async () => {
+      const resExpected = true
+      relationBlockedService.isBlocked.mockReturnValue(resExpected)
+      const result = await relationBlockedresolver.isRelationBlocked('1', '2')
+
+      expect(result).toStrictEqual(resExpected)
+      expect(relationBlockedService.isBlocked).toHaveBeenCalledWith('1', '2')
+    })
+  })
+  it('findAllRelationBlockedByUser', async () => {
+    const resExpected = [
+      {
+        userBlockingId: '1',
+        userBlockedId: '2'
+      },
+      {
+        userBlockingId: '1',
+        userBlockedId: '23'
+      }
+    ]
+    relationBlockedService.findAllBlockedByUser.mockReturnValue(resExpected)
+
+    const result = await relationBlockedresolver.findAllRelationBlockedByUser(
+      '1'
+    )
+
+    expect(result).toStrictEqual(resExpected)
+    expect(relationBlockedService.findAllBlockedByUser).toHaveBeenCalledWith(
+      '1'
+    )
+  })
+  describe('Test ValidationPipe', () => {
+    it('createRelationblocked', async () => {
+      const data = {
+        userBlockingId: '111111111111111111111',
+        userBlockedId: '232222222222222222222'
+      }
+      const metadata: ArgumentMetadata = {
+        type: 'body',
+        metatype: RelationBlockedInput,
+        data: ''
+      }
+      const response = await validationPipe.transform(data, metadata)
+      expect(response).toStrictEqual(data)
+    })
   })
   describe('Test Error', () => {
     describe('userBlockingId - nanoid tests (mandatory)', () => {
@@ -253,10 +331,3 @@ describe('UserBlockedResolver', () => {
     })
   })
 })
-
-/*
-  All methods tested
-  findall with invalidID
-  Delete invalidID
-  IsRelationBlocked with wrong id return false
-*/
