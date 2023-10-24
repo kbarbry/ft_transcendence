@@ -7,7 +7,7 @@ export class NanoidsValidationPipe
   transform(value: string[]): string[] {
     const nanoidRegex = /^[A-Za-z0-9_-]{21}$/
     const validatedArray = value.filter((element) => nanoidRegex.test(element))
-    console.log(validatedArray)
+
     return validatedArray
   }
 }
