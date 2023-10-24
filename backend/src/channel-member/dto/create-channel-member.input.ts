@@ -2,7 +2,7 @@ import { Field, InputType } from '@nestjs/graphql'
 import { IsOptional, IsString, IsUrl, Length, Matches } from 'class-validator'
 
 @InputType()
-export class CreateChannelMemberCreateInput {
+export class CreateChannelMemberInput {
   @Field(() => String)
   @IsOptional()
   @IsUrl({}, { message: '$property must be a valid URL.' })
