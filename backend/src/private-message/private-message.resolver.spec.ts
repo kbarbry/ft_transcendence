@@ -36,6 +36,9 @@ describe('PrivateMessageResolver', () => {
     jest.clearAllMocks()
     privateMessageService.create.mockReset()
   })
+  it('PrivateMessage Resolver should be defined', () => {
+    expect(privateMessageresolver).toBeDefined()
+  })
 
   describe('Test Mutation', () => {
     it('createPrivateMessage', async () => {
@@ -86,11 +89,18 @@ describe('PrivateMessageResolver', () => {
       expect(privateMessageService.findOne).toHaveBeenCalledWith('1')
     })
     it('findAllPrivateMessageWith', async () => {
-      const resExpected = {
-        senderId: '1',
-        receiverId: '2',
-        content: 'this is a message'
-      }
+      const resExpected = [
+        {
+          senderId: '1',
+          receiverId: '2',
+          content: 'this is a message'
+        },
+        {
+          senderId: '12',
+          receiverId: '23',
+          content: 'this is a message'
+        }
+      ]
       privateMessageService.findAllMessageWith.mockReturnValue(resExpected)
 
       const result = await privateMessageresolver.findAllPrivateMessageWith(
@@ -105,11 +115,18 @@ describe('PrivateMessageResolver', () => {
       )
     })
     it('findAllMessageWithLiteVersion', async () => {
-      const resExpected = {
-        senderId: '1',
-        receiverId: '2',
-        content: 'this is a message'
-      }
+      const resExpected = [
+        {
+          senderId: '1',
+          receiverId: '2',
+          content: 'this is a message'
+        },
+        {
+          senderId: '12',
+          receiverId: '23',
+          content: 'this is a message'
+        }
+      ]
 
       privateMessageService.findAllMessageWithLiteVersion.mockReturnValue(
         resExpected
@@ -127,17 +144,24 @@ describe('PrivateMessageResolver', () => {
       ).toHaveBeenCalledWith('1', '2')
     })
     it('findPrivateMessageContain', async () => {
-      const resExpected = {
-        senderId: '1',
-        receiverId: '2',
-        content: 'this is a message needle'
-      }
+      const resExpected = [
+        {
+          senderId: '1',
+          receiverId: '2',
+          content: 'this is a message needle'
+        },
+        {
+          senderId: '122',
+          receiverId: '233',
+          content: 'this is a message needle'
+        }
+      ]
 
       privateMessageService.findPrivateMessageContain.mockReturnValue(
         resExpected
       )
 
-      const result = await privateMessageresolver.findPrivateMessageContain(
+      const result = await privateMessageresolver.findAllPrivateMessageContain(
         '1',
         '2',
         'needle'
@@ -149,9 +173,35 @@ describe('PrivateMessageResolver', () => {
       ).toHaveBeenCalledWith('1', '2', 'needle')
     })
   })
-
-  it('PrivateMessage Resolver should be defined', () => {
-    expect(privateMessageresolver).toBeDefined()
+  describe('Test ValidationPipe', () => {
+    it('createUser', async () => {
+      const data = {
+        senderId: '111111111111111111111',
+        receiverId: '222222222222222222222',
+        content: 'this is a message needle'
+      }
+      const metadata: ArgumentMetadata = {
+        type: 'body',
+        metatype: CreatePrivateMessageInput,
+        data: ''
+      }
+      const response = await validationPipe.transform(data, metadata)
+      expect(response).toStrictEqual(data)
+    })
+    it('updateUser', async () => {
+      const data = {
+        senderId: '111111111111111111111',
+        receiverId: '222222222222222222222',
+        content: 'this is a message needle'
+      }
+      const metadata: ArgumentMetadata = {
+        type: 'body',
+        metatype: UpdatePrivateMessageInput,
+        data: ''
+      }
+      const response = await validationPipe.transform(data, metadata)
+      expect(response).toStrictEqual(data)
+    })
   })
   describe('Test Error', () => {
     describe('senderId - nanoid tests (mandatory)', () => {
@@ -388,8 +438,8 @@ describe('PrivateMessageResolver', () => {
         expect(thrownError.getResponse()).toStrictEqual(res)
       })
     })
-    describe('username - string tests (mandatory)', () => {
-      it('invalid username - no username', async () => {
+    describe('content- string tests (mandatory)', () => {
+      it('invalid content - no username', async () => {
         const data = {
           senderId: 'ValidIdToTestuserBloc',
           receiverId: 'ValidIdToTestuserBlod'
@@ -412,7 +462,7 @@ describe('PrivateMessageResolver', () => {
           .catch((error) => error)
         expect(thrownError.getResponse()).toStrictEqual(res)
       })
-      it('invalid username - null', async () => {
+      it('invalid content - null', async () => {
         const data = {
           senderId: 'ValidIdToTestuserBloc',
           receiverId: 'ValidIdToTestuserBlod',
