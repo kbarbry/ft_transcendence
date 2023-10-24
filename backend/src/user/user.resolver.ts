@@ -17,7 +17,7 @@ export class UserResolver {
     @Args('data', { type: () => CreateUserInput }, ValidationPipe)
     data: CreateUserInput
   ): Promise<User> {
-    return await this.userService.create(data)
+    return this.userService.create(data)
   }
 
   @Mutation(() => User)
