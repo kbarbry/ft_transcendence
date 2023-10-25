@@ -92,6 +92,9 @@ describe('UserPresenceResolver', () => {
       const resExpected = [
         {
           userId: '011'
+        },
+        {
+          userId: '012'
         }
       ]
       userPresenceService.findAllByUserId.mockReturnValue(resExpected)
