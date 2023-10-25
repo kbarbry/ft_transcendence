@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing'
+import { CreateChannelMemberInput } from './dto/create-channel-member.input'
 import { ChannelMemberService } from './channel-member.service'
 import { PrismaService } from '../prisma/prisma.service'
 import { EMemberType } from '@prisma/client'
@@ -8,13 +9,15 @@ import { ChannelBlockedService } from '../channel-blocked/channel-blocked.servic
 import { ChannelInvitedService } from '../channel-invited/channel-invited.service'
 import { ExceptionUserBlockedInChannel } from '../channel/exceptions/blocked.exception'
 import { ChannelService } from '../channel/channel.service'
+import { UserService } from '../user/user.service'
 import { ExceptionUserNotInvited } from '../channel/exceptions/invited.exception'
 import { ExceptionInvalidMaxUserInChannel } from '../channel/exceptions/channel.exception'
 import {
   ExceptionTryingToMakeAdminAnAdmin,
   ExceptionTryingToMuteAMuted,
   ExceptionTryingToUnmuteAnUnmuted,
-  ExceptionTryingToUnmakeAdminAMember
+  ExceptionTryingToUnmakeAdminAMember,
+  ExceptionUserNotFound
 } from '../channel/exceptions/channel-member.exceptions'
 
 describe('ChannelMemberService', () => {
@@ -27,11 +30,12 @@ describe('ChannelMemberService', () => {
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        ChannelMemberService,
         PrismaService,
+        ChannelMemberService,
         ChannelBlockedService,
         ChannelInvitedService,
-        ChannelService
+        ChannelService,
+        UserService
       ]
     }).compile()
 
@@ -68,18 +72,26 @@ describe('ChannelMemberService', () => {
     //**************************************************//
     //  CHANNEL CREATION
     //**************************************************//
-    await prismaService.$executeRaw`INSERT INTO "public"."Channel" VALUES ('pihayPlUh0qtDrePkJ87t', 'random name', 'randomURL', 'TopicName', 'Password123', '567ayPlUh0qtDrePkJ87t', 50, 'Public', '2023-09-13 10:00:00');`
-    await prismaService.$executeRaw`INSERT INTO "public"."Channel" VALUES ('RDaquZM1MRu7A1btyFiNb', 'random name2', 'randomURL', 'TopicName', 'Password123', '567ayPlUh0qtDrePkJ87t', 50, 'Protected', '2023-09-13 10:00:00');`
-    await prismaService.$executeRaw`INSERT INTO "public"."Channel" VALUES ('dxb50bMlJwngXPUyc6yNX', 'random name3', 'randomURL', 'TopicName', 'Password123', '567ayPlUh0qtDrePkJ87t', 3, 'Public', '2023-09-13 10:00:00');`
+    await prismaService.$executeRaw`
+      INSERT INTO
+      "public"."Channel"
+      VALUES
+      ('pihayPlUh0qtDrePkJ87t', 'random name', 'randomURL', 'TopicName', 'Password123', '567ayPlUh0qtDrePkJ87t', 50, 'Public', '2023-09-13 10:00:00'),
+      ('RDaquZM1MRu7A1btyFiNb', 'random name2', 'randomURL', 'TopicName', 'Password123', '567ayPlUh0qtDrePkJ87t', 50, 'Protected', '2023-09-13 10:00:00'),
+      ('dxb50bMlJwngXPUyc6yNX', 'random name3', 'randomURL', 'TopicName', 'Password123', '567ayPlUh0qtDrePkJ87t', 3, 'Public', '2023-09-13 10:00:00');`
 
     //**************************************************//
     //  CHANNEL MEMBER CREATION
     //**************************************************//
-    await prismaService.$executeRaw`INSERT INTO "public"."ChannelMember" VALUES ('NewAvatarURL', 'WonderfullNickname', '765ayPlUh0qtDrePkJ87t', 'pihayPlUh0qtDrePkJ87t', 'Member', false, '2023-09-13 20:00:00');`
-    await prismaService.$executeRaw`INSERT INTO "public"."ChannelMember" VALUES ('NewAvatarURL', 'WonderfullNickname', 'ftrX94_NVjmzVm9QL3k4r', 'pihayPlUh0qtDrePkJ87t', 'Member', false, '2023-09-13 20:00:00');`
-    await prismaService.$executeRaw`INSERT INTO "public"."ChannelMember" VALUES ('NewAvatarURL', 'WonderfullNickname', '765ayPlUh0qtDrePkJ87t', 'dxb50bMlJwngXPUyc6yNX', 'Member', false, '2023-09-13 20:00:00');`
-    await prismaService.$executeRaw`INSERT INTO "public"."ChannelMember" VALUES ('NewAvatarURL', 'WonderfullNickname', 'ftrX94_NVjmzVm9QL3k4r', 'dxb50bMlJwngXPUyc6yNX', 'Member', true, '2023-09-13 20:00:00');`
-    await prismaService.$executeRaw`INSERT INTO "public"."ChannelMember" VALUES ('NewAvatarURL', 'WonderfullNickname', 'fdpvTLhbNpjA39Pc7wwtn', 'dxb50bMlJwngXPUyc6yNX', 'Admin', false, '2023-09-13 20:00:00');`
+    await prismaService.$executeRaw`
+      INSERT INTO
+      "public"."ChannelMember"
+      VALUES
+      ('NewAvatarURL', 'WonderfullNickname', '765ayPlUh0qtDrePkJ87t', 'pihayPlUh0qtDrePkJ87t', 'Member', false, '2023-09-13 20:00:00'),
+      ('NewAvatarURL', 'WonderfullNickname', 'ftrX94_NVjmzVm9QL3k4r', 'pihayPlUh0qtDrePkJ87t', 'Member', false, '2023-09-13 20:00:00'),
+      ('NewAvatarURL', 'WonderfullNickname', '765ayPlUh0qtDrePkJ87t', 'dxb50bMlJwngXPUyc6yNX', 'Member', false, '2023-09-13 20:00:00'),
+      ('NewAvatarURL', 'WonderfullNickname', 'ftrX94_NVjmzVm9QL3k4r', 'dxb50bMlJwngXPUyc6yNX', 'Member', true, '2023-09-13 20:00:00'),
+      ('NewAvatarURL', 'WonderfullNickname', 'fdpvTLhbNpjA39Pc7wwtn', 'dxb50bMlJwngXPUyc6yNX', 'Admin', false, '2023-09-13 20:00:00');`
 
     //**************************************************//
     //  CHANNEL BLOCKED CREATION
@@ -118,17 +130,33 @@ describe('ChannelMemberService', () => {
   })
 
   describe('Test Mutation', () => {
-    it('should create ChannelMember', async () => {
-      const channelMemberData = {
+    it('should create ChannelMember with specified nickname', async () => {
+      const channelMemberData: CreateChannelMemberInput = {
         avatarUrl: 'Nice_AVATAAAAR',
         nickname: 'Nick_la_vie',
         userId: '567ayPlUh0qtDrePkJ87t',
         channelId: 'pihayPlUh0qtDrePkJ87t'
       }
+
       const newChannelMember = await channelMemberService.create(
         channelMemberData
       )
-      expect(newChannelMember).toBeDefined()
+
+      expect(newChannelMember.nickname).toStrictEqual('Nick_la_vie')
+    })
+
+    it("should create ChannelMember with user's username as nickname", async () => {
+      const channelMemberData: CreateChannelMemberInput = {
+        avatarUrl: 'Nice_AVATAAAAR',
+        userId: '567ayPlUh0qtDrePkJ87t',
+        channelId: 'pihayPlUh0qtDrePkJ87t'
+      }
+
+      const newChannelMember = await channelMemberService.create(
+        channelMemberData
+      )
+
+      expect(newChannelMember.nickname).toStrictEqual('Awdy')
     })
 
     it('should create ChannelMember in protected channel', async () => {
@@ -212,6 +240,18 @@ describe('ChannelMemberService', () => {
     })
   })
   describe('Test Error', () => {
+    it('trying to create ChannelMember with invalid userId', async () => {
+      const channelMemberData: CreateChannelMemberInput = {
+        avatarUrl: 'Nice_AVATAAAAR',
+        userId: 'fffayPlUh0qtDrePkJ87t',
+        channelId: 'pihayPlUh0qtDrePkJ87t'
+      }
+
+      await expect(
+        channelMemberService.create(channelMemberData)
+      ).rejects.toThrow(ExceptionUserNotFound)
+    })
+
     it('trying to make an admin on an Admin', async () => {
       await expect(
         channelMemberService.makeAdmin(
@@ -220,6 +260,7 @@ describe('ChannelMemberService', () => {
         )
       ).rejects.toThrow(ExceptionTryingToMakeAdminAnAdmin)
     })
+
     it('trying to unmakeAdmin a member', async () => {
       await expect(
         channelMemberService.unmakeAdmin(
