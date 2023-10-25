@@ -89,18 +89,21 @@ describe('UserPresenceResolver', () => {
       expect(userPresenceService.findLastByUserId).toHaveBeenCalledWith('01')
     })
     it('findAllUserPresenceByUserId', async () => {
-      const resExpected = {
-        id: '01'
-      }
+      const resExpected = [
+        {
+          userId: '011'
+        }
+      ]
       userPresenceService.findAllByUserId.mockReturnValue(resExpected)
 
       const result = await userPresenceResolver.findAllUserPresenceByUserId(
-        '01'
+        '011'
       )
 
       expect(result).toStrictEqual(resExpected)
-      expect(userPresenceService.findAllByUserId).toHaveBeenCalledWith('01')
+      expect(userPresenceService.findAllByUserId).toHaveBeenCalledWith('011')
     })
+
     it('isUserPresenceConnected', async () => {
       userPresenceService.isConnected.mockReturnValue(true)
       const res = await userPresenceResolver.isUserPresenceConnected('01')
