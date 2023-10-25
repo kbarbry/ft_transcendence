@@ -73,7 +73,7 @@ export class PrivateMessageResolver {
   }
 
   @Query(() => [PrivateMessage])
-  findPrivateMessageContain(
+  findAllPrivateMessageContain(
     @Args('senderId', { type: () => String }, NanoidValidationPipe)
     senderId: string,
     @Args('receiverId', { type: () => String }, NanoidValidationPipe)
