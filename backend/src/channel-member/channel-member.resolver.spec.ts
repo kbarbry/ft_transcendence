@@ -262,8 +262,6 @@ describe('ChannelMemberResolver', () => {
       }
       const res = {
         message: [
-          'nickname must be between 1 and 30 characters long.',
-          'nickname must be a string.',
           'userId must be exactly 21 characters long.',
           'Invalid nanoid characters.',
           'channelId must be exactly 21 characters long.',
@@ -353,7 +351,7 @@ describe('ChannelMemberResolver', () => {
       })
     })
 
-    describe('nickname - string (mandatory)', () => {
+    describe('nickname - string', () => {
       it('nickname - too long', async () => {
         const data = {
           nickname: 'Really      too     long       nickname',
@@ -401,55 +399,6 @@ describe('ChannelMemberResolver', () => {
       it('nickname - invalid type', async () => {
         const data = {
           nickname: 12,
-          userId: '765ayPlUh0qtDrePkJ87t',
-          channelId: 'pihayPlUh0qtDrePkJ87t'
-        }
-        const metadata: ArgumentMetadata = {
-          type: 'body',
-          metatype: CreateChannelMemberInput,
-          data: ''
-        }
-        const res = {
-          message: [
-            'nickname must be between 1 and 30 characters long.',
-            'nickname must be a string.'
-          ],
-          error: 'Bad Request',
-          statusCode: 400
-        }
-        const thrownError = await validationPipe
-          .transform(data, metadata)
-          .catch((error) => error)
-        expect(thrownError.getResponse()).toStrictEqual(res)
-      })
-
-      it('nickname - null', async () => {
-        const data = {
-          nickname: null,
-          userId: '765ayPlUh0qtDrePkJ87t',
-          channelId: 'pihayPlUh0qtDrePkJ87t'
-        }
-        const metadata: ArgumentMetadata = {
-          type: 'body',
-          metatype: CreateChannelMemberInput,
-          data: ''
-        }
-        const res = {
-          message: [
-            'nickname must be between 1 and 30 characters long.',
-            'nickname must be a string.'
-          ],
-          error: 'Bad Request',
-          statusCode: 400
-        }
-        const thrownError = await validationPipe
-          .transform(data, metadata)
-          .catch((error) => error)
-        expect(thrownError.getResponse()).toStrictEqual(res)
-      })
-
-      it('nickname - undefined', async () => {
-        const data = {
           userId: '765ayPlUh0qtDrePkJ87t',
           channelId: 'pihayPlUh0qtDrePkJ87t'
         }
