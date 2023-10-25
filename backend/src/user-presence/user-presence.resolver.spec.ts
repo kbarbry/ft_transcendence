@@ -2,24 +2,59 @@ import { Test, TestingModule } from '@nestjs/testing'
 import { UserPresenceResolver } from './user-presence.resolver'
 import { UserPresenceService } from './user-presence.service'
 import { PrismaService } from '../prisma/prisma.service'
-import { ArgumentMetadata, ValidationPipe } from '@nestjs/common'
 import { UserPresenceCreateInput } from './dto/create-user-presence.input'
+import { ArgumentMetadata, ValidationPipe } from '@nestjs/common'
+import { ELanguage, EStatus } from '@prisma/client'
 
 describe('UserPresenceResolver', () => {
-  let userpresenceresolver: UserPresenceResolver
-  const validationPipe = new ValidationPipe()
+  let userPresenceResolver: UserPresenceResolver
+  const userPresenceService = {
+    create: jest.fn(),
+    disconnected: jest.fn(),
+    isConnected: jest.fn(),
+    findOne: jest.fn(),
+    findLastByUserId: jest.fn(),
+    findAllByUserId: jest.fn()
+  }
+  let validationPipe: ValidationPipe
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [UserPresenceResolver, UserPresenceService, PrismaService]
+      providers: [
+        UserPresenceResolver,
+        {
+          provide: UserPresenceService,
+          useValue: userPresenceService
+        },
+        PrismaService
+      ]
     }).compile()
-
-    userpresenceresolver =
+    userPresenceResolver =
       module.get<UserPresenceResolver>(UserPresenceResolver)
+  })
+  beforeEach(async () => {
+    validationPipe = new ValidationPipe()
+    jest.clearAllMocks()
+    userPresenceService.create.mockReset()
   })
 
   it('userPresence resolver should be defined', () => {
-    expect(userpresenceresolver).toBeDefined()
+    expect(userPresenceResolver).toBeDefined()
+  })
+
+  describe('Test Mutation', () => {
+    it('createUserPresence', async () => {
+      const data: UserPresenceCreateInput = {
+        userId: '01'
+      }
+      const resExpected = { id: '01', ...data }
+      userPresenceService.create.mockReturnValue(resExpected)
+
+      const result = await userPresenceResolver.createUserPresence(data)
+
+      expect(result).toStrictEqual(resExpected)
+      expect(userPresenceService.create).toHaveBeenCalledWith(data)
+    })
   })
 
   describe('Test Error', () => {
