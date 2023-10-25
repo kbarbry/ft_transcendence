@@ -1,29 +1,227 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { ChannelResolver } from './channel.resolver'
 import { ChannelService } from './channel.service'
-import { PrismaService } from '../prisma/prisma.service'
+import { EChannelType } from '@prisma/client'
 import { ArgumentMetadata, ValidationPipe } from '@nestjs/common'
 import { CreateChannelInput } from './dto/create-channel.input'
-import { EChannelType } from '@prisma/client'
+import { PrismaService } from '../prisma/prisma.service'
+import {
+  UpdateChannelInput,
+  UpdateChannelOwnerIdInput
+} from './dto/update-channel.input'
 
 describe('ChannelResolver', () => {
-  let resolver: ChannelResolver
-  const validationPipe = new ValidationPipe()
+  let channelResolver: ChannelResolver
+  const channelService = {
+    create: jest.fn(),
+    update: jest.fn(),
+    updateOwner: jest.fn(),
+    delete: jest.fn(),
+    findOne: jest.fn(),
+    findAllThatContain: jest.fn(),
+    findOwner: jest.fn(),
+    findAllChannelOfOwner: jest.fn()
+  }
+  let validationPipe: ValidationPipe
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [ChannelResolver, ChannelService, PrismaService]
+      providers: [
+        ChannelResolver,
+        { provide: ChannelService, useValue: channelService },
+        PrismaService
+      ]
     }).compile()
 
-    resolver = module.get<ChannelResolver>(ChannelResolver)
+    channelResolver = module.get<ChannelResolver>(ChannelResolver)
+  })
+
+  beforeEach(async () => {
+    validationPipe = new ValidationPipe()
+    jest.clearAllMocks()
+    channelService.create.mockReset()
   })
 
   it('should be defined', () => {
-    expect(resolver).toBeDefined()
+    expect(channelResolver).toBeDefined()
   })
 
-  describe('Validation Pipe Good', () => {
-    it('Good data - every field', async () => {
+  describe('Test Mutation', () => {
+    it('createChannel', async () => {
+      const data: CreateChannelInput = {
+        name: 'Channel Name',
+        avatarUrl: 'http://www.pic.com/pic.png',
+        topic: 'The topic',
+        password: 'Yes',
+        ownerId: '564ayPlUh0qtDrePkJ87t',
+        maxUsers: 10,
+        type: EChannelType.Protected
+      }
+
+      const resExpected = { id: '1', ...data }
+      channelService.create.mockReturnValue(resExpected)
+      const result = await channelResolver.createChannel(data)
+
+      expect(result).toStrictEqual(resExpected)
+      expect(channelService.create).toHaveBeenCalledWith(data)
+    })
+
+    it('updateChannel', async () => {
+      const data: UpdateChannelInput = {
+        name: 'Channel Name',
+        avatarUrl: 'http://www.pic.com/pic.png',
+        topic: 'The topic',
+        password: 'Yes',
+        maxUsers: 10,
+        type: EChannelType.Protected
+      }
+
+      const resExpected = { id: '1', ...data }
+      channelService.update.mockReturnValue(resExpected)
+      const result = await channelResolver.updateChannel('1', data)
+
+      expect(result).toStrictEqual(resExpected)
+      expect(channelService.update).toHaveBeenCalledWith('1', data)
+    })
+
+    it('updateChannelOwner', async () => {
+      const data: UpdateChannelOwnerIdInput = {
+        ownerId: '564ayPlUh0qtDrePkJ87t'
+      }
+      const resExpected = {
+        id: '1',
+        name: 'Channel Name',
+        avatarUrl: 'http://www.pic.com/pic.png',
+        topic: 'The topic',
+        password: 'Yes',
+        ownerId: '564ayPlUh0qtDrePkJ87t',
+        maxUsers: 10,
+        type: EChannelType.Protected
+      }
+
+      channelService.updateOwner.mockReturnValue(resExpected)
+      const result = await channelResolver.updateChannelOwner('1', data)
+
+      expect(result).toStrictEqual(resExpected)
+      expect(channelService.updateOwner).toHaveBeenCalledWith('1', data)
+    })
+
+    it('deleteChannel', async () => {
+      const data = {
+        name: 'Channel Name',
+        avatarUrl: 'http://www.pic.com/pic.png',
+        topic: 'The topic',
+        password: 'Yes',
+        ownerId: '564ayPlUh0qtDrePkJ87t',
+        maxUsers: 10,
+        type: EChannelType.Protected
+      }
+
+      const resExpected = { id: '1', ...data }
+      channelService.delete.mockReturnValue(resExpected)
+      const result = await channelResolver.deleteChannel('1')
+
+      expect(result).toStrictEqual(resExpected)
+      expect(channelService.delete).toHaveBeenCalledWith('1')
+    })
+  })
+
+  describe('Test Query', () => {
+    it('findOneChannel', async () => {
+      const resExpected = {
+        name: 'Channel Name',
+        avatarUrl: 'http://www.pic.com/pic.png',
+        topic: 'The topic',
+        password: 'Yes',
+        ownerId: '564ayPlUh0qtDrePkJ87t',
+        maxUsers: 10,
+        type: EChannelType.Protected
+      }
+
+      channelService.findOne.mockReturnValue(resExpected)
+      const result = await channelResolver.findOneChannel('1')
+
+      expect(result).toStrictEqual(resExpected)
+      expect(channelService.findOne).toHaveBeenCalledWith('1')
+    })
+
+    it('findAllChannelThatContain', async () => {
+      const resExpected = [
+        {
+          name: 'Channel Name 1',
+          avatarUrl: 'http://www.pic.com/pic.png',
+          topic: 'The topic 0',
+          password: null,
+          ownerId: '564ayPlUh0qtDrePkJ87t',
+          maxUsers: 10,
+          type: EChannelType.Protected
+        },
+        {
+          name: 'Channel Name 2',
+          avatarUrl: 'http://www.pic.com/pic.png',
+          topic: 'The topic 2',
+          password: null,
+          ownerId: '564ayPlUh0qtDrePkJ87t',
+          maxUsers: 10,
+          type: EChannelType.Protected
+        }
+      ]
+
+      channelService.findAllThatContain.mockReturnValue(resExpected)
+      const result = await channelResolver.findAllChannelThatContain(
+        'Channel Name'
+      )
+
+      expect(result).toStrictEqual(resExpected)
+      expect(channelService.findAllThatContain).toHaveBeenCalledWith(
+        'Channel Name'
+      )
+    })
+
+    it('findChannelOwner', async () => {
+      const resExpected = {
+        ownerId: '1'
+      }
+
+      channelService.findOwner.mockReturnValue(resExpected)
+      const result = await channelResolver.findChannelOwner('1')
+
+      expect(result).toStrictEqual(resExpected)
+      expect(channelService.findOwner).toHaveBeenCalledWith('1')
+    })
+
+    it('findAllChannelOfOwner', async () => {
+      const resExpected = [
+        {
+          name: 'Channel Name 1',
+          avatarUrl: 'http://www.pic.com/pic.png',
+          topic: 'The topic 0',
+          password: null,
+          ownerId: '1',
+          maxUsers: 10,
+          type: EChannelType.Protected
+        },
+        {
+          name: 'Channel Name 2',
+          avatarUrl: 'http://www.pic.com/pic.png',
+          topic: 'The topic 2',
+          password: null,
+          ownerId: '1',
+          maxUsers: 10,
+          type: EChannelType.Protected
+        }
+      ]
+
+      channelService.findAllChannelOfOwner.mockReturnValue(resExpected)
+      const result = await channelResolver.findAllChannelOfOwner('1')
+
+      expect(result).toStrictEqual(resExpected)
+      expect(channelService.findAllChannelOfOwner).toHaveBeenCalledWith('1')
+    })
+  })
+
+  describe('Test ValidationPipe', () => {
+    it('CreateChannel', async () => {
       const data = {
         name: 'Channel Name',
         avatarUrl: 'http://www.pic.com/pic.png',
@@ -38,7 +236,44 @@ describe('ChannelResolver', () => {
         metatype: CreateChannelInput,
         data: ''
       }
+
       const response = await validationPipe.transform(data, metadata)
+
+      expect(response).toStrictEqual(data)
+    })
+
+    it('UpdateChannel', async () => {
+      const data = {
+        name: 'Channel Name',
+        avatarUrl: 'http://www.pic.com/pic.png',
+        topic: 'The topic',
+        password: 'Yes',
+        maxUsers: 10,
+        type: EChannelType.Protected
+      }
+      const metadata: ArgumentMetadata = {
+        type: 'body',
+        metatype: UpdateChannelInput,
+        data: ''
+      }
+
+      const response = await validationPipe.transform(data, metadata)
+
+      expect(response).toStrictEqual(data)
+    })
+
+    it('UpdateChannelOwnerId', async () => {
+      const data = {
+        ownerId: '564ayPlUh0qtDrePkJ87t'
+      }
+      const metadata: ArgumentMetadata = {
+        type: 'body',
+        metatype: UpdateChannelOwnerIdInput,
+        data: ''
+      }
+
+      const response = await validationPipe.transform(data, metadata)
+
       expect(response).toStrictEqual(data)
     })
   })

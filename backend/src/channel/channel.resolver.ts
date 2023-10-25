@@ -3,7 +3,10 @@ import { ChannelService } from './channel.service'
 import { Channel } from './entities/channel.entity'
 import { CreateChannelInput } from './dto/create-channel.input'
 import { ValidationPipe } from '@nestjs/common'
-import { UpdateChannelInput } from './dto/update-channel.input'
+import {
+  UpdateChannelInput,
+  UpdateChannelOwnerIdInput
+} from './dto/update-channel.input'
 import { NanoidValidationPipe } from '../common/pipes/nanoid.pipe'
 import { StringValidationPipe } from '../common/pipes/string.pipe'
 
@@ -30,6 +33,14 @@ export class ChannelResolver {
     data: UpdateChannelInput
   ): Promise<Channel> {
     return this.channelService.update(id, data)
+  }
+
+  @Mutation(() => Channel)
+  async updateChannelOwner(
+    id: string,
+    data: UpdateChannelOwnerIdInput
+  ): Promise<Channel | null> {
+    return this.channelService.updateOwner(id, data)
   }
 
   @Mutation(() => Channel)
