@@ -108,9 +108,6 @@ describe('UserPresenceResolver', () => {
       expect(userPresenceService.isConnected).toHaveBeenCalledWith('01')
     })
   })
-
-  ////////////////
-
   describe('Test ValidationPipe', () => {
     it('createUserPresence', async () => {
       const data = {
