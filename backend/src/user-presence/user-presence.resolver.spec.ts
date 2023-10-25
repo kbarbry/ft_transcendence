@@ -4,7 +4,6 @@ import { UserPresenceService } from './user-presence.service'
 import { PrismaService } from '../prisma/prisma.service'
 import { UserPresenceCreateInput } from './dto/create-user-presence.input'
 import { ArgumentMetadata, ValidationPipe } from '@nestjs/common'
-import { ELanguage, EStatus } from '@prisma/client'
 
 describe('UserPresenceResolver', () => {
   let userPresenceResolver: UserPresenceResolver
@@ -54,6 +53,60 @@ describe('UserPresenceResolver', () => {
 
       expect(result).toStrictEqual(resExpected)
       expect(userPresenceService.create).toHaveBeenCalledWith(data)
+    })
+    it('disconnected', async () => {
+      const resExpected = { id: '01' }
+      userPresenceService.disconnected.mockReturnValue(resExpected)
+      const res = await userPresenceResolver.disconnectedUserPresence('01')
+      expect(res).toStrictEqual(resExpected)
+      expect(userPresenceService.disconnected).toHaveBeenCalledWith('01')
+    })
+  })
+
+  describe('Test Query', () => {
+    it('findOneUserPresence', async () => {
+      const resExpected = {
+        id: '01'
+      }
+      userPresenceService.findOne.mockReturnValue(resExpected)
+
+      const result = await userPresenceResolver.findOneUserPresence('01')
+
+      expect(result).toStrictEqual(resExpected)
+      expect(userPresenceService.findOne).toHaveBeenCalledWith('01')
+    })
+    it('findLastUserPresenceByUserId', async () => {
+      const resExpected = {
+        id: '01'
+      }
+      userPresenceService.findLastByUserId.mockReturnValue(resExpected)
+
+      const result = await userPresenceResolver.findLastUserPresenceByUserId(
+        '01'
+      )
+
+      expect(result).toStrictEqual(resExpected)
+      expect(userPresenceService.findLastByUserId).toHaveBeenCalledWith('01')
+    })
+    it('findAllUserPresenceByUserId', async () => {
+      const resExpected = {
+        id: '01'
+      }
+      userPresenceService.findAllByUserId.mockReturnValue(resExpected)
+
+      const result = await userPresenceResolver.findAllUserPresenceByUserId(
+        '01'
+      )
+
+      expect(result).toStrictEqual(resExpected)
+      expect(userPresenceService.findAllByUserId).toHaveBeenCalledWith('01')
+    })
+    //////////////////
+    it('isUserPresenceConnected', async () => {
+      userPresenceService.isConnected.mockReturnValue(true)
+      const res = await userPresenceResolver.isUserPresenceConnected('01')
+      expect(res).toStrictEqual(true)
+      expect(userPresenceService.isConnected).toHaveBeenCalledWith('01')
     })
   })
 
@@ -166,7 +219,6 @@ describe('UserPresenceResolver', () => {
     })
   })
 })
-
 //check with invalid user
 // check with invalid ID (lenght or ivanlid char)
 // check userpresence creation
