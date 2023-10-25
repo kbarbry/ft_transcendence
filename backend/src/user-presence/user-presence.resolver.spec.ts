@@ -101,7 +101,6 @@ describe('UserPresenceResolver', () => {
       expect(result).toStrictEqual(resExpected)
       expect(userPresenceService.findAllByUserId).toHaveBeenCalledWith('01')
     })
-    //////////////////
     it('isUserPresenceConnected', async () => {
       userPresenceService.isConnected.mockReturnValue(true)
       const res = await userPresenceResolver.isUserPresenceConnected('01')
@@ -110,6 +109,22 @@ describe('UserPresenceResolver', () => {
     })
   })
 
+  ////////////////
+
+  describe('Test ValidationPipe', () => {
+    it('createUserPresence', async () => {
+      const data = {
+        userId: '010iAmAValidIdYeahhhh'
+      }
+      const metadata: ArgumentMetadata = {
+        type: 'body',
+        metatype: UserPresenceCreateInput,
+        data: ''
+      }
+      const response = await validationPipe.transform(data, metadata)
+      expect(response).toStrictEqual(data)
+    })
+  })
   describe('Test Error', () => {
     describe('userId - nanoid tests (mandatory)', () => {
       it('invalid nanoid - empty id', async () => {
@@ -219,9 +234,3 @@ describe('UserPresenceResolver', () => {
     })
   })
 })
-//check with invalid user
-// check with invalid ID (lenght or ivanlid char)
-// check userpresence creation
-// disconnected at working
-// FindOne working
-// all methods working
