@@ -29,3 +29,9 @@ export class ExceptionTryingToUnmuteAnUnmuted extends HttpException {
     )
   }
 }
+
+export class ExceptionUserNotFound extends HttpException {
+  constructor() {
+    super('User not found for creation of channel member', HttpStatus.CONFLICT)
+  }
+}
