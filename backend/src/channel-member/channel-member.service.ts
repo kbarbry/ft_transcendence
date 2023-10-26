@@ -1,20 +1,23 @@
 import { Inject, Injectable } from '@nestjs/common'
 import { PrismaService } from '../prisma/prisma.service'
 import { ChannelMember, EChannelType, EMemberType } from '@prisma/client'
-import { CreateChannelMemberCreateInput } from './dto/create-channel-member.input'
+import { CreateChannelMemberInput } from './dto/create-channel-member.input'
+import { UpdateChannelMemberInput } from './dto/update-channel-member.input'
 import { ChannelBlockedService } from '../channel-blocked/channel-blocked.service'
 import { ChannelInvitedService } from '../channel-invited/channel-invited.service'
+import { ChannelService } from '../channel/channel.service'
+import { UserService } from '../user/user.service'
 import { ExceptionUserBlockedInChannel } from '../channel/exceptions/blocked.exception'
 import { ExceptionUserNotInvited } from '../channel/exceptions/invited.exception'
-import { ChannelService } from '../channel/channel.service'
 import { ExceptionInvalidMaxUserInChannel } from '../channel/exceptions/channel.exception'
 import {
   ExceptionTryingToMakeAdminAnAdmin,
   ExceptionTryingToMuteAMuted,
   ExceptionTryingToUnmuteAnUnmuted,
-  ExceptionTryingToUnmakeAdminAMember
+  ExceptionTryingToUnmakeAdminAMember,
+  ExceptionUserNotFound
 } from '../channel/exceptions/channel-member.exceptions'
-import { UpdateChannelMemberCreateInput } from './dto/update-channel-member.input'
+
 @Injectable()
 export class ChannelMemberService {
   constructor(private prisma: PrismaService) {}
@@ -28,10 +31,13 @@ export class ChannelMemberService {
   @Inject(ChannelService)
   private readonly channelService: ChannelService
 
+  @Inject(UserService)
+  private readonly userService: UserService
+
   //**************************************************//
   //  MUTATION
   //**************************************************//
-  async create(data: CreateChannelMemberCreateInput): Promise<ChannelMember> {
+  async create(data: CreateChannelMemberInput): Promise<ChannelMember> {
     const userId = data.userId as string
     const channelId = data.channelId as string
     const channel = await this.channelService.findOne(channelId)
@@ -46,6 +52,7 @@ export class ChannelMemberService {
     const numberMembers = (
       await this.prisma.channelMember.findMany({ where: { channelId } })
     ).length
+
     if (userBlocked) {
       throw new ExceptionUserBlockedInChannel()
     }
@@ -54,17 +61,26 @@ export class ChannelMemberService {
         await this.channelInvitedService.delete(userId, channelId)
       else throw new ExceptionUserNotInvited()
     }
-    if (channel && numberMembers >= channel.maxUsers)
+    if (channel && numberMembers >= channel.maxUsers) {
       throw new ExceptionInvalidMaxUserInChannel()
+    }
+
+    let nickname = data.nickname
+    if (!nickname) {
+      const user = await this.userService.findOne(data.userId)
+      if (!user) throw new ExceptionUserNotFound()
+      nickname = user.username
+    }
+
     return this.prisma.channelMember.create({
-      data
+      data: { nickname, ...data }
     })
   }
 
   async update(
     userId: string,
     channelId: string,
-    data: UpdateChannelMemberCreateInput
+    data: UpdateChannelMemberInput
   ): Promise<ChannelMember> {
     return this.prisma.channelMember.update({
       where: {
