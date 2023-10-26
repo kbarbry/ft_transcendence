@@ -14,7 +14,7 @@ export class ExceptionUserBlocked extends HttpException {
 
 export class ExceptionUserBlockedYou extends HttpException {
   constructor() {
-    super('You are blocked by the other user', HttpStatus.FORBIDDEN)
+    super('You are blocked by the other user', HttpStatus.CONFLICT)
   }
 }
 

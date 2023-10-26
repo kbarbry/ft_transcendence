@@ -44,6 +44,7 @@ describe('UserBlockedResolver', () => {
       const result = await relationBlockedresolver.createRelationBlocked(data)
 
       expect(result).toStrictEqual(resExpected)
+      expect(relationBlockedService.create).toHaveBeenCalledWith(data)
     })
     it('delete RelationBlocked', async () => {
       const resExpected = { userBlockingId: '1' }
@@ -55,6 +56,7 @@ describe('UserBlockedResolver', () => {
       )
 
       expect(result).toStrictEqual(resExpected)
+      expect(relationBlockedService.delete).toHaveBeenCalledWith('1', '2')
     })
   })
   describe('Test Query', () => {
