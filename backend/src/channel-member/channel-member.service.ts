@@ -1,22 +1,21 @@
 import { Inject, Injectable } from '@nestjs/common'
 import { PrismaService } from '../prisma/prisma.service'
-import {
-  Prisma,
-  ChannelMember,
-  EChannelType,
-  EMemberType
-} from '@prisma/client'
+import { ChannelMember, EChannelType, EMemberType } from '@prisma/client'
+import { CreateChannelMemberInput } from './dto/create-channel-member.input'
+import { UpdateChannelMemberInput } from './dto/update-channel-member.input'
 import { ChannelBlockedService } from '../channel-blocked/channel-blocked.service'
 import { ChannelInvitedService } from '../channel-invited/channel-invited.service'
+import { ChannelService } from '../channel/channel.service'
+import { UserService } from '../user/user.service'
 import { ExceptionUserBlockedInChannel } from '../channel/exceptions/blocked.exception'
 import { ExceptionUserNotInvited } from '../channel/exceptions/invited.exception'
-import { ChannelService } from '../channel/channel.service'
 import { ExceptionInvalidMaxUserInChannel } from '../channel/exceptions/channel.exception'
 import {
-  ExceptionTryingToUpdateChannelMemberChannelId,
-  ExceptionTryingToUpdateChannelMemberCreatedAt,
-  ExceptionTryingToUpdateChannelMemberType,
-  ExceptionTryingToUpdateChannelMemberUserID
+  ExceptionTryingToMakeAdminAnAdmin,
+  ExceptionTryingToMuteAMuted,
+  ExceptionTryingToUnmuteAnUnmuted,
+  ExceptionTryingToUnmakeAdminAMember,
+  ExceptionUserNotFound
 } from '../channel/exceptions/channel-member.exceptions'
 
 @Injectable()
@@ -32,12 +31,15 @@ export class ChannelMemberService {
   @Inject(ChannelService)
   private readonly channelService: ChannelService
 
+  @Inject(UserService)
+  private readonly userService: UserService
+
   //**************************************************//
   //  MUTATION
   //**************************************************//
-  async create(data: Prisma.ChannelMemberCreateInput): Promise<ChannelMember> {
-    const userId = data.user.connect?.id as string
-    const channelId = data.channel.connect?.id as string
+  async create(data: CreateChannelMemberInput): Promise<ChannelMember> {
+    const userId = data.userId as string
+    const channelId = data.channelId as string
     const channel = await this.channelService.findOne(channelId)
     const userBlocked = await this.channelBlockedService.findOne(
       userId,
@@ -50,6 +52,7 @@ export class ChannelMemberService {
     const numberMembers = (
       await this.prisma.channelMember.findMany({ where: { channelId } })
     ).length
+
     if (userBlocked) {
       throw new ExceptionUserBlockedInChannel()
     }
@@ -58,23 +61,27 @@ export class ChannelMemberService {
         await this.channelInvitedService.delete(userId, channelId)
       else throw new ExceptionUserNotInvited()
     }
-    if (channel && numberMembers >= channel.maxUsers)
+    if (channel && numberMembers >= channel.maxUsers) {
       throw new ExceptionInvalidMaxUserInChannel()
+    }
+
+    let nickname = data.nickname
+    if (!nickname) {
+      const user = await this.userService.findOne(data.userId)
+      if (!user) throw new ExceptionUserNotFound()
+      nickname = user.username
+    }
+
     return this.prisma.channelMember.create({
-      data
+      data: { nickname, ...data }
     })
   }
 
   async update(
     userId: string,
     channelId: string,
-    data: Prisma.ChannelMemberUpdateInput
+    data: UpdateChannelMemberInput
   ): Promise<ChannelMember> {
-    if (data.user) throw new ExceptionTryingToUpdateChannelMemberUserID()
-    if (data.channel) throw new ExceptionTryingToUpdateChannelMemberChannelId()
-    if (data.createdAt)
-      throw new ExceptionTryingToUpdateChannelMemberCreatedAt()
-    if (data.type) throw new ExceptionTryingToUpdateChannelMemberType()
     return this.prisma.channelMember.update({
       where: {
         userId_channelId: {
@@ -86,7 +93,39 @@ export class ChannelMemberService {
     })
   }
 
+  async unmakeAdmin(userId: string, channelId: string): Promise<ChannelMember> {
+    const channelMember = await this.prisma.channelMember.findUnique({
+      where: {
+        userId_channelId: {
+          userId,
+          channelId
+        }
+      }
+    })
+    if (channelMember?.type === EMemberType.Member)
+      throw new ExceptionTryingToUnmakeAdminAMember()
+    return this.prisma.channelMember.update({
+      where: {
+        userId_channelId: {
+          userId,
+          channelId
+        }
+      },
+      data: { type: EMemberType.Member }
+    })
+  }
+
   async makeAdmin(userId: string, channelId: string): Promise<ChannelMember> {
+    const channelMember = await this.prisma.channelMember.findUnique({
+      where: {
+        userId_channelId: {
+          userId,
+          channelId
+        }
+      }
+    })
+    if (channelMember?.type === EMemberType.Admin)
+      throw new ExceptionTryingToMakeAdminAnAdmin()
     return this.prisma.channelMember.update({
       where: {
         userId_channelId: {
@@ -95,6 +134,49 @@ export class ChannelMemberService {
         }
       },
       data: { type: EMemberType.Admin }
+    })
+  }
+
+  async mute(userId: string, channelId: string): Promise<ChannelMember> {
+    const channelMember = await this.prisma.channelMember.findUnique({
+      where: {
+        userId_channelId: {
+          userId,
+          channelId
+        }
+      }
+    })
+    if (channelMember?.muted === true) throw new ExceptionTryingToMuteAMuted()
+    return this.prisma.channelMember.update({
+      where: {
+        userId_channelId: {
+          userId,
+          channelId
+        }
+      },
+      data: { muted: true }
+    })
+  }
+
+  async unmute(userId: string, channelId: string): Promise<ChannelMember> {
+    const channelMember = await this.prisma.channelMember.findUnique({
+      where: {
+        userId_channelId: {
+          userId,
+          channelId
+        }
+      }
+    })
+    if (channelMember?.muted === false)
+      throw new ExceptionTryingToUnmuteAnUnmuted()
+    return this.prisma.channelMember.update({
+      where: {
+        userId_channelId: {
+          userId,
+          channelId
+        }
+      },
+      data: { muted: false }
     })
   }
 

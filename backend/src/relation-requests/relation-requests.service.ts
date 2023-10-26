@@ -9,6 +9,7 @@ import {
 } from '../user/exceptions/blocked.exceptions'
 import { ExceptionUsersAlreadyFriend } from '../user/exceptions/friend.exceptions'
 import { ExceptionRequestingYourself } from '../user/exceptions/request.exceptions'
+import { RelationRequestsInput } from './dto/create-relation-requests.input'
 
 @Injectable()
 export class RelationRequestsService {
@@ -24,56 +25,50 @@ export class RelationRequestsService {
   //  MUTATION
   //**************************************************//
   async create(
-    userSenderId: string,
-    userReceiverId: string
+    data: RelationRequestsInput
   ): Promise<RelationRequests | RelationFriend> {
     const userFriend = await this.relationFriendService.isFriend(
-      userSenderId,
-      userReceiverId
+      data.userSenderId,
+      data.userReceiverId
     )
     const userBlocked = await this.relationBlockedService.isBlocked(
-      userSenderId,
-      userReceiverId
+      data.userSenderId,
+      data.userReceiverId
     )
     const userBlockedYou = await this.relationBlockedService.isBlocked(
-      userReceiverId,
-      userSenderId
+      data.userReceiverId,
+      data.userSenderId
     )
     const userRequestReceived = await this.isRequested(
-      userReceiverId,
-      userSenderId
+      data.userReceiverId,
+      data.userSenderId
     )
-    if (userSenderId === userReceiverId) {
+    if (data.userSenderId === data.userReceiverId) {
       throw new ExceptionRequestingYourself()
     }
 
-    // if blocked
     if (userBlocked) {
       throw new ExceptionUserBlocked()
     }
 
-    // if blocked by the other user
     if (userBlockedYou) {
       throw new ExceptionUserBlockedYou()
     }
 
-    // if friend
     if (userFriend) {
       throw new ExceptionUsersAlreadyFriend()
     }
 
-    // if requestFriendReceived
     if (userRequestReceived) {
-      await this.delete(userReceiverId, userSenderId)
-      return this.relationFriendService.create(userSenderId, userReceiverId)
+      await this.delete(data.userReceiverId, data.userSenderId)
+      return this.relationFriendService.create({
+        userAId: data.userSenderId,
+        userBId: data.userReceiverId
+      })
     }
 
-    // if no relations
     return this.prisma.relationRequests.create({
-      data: {
-        userSenderId,
-        userReceiverId
-      }
+      data
     })
   }
 
@@ -116,11 +111,11 @@ export class RelationRequestsService {
     return res !== null
   }
 
-  async findAllRequestSent(id: string): Promise<string[]> {
+  async findAllRequestSent(userSenderId: string): Promise<string[]> {
     return (
       await this.prisma.relationRequests.findMany({
         where: {
-          userSenderId: id
+          userSenderId
         },
         select: {
           userReceiverId: true
@@ -132,11 +127,11 @@ export class RelationRequestsService {
     ).map((elem) => elem.userReceiverId)
   }
 
-  async findAllRequestReceived(id: string): Promise<string[]> {
+  async findAllRequestReceived(userReceiverId: string): Promise<string[]> {
     return (
       await this.prisma.relationRequests.findMany({
         where: {
-          userReceiverId: id
+          userReceiverId
         },
         select: {
           userSenderId: true

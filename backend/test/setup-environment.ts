@@ -12,18 +12,3 @@ export const cleanDataBase = async (prismaService: PrismaService) => {
   await prismaService.$executeRaw`DELETE FROM "public"."Channel";`
   await prismaService.$executeRaw`DELETE FROM "public"."User";`
 }
-
-// export const cleanDataBase = async (prismaService: PrismaService) => {
-//   await prismaService.$executeRaw`
-//     TRUNCATE
-//     "public"."RelationFriend",
-//     "public"."RelationBlocked",
-//     "public"."RelationRequests",
-//     "public"."UserPresence",
-//     "public"."ChannelMessage",
-//     "public"."ChannelMember",
-//     "public"."PrivateMessage",
-//     "public"."GameStat",
-//     "public"."Channel",
-//     "public"."User";`
-// }

@@ -1,18 +1,17 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { UserPresenceService } from './user-presence.service'
 import { PrismaService } from '../prisma/prisma.service'
-import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library'
 import { cleanDataBase } from '../../test/setup-environment'
-import { ExceptionIsConnectedShouldBeTrue } from '../user/exceptions/user-presence.exception'
+import { UserPresenceCreateInput } from './dto/create-user-presence.input'
 
 describe('UserPresenceService', () => {
   let userPresenceService: UserPresenceService
   let prismaService: PrismaService
-  let userPresenceData: any
+  let userPresenceData: UserPresenceCreateInput
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [UserPresenceService, PrismaService] // Incluez le PrismaService dans les providers
+      providers: [UserPresenceService, PrismaService]
     }).compile()
 
     userPresenceService = module.get<UserPresenceService>(UserPresenceService)
@@ -59,21 +58,13 @@ describe('UserPresenceService', () => {
 
   describe('Test Mutation', () => {
     userPresenceData = {
-      id: 'drfOayWwwUh12tDrePkJ8',
-      connectedAt: new Date(),
-      user: {
-        connect: {
-          id: 'd2OayPlUh0qtDrePkJ87t'
-        }
-      }
+      userId: 'd2OayPlUh0qtDrePkJ87t'
     }
 
     it('should create a new UserPresence', async () => {
       const userPresence = await userPresenceService.create(userPresenceData)
       expect(userPresence).toBeDefined()
-      expect(userPresence.connectedAt).toStrictEqual(
-        userPresenceData.connectedAt
-      )
+      expect(userPresence.userId).toStrictEqual(userPresenceData.userId)
     })
 
     it('should update disconnected value', async () => {
@@ -119,22 +110,6 @@ describe('UserPresenceService', () => {
         'poupouPwwUh12tDrePkJ8'
       )
       expect(userPresence).toStrictEqual(false)
-    })
-  })
-  describe('Test Error', () => {
-    it('User presence created with already taken ID', async () => {
-      const wrongUserPresenceData = {
-        id: 'drfOayPwwUh12tDrePkJ8',
-        connectedAt: new Date(),
-        user: {
-          connect: {
-            id: 'd2OayPlUh0qtDrePkJ87t'
-          }
-        }
-      }
-      expect(userPresenceService.create(wrongUserPresenceData)).rejects.toThrow(
-        PrismaClientKnownRequestError
-      )
     })
   })
 })

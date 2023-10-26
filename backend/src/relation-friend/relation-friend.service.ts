@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common'
 import { RelationFriend } from '@prisma/client'
 import { PrismaService } from '../prisma/prisma.service'
-
+import { RelationFriendInput } from './dto/create-relation-friend.input'
 @Injectable()
 export class RelationFriendService {
   constructor(private prisma: PrismaService) {}
@@ -9,12 +9,25 @@ export class RelationFriendService {
   //**************************************************//
   //  MUTATION
   //**************************************************//
-  async create(userAId: string, userBId: string): Promise<RelationFriend> {
-    if (userAId > userBId) [userAId, userBId] = [userBId, userAId]
+  async create(data: RelationFriendInput): Promise<RelationFriend> {
+    if (data.userAId > data.userBId)
+      [data.userAId, data.userBId] = [data.userBId, data.userAId]
     return this.prisma.relationFriend.create({
       data: {
-        userAId,
-        userBId
+        userAId: data.userAId,
+        userBId: data.userBId
+      }
+    })
+  }
+
+  async delete(userAId: string, userBId: string): Promise<RelationFriend> {
+    if (userAId > userBId) [userAId, userBId] = [userBId, userAId]
+    return this.prisma.relationFriend.delete({
+      where: {
+        userAId_userBId: {
+          userAId,
+          userBId
+        }
       }
     })
   }
@@ -58,17 +71,5 @@ export class RelationFriendService {
       }
     })
     return relation !== null
-  }
-
-  async delete(userAId: string, userBId: string): Promise<RelationFriend> {
-    if (userAId > userBId) [userAId, userBId] = [userBId, userAId]
-    return this.prisma.relationFriend.delete({
-      where: {
-        userAId_userBId: {
-          userAId,
-          userBId
-        }
-      }
-    })
   }
 }

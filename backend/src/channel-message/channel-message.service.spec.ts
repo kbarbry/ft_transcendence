@@ -1,15 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { ChannelMessageService } from './channel-message.service'
 import { PrismaService } from '../prisma/prisma.service'
-import { Prisma } from '@prisma/client'
-import {
-  ExceptionChannelMessageTryingToUpdateChannelID,
-  ChannelMessageExceptionTryingToUpdateCreationDate,
-  ChannelMessageExceptionTryingToUpdateID,
-  ChannelMessageExceptionTryingToUpdateSenderID
-} from '../user/exceptions/channel-message.exception'
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library'
 import { cleanDataBase } from '../../test/setup-environment'
+import { CreateChannelMessageInput } from './dto/create-channel-message.input'
+import { UpdateChannelMessageInput } from './dto/update-channel-message.input'
 
 describe('ChannelMessageService', () => {
   let channelMessageService: ChannelMessageService
@@ -77,28 +72,26 @@ describe('ChannelMessageService', () => {
 
   describe('Test channel-message Mutation', () => {
     it('should create a ChannelMessage', async () => {
-      const newMessageInput: Prisma.ChannelMessageCreateInput = {
+      const newMessageInput: CreateChannelMessageInput = {
         content: 'New Message from au7d4',
-        createdAt: new Date(Date.UTC(2023, 8, 13, 11, 30, 42)),
-        user: { connect: { id: 'au7d4ec6daffd64a2d4ca' } },
-        channel: { connect: { id: 'ac7d4ec6daffd64a2d4ca' } }
+        senderId: 'au7d4ec6daffd64a2d4ca',
+        channelId: 'ac7d4ec6daffd64a2d4ca'
       }
 
       const messageDB = {
         senderId: 'au7d4ec6daffd64a2d4ca',
         channelId: 'ac7d4ec6daffd64a2d4ca',
-        content: 'New Message from au7d4',
-        createdAt: new Date(Date.UTC(2023, 8, 13, 11, 30, 42))
+        content: 'New Message from au7d4'
       }
       const dbret = await channelMessageService.create(newMessageInput)
       expect(dbret.senderId).toStrictEqual(messageDB.senderId)
       expect(dbret.channelId).toStrictEqual(messageDB.channelId)
       expect(dbret.content).toStrictEqual(messageDB.content)
-      expect(dbret.createdAt).toStrictEqual(messageDB.createdAt)
+      expect(dbret.createdAt).toBeDefined()
     })
 
     it('should update a ChannelMessage', async () => {
-      const messageUpdateInput: Prisma.ChannelMessageUpdateInput = {
+      const messageUpdateInput: UpdateChannelMessageInput = {
         content: 'You all are nice'
       }
       const dbret = await channelMessageService.update(
@@ -109,9 +102,6 @@ describe('ChannelMessageService', () => {
     })
 
     it('should delete a ChannelMessage', async () => {
-      const message = await channelMessageService.findOne(
-        'em7d4ec6daffd64a2d4cc'
-      )
       const delMessage = {
         id: 'em7d4ec6daffd64a2d4cc',
         senderId: 'du87734d323ac71c6efbd',
@@ -144,7 +134,7 @@ describe('ChannelMessageService', () => {
     })
 
     it('should find an empty ChannelMessage list by finding ChannelMessage of a user in a Channel where he is not', async () => {
-      const msgList = await channelMessageService.findInChannelIdsAndUserId(
+      const msgList = await channelMessageService.findAllInChannelByUser(
         'bc88e59aef615c5df6dfb',
         'au7d4ec6daffd64a2d4ca'
       )
@@ -235,7 +225,7 @@ describe('ChannelMessageService', () => {
           createdAt: new Date(Date.UTC(2023, 8, 13, 11, 30, 42))
         }
       ]
-      const msgList = await channelMessageService.findInChannelIdsAndUserId(
+      const msgList = await channelMessageService.findAllInChannelByUser(
         'ac7d4ec6daffd64a2d4ca',
         'au7d4ec6daffd64a2d4ca'
       )
@@ -286,57 +276,6 @@ describe('ChannelMessageService', () => {
   })
 
   describe('Test Error', () => {
-    it('should update a ChannelMessage id and throw error', async () => {
-      const messageUpdateInput: Prisma.ChannelMessageUpdateInput = {
-        id: 'random id'
-      }
-      await expect(
-        channelMessageService.update(
-          'gm7d4ec6daffd64a2d4cg',
-          messageUpdateInput
-        )
-      ).rejects.toThrow(ChannelMessageExceptionTryingToUpdateID)
-    })
-
-    it("should update a ChannelMessage's channel and throw error", async () => {
-      const messageUpdateInput: Prisma.ChannelMessageUpdateInput = {
-        channel: { connect: { id: 'truc' } },
-        content: 'content exist'
-      }
-      await expect(
-        channelMessageService.update(
-          'hm7d4ec6daffd64a2d4ch',
-          messageUpdateInput
-        )
-      ).rejects.toThrow(ExceptionChannelMessageTryingToUpdateChannelID)
-    })
-
-    it("should update a ChannelMessage's creation date and throw error", async () => {
-      const messageUpdateInput: Prisma.ChannelMessageUpdateInput = {
-        content: 'content exist',
-        createdAt: new Date(Date.UTC(2023, 8, 13, 11, 30, 42))
-      }
-      await expect(
-        channelMessageService.update(
-          'hm7d4ec6daffd64a2d4ch',
-          messageUpdateInput
-        )
-      ).rejects.toThrow(ChannelMessageExceptionTryingToUpdateCreationDate)
-    })
-
-    it("should update a ChannelMessage's sender id date and throw error", async () => {
-      const messageUpdateInput: Prisma.ChannelMessageUpdateInput = {
-        content: 'content exist',
-        user: { connect: { id: 'another sender id' } }
-      }
-      await expect(
-        channelMessageService.update(
-          'hm7d4ec6daffd64a2d4ch',
-          messageUpdateInput
-        )
-      ).rejects.toThrow(ChannelMessageExceptionTryingToUpdateSenderID)
-    })
-
     it('should delete non existing ChannelMessage and throw error', async () => {
       await expect(
         channelMessageService.delete('zzzd4ec6daffd64a2d4cc')
@@ -344,11 +283,10 @@ describe('ChannelMessageService', () => {
     })
 
     it('should create a ChannelMessage with wrong channel Id', async () => {
-      const newMessageInput: Prisma.ChannelMessageCreateInput = {
+      const newMessageInput: CreateChannelMessageInput = {
         content: 'New Message from au7d4',
-        createdAt: new Date(Date.UTC(2023, 8, 13, 11, 30, 42)),
-        user: { connect: { id: 'au7d4ec6daffd64a2d4ca' } },
-        channel: { connect: { id: 'wrong channel id' } }
+        senderId: 'au7d4ec6daffd64a2d4ca',
+        channelId: 'wrong channel id'
       }
 
       await expect(
@@ -357,11 +295,10 @@ describe('ChannelMessageService', () => {
     })
 
     it('should create a ChannelMessage with wrong sender Id', async () => {
-      const newMessageInput: Prisma.ChannelMessageCreateInput = {
+      const newMessageInput: CreateChannelMessageInput = {
         content: 'New Message from au7d4',
-        createdAt: new Date(Date.UTC(2023, 8, 13, 11, 30, 42)),
-        user: { connect: { id: 'wrong sender id' } },
-        channel: { connect: { id: 'ac7d4ec6daffd64a2d4ca' } }
+        senderId: 'wrong sender id',
+        channelId: 'ac7d4ec6daffd64a2d4ca'
       }
 
       await expect(

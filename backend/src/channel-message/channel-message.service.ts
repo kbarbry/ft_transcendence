@@ -1,25 +1,45 @@
 import { Injectable } from '@nestjs/common'
-import { ChannelMessage, Prisma } from '@prisma/client'
+import { ChannelMessage } from '@prisma/client'
 import { PrismaService } from '../prisma/prisma.service'
-import {
-  ExceptionChannelMessageTryingToUpdateChannelID,
-  ChannelMessageExceptionTryingToUpdateCreationDate,
-  ChannelMessageExceptionTryingToUpdateID,
-  ChannelMessageExceptionTryingToUpdateSenderID
-} from '../user/exceptions/channel-message.exception'
+import { CreateChannelMessageInput } from './dto/create-channel-message.input'
+import { UpdateChannelMessageInput } from './dto/update-channel-message.input'
 
 @Injectable()
 export class ChannelMessageService {
   constructor(private prisma: PrismaService) {}
 
-  async create(
-    data: Prisma.ChannelMessageCreateInput
-  ): Promise<ChannelMessage> {
+  //**************************************************//
+  //  MUTATION
+  //**************************************************//
+  async create(data: CreateChannelMessageInput): Promise<ChannelMessage> {
     return this.prisma.channelMessage.create({
       data
     })
   }
 
+  async update(
+    id: string,
+    data: UpdateChannelMessageInput
+  ): Promise<ChannelMessage> {
+    return this.prisma.channelMessage.update({
+      where: {
+        id
+      },
+      data
+    })
+  }
+
+  async delete(id: string): Promise<ChannelMessage> {
+    return this.prisma.channelMessage.delete({
+      where: {
+        id
+      }
+    })
+  }
+
+  //**************************************************//
+  //  QUERY
+  //**************************************************//
   async findOne(id: string): Promise<ChannelMessage | null> {
     return this.prisma.channelMessage.findUnique({
       where: {
@@ -36,7 +56,7 @@ export class ChannelMessageService {
     })
   }
 
-  async findInChannelIdsAndUserId(
+  async findAllInChannelByUser(
     channelId: string,
     senderId: string
   ): Promise<ChannelMessage[]> {
@@ -59,41 +79,6 @@ export class ChannelMessageService {
             content: { contains: containingText }
           }
         ]
-      }
-    })
-  }
-
-  async update(
-    id: string,
-    data: Prisma.ChannelMessageUpdateInput
-  ): Promise<ChannelMessage> {
-    if (data.id) {
-      throw new ChannelMessageExceptionTryingToUpdateID()
-    }
-    if (data.channel) {
-      throw new ExceptionChannelMessageTryingToUpdateChannelID()
-    }
-    if (data.createdAt) {
-      throw new ChannelMessageExceptionTryingToUpdateCreationDate()
-    }
-    if (data.user) {
-      throw new ChannelMessageExceptionTryingToUpdateSenderID()
-    }
-    if (!data.updatedAt) {
-      data.updatedAt = new Date()
-    }
-    return this.prisma.channelMessage.update({
-      where: {
-        id
-      },
-      data
-    })
-  }
-
-  async delete(id: string): Promise<ChannelMessage> {
-    return this.prisma.channelMessage.delete({
-      where: {
-        id
       }
     })
   }

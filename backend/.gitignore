@@ -2,9 +2,10 @@
 /dist
 /node_modules
 /prisma/migrations
-
+/src/schema.gql
 # package output
 package-lock.json
+.env
 
 # Logs
 logs

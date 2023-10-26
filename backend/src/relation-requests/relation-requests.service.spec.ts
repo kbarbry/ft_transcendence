@@ -11,6 +11,7 @@ import {
   ExceptionUserBlockedYou
 } from '../user/exceptions/blocked.exceptions'
 import { ExceptionUsersAlreadyFriend } from '../user/exceptions/friend.exceptions'
+import { RelationRequestsInput } from './dto/create-relation-requests.input'
 
 describe('RelationRequestsService', () => {
   let relationRequestsService: RelationRequestsService
@@ -74,8 +75,6 @@ describe('RelationRequestsService', () => {
       ('bababff1f6cd647fc171-', 'ohohoff1f6cd647fc171-'),
       ('e28d4ff1f6cd647fc171-', 'df87734d323ac71c6efb-');`
 
-    //'537d4ec6daffd64a2d4c', '4376f06677b65d3168d6'
-
     await prismaService.$executeRaw`INSERT INTO
       "public"."RelationBlocked"
       VALUES
@@ -110,41 +109,45 @@ describe('RelationRequestsService', () => {
 
   describe('Test Mutation', () => {
     it('should create a new user', async () => {
-      const resRequest = await relationRequestsService.create(
-        '537d4ec6daffd64a2d4c-',
-        'f488e59aef615c5df6df-'
-      )
+      const input: RelationRequestsInput = {
+        userSenderId: '537d4ec6daffd64a2d4c-',
+        userReceiverId: 'f488e59aef615c5df6df-'
+      }
       const expectedRes = {
         userSenderId: '537d4ec6daffd64a2d4c-',
         userReceiverId: 'f488e59aef615c5df6df-'
       }
-      expect(resRequest).toStrictEqual(expectedRes)
-    })
 
-    it('should delete an user', async () => {
-      const resRequest = await relationRequestsService.delete(
-        '537d4ec6daffd64a2d4c-',
-        '4376f06677b65d3168d6-'
-      )
-      const expectedRes = {
-        userSenderId: '537d4ec6daffd64a2d4c-',
-        userReceiverId: '4376f06677b65d3168d6-'
-      }
-      expect(resRequest).toStrictEqual(expectedRes)
-    })
-
-    it('should add userB as friend (alreadyRequested B->A)', async () => {
-      const resRequest = await relationRequestsService.create(
-        'ohohoff1f6cd647fc171-',
-        'bababff1f6cd647fc171-'
-      )
-      const expectedRes = {
-        userAId: 'bababff1f6cd647fc171-',
-        userBId: 'ohohoff1f6cd647fc171-'
-      }
-      expect(resRequest).toStrictEqual(expectedRes)
+      const result = await relationRequestsService.create(input)
+      expect(result).toEqual(expectedRes)
     })
   })
+
+  it('should delete an user', async () => {
+    const resRequest = await relationRequestsService.delete(
+      '537d4ec6daffd64a2d4c-',
+      '4376f06677b65d3168d6-'
+    )
+    const expectedRes = {
+      userSenderId: '537d4ec6daffd64a2d4c-',
+      userReceiverId: '4376f06677b65d3168d6-'
+    }
+    expect(resRequest).toStrictEqual(expectedRes)
+  })
+
+  it('should add userB as friend (alreadyRequested B->A)', async () => {
+    const input: RelationRequestsInput = {
+      userSenderId: 'ohohoff1f6cd647fc171-',
+      userReceiverId: 'bababff1f6cd647fc171-'
+    }
+    const expectedRes = {
+      userAId: 'bababff1f6cd647fc171-',
+      userBId: 'ohohoff1f6cd647fc171-'
+    }
+    const result = await relationRequestsService.create(input)
+    expect(result).toEqual(expectedRes)
+  })
+
   describe('Test Query', () => {
     it('should find user by id', async () => {
       const findUser = await relationRequestsService.findOne(
@@ -216,57 +219,63 @@ describe('RelationRequestsService', () => {
   })
   describe('Test Error', () => {
     it('id already created', async () => {
-      await expect(
-        relationRequestsService.create(
-          '537d4ec6daffd64a2d4c-',
-          '4376f06677b65d3168d6-'
-        )
-      ).rejects.toThrow(PrismaClientKnownRequestError)
+      const input: RelationRequestsInput = {
+        userSenderId: '537d4ec6daffd64a2d4c-',
+        userReceiverId: '4376f06677b65d3168d6-'
+      }
+      await expect(async () => {
+        await relationRequestsService.create(input)
+      }).rejects.toThrow(PrismaClientKnownRequestError)
     })
 
     it('trying to request yourself (miskina)', async () => {
-      await expect(
-        relationRequestsService.create(
-          '537d4ec6daffd64a2d4c-',
-          '537d4ec6daffd64a2d4c-'
-        )
-      ).rejects.toThrow(ExceptionRequestingYourself)
+      const input: RelationRequestsInput = {
+        userSenderId: '537d4ec6daffd64a2d4c-',
+        userReceiverId: '537d4ec6daffd64a2d4c-'
+      }
+      await expect(async () => {
+        await relationRequestsService.create(input)
+      }).rejects.toThrow(ExceptionRequestingYourself)
     })
 
     it('trying to request someone blocked', async () => {
-      await expect(
-        relationRequestsService.create(
-          '537d4ec6daffd64a2d4c-',
-          'df87734d323ac71c6efb-'
-        )
-      ).rejects.toThrow(ExceptionUserBlocked)
+      const input: RelationRequestsInput = {
+        userSenderId: '537d4ec6daffd64a2d4c-',
+        userReceiverId: 'df87734d323ac71c6efb-'
+      }
+      await expect(async () => {
+        await relationRequestsService.create(input)
+      }).rejects.toThrow(ExceptionUserBlocked)
     })
 
     it('trying to request someone who blocked you', async () => {
-      await expect(
-        relationRequestsService.create(
-          'f488e59aef615c5df6df-',
-          '4376f06677b65d3168d6-'
-        )
-      ).rejects.toThrow(ExceptionUserBlockedYou)
+      const input: RelationRequestsInput = {
+        userSenderId: 'f488e59aef615c5df6df-',
+        userReceiverId: '4376f06677b65d3168d6-'
+      }
+      await expect(async () => {
+        await relationRequestsService.create(input)
+      }).rejects.toThrow(ExceptionUserBlockedYou)
     })
 
     it('trying to request someone you are already friend with A->B', async () => {
-      await expect(
-        relationRequestsService.create(
-          'ec178ef86d29197b6ffd-',
-          '4376f06677b65d3168d6-'
-        )
-      ).rejects.toThrow(ExceptionUsersAlreadyFriend)
+      const input: RelationRequestsInput = {
+        userSenderId: 'ec178ef86d29197b6ffd-',
+        userReceiverId: '4376f06677b65d3168d6-'
+      }
+      await expect(async () => {
+        await relationRequestsService.create(input)
+      }).rejects.toThrow(ExceptionUsersAlreadyFriend)
     })
 
     it('trying to request someone you are already friend with B->A', async () => {
-      await expect(
-        relationRequestsService.create(
-          '4376f06677b65d3168d6-',
-          'ec178ef86d29197b6ffd-'
-        )
-      ).rejects.toThrow(ExceptionUsersAlreadyFriend)
+      const input: RelationRequestsInput = {
+        userSenderId: '4376f06677b65d3168d6-',
+        userReceiverId: 'ec178ef86d29197b6ffd-'
+      }
+      await expect(async () => {
+        await relationRequestsService.create(input)
+      }).rejects.toThrow(ExceptionUsersAlreadyFriend)
     })
   })
 })

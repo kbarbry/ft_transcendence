@@ -1,10 +1,8 @@
 import { Injectable } from '@nestjs/common'
 import { PrismaService } from '../prisma/prisma.service'
-import { Prisma, GameStat, EGameType } from '@prisma/client'
-import {
-  ExceptionTryingToUpdateID,
-  ExceptionSamePlayerInGame
-} from '../user/exceptions/game-stat.exception'
+import { GameStat, EGameType } from '@prisma/client'
+import { CreateGameStatInput } from './dto/create-game-stat.input'
+import { ExceptionSamePlayerInGame } from '../user/exceptions/game-stat.exception'
 
 @Injectable()
 export class GameStatService {
@@ -13,8 +11,8 @@ export class GameStatService {
   //  MUTATION
   //**************************************************//
 
-  async create(data: Prisma.GameStatCreateInput): Promise<GameStat> {
-    if (data.looser?.connect?.id === data.winner?.connect?.id) {
+  async create(data: CreateGameStatInput): Promise<GameStat> {
+    if (data.loserId === data.winnerId) {
       throw new ExceptionSamePlayerInGame()
     }
     return this.prisma.gameStat.create({
@@ -37,7 +35,7 @@ export class GameStatService {
   async findAll(id: string): Promise<GameStat[]> {
     return this.prisma.gameStat.findMany({
       where: {
-        OR: [{ winnerId: id }, { looserId: id }]
+        OR: [{ winnerId: id }, { loserId: id }]
       },
       orderBy: {
         createdAt: 'desc'
@@ -59,7 +57,7 @@ export class GameStatService {
   async findLose(id: string): Promise<GameStat[]> {
     return this.prisma.gameStat.findMany({
       where: {
-        looserId: id
+        loserId: id
       },
       orderBy: {
         createdAt: 'desc'
@@ -72,7 +70,7 @@ export class GameStatService {
       where: {
         OR: [
           { winnerId: id, type: EGameType.Classic },
-          { looserId: id, type: EGameType.Classic }
+          { loserId: id, type: EGameType.Classic }
         ]
       },
       orderBy: {
@@ -86,7 +84,7 @@ export class GameStatService {
       where: {
         OR: [
           { winnerId: id, type: EGameType.Special },
-          { looserId: id, type: EGameType.Special }
+          { loserId: id, type: EGameType.Special }
         ]
       },
       orderBy: {
