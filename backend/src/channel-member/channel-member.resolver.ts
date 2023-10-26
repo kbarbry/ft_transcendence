@@ -1,8 +1,8 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql'
 import { ChannelMember } from './entities/channel-member.entity'
 import { ChannelMemberService } from './channel-member.service'
-import { CreateChannelMemberCreateInput } from './dto/create-channel-member.input'
-import { UpdateChannelMemberCreateInput } from './dto/update-channel-member.input'
+import { CreateChannelMemberInput } from './dto/create-channel-member.input'
+import { UpdateChannelMemberInput } from './dto/update-channel-member.input'
 import { ValidationPipe } from '@nestjs/common'
 import { NanoidValidationPipe } from '../common/pipes/nanoid.pipe'
 
@@ -15,12 +15,8 @@ export class ChannelMemberResolver {
   //**************************************************//
   @Mutation(() => ChannelMember)
   async createChannelMember(
-    @Args(
-      'data',
-      { type: () => CreateChannelMemberCreateInput },
-      ValidationPipe
-    )
-    data: CreateChannelMemberCreateInput
+    @Args('data', { type: () => CreateChannelMemberInput }, ValidationPipe)
+    data: CreateChannelMemberInput
   ): Promise<ChannelMember> {
     return this.channelMemberService.create(data)
   }
@@ -31,12 +27,8 @@ export class ChannelMemberResolver {
     userId: string,
     @Args('channelId', { type: () => String }, NanoidValidationPipe)
     channelId: string,
-    @Args(
-      'data',
-      { type: () => UpdateChannelMemberCreateInput },
-      ValidationPipe
-    )
-    data: UpdateChannelMemberCreateInput
+    @Args('data', { type: () => UpdateChannelMemberInput }, ValidationPipe)
+    data: UpdateChannelMemberInput
   ): Promise<ChannelMember> {
     return this.channelMemberService.update(userId, channelId, data)
   }

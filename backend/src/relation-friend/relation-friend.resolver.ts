@@ -21,7 +21,7 @@ export class RelationFriendResolver {
   }
 
   @Mutation(() => RelationFriend)
-  async deleteRelationRequests(
+  async deleteRelationFriend(
     @Args('userAId', { type: () => String }, NanoidValidationPipe)
     userAId: string,
     @Args('userBId', { type: () => String }, NanoidValidationPipe)
