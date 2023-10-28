@@ -1,4 +1,9 @@
-import { Catch, HttpStatus } from '@nestjs/common'
+import {
+  BadRequestException,
+  Catch,
+  HttpStatus,
+  UnauthorizedException
+} from '@nestjs/common'
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library'
 import { GqlExceptionFilter } from '@nestjs/graphql'
 import { GraphQLError } from 'graphql'
@@ -48,11 +53,18 @@ export class GlobalExceptionFilter implements GqlExceptionFilter {
       const meta = exception.getResponse()
       const extensions = { type, code, meta }
       const message = `Your data contains some conflict with our application`
+      customError = new GraphQLError(message, { extensions })
+    } else if (exception instanceof UnauthorizedException) {
+      const type = EErrorOrigin.ServerError
+      const code = HttpStatus.UNAUTHORIZED
+      const meta = exception
+      const extensions = { type, code, meta }
+      const message = `You're not authorized to access this data`
 
       customError = new GraphQLError(message, { extensions })
     } else {
-      console.log(exception)
-      customError = new GraphQLError('Unhandled error')
+      // console.log(exception)
+      customError = new GraphQLError('Unhandled error', exception)
     }
 
     return customError

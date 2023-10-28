@@ -20,9 +20,11 @@ import { join } from 'path'
 import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin/landingPage/default'
 import { APP_FILTER } from '@nestjs/core'
 import { GlobalExceptionFilter } from './common/filters/general.filter'
+import { AuthModule } from './auth/auth.module'
 
 @Module({
   imports: [
+    AuthModule,
     PrismaModule,
     ChannelModule,
     ChannelBlockedModule,
