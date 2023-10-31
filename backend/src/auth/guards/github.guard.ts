@@ -3,11 +3,11 @@ import { AuthGuard } from '@nestjs/passport'
 
 @Injectable()
 export class GithubOauthGuard extends AuthGuard('github') {
-  async canActivate(context: ExecutionContext) {
-    // const activate = (await super.canActivate(context)) as boolean
-    // const request = context.switchToHttp().getRequest()
-    // await super.logIn(request)
-    // return activate
-    return true
-  }
+  //   async canActivate(context: ExecutionContext) {
+  //     console.log('=== GithubOauthGuard ===') //TODO debug
+  //     const activate = (await super.canActivate(context)) as boolean
+  //     const request = context.switchToHttp().getRequest()
+  //     await super.logIn(request)
+  //     return activate
+  //   }
 }

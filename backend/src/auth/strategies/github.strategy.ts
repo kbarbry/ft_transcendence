@@ -13,6 +13,8 @@ export class GithubOauthStrategy extends PassportStrategy(Strategy, 'github') {
   private readonly authService: AuthService
 
   async validate(accessToken: string, _refreshToken: string, profile: Profile) {
-    // TODO
+    const id = profile.id
+
+    const user = this.authService.validateGitHubUser() //Set the right parameter in function of the github profil infos
   }
 }

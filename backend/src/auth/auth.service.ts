@@ -2,12 +2,17 @@ import { Inject, Injectable } from '@nestjs/common'
 import { UserService } from 'src/user/user.service'
 import { randomBytes } from 'crypto'
 import { isURL } from 'class-validator'
+import { User } from 'src/user/entities/user.entity'
 
 type GoogleUserParams = {
   email: string
   username: string
   avatarUrl?: string
   language?: string
+}
+
+type GitHubUserParams = {
+  //TODO
 }
 
 @Injectable()
@@ -47,6 +52,7 @@ export class AuthService {
   }
 
   async validateGitHubUser() {
+    //TODO validate in db and return db user
     return null
   }
 }

@@ -42,7 +42,7 @@ export class AuthController {
     }
   }
 
-  @Get('auth/github')
+  @Get('github')
   @UseGuards(GithubOauthGuard)
   async githubAuth() {
     // With `@UseGuards(GithubOauthGuard)` we are using an AuthGuard that @nestjs/passport
@@ -50,7 +50,7 @@ export class AuthController {
     // The Guard initiates the passport-github flow.
   }
 
-  @Get('auth/github/callback')
+  @Get('github/redirect')
   @UseGuards(GithubOauthGuard)
   async githubAuthCallback(@Req() req: Request) {
     // Passport automatically creates a `user` object, based on the return value of our
