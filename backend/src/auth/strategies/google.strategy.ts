@@ -13,10 +13,16 @@ export class GoogleStrategy extends PassportStrategy(Strategy) {
       scope: ['profile', 'email']
     })
   }
+
   @Inject(AuthService)
   private readonly authService: AuthService
 
-  async validate(accessToken: string, refreshToken: string, profile: Profile) {
+  async validate(
+    accessToken: string,
+    refreshToken: string,
+    profile: Profile,
+    callback: CallableFunction
+  ) {
     console.log('INFORMATIONS PROFILE')
     // console.log(accessToken)
     // console.log(refreshToken)
@@ -30,6 +36,6 @@ export class GoogleStrategy extends PassportStrategy(Strategy) {
       email,
       avatarUrl
     })
-    return user
+    return callback(null, user)
   }
 }

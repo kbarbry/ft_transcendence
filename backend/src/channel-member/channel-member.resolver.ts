@@ -3,10 +3,12 @@ import { ChannelMember } from './entities/channel-member.entity'
 import { ChannelMemberService } from './channel-member.service'
 import { CreateChannelMemberInput } from './dto/create-channel-member.input'
 import { UpdateChannelMemberInput } from './dto/update-channel-member.input'
-import { ValidationPipe } from '@nestjs/common'
+import { UseGuards, ValidationPipe } from '@nestjs/common'
 import { NanoidValidationPipe } from '../common/pipes/nanoid.pipe'
+import { AuthorizationGuard } from 'src/auth/guards/authorization.guard'
 
 @Resolver(() => ChannelMember)
+@UseGuards(AuthorizationGuard)
 export class ChannelMemberResolver {
   constructor(private readonly channelMemberService: ChannelMemberService) {}
 

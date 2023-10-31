@@ -2,10 +2,12 @@ import { Args, Mutation, Resolver, Query } from '@nestjs/graphql'
 import { ChannelInvited } from './entities/channel-invited.entity'
 import { ChannelInvitedService } from './channel-invited.service'
 import { CreateChannelInvitedInput } from './dto/create-channel-invited.input'
-import { ValidationPipe } from '@nestjs/common'
+import { UseGuards, ValidationPipe } from '@nestjs/common'
 import { NanoidValidationPipe } from '../common/pipes/nanoid.pipe'
+import { AuthorizationGuard } from 'src/auth/guards/authorization.guard'
 
 @Resolver(() => ChannelInvited)
+@UseGuards(AuthorizationGuard)
 export class ChannelInvitedResolver {
   constructor(private readonly channelInvitedServie: ChannelInvitedService) {}
 

@@ -16,13 +16,17 @@ export class AuthService {
   private readonly userService: UserService
 
   async checkUsername(username: string): Promise<string> {
-    let checkedUsername = username.trim().slice(30)
-    if (await this.userService.isUsernameUsed(username)) {
+    let checkedUsername = username.trim().slice(0, 29)
+    console.log('Before change ', checkedUsername)
+    if (
+      username.length <= 0 ||
+      (await this.userService.isUsernameUsed(username))
+    ) {
       const slicedUsername = username.slice(0, 10)
       const nanoIdUsername = randomBytes(15).toString('hex').slice(0, 15)
       checkedUsername = slicedUsername.trim() + '-' + nanoIdUsername
     }
-    console.log(checkedUsername)
+    console.log('AuthService 29 : checkUsername(): ' + checkedUsername)
     return checkedUsername
   }
 

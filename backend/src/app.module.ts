@@ -21,6 +21,7 @@ import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin
 import { APP_FILTER } from '@nestjs/core'
 import { GlobalExceptionFilter } from './common/filters/general.filter'
 import { AuthModule } from './auth/auth.module'
+import { PassportModule } from '@nestjs/passport'
 
 @Module({
   imports: [
@@ -45,7 +46,8 @@ import { AuthModule } from './auth/auth.module'
       playground: false,
       includeStacktraceInErrorResponses: false,
       plugins: [ApolloServerPluginLandingPageLocalDefault()]
-    })
+    }),
+    PassportModule.register({ session: true })
   ],
   controllers: [],
   providers: [
