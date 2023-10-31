@@ -3,9 +3,9 @@ import { AppModule } from './app.module'
 import { ValidationPipe } from '@nestjs/common'
 import { GlobalExceptionFilter } from './common/filters/general.filter'
 import { ExceptionClassValidator } from './common/exceptions/class-validator.exception'
-import * as session from 'express-session'
+import session from 'express-session'
 import { randomBytes } from 'crypto'
-import * as passport from 'passport'
+import passport from 'passport'
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule)
