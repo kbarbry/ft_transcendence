@@ -10,6 +10,13 @@ type GoogleUserParams = {
   language?: string
 }
 
+type GithubUserParams = {
+  email: string
+  username: string
+  avatarUrl?: string
+  language?: string
+}
+
 @Injectable()
 export class AuthService {
   @Inject(UserService)
@@ -46,10 +53,23 @@ export class AuthService {
     return userResult
   }
 
+  async validateGitHubUser(profile: GithubUserParams) {
+    let userResult = await this.userService.findOnebyMail(profile.email)
+    if (!userResult) {
+      const username = await this.checkUsername(profile.username)
+      let avatarUrl = profile.avatarUrl
+      if (avatarUrl) avatarUrl = isURL(avatarUrl) ? avatarUrl : undefined
+      userResult = await this.userService.create({
+        mail: profile.email,
+        username: username,
+        avatarUrl: avatarUrl
+      })
+    }
+    return userResult
+  }
 
   async validateFortyTwo(profile: any) {
     let userResult = await this.userService.findOnebyMail(profile.email)
-    console.log(userResult)
     if (!userResult) {
       const username = await this.checkUsername(profile.username)
       let avatarUrl = profile.avatarUrl
@@ -68,7 +88,6 @@ export class AuthService {
     if (!userResult || !(userResult.password === password)) {
       return null
     }
-    console.log(userResult)
     return userResult
   }
 }

@@ -3,6 +3,7 @@ import { GoogleAuthGuard } from './guards/google.guard'
 import { FortyTwoAuthGuard } from './guards/42.guard'
 import { AuthorizationGuard } from './guards/authorization.guard'
 import { Request } from 'express'
+import { GithubGuard } from './guards/github.guard'
 import { LocalAuthGuard } from './guards/local.guard'
 
 @Controller('auth')
@@ -61,5 +62,17 @@ export class AuthController {
     return {
       msg: 'Unauthorized'
     }
+  }
+
+  @Get('github/login')
+  @UseGuards(GithubGuard)
+  async githubAuth() {
+    return 'login github'
+  }
+
+  @Get('github/redirect')
+  @UseGuards(GithubGuard)
+  async githubAuthCallback() {
+    return 'redirect github'
   }
 }
