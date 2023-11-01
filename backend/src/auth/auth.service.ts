@@ -2,7 +2,6 @@ import { Inject, Injectable } from '@nestjs/common'
 import { UserService } from 'src/user/user.service'
 import { randomBytes } from 'crypto'
 import { isURL } from 'class-validator'
-import { User } from 'src/user/entities/user.entity'
 
 type GoogleUserParams = {
   email: string
@@ -11,8 +10,11 @@ type GoogleUserParams = {
   language?: string
 }
 
-type GitHubUserParams = {
-  //TODO
+type GithubUserParams = {
+  email: string
+  username: string
+  avatarUrl?: string
+  language?: string
 }
 
 @Injectable()
@@ -51,8 +53,19 @@ export class AuthService {
     return userResult
   }
 
-  async validateGitHubUser() {
-    //TODO validate in db and return db user
-    return null
+  async validateGitHubUser(profile: GithubUserParams) {
+    let userResult = await this.userService.findOnebyMail(profile.email)
+    console.log(userResult)
+    if (!userResult) {
+      const username = await this.checkUsername(profile.username)
+      let avatarUrl = profile.avatarUrl
+      if (avatarUrl) avatarUrl = isURL(avatarUrl) ? avatarUrl : undefined
+      userResult = await this.userService.create({
+        mail: profile.email,
+        username: username,
+        avatarUrl: avatarUrl
+      })
+    }
+    return userResult
   }
 }
