@@ -2,7 +2,7 @@ import { Controller, Get, Req, UseGuards } from '@nestjs/common'
 import { GoogleAuthGuard } from './guards/google.guard'
 import { AuthorizationGuard } from './guards/authorization.guard'
 import { Request } from 'express'
-import { GithubOauthGuard } from './guards/github.guard'
+import { GithubGuard } from './guards/github.guard'
 
 @Controller('auth')
 export class AuthController {
@@ -42,29 +42,15 @@ export class AuthController {
     }
   }
 
-  @Get('github')
-  @UseGuards(GithubOauthGuard)
+  @Get('github/login')
+  @UseGuards(GithubGuard)
   async githubAuth() {
-    // With `@UseGuards(GithubOauthGuard)` we are using an AuthGuard that @nestjs/passport
-    // automatically provisioned for us when we extended the passport-github strategy.
-    // The Guard initiates the passport-github flow.
+    return 'login github'
   }
 
   @Get('github/redirect')
-  @UseGuards(GithubOauthGuard)
-  async githubAuthCallback(@Req() req: Request) {
-    // Passport automatically creates a `user` object, based on the return value of our
-    // GithubOauthStrategy#validate() method, and assigns it to the Request object as `req.user`
-
-    const user = req.user
-
-    // TODO delete
-    console.log(
-      `${this.githubAuthCallback.name}(): req.user = ${JSON.stringify(
-        user,
-        null,
-        4
-      )}`
-    )
+  @UseGuards(GithubGuard)
+  async githubAuthCallback() {
+    return 'redirect github'
   }
 }
