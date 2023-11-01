@@ -1,5 +1,6 @@
 import { Controller, Get, Post, Req, UseGuards } from '@nestjs/common'
 import { GoogleAuthGuard } from './guards/google.guard'
+import { FortyTwoAuthGuard } from './guards/42.guard'
 import { AuthorizationGuard } from './guards/authorization.guard'
 import { Request } from 'express'
 import { LocalAuthGuard } from './guards/local.guard'
@@ -9,6 +10,18 @@ export class AuthController {
   @Get('login')
   getLogin() {
     return 'Login page'
+  }
+
+  @Get('42/login')
+  @UseGuards(FortyTwoAuthGuard)
+  ftLogin() {
+    return { msg: '42 Auth Login' }
+  }
+
+  @Get('42/redirect')
+  @UseGuards(FortyTwoAuthGuard)
+  ftRedirect() {
+    return { msg: '42 OK' }
   }
 
   @Get('register')

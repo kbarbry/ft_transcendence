@@ -46,6 +46,23 @@ export class AuthService {
     return userResult
   }
 
+
+  async validateFortyTwo(profile: any) {
+    let userResult = await this.userService.findOnebyMail(profile.email)
+    console.log(userResult)
+    if (!userResult) {
+      const username = await this.checkUsername(profile.username)
+      let avatarUrl = profile.avatarUrl
+      if (avatarUrl) avatarUrl = isURL(avatarUrl) ? avatarUrl : undefined
+      userResult = await this.userService.create({
+        mail: profile.email,
+        username: username,
+        avatarUrl: avatarUrl
+      })
+    }
+    return userResult
+  }
+
   async validateLocalUser(email: string, password: string) {
     const userResult = await this.userService.findOnebyMail(email)
     if (!userResult || !(userResult.password === password)) {
