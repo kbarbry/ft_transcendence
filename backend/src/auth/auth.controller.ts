@@ -1,7 +1,8 @@
-import { Controller, Get, Req, UseGuards } from '@nestjs/common'
+import { Controller, Get, Post, Req, UseGuards } from '@nestjs/common'
 import { GoogleAuthGuard } from './guards/google.guard'
 import { AuthorizationGuard } from './guards/authorization.guard'
 import { Request } from 'express'
+import { LocalAuthGuard } from './guards/local.guard'
 
 @Controller('auth')
 export class AuthController {
@@ -13,6 +14,14 @@ export class AuthController {
   @Get('register')
   getRegister() {
     return 'Register page'
+  }
+
+  @UseGuards(LocalAuthGuard)
+  @Post('login')
+  async login(@Req() req: Request) {
+    console.log('USER INFO REQUEST')
+    console.log(req.user)
+    return req.user
   }
 
   @UseGuards(GoogleAuthGuard)

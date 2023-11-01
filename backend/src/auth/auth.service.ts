@@ -45,4 +45,13 @@ export class AuthService {
     }
     return userResult
   }
+
+  async validateLocalUser(email: string, password: string) {
+    const userResult = await this.userService.findOnebyMail(email)
+    if (!userResult || !(userResult.password === password)) {
+      return null
+    }
+    console.log(userResult)
+    return userResult
+  }
 }
