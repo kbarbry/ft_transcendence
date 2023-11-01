@@ -4,10 +4,11 @@ import { GoogleStrategy } from './strategies/google.strategy'
 import { AuthService } from './auth.service'
 import { UserModule } from 'src/user/user.module'
 import { SessionSerializer } from './serializer/cookie.serializer'
+import { GithubStrategy } from './strategies/github.strategy'
 
 @Module({
   imports: [UserModule],
   controllers: [AuthController],
-  providers: [GoogleStrategy, AuthService, SessionSerializer]
+  providers: [GoogleStrategy, GithubStrategy, AuthService, SessionSerializer]
 })
 export class AuthModule {}
