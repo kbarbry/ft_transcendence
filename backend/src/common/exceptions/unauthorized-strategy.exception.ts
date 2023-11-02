@@ -1,7 +1,7 @@
 import { UnauthorizedException } from '@nestjs/common'
 import { EStrategy } from 'src/auth/utils/check.utils'
 
-export class ExceptionUnhautorizedStrategy extends UnauthorizedException {
+export class ExceptionUnauthorizedStrategy extends UnauthorizedException {
   constructor(strategy: EStrategy, acceptedStrategies: EStrategy[]) {
     super('Unauthorized strategy')
 
