@@ -7,9 +7,10 @@ import { UserModule } from 'src/user/user.module'
 import { SessionSerializer } from './serializer/cookie.serializer'
 import { GithubStrategy } from './strategies/github.strategy'
 import { School42Strategy } from './strategies/42.strategy'
+import { PrismaModule } from '../prisma/prisma.module'
 
 @Module({
-  imports: [UserModule],
+  imports: [UserModule, PrismaModule],
   controllers: [AuthController],
   providers: [
     GoogleStrategy,

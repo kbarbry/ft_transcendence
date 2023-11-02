@@ -2,12 +2,16 @@ import { Catch, HttpStatus, UnauthorizedException } from '@nestjs/common'
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library'
 import { GqlExceptionFilter } from '@nestjs/graphql'
 import { GraphQLError } from 'graphql'
-import { ExceptionClassValidator } from '../exceptions/class-validator.exception'
+import {
+  ExceptionClassValidator,
+  ExceptionCustomClassValidator
+} from '../exceptions/class-validator.exception'
 import { ExceptionUnauthorizedStrategy } from '../exceptions/unauthorized-strategy.exception'
 
 enum EErrorOrigin {
   Prisma = 'prisma',
   ClassValidator = 'ClassValidator',
+  CustomClassValidator = 'CustomClassValidator',
   CustomException = 'CustomException',
   ServerError = 'ServerError'
 }
@@ -20,6 +24,7 @@ enum EErrorPrisma {
 @Catch()
 export class GlobalExceptionFilter implements GqlExceptionFilter {
   catch(exception: any) {
+    console.log('--- New exception sent ---')
     let customError: GraphQLError
 
     if (exception instanceof PrismaClientKnownRequestError) {
@@ -33,10 +38,17 @@ export class GlobalExceptionFilter implements GqlExceptionFilter {
         message = `${meta ? meta.target : 'Field'} is already taken.`
       if (code === EErrorPrisma.P2003)
         message = `The entity you are trying to reach doesn't exist.`
-      else console.log(exception)
       customError = new GraphQLError(message, { extensions })
     } else if (exception instanceof ExceptionClassValidator) {
       const type = EErrorOrigin.ClassValidator
+      const code = HttpStatus.I_AM_A_TEAPOT
+      const meta = exception.getResponse()
+      const extensions = { type, code, meta }
+      const message = `Data isn't well formated`
+
+      customError = new GraphQLError(message, { extensions })
+    } else if (exception instanceof ExceptionCustomClassValidator) {
+      const type = EErrorOrigin.CustomClassValidator
       const code = HttpStatus.I_AM_A_TEAPOT
       const meta = exception.getResponse()
       const extensions = { type, code, meta }
@@ -69,10 +81,9 @@ export class GlobalExceptionFilter implements GqlExceptionFilter {
       customError = new GraphQLError(message, { extensions })
       console.log(customError)
     } else {
-      // console.log(exception)
+      console.log(exception)
       customError = new GraphQLError('Unhandled error', exception)
     }
-
     return customError
   }
 }
