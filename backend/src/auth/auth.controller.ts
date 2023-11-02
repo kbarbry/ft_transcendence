@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Req, UseGuards } from '@nestjs/common'
+import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common'
 import { Request } from 'express'
 import { GoogleAuthGuard } from './guards/google.guard'
 import { School42AuthGuard } from './guards/42.guard'
@@ -13,17 +13,15 @@ import { CreateUserAuthInput } from './dto/create-user-auth.input'
 export class AuthController {
   constructor(readonly authService: AuthService) {}
 
-  @Get('register')
+  @Get('signup')
   getRegister() {
     return 'Register page'
   }
 
-  @Post('register')
-  async postRegister(reqUserInput: CreateUserAuthInput): Promise<User> {
-    const user: User = await this.authService.createUser(reqUserInput)
-    //handle error
-
-    return user //return user with 201 and open session
+  @Post('signup')
+  async postRegister(@Body('userInput') userInput: CreateUserAuthInput) {
+    this.authService.createUser(userInput)
+    return { msg: 'Local SignUp OK' }
   }
 
   @Get('login')
