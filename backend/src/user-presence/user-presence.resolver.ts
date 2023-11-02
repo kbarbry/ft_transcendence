@@ -4,7 +4,7 @@ import { UserPresence } from './entities/user-presence.entity'
 import { UserPresenceCreateInput } from './dto/create-user-presence.input'
 import { UseGuards, ValidationPipe } from '@nestjs/common'
 import { NanoidValidationPipe } from '../common/pipes/nanoid.pipe'
-import { AuthorizationGuard } from 'src/auth/guards/authorization.guard'
+import { AuthorizationGuard } from '../auth/guards/authorization.guard'
 
 @Resolver(() => UserPresence)
 @UseGuards(AuthorizationGuard)

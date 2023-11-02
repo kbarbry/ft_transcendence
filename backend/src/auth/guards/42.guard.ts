@@ -1,5 +1,5 @@
-import { Injectable, ExecutionContext } from '@nestjs/common'
+import { Injectable } from '@nestjs/common'
 import { AuthGuard } from '@nestjs/passport'
 
 @Injectable()
-export class FortyTwoAuthGuard extends AuthGuard('42') {}
+export class School42AuthGuard extends AuthGuard('42') {}

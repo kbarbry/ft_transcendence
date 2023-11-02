@@ -1,33 +1,34 @@
 import { Controller, Get, Post, Req, UseGuards } from '@nestjs/common'
-import { GoogleAuthGuard } from './guards/google.guard'
-import { FortyTwoAuthGuard } from './guards/42.guard'
-import { AuthorizationGuard } from './guards/authorization.guard'
 import { Request } from 'express'
+import { GoogleAuthGuard } from './guards/google.guard'
+import { School42AuthGuard } from './guards/42.guard'
+import { AuthorizationGuard } from './guards/authorization.guard'
 import { GithubGuard } from './guards/github.guard'
 import { LocalAuthGuard } from './guards/local.guard'
+import { AuthService } from './auth.service'
+import { User } from 'src/user/entities/user.entity'
+import { CreateUserAuthInput } from './dto/create-user-auth.input'
 
 @Controller('auth')
 export class AuthController {
-  @Get('login')
-  getLogin() {
-    return 'Login page'
-  }
-
-  @Get('42/login')
-  @UseGuards(FortyTwoAuthGuard)
-  ftLogin() {
-    return { msg: '42 Auth Login' }
-  }
-
-  @Get('42/redirect')
-  @UseGuards(FortyTwoAuthGuard)
-  ftRedirect() {
-    return { msg: '42 OK' }
-  }
+  constructor(readonly authService: AuthService) {}
 
   @Get('register')
   getRegister() {
     return 'Register page'
+  }
+
+  @Post('register')
+  async postRegister(reqUserInput: CreateUserAuthInput): Promise<User> {
+    const user: User = await this.authService.createUser(reqUserInput)
+    //handle error
+
+    return user //return user with 201 and open session
+  }
+
+  @Get('login')
+  getLogin() {
+    return { msg: 'Local Auth Login' }
   }
 
   @UseGuards(LocalAuthGuard)
@@ -35,19 +36,43 @@ export class AuthController {
   async login(@Req() req: Request) {
     console.log('USER INFO REQUEST')
     console.log(req.user)
-    return req.user
+    return { msg: 'Local Auth Login', user: req.user }
+  }
+
+  @Get('42/login')
+  @UseGuards(School42AuthGuard)
+  ftLogin() {
+    return { msg: '42 Auth Login' }
+  }
+
+  @Get('42/redirect')
+  @UseGuards(School42AuthGuard)
+  ftRedirect() {
+    return { msg: '42 OK' }
   }
 
   @UseGuards(GoogleAuthGuard)
   @Get('google/login')
-  gethello() {
-    return 'google/login : bite Bonsoir Paris'
+  getGoogleAuth() {
+    return { msg: 'Google Auth Login' }
   }
 
   @UseGuards(GoogleAuthGuard)
   @Get('google/redirect')
-  gethello2() {
-    return 'google/redirect : bite Bonsoir Pariiiiis'
+  getGoogleCallback() {
+    return { msg: 'Google OK' }
+  }
+
+  @Get('github/login')
+  @UseGuards(GithubGuard)
+  async getGithubAuth() {
+    return { msg: 'GitHub Auth Login' }
+  }
+
+  @Get('github/redirect')
+  @UseGuards(GithubGuard)
+  async getGithubAuthCallback() {
+    return { msg: 'GitHub OK' }
   }
 
   @UseGuards(AuthorizationGuard)
@@ -62,17 +87,5 @@ export class AuthController {
     return {
       msg: 'Unauthorized'
     }
-  }
-
-  @Get('github/login')
-  @UseGuards(GithubGuard)
-  async githubAuth() {
-    return 'login github'
-  }
-
-  @Get('github/redirect')
-  @UseGuards(GithubGuard)
-  async githubAuthCallback() {
-    return 'redirect github'
   }
 }

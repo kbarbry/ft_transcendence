@@ -3,14 +3,11 @@ import { PrismaService } from '../prisma/prisma.service'
 import { UserService } from './user.service'
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library'
 import { cleanDataBase } from '../../test/setup-environment'
-import { CreateUserInput } from './dto/create-user.input'
 import { UpdateUserInput } from './dto/update-user.input'
 
 describe('Test UserService', () => {
   let userService: UserService
   let prismaService: PrismaService
-  let newUser: any
-  let userData: CreateUserInput
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -31,18 +28,13 @@ describe('Test UserService', () => {
     //  USER CREATION
     //**************************************************//
     await prismaService.$executeRaw`
-    INSERT INTO
-    "public"."User"
-    VALUES
-    ('d2OayPlUh0qtDrePkJ87t', 'random url', 'alfred@42.fr', 'Ally', 'oui', null, null, false, 'Online', 'English', 1),
-    ('j6-X94_NVjmzVm9QL3k4r', 'random url', 'charlie@42.fr', 'Chacha', 'oui', null, null, false, 'Invisble', 'French', 12),
-    ('_U0vTLhbNpjA39Pc7wwtn', 'random url', 'bob@42.fr', 'Bobby', 'Babby', null, null, false, 'Online', 'English', 1),
-    ('_smvTLhbNpjA39Pc7wwtn', 'random url', 'SameMail@example.com', 'SameUser', 'oui', null, null, false, 'Online', 'English', 1);`
-
-    userData = {
-      mail: 'CreateUser@example.com',
-      username: 'CreateUser_user'
-    }
+      INSERT INTO
+      "public"."User"
+      VALUES
+      ('d2OayPlUh0qtDrePkJ87t', 'random url', 'alfred@42.fr', 'Ally', 'oui', false, false, false, false, 'Online', 'English', 1),
+      ('j6-X94_NVjmzVm9QL3k4r', 'random url', 'charlie@42.fr', 'Chacha', 'oui', false, false, false, false, 'Invisble', 'French', 12),
+      ('_U0vTLhbNpjA39Pc7wwtn', 'random url', 'bob@42.fr', 'Bobby', 'Babby', false, false, false, false, 'Online', 'English', 1),
+      ('_smvTLhbNpjA39Pc7wwtn', 'random url', 'SameMail@example.com', 'SameUser', 'oui', false, false, false, false, 'Online', 'English', 1);`
   })
 
   afterAll(async () => {
@@ -59,11 +51,6 @@ describe('Test UserService', () => {
   })
 
   describe('Test Mutation', () => {
-    it('should create a new user', async () => {
-      newUser = await userService.create(userData)
-      expect(newUser).toBeDefined()
-    })
-
     it('should update an existing user', async () => {
       const updateUserInput: UpdateUserInput = {
         username: 'Bob'
@@ -154,36 +141,12 @@ describe('Test UserService', () => {
   })
 
   describe('Test Error', () => {
-    it('user already created - same mail', async () => {
-      const userDataSameEmail = {
-        mail: 'SameMail@example.com',
-        username: 'NoteSameUser',
-        level: 0,
-        avatarUrl: 'random url'
-      }
-      await expect(userService.create(userDataSameEmail)).rejects.toThrow(
-        PrismaClientKnownRequestError
-      )
-    })
-
-    it('user already created - same username', async () => {
-      const userDataSameUsername = {
-        mail: 'NotSameMail@example.com',
-        username: 'SameUser',
-        level: 0,
-        avatarUrl: 'random url'
-      }
-      await expect(userService.create(userDataSameUsername)).rejects.toThrow(
-        PrismaClientKnownRequestError
-      )
-    })
-
     it('update already taken username and trow error', async () => {
       const updatedData: UpdateUserInput = {
         username: 'Ally'
       }
       await expect(
-        (newUser = userService.update('j6-X94_NVjmzVm9QL3k4r', updatedData))
+        userService.update('j6-X94_NVjmzVm9QL3k4r', updatedData)
       ).rejects.toThrow(PrismaClientKnownRequestError)
     })
 

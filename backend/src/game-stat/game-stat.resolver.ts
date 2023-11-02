@@ -4,7 +4,7 @@ import { GameStat } from './entities/game-stat.entity'
 import { CreateGameStatInput } from './dto/create-game-stat.input'
 import { UseGuards, ValidationPipe } from '@nestjs/common'
 import { NanoidValidationPipe } from '../common/pipes/nanoid.pipe'
-import { AuthorizationGuard } from 'src/auth/guards/authorization.guard'
+import { AuthorizationGuard } from '../auth/guards/authorization.guard'
 
 @Resolver(() => GameStat)
 @UseGuards(AuthorizationGuard)

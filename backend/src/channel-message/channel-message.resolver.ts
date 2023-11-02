@@ -6,7 +6,7 @@ import { UseGuards, ValidationPipe } from '@nestjs/common'
 import { UpdateChannelMessageInput } from './dto/update-channel-message.input'
 import { NanoidValidationPipe } from '../common/pipes/nanoid.pipe'
 import { StringValidationPipe } from '../common/pipes/string.pipe'
-import { AuthorizationGuard } from 'src/auth/guards/authorization.guard'
+import { AuthorizationGuard } from '../auth/guards/authorization.guard'
 
 @Resolver(() => ChannelMessage)
 @UseGuards(AuthorizationGuard)

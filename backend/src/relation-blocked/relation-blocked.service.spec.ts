@@ -37,20 +37,20 @@ describe('RelationBlockedService', () => {
       INSERT INTO
       "public"."User"
       VALUES
-      ('a2OayPlUh0qtDrePkJ87t', 'random url', 'alfred@42.fr', 'Ally', 'oui', null, null, false, 'Online', 'English', 1),
-      ('a10ayPlUh0qtDrePkJ87t', 'random url', 'boulette@42.fr', 'Boul', 'oui', null, null, false, 'Online', 'English', 1),
-      ('baaayPlUh0qtDrePkJ87t', 'random url', 'adel@42.fr', 'Adelou', 'oui', null, null, false, 'Online', 'English', 1),
-      ('j6-X94_NVjmzVm9QL3k4r', 'random url', 'charlie@42.fr', 'Chacha', 'oui', null, null, false, 'Invisble', 'French', 12),
-      ('bbbbyPlUh0qtDrePkJ87t', 'random url', 'mama@42.fr', 'mama', 'oui', null, null, false, 'Online', 'English', 1),
-      ('ccccyPlUh0qtDrePkJ87t', 'random url', 'maurice@42.fr', 'Momo', 'oui', null, null, false, 'Online', 'English', 1),
-      ('ddddyPlUh0qtDrePkJ87t', 'random url', 'suzette@42.fr', 'Suzette', 'oui', null, null, false, 'Online', 'English', 1),
-      ('eeeeyPlUh0qtDrePkJ87t', 'random url', 'mauricette@42.fr', 'Momoe', 'oui', null, null, false, 'Online', 'English', 1),
-      ('j9-X94_NVjmzVm9QL3k4r', 'random url', 'seveneleven@42.fr', '79', 'oui', null, null, false, 'Online', 'English', 1),
-      ('drfOayPwwUh12tDrePkJ8', 'random url', 'other@42.fr', 'other', 'oui', null, null, false, 'Online', 'English', 1),
-      ('qci4ayPwwUh12tDrePkJ8', 'random url', 'dad42.fr', 'dad', 'oui', null, null, false, 'Online', 'English', 1),
-      ('qci4ayPwwUh12tDrePkJ9', 'random url', 'dkj842.fr', 'dkj', 'oui', null, null, false, 'Online', 'English', 1),
-      ('e10eyPlUh0qtDrePkJ87t', 'random url', 'edix42.fr', 'Eddy', 'oui', null, null, false, 'Online', 'English', 1),
-      ('qci4ayPwwUh12tDrePkJ0', 'random url', 'papy42.fr', 'papy', 'oui', null, null, false, 'Online', 'English', 1);`
+      ('a2OayPlUh0qtDrePkJ87t', 'random url', 'alfred@42.fr', 'Ally', 'oui', false, false, false, false, 'Online', 'English', 1),
+      ('a10ayPlUh0qtDrePkJ87t', 'random url', 'boulette@42.fr', 'Boul', 'oui', false, false, false, false, 'Online', 'English', 1),
+      ('baaayPlUh0qtDrePkJ87t', 'random url', 'adel@42.fr', 'Adelou', 'oui', false, false, false, false, 'Online', 'English', 1),
+      ('j6-X94_NVjmzVm9QL3k4r', 'random url', 'charlie@42.fr', 'Chacha', 'oui', false, false, false, false, 'Invisble', 'French', 12),
+      ('bbbbyPlUh0qtDrePkJ87t', 'random url', 'mama@42.fr', 'mama', 'oui', false, false, false, false, 'Online', 'English', 1),
+      ('ccccyPlUh0qtDrePkJ87t', 'random url', 'maurice@42.fr', 'Momo', 'oui', false, false, false, false, 'Online', 'English', 1),
+      ('ddddyPlUh0qtDrePkJ87t', 'random url', 'suzette@42.fr', 'Suzette', 'oui', false, false, false, false, 'Online', 'English', 1),
+      ('eeeeyPlUh0qtDrePkJ87t', 'random url', 'mauricette@42.fr', 'Momoe', 'oui', false, false, false, false, 'Online', 'English', 1),
+      ('j9-X94_NVjmzVm9QL3k4r', 'random url', 'seveneleven@42.fr', '79', 'oui', false, false, false, false, 'Online', 'English', 1),
+      ('drfOayPwwUh12tDrePkJ8', 'random url', 'other@42.fr', 'other', 'oui', false, false, false, false, 'Online', 'English', 1),
+      ('qci4ayPwwUh12tDrePkJ8', 'random url', 'dad42.fr', 'dad', 'oui', false, false, false, false, 'Online', 'English', 1),
+      ('qci4ayPwwUh12tDrePkJ9', 'random url', 'dkj842.fr', 'dkj', 'oui', false, false, false, false, 'Online', 'English', 1),
+      ('e10eyPlUh0qtDrePkJ87t', 'random url', 'edix42.fr', 'Eddy', 'oui', false, false, false, false, 'Online', 'English', 1),
+      ('qci4ayPwwUh12tDrePkJ0', 'random url', 'papy42.fr', 'papy', 'oui', false, false, false, false, 'Online', 'English', 1);`
 
     //**************************************************//
     //  RELATION BLOCKED CREATION

@@ -9,7 +9,7 @@ import {
 } from './dto/update-channel.input'
 import { NanoidValidationPipe } from '../common/pipes/nanoid.pipe'
 import { StringValidationPipe } from '../common/pipes/string.pipe'
-import { AuthorizationGuard } from 'src/auth/guards/authorization.guard'
+import { AuthorizationGuard } from '../auth/guards/authorization.guard'
 
 @Resolver(() => Channel)
 @UseGuards(AuthorizationGuard)

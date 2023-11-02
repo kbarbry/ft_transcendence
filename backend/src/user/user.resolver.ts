@@ -1,14 +1,13 @@
 import { Resolver, Query, Mutation, Args } from '@nestjs/graphql'
 import { UserService } from './user.service'
 import { User } from './entities/user.entity'
-import { CreateUserInput } from './dto/create-user.input'
 import { UseGuards, ValidationPipe } from '@nestjs/common'
 import { UpdateUserInput } from './dto/update-user.input'
 import { NanoidValidationPipe } from '../common/pipes/nanoid.pipe'
 import { NanoidsValidationPipe } from '../common/pipes/nanoids.pipe'
 import { EmailValidationPipe } from '../common/pipes/email.pipe'
 import { UsernameValidationPipe } from '../common/pipes/username.pipe'
-import { AuthorizationGuard } from 'src/auth/guards/authorization.guard'
+import { AuthorizationGuard } from '../auth/guards/authorization.guard'
 
 @Resolver(() => User)
 @UseGuards(AuthorizationGuard)
@@ -18,14 +17,6 @@ export class UserResolver {
   //**************************************************//
   //  MUTATION
   //**************************************************//
-  @Mutation(() => User)
-  async createUser(
-    @Args('data', { type: () => CreateUserInput }, ValidationPipe)
-    data: CreateUserInput
-  ): Promise<User> {
-    return this.userService.create(data)
-  }
-
   @Mutation(() => User)
   async updateUser(
     @Args('id', { type: () => String }, NanoidValidationPipe) id: string,

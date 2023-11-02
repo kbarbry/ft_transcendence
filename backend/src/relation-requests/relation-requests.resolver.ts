@@ -5,7 +5,7 @@ import { RelationFriend } from '../relation-friend/entities/relation-friend.enti
 import { RelationRequestsInput } from './dto/create-relation-requests.input'
 import { UseGuards, ValidationPipe } from '@nestjs/common'
 import { NanoidValidationPipe } from '../common/pipes/nanoid.pipe'
-import { AuthorizationGuard } from 'src/auth/guards/authorization.guard'
+import { AuthorizationGuard } from '../auth/guards/authorization.guard'
 
 @Resolver(() => RelationRequests)
 @UseGuards(AuthorizationGuard)

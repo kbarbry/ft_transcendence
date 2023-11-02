@@ -4,7 +4,7 @@ import { ChannelInvitedService } from './channel-invited.service'
 import { CreateChannelInvitedInput } from './dto/create-channel-invited.input'
 import { UseGuards, ValidationPipe } from '@nestjs/common'
 import { NanoidValidationPipe } from '../common/pipes/nanoid.pipe'
-import { AuthorizationGuard } from 'src/auth/guards/authorization.guard'
+import { AuthorizationGuard } from '../auth/guards/authorization.guard'
 
 @Resolver(() => ChannelInvited)
 @UseGuards(AuthorizationGuard)

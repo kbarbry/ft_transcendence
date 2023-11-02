@@ -4,7 +4,7 @@ import { AuthService } from '../auth.service'
 import passport42 from 'passport-42'
 
 @Injectable()
-export class FortyTwoStrategy extends PassportStrategy(
+export class School42Strategy extends PassportStrategy(
   passport42.Strategy,
   '42'
 ) {
@@ -28,7 +28,7 @@ export class FortyTwoStrategy extends PassportStrategy(
     const username = profile.username
     const email = profile.emails[0].value
     const avatarUrl = profile._json.image.link
-    const user = this.authService.validateFortyTwo({
+    const user = this.authService.validateSchool42({
       username,
       email,
       avatarUrl

@@ -1,18 +1,21 @@
-import { InputType, Field, Float } from '@nestjs/graphql'
-import { ELanguage, EStatus } from '@prisma/client'
+import { InputType, Field } from '@nestjs/graphql'
+import { ELanguage } from '@prisma/client'
 import {
-  IsEmail,
   IsEnum,
-  IsNumber,
   IsOptional,
   IsString,
   IsUrl,
+  IsBoolean,
   Length,
-  Min
+  IsEmail
 } from 'class-validator'
 
 @InputType()
-export class CreateUserInput {
+export class CreateUserAuthInput {
+  @Field(() => String)
+  @IsEmail({}, { message: '$property must be a valid email address.' })
+  mail: string
+
   @Field(() => String, { nullable: true })
   @IsOptional()
   @IsUrl({}, { message: '$property must be a valid URL.' })
@@ -23,10 +26,6 @@ export class CreateUserInput {
   avatarUrl?: string
 
   @Field(() => String)
-  @IsEmail({}, { message: '$property must be a valid email address.' })
-  mail: string
-
-  @Field(() => String)
   @IsString({ message: '$property must be a string.' })
   @Length(1, 30, {
     message:
@@ -34,22 +33,23 @@ export class CreateUserInput {
   })
   username: string
 
-  @Field(() => EStatus, { nullable: true })
-  @IsOptional()
-  @IsEnum(EStatus, { message: '$property must be a valid EStatus.' })
-  status?: EStatus
-
   @Field(() => ELanguage, { nullable: true })
   @IsOptional()
   @IsEnum(ELanguage, { message: '$property must be a valid ELanguage.' })
   languages?: ELanguage
 
-  @Field(() => Float, { nullable: true })
+  @Field(() => Boolean)
   @IsOptional()
-  @IsNumber(
-    { allowInfinity: false, allowNaN: false },
-    { message: '$property must be a number.' }
-  )
-  @Min(0, { message: '$property must not be less than $constraint1.' })
-  level?: number
+  @IsBoolean()
+  googleAuth?: boolean
+
+  @Field(() => Boolean)
+  @IsOptional()
+  @IsBoolean()
+  githubAuth?: boolean
+
+  @Field(() => Boolean)
+  @IsOptional()
+  @IsBoolean()
+  school42Auth?: boolean
 }

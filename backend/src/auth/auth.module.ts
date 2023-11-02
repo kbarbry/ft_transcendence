@@ -6,11 +6,18 @@ import { AuthService } from './auth.service'
 import { UserModule } from 'src/user/user.module'
 import { SessionSerializer } from './serializer/cookie.serializer'
 import { GithubStrategy } from './strategies/github.strategy'
-import { FortyTwoStrategy } from './strategies/42.strategy'
+import { School42Strategy } from './strategies/42.strategy'
 
 @Module({
   imports: [UserModule],
   controllers: [AuthController],
-  providers: [GoogleStrategy, LocalStrategy, GithubStrategy, FortyTwoStrategy, AuthService, SessionSerializer]
+  providers: [
+    GoogleStrategy,
+    LocalStrategy,
+    GithubStrategy,
+    School42Strategy,
+    AuthService,
+    SessionSerializer
+  ]
 })
 export class AuthModule {}

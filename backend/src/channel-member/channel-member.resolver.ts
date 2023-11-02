@@ -5,7 +5,7 @@ import { CreateChannelMemberInput } from './dto/create-channel-member.input'
 import { UpdateChannelMemberInput } from './dto/update-channel-member.input'
 import { UseGuards, ValidationPipe } from '@nestjs/common'
 import { NanoidValidationPipe } from '../common/pipes/nanoid.pipe'
-import { AuthorizationGuard } from 'src/auth/guards/authorization.guard'
+import { AuthorizationGuard } from '../auth/guards/authorization.guard'
 
 @Resolver(() => ChannelMember)
 @UseGuards(AuthorizationGuard)

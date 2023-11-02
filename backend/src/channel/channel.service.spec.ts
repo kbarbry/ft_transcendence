@@ -29,8 +29,8 @@ describe('ChannelService', () => {
     //**************************************************//
     //  USER CREATION
     //**************************************************//
-    await prismaService.$executeRaw`INSERT INTO "public"."User" VALUES ('564ayPlUh0qtDrePkJ87t', 'random url', 'alfred@42.fr', 'Ally', 'oui', null, null, false, 'Online', 'English', 1);`
-    await prismaService.$executeRaw`INSERT INTO "public"."User" VALUES ('000ayPlUh0qtDrePkJ87t', 'random url', 'alfredo@42.fr', 'Allo', 'oui', null, null, false, 'Online', 'English', 1);`
+    await prismaService.$executeRaw`INSERT INTO "public"."User" VALUES ('564ayPlUh0qtDrePkJ87t', 'random url', 'alfred@42.fr', 'Ally', 'oui', false, false, false, false, 'Online', 'English', 1);`
+    await prismaService.$executeRaw`INSERT INTO "public"."User" VALUES ('000ayPlUh0qtDrePkJ87t', 'random url', 'alfredo@42.fr', 'Allo', 'oui', false, false, false, false, 'Online', 'English', 1);`
 
     //**************************************************//
     //  CHANNEL CREATION
