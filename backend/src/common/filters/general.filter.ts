@@ -3,6 +3,7 @@ import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library'
 import { GqlExceptionFilter } from '@nestjs/graphql'
 import { GraphQLError } from 'graphql'
 import { ExceptionClassValidator } from '../exceptions/class-validator.exception'
+import { ExceptionUnauthorizedStrategy } from '../exceptions/unauthorized-strategy.exception'
 
 enum EErrorOrigin {
   Prisma = 'prisma',
@@ -55,6 +56,15 @@ export class GlobalExceptionFilter implements GqlExceptionFilter {
       const meta = { redirect: '/login', ...exception }
       const extensions = { type, code, meta }
       const message = `You're not authorized to access this data`
+
+      customError = new GraphQLError(message, { extensions })
+      console.log(customError)
+    } else if (exception instanceof ExceptionUnauthorizedStrategy) {
+      const type = EErrorOrigin.ServerError
+      const code = HttpStatus.UNAUTHORIZED
+      const meta = { redirect: '/login', ...exception }
+      const extensions = { type, code, meta }
+      const message = `You're not using the right strategy`
 
       customError = new GraphQLError(message, { extensions })
       console.log(customError)
