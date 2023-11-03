@@ -18,7 +18,8 @@ import { PrismaModule } from '../prisma/prisma.module'
     GithubStrategy,
     School42Strategy,
     AuthService,
-    SessionSerializer
+    SessionSerializer,
+    PrismaService
   ]
 })
 export class AuthModule {}
