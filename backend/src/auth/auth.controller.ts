@@ -2,7 +2,6 @@ import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common'
 import { Request } from 'express'
 import { GoogleAuthGuard } from './guards/google.guard'
 import { School42AuthGuard } from './guards/42.guard'
-import { AuthorizationGuard } from './guards/authorization.guard'
 import { GithubGuard } from './guards/github.guard'
 import { LocalAuthGuard } from './guards/local.guard'
 import { AuthService } from './auth.service'
@@ -12,20 +11,10 @@ import { CreateUserAuthLocalInput } from './dto/create-user-auth.input'
 export class AuthController {
   constructor(readonly authService: AuthService) {}
 
-  @Get('signup')
-  getRegister() {
-    return 'Register page'
-  }
-
   @Post('signup')
   async postRegister(@Body() userInput: CreateUserAuthLocalInput) {
     this.authService.createUser(userInput)
     return { msg: 'Local SignUp OK' }
-  }
-
-  @Get('login')
-  getLogin() {
-    return { msg: 'Local Auth Login' }
   }
 
   @UseGuards(LocalAuthGuard)
@@ -68,19 +57,5 @@ export class AuthController {
   @UseGuards(GithubGuard)
   async getGithubAuthCallback() {
     return { msg: 'GitHub OK' }
-  }
-
-  @UseGuards(AuthorizationGuard)
-  @Get('status')
-  user(@Req() request: Request) {
-    if (request.user) {
-      return {
-        msg: 'Authorized',
-        user: request.user
-      }
-    }
-    return {
-      msg: 'Unauthorized'
-    }
   }
 }

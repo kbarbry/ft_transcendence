@@ -1,4 +1,10 @@
-import { Catch, HttpStatus, UnauthorizedException } from '@nestjs/common'
+import {
+  ArgumentsHost,
+  Catch,
+  ExceptionFilter,
+  HttpStatus,
+  UnauthorizedException
+} from '@nestjs/common'
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library'
 import { GqlExceptionFilter } from '@nestjs/graphql'
 import { GraphQLError } from 'graphql'
@@ -7,6 +13,7 @@ import {
   ExceptionCustomClassValidator
 } from '../exceptions/class-validator.exception'
 import { ExceptionUnauthorizedStrategy } from '../exceptions/unauthorized-strategy.exception'
+import { LoggingService } from '../logging/exception.logging'
 
 enum EErrorOrigin {
   Prisma = 'prisma',
@@ -22,10 +29,15 @@ enum EErrorPrisma {
 }
 
 @Catch()
-export class GlobalExceptionFilter implements GqlExceptionFilter {
-  catch(exception: any) {
-    console.log('--- New exception sent ---')
+export class GlobalExceptionFilter implements ExceptionFilter {
+  private loggingService = new LoggingService()
+  
+  catch(exception: any, host: ArgumentsHost) {
     let customError: GraphQLError
+
+    this.loggingService.logError('-- exception generated --')
+    const ctx = host.switchToHttp()
+    const response = ctx.getResponse<Response>()
 
     if (exception instanceof PrismaClientKnownRequestError) {
       const type = EErrorOrigin.Prisma
@@ -33,11 +45,14 @@ export class GlobalExceptionFilter implements GqlExceptionFilter {
       const meta = exception.meta
       const extensions = { type, code, meta }
       let message = 'Prisma unhandled error'
+      console.log('- prisma error -')
 
       if (code === EErrorPrisma.P2002)
         message = `${meta ? meta.target : 'Field'} is already taken.`
       if (code === EErrorPrisma.P2003)
         message = `The entity you are trying to reach doesn't exist.`
+      else this.loggingService.logError('UNHANDLED ERROR')
+
       customError = new GraphQLError(message, { extensions })
     } else if (exception instanceof ExceptionClassValidator) {
       const type = EErrorOrigin.ClassValidator
@@ -45,6 +60,7 @@ export class GlobalExceptionFilter implements GqlExceptionFilter {
       const meta = exception.getResponse()
       const extensions = { type, code, meta }
       const message = `Data isn't well formated`
+      console.log('- class validator error -')
 
       customError = new GraphQLError(message, { extensions })
     } else if (exception instanceof ExceptionCustomClassValidator) {
@@ -84,6 +100,8 @@ export class GlobalExceptionFilter implements GqlExceptionFilter {
       console.log(exception)
       customError = new GraphQLError('Unhandled error', exception)
     }
+
+    this.loggingService.logError(JSON.stringify(customError))
     return customError
   }
 }
