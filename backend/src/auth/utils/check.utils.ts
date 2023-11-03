@@ -32,8 +32,8 @@ export function checkValidStrategies(user: User): EStrategy[] {
 
 export function checkStrategy(strategy: EStrategy, user: User): boolean {
   if (strategy === EStrategy.github && user.githubAuth) return true
-  else if (strategy === EStrategy.local && user.password) return true
-  else if (strategy === EStrategy.google && user.googleAuth) return true
-  else if (strategy === EStrategy.school42 && user.school42Auth) return true
-  else return false
+  if (strategy === EStrategy.local && user.password) return true
+  if (strategy === EStrategy.google && user.googleAuth) return true
+  if (strategy === EStrategy.school42 && user.school42Auth) return true
+  return false
 }

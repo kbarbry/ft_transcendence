@@ -2,6 +2,7 @@ import { Inject, Injectable, UnauthorizedException } from '@nestjs/common'
 import { PassportStrategy } from '@nestjs/passport'
 import { Profile, Strategy } from 'passport-google-oauth20'
 import { AuthService } from '../auth.service'
+import { ELanguage } from '@prisma/client'
 
 @Injectable()
 export class GoogleStrategy extends PassportStrategy(Strategy) {
@@ -30,11 +31,29 @@ export class GoogleStrategy extends PassportStrategy(Strategy) {
     const avatarUrl = profile.photos ? profile.photos[0].value : undefined
     const email = profile.emails ? profile.emails[0].value : undefined
     const username = profile.displayName
+    let language: string | undefined = profile._json.locale
+      ? profile._json.locale
+      : undefined
+    switch (language) {
+      case 'fr': {
+        language = ELanguage.English
+        break
+      }
+      case 'en': {
+        language = ELanguage.French
+        break
+      }
+      default: {
+        language = ELanguage.English
+        break
+      }
+    }
     if (!email) throw new UnauthorizedException()
     const user = this.authService.validateGoogleUser({
       username,
       email,
-      avatarUrl
+      avatarUrl,
+      language
     })
     return callback(null, user)
   }

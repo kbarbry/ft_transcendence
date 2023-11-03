@@ -12,7 +12,7 @@ import { StringValidationPipe } from '../common/pipes/string.pipe'
 import { AuthorizationGuard } from '../auth/guards/authorization.guard'
 
 @Resolver(() => Channel)
-@UseGuards(AuthorizationGuard)
+// @UseGuards(AuthorizationGuard)
 export class ChannelResolver {
   constructor(private readonly channelService: ChannelService) {}
 

@@ -5,7 +5,6 @@ import {
   IsOptional,
   IsString,
   IsUrl,
-  IsBoolean,
   Length,
   IsEmail
 } from 'class-validator'
@@ -32,26 +31,6 @@ export class CreateUserAuthInput {
       '$property must be between $constraint1 and $constraint2 characters long.'
   })
   username: string
-
-  @Field(() => ELanguage, { nullable: true })
-  @IsOptional()
-  @IsEnum(ELanguage, { message: '$property must be a valid ELanguage.' })
-  languages?: ELanguage
-
-  @Field(() => Boolean)
-  @IsOptional()
-  @IsBoolean()
-  googleAuth?: boolean
-
-  @Field(() => Boolean)
-  @IsOptional()
-  @IsBoolean()
-  githubAuth?: boolean
-
-  @Field(() => Boolean)
-  @IsOptional()
-  @IsBoolean()
-  school42Auth?: boolean
 }
 
 @InputType()
@@ -63,4 +42,9 @@ export class CreateUserAuthLocalInput extends CreateUserAuthInput {
       '$property must be between $constraint1 and $constraint2 characters long.'
   })
   password: string
+
+  @Field(() => ELanguage, { nullable: true })
+  @IsOptional()
+  @IsEnum(ELanguage, { message: '$property must be a valid ELanguage.' })
+  languages?: ELanguage
 }
