@@ -23,9 +23,6 @@ export class GithubStrategy extends PassportStrategy(Strategy) {
     profile: Profile,
     callback: CallableFunction
   ) {
-    console.log('Calling GithubStrategy validate.')
-    console.log(profile)
-
     const avatarUrl = profile.photos ? profile.photos[0].value : undefined
     const email = profile.emails ? profile.emails[0].value : undefined
     const username = profile.displayName

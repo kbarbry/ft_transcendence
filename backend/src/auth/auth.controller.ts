@@ -31,8 +31,6 @@ export class AuthController {
   @UseGuards(LocalAuthGuard)
   @Post('login')
   async login(@Req() req: Request) {
-    console.log('USER INFO REQUEST')
-    console.log(req.user)
     return { msg: 'Local Auth Login', user: req.user }
   }
 
