@@ -7,6 +7,7 @@ import { UserModule } from 'src/user/user.module'
 import { SessionSerializer } from './serializer/cookie.serializer'
 import { GithubStrategy } from './strategies/github.strategy'
 import { School42Strategy } from './strategies/42.strategy'
+import { PrismaService } from 'src/prisma/prisma.service'
 
 @Module({
   imports: [UserModule],
@@ -17,7 +18,8 @@ import { School42Strategy } from './strategies/42.strategy'
     GithubStrategy,
     School42Strategy,
     AuthService,
-    SessionSerializer
+    SessionSerializer,
+    PrismaService
   ]
 })
 export class AuthModule {}

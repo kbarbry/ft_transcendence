@@ -72,7 +72,6 @@ export class GlobalExceptionFilter implements GqlExceptionFilter {
       // console.log(exception)
       customError = new GraphQLError('Unhandled error', exception)
     }
-
     return customError
   }
 }

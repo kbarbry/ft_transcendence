@@ -53,3 +53,14 @@ export class CreateUserAuthInput {
   @IsBoolean()
   school42Auth?: boolean
 }
+
+@InputType()
+export class CreateUserAuthLocalInput extends CreateUserAuthInput {
+  @Field(() => String)
+  @IsString({ message: '$property must be a string.' })
+  @Length(6, 30, {
+    message:
+      '$property must be between $constraint1 and $constraint2 characters long.'
+  })
+  password: string
+}
