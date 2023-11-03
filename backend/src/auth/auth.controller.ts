@@ -6,8 +6,7 @@ import { AuthorizationGuard } from './guards/authorization.guard'
 import { GithubGuard } from './guards/github.guard'
 import { LocalAuthGuard } from './guards/local.guard'
 import { AuthService } from './auth.service'
-import { User } from 'src/user/entities/user.entity'
-import { CreateUserAuthInput } from './dto/create-user-auth.input'
+import { CreateUserAuthLocalInput } from './dto/create-user-auth.input'
 
 @Controller('auth')
 export class AuthController {
@@ -19,7 +18,7 @@ export class AuthController {
   }
 
   @Post('signup')
-  async postRegister(@Body('userInput') userInput: CreateUserAuthInput) {
+  async postRegister(@Body() userInput: CreateUserAuthLocalInput) {
     this.authService.createUser(userInput)
     return { msg: 'Local SignUp OK' }
   }
