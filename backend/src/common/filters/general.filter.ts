@@ -8,13 +8,17 @@ import {
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library'
 import { GqlExceptionFilter } from '@nestjs/graphql'
 import { GraphQLError } from 'graphql'
-import { ExceptionClassValidator } from '../exceptions/class-validator.exception'
+import {
+  ExceptionClassValidator,
+  ExceptionCustomClassValidator
+} from '../exceptions/class-validator.exception'
 import { ExceptionUnauthorizedStrategy } from '../exceptions/unauthorized-strategy.exception'
 import { LoggingService } from '../logging/exception.logging'
 
 enum EErrorOrigin {
   Prisma = 'prisma',
   ClassValidator = 'ClassValidator',
+  CustomClassValidator = 'CustomClassValidator',
   CustomException = 'CustomException',
   ServerError = 'ServerError'
 }
@@ -27,6 +31,7 @@ enum EErrorPrisma {
 @Catch()
 export class GlobalExceptionFilter implements ExceptionFilter {
   private loggingService = new LoggingService()
+  
   catch(exception: any, host: ArgumentsHost) {
     let customError: GraphQLError
 
@@ -47,6 +52,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       if (code === EErrorPrisma.P2003)
         message = `The entity you are trying to reach doesn't exist.`
       else this.loggingService.logError('UNHANDLED ERROR')
+
       customError = new GraphQLError(message, { extensions })
     } else if (exception instanceof ExceptionClassValidator) {
       const type = EErrorOrigin.ClassValidator
@@ -55,6 +61,14 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       const extensions = { type, code, meta }
       const message = `Data isn't well formated`
       console.log('- class validator error -')
+
+      customError = new GraphQLError(message, { extensions })
+    } else if (exception instanceof ExceptionCustomClassValidator) {
+      const type = EErrorOrigin.CustomClassValidator
+      const code = HttpStatus.I_AM_A_TEAPOT
+      const meta = exception.getResponse()
+      const extensions = { type, code, meta }
+      const message = `Data isn't well formated`
 
       customError = new GraphQLError(message, { extensions })
     } else if (exception.status === HttpStatus.CONFLICT) {
@@ -83,7 +97,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       customError = new GraphQLError(message, { extensions })
       console.log(customError)
     } else {
-      // console.log(exception)
+      console.log(exception)
       customError = new GraphQLError('Unhandled error', exception)
     }
 

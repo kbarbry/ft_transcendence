@@ -18,16 +18,7 @@ export class GoogleStrategy extends PassportStrategy(Strategy) {
   @Inject(AuthService)
   private readonly authService: AuthService
 
-  async validate(
-    accessToken: string,
-    refreshToken: string,
-    profile: Profile,
-    callback: CallableFunction
-  ) {
-    console.log('INFORMATIONS PROFILE')
-    // console.log(accessToken)
-    // console.log(refreshToken)
-    console.log(profile)
+  async validate(profile: Profile, callback: CallableFunction) {
     const avatarUrl = profile.photos ? profile.photos[0].value : undefined
     const email = profile.emails ? profile.emails[0].value : undefined
     const username = profile.displayName
