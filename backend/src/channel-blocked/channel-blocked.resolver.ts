@@ -1,11 +1,13 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql'
 import { CreateChannelBlockedInput } from './dto/create-channel-blocked.input'
 import { ChannelBlocked } from './entities/channel-blocked.entity'
-import { ValidationPipe } from '@nestjs/common'
+import { UseGuards, ValidationPipe } from '@nestjs/common'
 import { ChannelBlockedService } from './channel-blocked.service'
 import { NanoidValidationPipe } from '../common/pipes/nanoid.pipe'
+import { AuthorizationGuard } from '../auth/guards/authorization.guard'
 
 @Resolver()
+@UseGuards(AuthorizationGuard)
 export class ChannelBlockedResolver {
   constructor(private readonly channelBlockedService: ChannelBlockedService) {}
 

@@ -3,6 +3,9 @@ import { AppModule } from './app.module'
 import { ValidationPipe } from '@nestjs/common'
 import { GlobalExceptionFilter } from './common/filters/general.filter'
 import { ExceptionClassValidator } from './common/exceptions/class-validator.exception'
+import session from 'express-session'
+import { randomBytes } from 'crypto'
+import passport from 'passport'
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule)
@@ -22,6 +25,25 @@ async function bootstrap() {
       }
     })
   )
+  app.setGlobalPrefix('api')
+  app.use(
+    session({
+      secret: randomBytes(16).toString('hex'),
+      saveUninitialized: false,
+      resave: false,
+      name: 'trans_session',
+      rolling: true,
+      unset: 'destroy',
+      cookie: {
+        httpOnly: true,
+        maxAge: 60000,
+        sameSite: 'strict',
+        signed: true
+      }
+    })
+  )
+  app.use(passport.initialize())
+  app.use(passport.session())
   await app.listen(3000)
 }
 bootstrap()

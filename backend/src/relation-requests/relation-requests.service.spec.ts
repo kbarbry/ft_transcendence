@@ -53,14 +53,14 @@ describe('RelationRequestsService', () => {
     await prismaService.$executeRaw`INSERT INTO 
       "public"."User" 
       VALUES 
-      ('537d4ec6daffd64a2d4c-', 'random url', 'alfred@42.fr', 'Ally', 'oui', null, null, false, 'Online', 'English', 1),
-      ('f488e59aef615c5df6df-', 'random url', 'bob.fr', 'Bobby', 'Babby', null, null, false, 'Online', 'English', 1),
-      ('4376f06677b65d3168d6-', 'random url', 'charlie@42.fr', 'Chacha', 'oui', null, null, false, 'Invisble', 'French', 12),
-      ('df87734d323ac71c6efb-', 'random url', 'david@42.fr', 'dav', 'oui', null, null, false, 'Invisble', 'French', 12),
-      ('ec178ef86d29197b6ffd-', 'random url', 'evan@42.fr', 'evee', 'oui', null, null, false, 'Idle', 'Spanish', 36),
-      ('e28d4ff1f6cd647fc171-', 'random url', 'frank@42.fr', 'punisher', 'oui', null, null, false, 'DoNotDisturb', 'Spanish', 9000),
-      ('ohohoff1f6cd647fc171-', 'random url', 'billy@42.fr', 'wallE', 'oui', null, null, false, 'Idle', 'English', 42),
-      ('bababff1f6cd647fc171-', 'random url', 'castex@42.fr', 'XxCovidxX', 'oui', null, null, false, 'Online', 'French', 666);`
+      ('537d4ec6daffd64a2d4c-', 'random url', 'alfred@42.fr', 'Ally', 'oui', false, false, false, false, 'Online', 'English', 1),
+      ('f488e59aef615c5df6df-', 'random url', 'bob.fr', 'Bobby', 'Babby', false, false, false, false, 'Online', 'English', 1),
+      ('4376f06677b65d3168d6-', 'random url', 'charlie@42.fr', 'Chacha', 'oui', false, false, false, false, 'Invisble', 'French', 12),
+      ('df87734d323ac71c6efb-', 'random url', 'david@42.fr', 'dav', 'oui', false, false, false, false, 'Invisble', 'French', 12),
+      ('ec178ef86d29197b6ffd-', 'random url', 'evan@42.fr', 'evee', 'oui', false, false, false, false, 'Idle', 'Spanish', 36),
+      ('e28d4ff1f6cd647fc171-', 'random url', 'frank@42.fr', 'punisher', 'oui', false, false, false, false, 'DoNotDisturb', 'Spanish', 9000),
+      ('ohohoff1f6cd647fc171-', 'random url', 'billy@42.fr', 'wallE', 'oui', false, false, false, false, 'Idle', 'English', 42),
+      ('bababff1f6cd647fc171-', 'random url', 'castex@42.fr', 'XxCovidxX', 'oui', false, false, false, false, 'Online', 'French', 666);`
 
     //**************************************************//
     //  RELATION REQUESTS CREATION

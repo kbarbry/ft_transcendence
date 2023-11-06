@@ -2,12 +2,14 @@ import { Resolver, Query, Mutation, Args } from '@nestjs/graphql'
 import { PrivateMessageService } from './private-message.service'
 import { PrivateMessage } from './entities/private-message.entity'
 import { CreatePrivateMessageInput } from './dto/create-private-message.input'
-import { ValidationPipe } from '@nestjs/common'
+import { UseGuards, ValidationPipe } from '@nestjs/common'
 import { UpdatePrivateMessageInput } from './dto/update-private-message.input'
 import { NanoidValidationPipe } from '../common/pipes/nanoid.pipe'
 import { StringValidationPipe } from '../common/pipes/string.pipe'
+import { AuthorizationGuard } from '../auth/guards/authorization.guard'
 
 @Resolver(() => PrivateMessage)
+@UseGuards(AuthorizationGuard)
 export class PrivateMessageResolver {
   constructor(private readonly privateMessageService: PrivateMessageService) {}
 

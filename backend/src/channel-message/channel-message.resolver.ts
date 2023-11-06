@@ -2,12 +2,14 @@ import { Resolver, Query, Mutation, Args } from '@nestjs/graphql'
 import { ChannelMessageService } from './channel-message.service'
 import { ChannelMessage } from './entities/channel-message.entity'
 import { CreateChannelMessageInput } from './dto/create-channel-message.input'
-import { ValidationPipe } from '@nestjs/common'
+import { UseGuards, ValidationPipe } from '@nestjs/common'
 import { UpdateChannelMessageInput } from './dto/update-channel-message.input'
 import { NanoidValidationPipe } from '../common/pipes/nanoid.pipe'
 import { StringValidationPipe } from '../common/pipes/string.pipe'
+import { AuthorizationGuard } from '../auth/guards/authorization.guard'
 
 @Resolver(() => ChannelMessage)
+@UseGuards(AuthorizationGuard)
 export class ChannelMessageResolver {
   constructor(private readonly channelMessageService: ChannelMessageService) {}
 

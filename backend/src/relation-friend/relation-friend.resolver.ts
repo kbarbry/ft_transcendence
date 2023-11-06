@@ -2,10 +2,12 @@ import { Resolver, Query, Mutation, Args } from '@nestjs/graphql'
 import { RelationFriendService } from './relation-friend.service'
 import { RelationFriend } from './entities/relation-friend.entity'
 import { RelationFriendInput } from './dto/create-relation-friend.input'
-import { ValidationPipe } from '@nestjs/common'
+import { UseGuards, ValidationPipe } from '@nestjs/common'
 import { NanoidValidationPipe } from '../common/pipes/nanoid.pipe'
+import { AuthorizationGuard } from '../auth/guards/authorization.guard'
 
 @Resolver(() => RelationFriend)
+@UseGuards(AuthorizationGuard)
 export class RelationFriendResolver {
   constructor(private readonly relationFriendService: RelationFriendService) {}
 

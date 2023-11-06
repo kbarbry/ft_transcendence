@@ -2,10 +2,12 @@ import { Resolver, Query, Mutation, Args } from '@nestjs/graphql'
 import { UserPresenceService } from './user-presence.service'
 import { UserPresence } from './entities/user-presence.entity'
 import { UserPresenceCreateInput } from './dto/create-user-presence.input'
-import { ValidationPipe } from '@nestjs/common'
+import { UseGuards, ValidationPipe } from '@nestjs/common'
 import { NanoidValidationPipe } from '../common/pipes/nanoid.pipe'
+import { AuthorizationGuard } from '../auth/guards/authorization.guard'
 
 @Resolver(() => UserPresence)
+@UseGuards(AuthorizationGuard)
 export class UserPresenceResolver {
   constructor(private readonly userpresenceService: UserPresenceService) {}
 

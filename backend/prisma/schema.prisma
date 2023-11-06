@@ -14,8 +14,9 @@ model User {
   username          String            @unique
 
   password          String?
-  googleId          String?
-  school42Id        String?
+  googleAuth        Boolean            @default(false)
+  githubAuth        Boolean            @default(false)
+  school42Auth      Boolean            @default(false)
   doubleA           Boolean            @default(false)
 
   status            EStatus            @default(Online)

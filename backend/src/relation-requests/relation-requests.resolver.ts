@@ -3,10 +3,12 @@ import { RelationRequestsService } from './relation-requests.service'
 import { RelationRequests } from './entities/relation-requests.entity'
 import { RelationFriend } from '../relation-friend/entities/relation-friend.entity'
 import { RelationRequestsInput } from './dto/create-relation-requests.input'
-import { ValidationPipe } from '@nestjs/common'
+import { UseGuards, ValidationPipe } from '@nestjs/common'
 import { NanoidValidationPipe } from '../common/pipes/nanoid.pipe'
+import { AuthorizationGuard } from '../auth/guards/authorization.guard'
 
 @Resolver(() => RelationRequests)
+@UseGuards(AuthorizationGuard)
 export class RelationRequestsResolver {
   constructor(
     private readonly relationRequestsService: RelationRequestsService

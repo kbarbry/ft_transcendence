@@ -2,10 +2,12 @@ import { Resolver, Query, Mutation, Args } from '@nestjs/graphql'
 import { RelationBlockedService } from './relation-blocked.service'
 import { RelationBlocked } from './entities/relation-blocked.entity'
 import { RelationBlockedInput } from './dto/create-relation-blocked.input'
-import { ValidationPipe } from '@nestjs/common'
+import { UseGuards, ValidationPipe } from '@nestjs/common'
 import { NanoidValidationPipe } from '../common/pipes/nanoid.pipe'
+import { AuthorizationGuard } from '../auth/guards/authorization.guard'
 
 @Resolver(() => RelationBlocked)
+@UseGuards(AuthorizationGuard)
 export class RelationBlockedResolver {
   constructor(
     private readonly relationBlockedService: RelationBlockedService
