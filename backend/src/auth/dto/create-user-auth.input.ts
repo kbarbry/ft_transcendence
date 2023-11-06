@@ -6,7 +6,8 @@ import {
   IsString,
   IsUrl,
   Length,
-  IsEmail
+  IsEmail,
+  IsBoolean
 } from 'class-validator'
 
 @InputType()
@@ -31,6 +32,24 @@ export class CreateUserAuthInput {
       '$property must be between $constraint1 and $constraint2 characters long.'
   })
   username: string
+}
+
+@InputType()
+export class CreateUserAOuth20Input extends CreateUserAuthInput {
+  @Field(() => Boolean)
+  @IsOptional()
+  @IsBoolean()
+  googleAuth?: boolean
+
+  @Field(() => Boolean)
+  @IsOptional()
+  @IsBoolean()
+  githubAuth?: boolean
+
+  @Field(() => Boolean)
+  @IsOptional()
+  @IsBoolean()
+  school42Auth?: boolean
 }
 
 @InputType()

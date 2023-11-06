@@ -6,13 +6,20 @@ import {
   checkStrategy,
   checkValidStrategies
 } from './utils/check.utils'
-import { ExceptionUnauthorizedStrategy } from 'src/common/exceptions/unauthorized-strategy.exception'
+import {
+  ExceptionInvalidCredentials,
+  ExceptionUnauthorizedStrategy
+} from 'src/common/exceptions/unauthorized-strategy.exception'
 import { User } from '@prisma/client'
 import { PrismaService } from 'src/prisma/prisma.service'
-import { CreateUserAuthInput } from './dto/create-user-auth.input'
+import {
+  CreateUserAOuth20Input,
+  CreateUserAuthInput
+} from './dto/create-user-auth.input'
 import { randomBytes } from 'crypto'
 import { plainToClass } from 'class-transformer'
 import { ExceptionCustomClassValidator } from 'src/common/exceptions/class-validator.exception'
+import * as bcrypt from 'bcrypt'
 
 type GoogleUserParams = {
   email: string
@@ -54,7 +61,9 @@ export class AuthService {
     return checkedUsername
   }
 
-  async createUser(data: CreateUserAuthInput): Promise<User> {
+  async createUser(
+    data: CreateUserAuthInput | CreateUserAOuth20Input
+  ): Promise<User> {
     const dataClass = plainToClass(CreateUserAuthInput, data)
     const error = await validate(dataClass)
     if (error.length) throw new ExceptionCustomClassValidator(error)
@@ -126,8 +135,8 @@ export class AuthService {
 
   async validateLocalUser(email: string, password: string) {
     const user = await this.userService.findOnebyMail(email)
-    if (!user || !(user.password === password)) {
-      return null
+    if (!user || !(await bcrypt.compare(password, user.password as string))) {
+      throw new ExceptionInvalidCredentials('Mail or password is invalid')
     } else if (!checkStrategy(EStrategy.local, user)) {
       throw new ExceptionUnauthorizedStrategy(
         EStrategy.local,

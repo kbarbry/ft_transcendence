@@ -14,6 +14,9 @@ export class ExceptionClassValidator extends HttpException {
 
 export class ExceptionCustomClassValidator extends HttpException {
   constructor(result: ValidationError[]) {
-    super(result, HttpStatus.I_AM_A_TEAPOT)
+    super(
+      { message: "Data isn't well formatted", result },
+      HttpStatus.I_AM_A_TEAPOT
+    )
   }
 }

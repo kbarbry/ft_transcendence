@@ -8,6 +8,7 @@ import { SessionSerializer } from './serializer/cookie.serializer'
 import { GithubStrategy } from './strategies/github.strategy'
 import { School42Strategy } from './strategies/42.strategy'
 import { PrismaModule } from '../prisma/prisma.module'
+import { PrismaService } from 'src/prisma/prisma.service'
 
 @Module({
   imports: [UserModule, PrismaModule],

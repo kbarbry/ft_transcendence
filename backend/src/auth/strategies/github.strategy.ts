@@ -7,9 +7,9 @@ import { AuthService } from '../auth.service'
 export class GithubStrategy extends PassportStrategy(Strategy) {
   constructor() {
     super({
-      clientID: '0c0315b4861ba384ccd7',
-      clientSecret: 'b73826934e72d2b84b479fe6d7cbbef7d754a42e',
-      callbackURL: 'http://localhost:3000/api/auth/github/redirect',
+      clientID: process.env['GITHUB_CLIENT_ID'],
+      clientSecret: process.env['GITHUB_CLIENT_SECRET'],
+      callbackURL: process.env['GITHUB_CALLBACK_URL'],
       scope: ['profile', 'user:email']
     })
   }
@@ -18,11 +18,14 @@ export class GithubStrategy extends PassportStrategy(Strategy) {
   private readonly authService: AuthService
 
   async validate(
-    accessToken: string,
+    token: string,
     refreshToken: string,
     profile: Profile,
     callback: CallableFunction
   ) {
+    console.log('Calling GithubStrategy validate.')
+    console.log(profile)
+
     const avatarUrl = profile.photos ? profile.photos[0].value : undefined
     const email = profile.emails ? profile.emails[0].value : undefined
     const username = profile.displayName
@@ -32,6 +35,6 @@ export class GithubStrategy extends PassportStrategy(Strategy) {
       username,
       avatarUrl
     })
-    return callback(null, user)
+    return callback(null, await user)
   }
 }
