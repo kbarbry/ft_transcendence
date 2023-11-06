@@ -6,6 +6,7 @@ import { GithubGuard } from './guards/github.guard'
 import { LocalAuthGuard } from './guards/local.guard'
 import { AuthService } from './auth.service'
 import { CreateUserAuthLocalInput } from './dto/create-user-auth.input'
+import * as bcrypt from 'bcrypt'
 
 @Controller('auth')
 export class AuthController {
@@ -13,7 +14,12 @@ export class AuthController {
 
   @Post('signup')
   async postRegister(@Body() userInput: CreateUserAuthLocalInput) {
-    this.authService.createUser(userInput)
+    try {
+      userInput.password = await bcrypt.hash(userInput.password, 10)
+      await this.authService.createUser(userInput)
+    } catch (e) {
+      throw e
+    }
     return { msg: 'Local SignUp OK' }
   }
 

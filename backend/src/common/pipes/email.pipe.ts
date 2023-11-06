@@ -1,13 +1,21 @@
-import { Injectable, PipeTransform, BadRequestException } from '@nestjs/common'
-import { isEmail } from 'class-validator'
+import { Injectable, PipeTransform } from '@nestjs/common'
+import { InputType } from '@nestjs/graphql'
+import { plainToClass } from 'class-transformer'
+import { IsEmail, validateSync } from 'class-validator'
+import { ExceptionCustomClassValidator } from '../exceptions/class-validator.exception'
+
+@InputType()
+class CustomValidationPipeDto {
+  @IsEmail({}, { message: '$property must be a valid email address.' })
+  mail: string
+}
 
 @Injectable()
 export class EmailValidationPipe implements PipeTransform<string, string> {
   transform(value: string): string {
-    if (!isEmail(value)) {
-      throw new BadRequestException('Invalid email format')
-    }
-
+    const dataClass = plainToClass(CustomValidationPipeDto, value)
+    const error = validateSync(dataClass)
+    if (error.length) throw new ExceptionCustomClassValidator(error)
     return value
   }
 }

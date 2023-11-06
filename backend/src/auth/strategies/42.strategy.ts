@@ -20,7 +20,7 @@ export class School42Strategy extends PassportStrategy(
   private readonly authService: AuthService
 
   async validate(
-    accessToken: string,
+    token: string,
     refreshToken: string,
     profile: any,
     callback: CallableFunction
@@ -33,6 +33,6 @@ export class School42Strategy extends PassportStrategy(
       email,
       avatarUrl
     })
-    return callback(null, user)
+    return callback(null, await user)
   }
 }

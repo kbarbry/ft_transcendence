@@ -10,7 +10,7 @@ export class GoogleStrategy extends PassportStrategy(Strategy) {
     super({
       clientID: process.env['GOOGLE_CLIENT_ID'],
       clientSecret: process.env['GOOGLE_CLIENT_SECRET'],
-      callbackURL: 'http://localhost:3000/api/auth/google/redirect',
+      callbackURL: process.env['GOOGLE_CALLBACK_URL'],
       scope: ['profile', 'email']
     })
   }
@@ -18,34 +18,43 @@ export class GoogleStrategy extends PassportStrategy(Strategy) {
   @Inject(AuthService)
   private readonly authService: AuthService
 
-  async validate(profile: Profile, callback: CallableFunction) {
+  async validate(
+    token: string,
+    refreshToken: string,
+    profile: Profile,
+    callback: CallableFunction
+  ) {
     const avatarUrl = profile.photos ? profile.photos[0].value : undefined
     const email = profile.emails ? profile.emails[0].value : undefined
     const username = profile.displayName
-    let language: string | undefined = profile._json.locale
-      ? profile._json.locale
-      : undefined
-    switch (language) {
-      case 'fr': {
-        language = ELanguage.English
-        break
-      }
-      case 'en': {
-        language = ELanguage.French
-        break
-      }
-      default: {
-        language = ELanguage.English
-        break
-      }
-    }
+    console.log('Reception profile')
+    console.log(profile)
+    // let language: string | undefined = profile._json.locale
+    //   ? profile._json.locale
+    //   : undefined
+    // switch (language) {
+    //   case 'fr': {
+    //     language = ELanguage.English
+    //     break
+    //   }
+    //   case 'en': {
+    //     language = ELanguage.French
+    //     break
+    //   }
+    //   default: {
+    //     language = ELanguage.English
+    //     break
+    //   }
+    // }
     if (!email) throw new UnauthorizedException()
     const user = this.authService.validateGoogleUser({
       username,
       email,
-      avatarUrl,
-      language
+      avatarUrl
+      // language
     })
-    return callback(null, user)
+    console.log('User found')
+    console.log(user)
+    return callback(null, await user)
   }
 }

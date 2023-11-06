@@ -6,13 +6,15 @@ import {
   UnauthorizedException
 } from '@nestjs/common'
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library'
-import { GqlExceptionFilter } from '@nestjs/graphql'
 import { GraphQLError } from 'graphql'
 import {
   ExceptionClassValidator,
   ExceptionCustomClassValidator
 } from '../exceptions/class-validator.exception'
-import { ExceptionUnauthorizedStrategy } from '../exceptions/unauthorized-strategy.exception'
+import {
+  ExceptionInvalidCredentials,
+  ExceptionUnauthorizedStrategy
+} from '../exceptions/unauthorized-strategy.exception'
 import { LoggingService } from '../logging/exception.logging'
 
 enum EErrorOrigin {
@@ -20,6 +22,8 @@ enum EErrorOrigin {
   ClassValidator = 'ClassValidator',
   CustomClassValidator = 'CustomClassValidator',
   CustomException = 'CustomException',
+  InvalidStrategy = 'InvalidStrategy',
+  InvalidCredentials = 'InvalidCredentials',
   ServerError = 'ServerError'
 }
 
@@ -31,13 +35,14 @@ enum EErrorPrisma {
 @Catch()
 export class GlobalExceptionFilter implements ExceptionFilter {
   private loggingService = new LoggingService()
-  
+
   catch(exception: any, host: ArgumentsHost) {
     let customError: GraphQLError
 
     this.loggingService.logError('-- exception generated --')
     const ctx = host.switchToHttp()
     const response = ctx.getResponse<Response>()
+    if (response.url) return null
 
     if (exception instanceof PrismaClientKnownRequestError) {
       const type = EErrorOrigin.Prisma
@@ -45,7 +50,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       const meta = exception.meta
       const extensions = { type, code, meta }
       let message = 'Prisma unhandled error'
-      console.log('- prisma error -')
+      this.loggingService.logError('- prisma error -')
 
       if (code === EErrorPrisma.P2002)
         message = `${meta ? meta.target : 'Field'} is already taken.`
@@ -60,7 +65,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       const meta = exception.getResponse()
       const extensions = { type, code, meta }
       const message = `Data isn't well formated`
-      console.log('- class validator error -')
+      this.loggingService.logError('- class validator error -')
 
       customError = new GraphQLError(message, { extensions })
     } else if (exception instanceof ExceptionCustomClassValidator) {
@@ -69,6 +74,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       const meta = exception.getResponse()
       const extensions = { type, code, meta }
       const message = `Data isn't well formated`
+      this.loggingService.logError('- custom class validator error -')
 
       customError = new GraphQLError(message, { extensions })
     } else if (exception.status === HttpStatus.CONFLICT) {
@@ -77,6 +83,8 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       const meta = exception.getResponse()
       const extensions = { type, code, meta }
       const message = `Your data contains some conflict with our application`
+      this.loggingService.logError('- custom conflict error -')
+
       customError = new GraphQLError(message, { extensions })
     } else if (exception instanceof UnauthorizedException) {
       const type = EErrorOrigin.ServerError
@@ -84,20 +92,31 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       const meta = { redirect: '/login', ...exception }
       const extensions = { type, code, meta }
       const message = `You're not authorized to access this data`
+      this.loggingService.logError('- unauthorized error -')
 
       customError = new GraphQLError(message, { extensions })
-      console.log(customError)
+    } else if (exception instanceof ExceptionInvalidCredentials) {
+      const type = EErrorOrigin.InvalidCredentials
+      const code = HttpStatus.UNAUTHORIZED
+      const meta = { redirect: '/login', ...exception }
+      const extensions = { type, code, meta }
+      const message = `Invalid credentials`
+      this.loggingService.logError('- invalid credentials error -')
+
+      customError = new GraphQLError(message, { extensions })
     } else if (exception instanceof ExceptionUnauthorizedStrategy) {
-      const type = EErrorOrigin.ServerError
+      const type = EErrorOrigin.InvalidStrategy
       const code = HttpStatus.UNAUTHORIZED
       const meta = { redirect: '/login', ...exception }
       const extensions = { type, code, meta }
       const message = `You're not using the right strategy`
+      this.loggingService.logError('- unauthorized strategy error -')
 
       customError = new GraphQLError(message, { extensions })
-      console.log(customError)
     } else {
-      console.log(exception)
+      this.loggingService.logError('- non catched error -')
+      this.loggingService.logError('UNHANDLED ERROR')
+      this.loggingService.logError(exception)
       customError = new GraphQLError('Unhandled error', exception)
     }
 

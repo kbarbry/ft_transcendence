@@ -1,11 +1,16 @@
 import { createLogger, transports, format } from 'winston'
-
 const { combine, timestamp, printf } = format
 
 export class LoggingService {
   private logger
 
   constructor() {
+    const now = new Date()
+    const year = now.getFullYear()
+    const month = `0${now.getMonth() + 1}`.slice(-2) // Adding 1 to month as it's zero-based
+    const day = `0${now.getDate()}`.slice(-2)
+    const dayOfWeek = now.toDateString().slice(0, 3)
+    const logFileName = `${year}-${month}-${day}-${dayOfWeek}.error.log`
     this.logger = createLogger({
       level: 'error',
       format: combine(
@@ -16,7 +21,7 @@ export class LoggingService {
       ),
       transports: [
         new transports.File({
-          filename: `logs/${new Date().toDateString()}.log`,
+          filename: `logs/${logFileName}`,
           level: 'error'
         })
       ]
