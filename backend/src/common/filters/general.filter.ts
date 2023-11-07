@@ -86,24 +86,6 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       this.loggingService.logError('- custom conflict error -')
 
       customError = new GraphQLError(message, { extensions })
-    } else if (exception instanceof UnauthorizedException) {
-      const type = EErrorOrigin.ServerError
-      const code = HttpStatus.UNAUTHORIZED
-      const meta = { redirect: '/login', ...exception }
-      const extensions = { type, code, meta }
-      const message = `You're not authorized to access this data`
-      this.loggingService.logError('- unauthorized error -')
-
-      customError = new GraphQLError(message, { extensions })
-    } else if (exception instanceof ExceptionInvalidCredentials) {
-      const type = EErrorOrigin.InvalidCredentials
-      const code = HttpStatus.UNAUTHORIZED
-      const meta = { redirect: '/login', ...exception }
-      const extensions = { type, code, meta }
-      const message = `Invalid credentials`
-      this.loggingService.logError('- invalid credentials error -')
-
-      customError = new GraphQLError(message, { extensions })
     } else if (exception instanceof ExceptionUnauthorizedStrategy) {
       const type = EErrorOrigin.InvalidStrategy
       const code = HttpStatus.UNAUTHORIZED
@@ -113,10 +95,33 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       this.loggingService.logError('- unauthorized strategy error -')
 
       customError = new GraphQLError(message, { extensions })
+    } else if (exception instanceof UnauthorizedException) {
+      const type = EErrorOrigin.ServerError
+      const code = HttpStatus.UNAUTHORIZED
+      const meta = { redirect: '/login', ...exception }
+      const extensions = { type, code, meta }
+      const message = `You're not authorized to access this data`
+      this.loggingService.logError('- unauthorized error -')
+
+      customError = new GraphQLError(message, { extensions })
+    } else if (
+      exception instanceof ExceptionInvalidCredentials ||
+      exception.message.includes('Failed to obtain access token') ||
+      exception.code.includes('invalid_grant')
+    ) {
+      const type = EErrorOrigin.InvalidCredentials
+      const code = HttpStatus.UNAUTHORIZED
+      const meta = { redirect: '/login', ...exception }
+      const extensions = { type, code, meta }
+      const message = `Invalid credentials`
+      this.loggingService.logError('- invalid credentials error -')
+
+      customError = new GraphQLError(message, { extensions })
     } else {
       this.loggingService.logError('- non catched error -')
       this.loggingService.logError('UNHANDLED ERROR')
       this.loggingService.logError(exception)
+      console.log(exception)
       customError = new GraphQLError('Unhandled error', exception)
     }
 

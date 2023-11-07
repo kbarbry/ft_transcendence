@@ -10,7 +10,7 @@ import { UsernameValidationPipe } from '../common/pipes/username.pipe'
 import { AuthorizationGuard } from '../auth/guards/authorization.guard'
 
 @Resolver(() => User)
-@UseGuards(AuthorizationGuard)
+// @UseGuards(AuthorizationGuard)
 export class UserResolver {
   constructor(private readonly userService: UserService) {}
 

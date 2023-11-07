@@ -10,7 +10,7 @@ import {
   ExceptionInvalidCredentials,
   ExceptionUnauthorizedStrategy
 } from 'src/common/exceptions/unauthorized-strategy.exception'
-import { User } from '@prisma/client'
+import { ELanguage, User } from '@prisma/client'
 import { PrismaService } from 'src/prisma/prisma.service'
 import {
   CreateUserAOuth20Input,
@@ -25,7 +25,7 @@ type GoogleUserParams = {
   email: string
   username: string
   avatarUrl?: string
-  language?: string
+  language?: ELanguage
 }
 
 type GithubUserParams = {
@@ -70,7 +70,7 @@ export class AuthService {
     return this.prisma.user.create({ data })
   }
 
-  async validateGoogleUser(profile: GoogleUserParams) {
+  async validateGoogleUser(profile: GoogleUserParams): Promise<User> {
     let user = await this.userService.findOnebyMail(profile.email)
     if (!user) {
       const username = await this.checkUsername(profile.username)
@@ -80,6 +80,7 @@ export class AuthService {
         mail: profile.email,
         username: username,
         avatarUrl: avatarUrl,
+        languages: profile.language,
         googleAuth: true
       })
     } else if (!checkStrategy(EStrategy.google, user)) {
@@ -91,7 +92,7 @@ export class AuthService {
     return user
   }
 
-  async validateGitHubUser(profile: GithubUserParams) {
+  async validateGitHubUser(profile: GithubUserParams): Promise<User> {
     let user = await this.userService.findOnebyMail(profile.email)
     if (!user) {
       const username = await this.checkUsername(profile.username)
@@ -112,7 +113,7 @@ export class AuthService {
     return user
   }
 
-  async validateSchool42(profile: School42UserParams) {
+  async validateSchool42(profile: School42UserParams): Promise<User> {
     let user = await this.userService.findOnebyMail(profile.email)
     if (!user) {
       const username = await this.checkUsername(profile.username)
@@ -133,7 +134,7 @@ export class AuthService {
     return user
   }
 
-  async validateLocalUser(email: string, password: string) {
+  async validateLocalUser(email: string, password: string): Promise<User> {
     const user = await this.userService.findOnebyMail(email)
     if (!user || !(await bcrypt.compare(password, user.password as string))) {
       throw new ExceptionInvalidCredentials('Mail or password is invalid')

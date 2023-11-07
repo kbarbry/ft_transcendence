@@ -2,6 +2,7 @@ import { Inject, Injectable, UnauthorizedException } from '@nestjs/common'
 import { PassportStrategy } from '@nestjs/passport'
 import { Profile, Strategy } from 'passport-github2'
 import { AuthService } from '../auth.service'
+import { ExceptionInvalidCredentials } from 'src/common/exceptions/unauthorized-strategy.exception'
 
 @Injectable()
 export class GithubStrategy extends PassportStrategy(Strategy) {
@@ -23,6 +24,7 @@ export class GithubStrategy extends PassportStrategy(Strategy) {
     profile: Profile,
     callback: CallableFunction
   ) {
+    if (!profile) throw new ExceptionInvalidCredentials('Github OAuth20 failed')
     console.log('Calling GithubStrategy validate.')
     console.log(profile)
 
