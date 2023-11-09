@@ -13,7 +13,7 @@ class CustomValidationPipeDto {
 @Injectable()
 export class EmailValidationPipe implements PipeTransform<string, string> {
   transform(value: string): string {
-    const dataClass = plainToClass(CustomValidationPipeDto, value)
+    const dataClass = plainToClass(CustomValidationPipeDto, { mail: value })
     const error = validateSync(dataClass)
     if (error.length) throw new ExceptionCustomClassValidator(error)
     return value

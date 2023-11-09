@@ -40,9 +40,10 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     let customError: GraphQLError
 
     this.loggingService.logError('-- exception generated --')
+    this.loggingService.logError(exception)
     const ctx = host.switchToHttp()
     const response = ctx.getResponse<Response>()
-    if (response.url) return null
+    // if (response.url) return null
 
     if (exception instanceof PrismaClientKnownRequestError) {
       const type = EErrorOrigin.Prisma
