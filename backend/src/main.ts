@@ -7,8 +7,14 @@ import session from 'express-session'
 import { randomBytes } from 'crypto'
 import passport from 'passport'
 
+
 async function bootstrap() {
   const app = await NestFactory.create(AppModule)
+  const cors = require("cors");
+  app.use(cors({
+    origin: "http://localhost:5173/",
+    methods: ["GET", "POST"]
+  }));
   app.useGlobalFilters(new GlobalExceptionFilter())
   app.useGlobalPipes(
     new ValidationPipe({
