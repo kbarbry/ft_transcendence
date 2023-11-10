@@ -3,6 +3,7 @@ import {
   Catch,
   ExceptionFilter,
   HttpStatus,
+  NotFoundException,
   UnauthorizedException
 } from '@nestjs/common'
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library'
@@ -71,7 +72,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
 
       if (code === EErrorPrisma.P2002)
         message = `${meta ? meta.target : 'Field'} is already taken.`
-      if (code === EErrorPrisma.P2003)
+      else if (code === EErrorPrisma.P2003)
         message = `The entity you are trying to reach doesn't exist.`
       else this.loggingService.logError('UNHANDLED ERROR')
 
@@ -142,7 +143,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
 
       if (code === EErrorPrisma.P2002)
         message = `${meta ? meta.target : 'Field'} is already taken.`
-      if (code === EErrorPrisma.P2003)
+      else if (code === EErrorPrisma.P2003)
         message = `The entity you are trying to reach doesn't exist.`
       else this.loggingService.logError('UNHANDLED ERROR')
 
@@ -183,6 +184,14 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       this.loggingService.logError('- invalid credentials error -')
 
       customError = new CustomRestApiError(type, code, message, meta)
+    } else if (exception instanceof NotFoundException) {
+      const type = EErrorOrigin.ServerError
+      const code = HttpStatus.NOT_FOUND
+      const meta = { redirect: '/404', ...exception }
+      const message = `404 - Not found`
+      this.loggingService.logError('- Not found error -')
+
+      customError = new CustomRestApiError(type, code, message, meta)
     } else {
       const type = EErrorOrigin.Unhandled
       const code = HttpStatus.BAD_REQUEST
@@ -191,6 +200,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       this.loggingService.logError('- non catched error -')
       this.loggingService.logError('UNHANDLED ERROR')
       this.loggingService.logError(exception)
+      console.log(exception)
 
       customError = new CustomRestApiError(type, code, message, meta)
     }
