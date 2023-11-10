@@ -34,34 +34,37 @@ export class GoogleStrategy extends PassportStrategy(Strategy) {
     const langToCheck = profile._json.locale
     let language: ELanguage | undefined = undefined
     let user: User
+
+    if (langToCheck)
+      language = checkLanguage(langToCheck, {
+        English: 'en',
+        French: 'fr',
+        Spanish: 'es'
+      })
+
+    if (!email)
+      throw new ExceptionInvalidCredentials('Google OAuth20 failed: no email')
+    if (!username)
+      throw new ExceptionInvalidCredentials(
+        'Google OAuth20 failed: no username'
+      )
+
     try {
-      console.log('Reception profile')
-      console.log(langToCheck)
-      if (langToCheck)
-        language = checkLanguage(langToCheck, {
-          English: 'en',
-          French: 'fr',
-          Spanish: 'es'
-        })
-      if (!email)
-        throw new ExceptionInvalidCredentials('Google OAuth20 failed: no email')
       user = await this.authService.validateGoogleUser({
         username,
         email,
         avatarUrl,
         language
       })
-      console.log('User found')
-      console.log(user)
     } catch (e) {
-      console.log(e)
-      throw new e()
+      throw e
     }
     if (!user) {
       throw new ExceptionInvalidCredentials(
         'Google OAuth20 failed: user not found'
       )
     }
+
     return callback(null, user)
   }
 }

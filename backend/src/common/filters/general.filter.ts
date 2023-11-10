@@ -24,7 +24,8 @@ enum EErrorOrigin {
   CustomException = 'CustomException',
   InvalidStrategy = 'InvalidStrategy',
   InvalidCredentials = 'InvalidCredentials',
-  ServerError = 'ServerError'
+  ServerError = 'ServerError',
+  Unhandled = 'Unhandled'
 }
 
 enum EErrorPrisma {
@@ -32,18 +33,33 @@ enum EErrorPrisma {
   P2003 = 'P2003'
 }
 
+class CustomRestApiError {
+  constructor(
+    public type: string,
+    public code: number | string,
+    public message: string,
+    public meta: any
+  ) {}
+}
+
 @Catch()
 export class GlobalExceptionFilter implements ExceptionFilter {
   private loggingService = new LoggingService()
 
   catch(exception: any, host: ArgumentsHost) {
-    let customError: GraphQLError
+    const request = host.switchToHttp().getRequest<Request>()
+    const restError = request?.url ? true : false
+    if (restError) {
+      this.loggingService.logError('-- RestAPI exception generated --')
+      return this.handleRestAPIException(exception)
+    } else {
+      this.loggingService.logError('-- GraphQL exception generated --')
+      return this.handleGraphQLException(exception)
+    }
+  }
 
-    this.loggingService.logError('-- exception generated --')
-    this.loggingService.logError(exception)
-    const ctx = host.switchToHttp()
-    const response = ctx.getResponse<Response>()
-    // if (response.url) return null
+  private handleGraphQLException(exception: any) {
+    let customError: GraphQLError
 
     if (exception instanceof PrismaClientKnownRequestError) {
       const type = EErrorOrigin.Prisma
@@ -87,15 +103,6 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       this.loggingService.logError('- custom conflict error -')
 
       customError = new GraphQLError(message, { extensions })
-    } else if (exception instanceof ExceptionUnauthorizedStrategy) {
-      const type = EErrorOrigin.InvalidStrategy
-      const code = HttpStatus.UNAUTHORIZED
-      const meta = { redirect: '/login', ...exception }
-      const extensions = { type, code, meta }
-      const message = `You're not using the right strategy`
-      this.loggingService.logError('- unauthorized strategy error -')
-
-      customError = new GraphQLError(message, { extensions })
     } else if (exception instanceof UnauthorizedException) {
       const type = EErrorOrigin.ServerError
       const code = HttpStatus.UNAUTHORIZED
@@ -105,25 +112,87 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       this.loggingService.logError('- unauthorized error -')
 
       customError = new GraphQLError(message, { extensions })
-    } else if (
-      exception instanceof ExceptionInvalidCredentials ||
-      exception.message.includes('Failed to obtain access token') ||
-      exception.code.includes('invalid_grant')
-    ) {
-      const type = EErrorOrigin.InvalidCredentials
-      const code = HttpStatus.UNAUTHORIZED
-      const meta = { redirect: '/login', ...exception }
-      const extensions = { type, code, meta }
-      const message = `Invalid credentials`
-      this.loggingService.logError('- invalid credentials error -')
-
-      customError = new GraphQLError(message, { extensions })
     } else {
+      const type = EErrorOrigin.Unhandled
+      const code = HttpStatus.BAD_REQUEST
+      const meta = { redirect: '/login' }
+      const extensions = { type, code, meta }
+      const message = 'Unhandled error'
       this.loggingService.logError('- non catched error -')
       this.loggingService.logError('UNHANDLED ERROR')
       this.loggingService.logError(exception)
       console.log(exception)
-      customError = new GraphQLError('Unhandled error', exception)
+
+      customError = new GraphQLError(message, { extensions })
+    }
+
+    this.loggingService.logError(JSON.stringify(customError))
+    return customError
+  }
+
+  private handleRestAPIException(exception: any) {
+    let customError: CustomRestApiError
+
+    if (exception instanceof PrismaClientKnownRequestError) {
+      const type = EErrorOrigin.Prisma
+      const code = exception.code
+      const meta = exception.meta
+      let message = `Prisma unhandled error`
+      this.loggingService.logError('- prisma error -')
+
+      if (code === EErrorPrisma.P2002)
+        message = `${meta ? meta.target : 'Field'} is already taken.`
+      if (code === EErrorPrisma.P2003)
+        message = `The entity you are trying to reach doesn't exist.`
+      else this.loggingService.logError('UNHANDLED ERROR')
+
+      customError = new CustomRestApiError(type, code, message, meta)
+    } else if (exception instanceof ExceptionClassValidator) {
+      const type = EErrorOrigin.ClassValidator
+      const code = HttpStatus.I_AM_A_TEAPOT
+      const meta = exception.getResponse()
+      const message = `Data isn't well formated`
+      this.loggingService.logError('- class validator error -')
+
+      customError = new CustomRestApiError(type, code, message, meta)
+    } else if (exception instanceof ExceptionCustomClassValidator) {
+      const type = EErrorOrigin.CustomClassValidator
+      const code = HttpStatus.I_AM_A_TEAPOT
+      const meta = exception.getResponse()
+      const message = `Data isn't well formated`
+      this.loggingService.logError('- custom class validator error -')
+
+      customError = new CustomRestApiError(type, code, message, meta)
+    } else if (exception instanceof ExceptionUnauthorizedStrategy) {
+      const type = EErrorOrigin.InvalidStrategy
+      const code = HttpStatus.UNAUTHORIZED
+      const meta = { redirect: '/login', ...exception }
+      const message = `You're not using the right strategy`
+      this.loggingService.logError('- unauthorized strategy error -')
+
+      customError = new CustomRestApiError(type, code, message, meta)
+    } else if (
+      exception instanceof ExceptionInvalidCredentials ||
+      exception?.message?.includes('Failed to obtain access token') ||
+      exception?.code?.includes('invalid_grant')
+    ) {
+      const type = EErrorOrigin.InvalidCredentials
+      const code = HttpStatus.UNAUTHORIZED
+      const meta = { redirect: '/login' }
+      const message = `Invalid credentials`
+      this.loggingService.logError('- invalid credentials error -')
+
+      customError = new CustomRestApiError(type, code, message, meta)
+    } else {
+      const type = EErrorOrigin.Unhandled
+      const code = HttpStatus.BAD_REQUEST
+      const meta = { redirect: '/login' }
+      const message = `Unhandled error`
+      this.loggingService.logError('- non catched error -')
+      this.loggingService.logError('UNHANDLED ERROR')
+      this.loggingService.logError(exception)
+
+      customError = new CustomRestApiError(type, code, message, meta)
     }
 
     this.loggingService.logError(JSON.stringify(customError))

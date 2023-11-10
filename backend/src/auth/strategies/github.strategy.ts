@@ -1,8 +1,9 @@
-import { Inject, Injectable, UnauthorizedException } from '@nestjs/common'
+import { Inject, Injectable } from '@nestjs/common'
 import { PassportStrategy } from '@nestjs/passport'
 import { Profile, Strategy } from 'passport-github2'
 import { AuthService } from '../auth.service'
 import { ExceptionInvalidCredentials } from 'src/common/exceptions/unauthorized-strategy.exception'
+import { User } from '@prisma/client'
 
 @Injectable()
 export class GithubStrategy extends PassportStrategy(Strategy) {
@@ -24,19 +25,34 @@ export class GithubStrategy extends PassportStrategy(Strategy) {
     profile: Profile,
     callback: CallableFunction
   ) {
-    if (!profile) throw new ExceptionInvalidCredentials('Github OAuth20 failed')
-    console.log('Calling GithubStrategy validate.')
-    console.log(profile)
-
+    if (!profile)
+      throw new ExceptionInvalidCredentials('Github OAuth20 failed: no profile')
     const avatarUrl = profile.photos ? profile.photos[0].value : undefined
     const email = profile.emails ? profile.emails[0].value : undefined
     const username = profile.displayName
-    if (!email) throw new UnauthorizedException()
-    const user = this.authService.validateGitHubUser({
-      email,
-      username,
-      avatarUrl
-    })
-    return callback(null, await user)
+    let user: User
+
+    if (!email)
+      throw new ExceptionInvalidCredentials('Github OAuth20 failed: no email')
+    if (!username)
+      throw new ExceptionInvalidCredentials(
+        'Github OAuth20 failed: no username'
+      )
+    try {
+      user = await this.authService.validateGitHubUser({
+        email,
+        username,
+        avatarUrl
+      })
+    } catch (e) {
+      throw e
+    }
+    if (!user) {
+      throw new ExceptionInvalidCredentials(
+        'Github OAuth20 failed: user not found'
+      )
+    }
+
+    return callback(null, user)
   }
 }

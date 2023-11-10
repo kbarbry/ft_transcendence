@@ -14,7 +14,7 @@ import { ELanguage, User } from '@prisma/client'
 import { PrismaService } from 'src/prisma/prisma.service'
 import {
   CreateUserAOuth20Input,
-  CreateUserAuthInput
+  CreateUserAuthLocalInput
 } from './dto/create-user-auth.input'
 import { randomBytes } from 'crypto'
 import { plainToClass } from 'class-transformer'
@@ -61,12 +61,22 @@ export class AuthService {
     return checkedUsername
   }
 
-  async createUser(
-    data: CreateUserAuthInput | CreateUserAOuth20Input
-  ): Promise<User> {
-    const dataClass = plainToClass(CreateUserAuthInput, data)
+  async createUserOAuth20(data: CreateUserAOuth20Input): Promise<User> {
+    const dataClass = plainToClass(CreateUserAOuth20Input, data)
     const error = await validate(dataClass)
+
     if (error.length) throw new ExceptionCustomClassValidator(error)
+
+    return this.prisma.user.create({ data })
+  }
+
+  async createUserLocal(data: CreateUserAuthLocalInput): Promise<User> {
+    const dataClass = plainToClass(CreateUserAuthLocalInput, data)
+    const error = await validate(dataClass)
+
+    if (error.length) throw new ExceptionCustomClassValidator(error)
+
+    data.password = bcrypt.hashSync(data.password, 10)
     return this.prisma.user.create({ data })
   }
 
@@ -76,7 +86,7 @@ export class AuthService {
       const username = await this.checkUsername(profile.username)
       let avatarUrl = profile.avatarUrl
       if (avatarUrl) avatarUrl = isURL(avatarUrl) ? avatarUrl : undefined
-      user = await this.createUser({
+      user = await this.createUserOAuth20({
         mail: profile.email,
         username: username,
         avatarUrl: avatarUrl,
@@ -98,7 +108,7 @@ export class AuthService {
       const username = await this.checkUsername(profile.username)
       let avatarUrl = profile.avatarUrl
       if (avatarUrl) avatarUrl = isURL(avatarUrl) ? avatarUrl : undefined
-      user = await this.createUser({
+      user = await this.createUserOAuth20({
         mail: profile.email,
         username: username,
         avatarUrl: avatarUrl,
@@ -119,7 +129,7 @@ export class AuthService {
       const username = await this.checkUsername(profile.username)
       let avatarUrl = profile.avatarUrl
       if (avatarUrl) avatarUrl = isURL(avatarUrl) ? avatarUrl : undefined
-      user = await this.createUser({
+      user = await this.createUserOAuth20({
         mail: profile.email,
         username: username,
         avatarUrl: avatarUrl,

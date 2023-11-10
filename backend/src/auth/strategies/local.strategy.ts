@@ -1,8 +1,9 @@
 import { PassportStrategy } from '@nestjs/passport'
-import { Inject, Injectable, UnauthorizedException } from '@nestjs/common'
+import { Inject, Injectable } from '@nestjs/common'
 import { AuthService } from '../auth.service'
 import { Strategy } from 'passport-local'
 import { User } from '@prisma/client'
+import { ExceptionInvalidCredentials } from 'src/common/exceptions/unauthorized-strategy.exception'
 
 @Injectable()
 export class LocalStrategy extends PassportStrategy(Strategy) {
@@ -14,14 +15,21 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
 
   async validate(email: string, password: string, callback: CallableFunction) {
     let user: User
+
+    if (!email)
+      throw new ExceptionInvalidCredentials('Local OAuth20 failed: no email')
+    if (!password)
+      throw new ExceptionInvalidCredentials('Local OAuth20 failed: no password')
+
     try {
       user = await this.authService.validateLocalUser(email, password)
     } catch (e) {
-      console.log(e)
       throw new e()
     }
     if (!user) {
-      throw new UnauthorizedException()
+      throw new ExceptionInvalidCredentials(
+        'Local OAuth20 failed: user not found'
+      )
     }
     return callback(null, user)
   }

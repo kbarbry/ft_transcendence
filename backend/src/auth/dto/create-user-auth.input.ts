@@ -11,7 +11,7 @@ import {
 } from 'class-validator'
 
 @InputType()
-export class CreateUserAuthInput {
+class CreateUserAuthInput {
   @Field(() => String)
   @IsEmail({}, { message: '$property must be a valid email address.' })
   mail: string
