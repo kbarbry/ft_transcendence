@@ -16,7 +16,7 @@ import {
   ExceptionInvalidCredentials,
   ExceptionUnauthorizedStrategy
 } from '../exceptions/unauthorized-strategy.exception'
-import { LoggingService } from '../logging/exception.logging'
+import { ELogType, LoggingService } from '../logging/file.logging'
 
 enum EErrorOrigin {
   Prisma = 'prisma',
@@ -45,16 +45,16 @@ class CustomRestApiError {
 
 @Catch()
 export class GlobalExceptionFilter implements ExceptionFilter {
-  private loggingService = new LoggingService()
+  private readonly loggingService = new LoggingService(ELogType.error)
 
   catch(exception: any, host: ArgumentsHost) {
     const request = host.switchToHttp().getRequest<Request>()
     const restError = request?.url ? true : false
     if (restError) {
-      this.loggingService.logError('-- RestAPI exception generated --')
+      this.loggingService.log('-- RestAPI exception generated --')
       return this.handleRestAPIException(exception)
     } else {
-      this.loggingService.logError('-- GraphQL exception generated --')
+      this.loggingService.log('-- GraphQL exception generated --')
       return this.handleGraphQLException(exception)
     }
   }
@@ -68,13 +68,13 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       const meta = exception.meta
       const extensions = { type, code, meta }
       let message = 'Prisma unhandled error'
-      this.loggingService.logError('- prisma error -')
+      this.loggingService.log('- prisma error -')
 
       if (code === EErrorPrisma.P2002)
         message = `${meta ? meta.target : 'Field'} is already taken.`
       else if (code === EErrorPrisma.P2003)
         message = `The entity you are trying to reach doesn't exist.`
-      else this.loggingService.logError('UNHANDLED ERROR')
+      else this.loggingService.log('UNHANDLED ERROR')
 
       customError = new GraphQLError(message, { extensions })
     } else if (exception instanceof ExceptionClassValidator) {
@@ -83,7 +83,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       const meta = exception.getResponse()
       const extensions = { type, code, meta }
       const message = `Data isn't well formated`
-      this.loggingService.logError('- class validator error -')
+      this.loggingService.log('- class validator error -')
 
       customError = new GraphQLError(message, { extensions })
     } else if (exception instanceof ExceptionCustomClassValidator) {
@@ -92,7 +92,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       const meta = exception.getResponse()
       const extensions = { type, code, meta }
       const message = `Data isn't well formated`
-      this.loggingService.logError('- custom class validator error -')
+      this.loggingService.log('- custom class validator error -')
 
       customError = new GraphQLError(message, { extensions })
     } else if (exception.status === HttpStatus.CONFLICT) {
@@ -101,7 +101,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       const meta = exception.getResponse()
       const extensions = { type, code, meta }
       const message = `Your data contains some conflict with our application`
-      this.loggingService.logError('- custom conflict error -')
+      this.loggingService.log('- custom conflict error -')
 
       customError = new GraphQLError(message, { extensions })
     } else if (exception instanceof UnauthorizedException) {
@@ -110,7 +110,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       const meta = { redirect: '/login', ...exception }
       const extensions = { type, code, meta }
       const message = `You're not authorized to access this data`
-      this.loggingService.logError('- unauthorized error -')
+      this.loggingService.log('- unauthorized error -')
 
       customError = new GraphQLError(message, { extensions })
     } else {
@@ -119,15 +119,15 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       const meta = { redirect: '/login' }
       const extensions = { type, code, meta }
       const message = 'Unhandled error'
-      this.loggingService.logError('- non catched error -')
-      this.loggingService.logError('UNHANDLED ERROR')
-      this.loggingService.logError(exception)
+      this.loggingService.log('- non catched error -')
+      this.loggingService.log('UNHANDLED ERROR')
+      this.loggingService.log(exception)
       console.log(exception)
 
       customError = new GraphQLError(message, { extensions })
     }
 
-    this.loggingService.logError(JSON.stringify(customError))
+    this.loggingService.log(JSON.stringify(customError))
     return customError
   }
 
@@ -139,13 +139,13 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       const code = exception.code
       const meta = exception.meta
       let message = `Prisma unhandled error`
-      this.loggingService.logError('- prisma error -')
+      this.loggingService.log('- prisma error -')
 
       if (code === EErrorPrisma.P2002)
         message = `${meta ? meta.target : 'Field'} is already taken.`
       else if (code === EErrorPrisma.P2003)
         message = `The entity you are trying to reach doesn't exist.`
-      else this.loggingService.logError('UNHANDLED ERROR')
+      else this.loggingService.log('UNHANDLED ERROR')
 
       customError = new CustomRestApiError(type, code, message, meta)
     } else if (exception instanceof ExceptionClassValidator) {
@@ -153,7 +153,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       const code = HttpStatus.I_AM_A_TEAPOT
       const meta = exception.getResponse()
       const message = `Data isn't well formated`
-      this.loggingService.logError('- class validator error -')
+      this.loggingService.log('- class validator error -')
 
       customError = new CustomRestApiError(type, code, message, meta)
     } else if (exception instanceof ExceptionCustomClassValidator) {
@@ -161,7 +161,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       const code = HttpStatus.I_AM_A_TEAPOT
       const meta = exception.getResponse()
       const message = `Data isn't well formated`
-      this.loggingService.logError('- custom class validator error -')
+      this.loggingService.log('- custom class validator error -')
 
       customError = new CustomRestApiError(type, code, message, meta)
     } else if (exception instanceof ExceptionUnauthorizedStrategy) {
@@ -169,7 +169,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       const code = HttpStatus.UNAUTHORIZED
       const meta = { redirect: '/login', ...exception }
       const message = `You're not using the right strategy`
-      this.loggingService.logError('- unauthorized strategy error -')
+      this.loggingService.log('- unauthorized strategy error -')
 
       customError = new CustomRestApiError(type, code, message, meta)
     } else if (
@@ -181,7 +181,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       const code = HttpStatus.UNAUTHORIZED
       const meta = { redirect: '/login' }
       const message = `Invalid credentials`
-      this.loggingService.logError('- invalid credentials error -')
+      this.loggingService.log('- invalid credentials error -')
 
       customError = new CustomRestApiError(type, code, message, meta)
     } else if (exception instanceof NotFoundException) {
@@ -189,7 +189,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       const code = HttpStatus.NOT_FOUND
       const meta = { redirect: '/404', ...exception }
       const message = `404 - Not found`
-      this.loggingService.logError('- Not found error -')
+      this.loggingService.log('- Not found error -')
 
       customError = new CustomRestApiError(type, code, message, meta)
     } else {
@@ -197,15 +197,15 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       const code = HttpStatus.BAD_REQUEST
       const meta = { redirect: '/login' }
       const message = `Unhandled error`
-      this.loggingService.logError('- non catched error -')
-      this.loggingService.logError('UNHANDLED ERROR')
-      this.loggingService.logError(exception)
+      this.loggingService.log('- non catched error -')
+      this.loggingService.log('UNHANDLED ERROR')
+      this.loggingService.log(exception)
       console.log(exception)
 
       customError = new CustomRestApiError(type, code, message, meta)
     }
 
-    this.loggingService.logError(JSON.stringify(customError))
+    this.loggingService.log(JSON.stringify(customError))
     return customError
   }
 }

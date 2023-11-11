@@ -4,6 +4,7 @@ import { AuthService } from '../auth.service'
 import passport42 from 'passport-42'
 import { ExceptionInvalidCredentials } from 'src/common/exceptions/unauthorized-strategy.exception'
 import { User } from '@prisma/client'
+import { ELogType, LoggingService } from 'src/common/logging/file.logging'
 
 @Injectable()
 export class School42Strategy extends PassportStrategy(
@@ -20,6 +21,8 @@ export class School42Strategy extends PassportStrategy(
 
   @Inject(AuthService)
   private readonly authService: AuthService
+
+  private readonly loggingService = new LoggingService(ELogType.login)
 
   async validate(
     token: string,
@@ -57,6 +60,7 @@ export class School42Strategy extends PassportStrategy(
       )
     }
 
+    this.loggingService.log('-- School42 Auth --')
     return callback(null, user)
   }
 }

@@ -4,6 +4,7 @@ import { Profile, Strategy } from 'passport-github2'
 import { AuthService } from '../auth.service'
 import { ExceptionInvalidCredentials } from 'src/common/exceptions/unauthorized-strategy.exception'
 import { User } from '@prisma/client'
+import { ELogType, LoggingService } from 'src/common/logging/file.logging'
 
 @Injectable()
 export class GithubStrategy extends PassportStrategy(Strategy) {
@@ -18,6 +19,8 @@ export class GithubStrategy extends PassportStrategy(Strategy) {
 
   @Inject(AuthService)
   private readonly authService: AuthService
+
+  private readonly loggingService = new LoggingService(ELogType.login)
 
   async validate(
     token: string,
@@ -53,6 +56,7 @@ export class GithubStrategy extends PassportStrategy(Strategy) {
       )
     }
 
+    this.loggingService.log('-- Github Auth --')
     return callback(null, user)
   }
 }

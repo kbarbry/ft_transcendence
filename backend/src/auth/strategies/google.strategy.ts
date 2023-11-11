@@ -5,6 +5,7 @@ import { AuthService } from '../auth.service'
 import { ExceptionInvalidCredentials } from 'src/common/exceptions/unauthorized-strategy.exception'
 import { checkLanguage } from '../utils/check.utils'
 import { ELanguage, User } from '@prisma/client'
+import { ELogType, LoggingService } from 'src/common/logging/file.logging'
 
 @Injectable()
 export class GoogleStrategy extends PassportStrategy(Strategy) {
@@ -20,6 +21,8 @@ export class GoogleStrategy extends PassportStrategy(Strategy) {
   @Inject(AuthService)
   private readonly authService: AuthService
 
+  private readonly loggingService = new LoggingService(ELogType.login)
+
   async validate(
     token: string,
     refreshToken: string,
@@ -31,12 +34,12 @@ export class GoogleStrategy extends PassportStrategy(Strategy) {
     const avatarUrl = profile.photos ? profile.photos[0].value : undefined
     const email = profile.emails ? profile.emails[0].value : undefined
     const username = profile.displayName
-    const langToCheck = profile._json.locale
+    const languageToCheck = profile._json.locale
     let language: ELanguage | undefined = undefined
     let user: User
 
-    if (langToCheck)
-      language = checkLanguage(langToCheck, {
+    if (languageToCheck)
+      language = checkLanguage(languageToCheck, {
         English: 'en',
         French: 'fr',
         Spanish: 'es'
@@ -65,6 +68,7 @@ export class GoogleStrategy extends PassportStrategy(Strategy) {
       )
     }
 
+    this.loggingService.log('-- Google Auth --')
     return callback(null, user)
   }
 }
