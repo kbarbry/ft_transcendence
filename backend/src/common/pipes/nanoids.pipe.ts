@@ -20,16 +20,12 @@ export class NanoidsValidationPipe
     const dataClassArray: NanoidValidationDto[] = value.map((id) =>
       plainToClass(NanoidValidationDto, { id })
     )
-    console.log(dataClassArray)
-
     const validDataClassArray = dataClassArray.filter((dataClass) => {
       const error = validateSync(dataClass)
       return error.length === 0
     })
-    console.log(validDataClassArray)
 
     const validatedIds = validDataClassArray.map((dataClass) => dataClass.id)
-    console.log(validatedIds)
     return validatedIds
   }
 }
