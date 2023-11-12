@@ -1,5 +1,4 @@
-import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common'
-import { Request } from 'express'
+import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common'
 import { GoogleAuthGuard } from './guards/google.guard'
 import { School42AuthGuard } from './guards/42.guard'
 import { GithubGuard } from './guards/github.guard'
@@ -23,8 +22,8 @@ export class AuthController {
 
   @UseGuards(LocalAuthGuard)
   @Post('login')
-  async login(@Req() req: Request) {
-    return { msg: 'Local Auth Login', user: req.user }
+  async login() {
+    return { msg: 'Local Auth Login' }
   }
 
   @Get('42/login')

@@ -144,8 +144,8 @@ export class AuthService {
     return user
   }
 
-  async validateLocalUser(email: string, password: string): Promise<User> {
-    const user = await this.userService.findOnebyMail(email)
+  async validateLocalUser(mail: string, password: string): Promise<User> {
+    const user = await this.userService.findOnebyMail(mail)
     if (!user || !(await bcrypt.compare(password, user.password as string))) {
       throw new ExceptionInvalidCredentials('Mail or password is invalid')
     } else if (!checkStrategy(EStrategy.local, user)) {

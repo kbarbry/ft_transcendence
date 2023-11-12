@@ -27,7 +27,7 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
     try {
       user = await this.authService.validateLocalUser(mail, password)
     } catch (e) {
-      throw new e()
+      throw e
     }
     if (!user) {
       throw new ExceptionInvalidCredentials(

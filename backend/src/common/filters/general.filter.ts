@@ -180,7 +180,9 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       const type = EErrorOrigin.InvalidCredentials
       const code = HttpStatus.UNAUTHORIZED
       const meta = { redirect: '/login' }
-      const message = `Invalid credentials`
+      const message = exception?.message
+        ? exception.message
+        : `Invalid credentials`
       this.loggingService.log('- invalid credentials error -')
 
       customError = new CustomRestApiError(type, code, message, meta)
