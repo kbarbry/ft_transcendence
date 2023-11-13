@@ -17,6 +17,7 @@ import {
   ExceptionUnauthorizedStrategy
 } from '../exceptions/unauthorized-strategy.exception'
 import { ELogType, LoggingService } from '../logging/file.logging'
+import { Response } from 'express'
 
 enum EErrorOrigin {
   Prisma = 'prisma',
@@ -48,11 +49,14 @@ export class GlobalExceptionFilter implements ExceptionFilter {
   private readonly loggingService = new LoggingService(ELogType.error)
 
   catch(exception: any, host: ArgumentsHost) {
-    const request = host.switchToHttp().getRequest<Request>()
+    const context = host.switchToHttp()
+    const request = context.getRequest<Request>()
+    const response = context.getResponse<Response>()
     const restError = request?.url ? true : false
+
     if (restError) {
       this.loggingService.log('-- RestAPI exception generated --')
-      return this.handleRestAPIException(exception)
+      return this.handleRestAPIException(exception, response)
     } else {
       this.loggingService.log('-- GraphQL exception generated --')
       return this.handleGraphQLException(exception)
@@ -131,14 +135,16 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     return customError
   }
 
-  private handleRestAPIException(exception: any) {
+  private handleRestAPIException(exception: any, response: Response) {
     let customError: CustomRestApiError
+    let statusCode: number
 
     if (exception instanceof PrismaClientKnownRequestError) {
       const type = EErrorOrigin.Prisma
       const code = exception.code
       const meta = exception.meta
       let message = `Prisma unhandled error`
+      statusCode = HttpStatus.BAD_REQUEST
       this.loggingService.log('- prisma error -')
 
       if (code === EErrorPrisma.P2002)
@@ -153,6 +159,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       const code = HttpStatus.I_AM_A_TEAPOT
       const meta = exception.getResponse()
       const message = `Data isn't well formated`
+      statusCode = HttpStatus.I_AM_A_TEAPOT
       this.loggingService.log('- class validator error -')
 
       customError = new CustomRestApiError(type, code, message, meta)
@@ -161,6 +168,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       const code = HttpStatus.I_AM_A_TEAPOT
       const meta = exception.getResponse()
       const message = `Data isn't well formated`
+      statusCode = HttpStatus.I_AM_A_TEAPOT
       this.loggingService.log('- custom class validator error -')
 
       customError = new CustomRestApiError(type, code, message, meta)
@@ -169,6 +177,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       const code = HttpStatus.UNAUTHORIZED
       const meta = { redirect: '/login', ...exception }
       const message = `You're not using the right strategy`
+      statusCode = HttpStatus.UNAUTHORIZED
       this.loggingService.log('- unauthorized strategy error -')
 
       customError = new CustomRestApiError(type, code, message, meta)
@@ -183,6 +192,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       const message = exception?.message
         ? exception.message
         : `Invalid credentials`
+      statusCode = HttpStatus.UNAUTHORIZED
       this.loggingService.log('- invalid credentials error -')
 
       customError = new CustomRestApiError(type, code, message, meta)
@@ -191,6 +201,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       const code = HttpStatus.NOT_FOUND
       const meta = { redirect: '/404', ...exception }
       const message = `404 - Not found`
+      statusCode = HttpStatus.NOT_FOUND
       this.loggingService.log('- Not found error -')
 
       customError = new CustomRestApiError(type, code, message, meta)
@@ -199,6 +210,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       const code = HttpStatus.BAD_REQUEST
       const meta = { redirect: '/login' }
       const message = `Unhandled error`
+      statusCode = HttpStatus.BAD_REQUEST
       this.loggingService.log('- non catched error -')
       this.loggingService.log('UNHANDLED ERROR')
       this.loggingService.log(exception)
@@ -206,8 +218,12 @@ export class GlobalExceptionFilter implements ExceptionFilter {
 
       customError = new CustomRestApiError(type, code, message, meta)
     }
-
     this.loggingService.log(JSON.stringify(customError))
-    return customError
+    response.status(statusCode).json({
+      type: customError.type,
+      code: customError.code,
+      message: customError.message,
+      meta: customError.meta
+    })
   }
 }
