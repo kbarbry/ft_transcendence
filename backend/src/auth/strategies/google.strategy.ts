@@ -1,8 +1,11 @@
-import { Inject, Injectable, UnauthorizedException } from '@nestjs/common'
+import { Inject, Injectable } from '@nestjs/common'
 import { PassportStrategy } from '@nestjs/passport'
 import { Profile, Strategy } from 'passport-google-oauth20'
 import { AuthService } from '../auth.service'
-import { ELanguage } from '@prisma/client'
+import { ExceptionInvalidCredentials } from 'src/common/exceptions/unauthorized-strategy.exception'
+import { checkLanguage } from '../utils/check.utils'
+import { ELanguage, User } from '@prisma/client'
+import { ELogType, LoggingService } from 'src/common/logging/file.logging'
 
 @Injectable()
 export class GoogleStrategy extends PassportStrategy(Strategy) {
@@ -18,43 +21,54 @@ export class GoogleStrategy extends PassportStrategy(Strategy) {
   @Inject(AuthService)
   private readonly authService: AuthService
 
+  private readonly loggingService = new LoggingService(ELogType.login)
+
   async validate(
     token: string,
     refreshToken: string,
     profile: Profile,
     callback: CallableFunction
   ) {
+    if (!profile)
+      throw new ExceptionInvalidCredentials('Google OAuth20 failed: no profile')
     const avatarUrl = profile.photos ? profile.photos[0].value : undefined
     const email = profile.emails ? profile.emails[0].value : undefined
     const username = profile.displayName
-    console.log('Reception profile')
-    console.log(profile)
-    // let language: string | undefined = profile._json.locale
-    //   ? profile._json.locale
-    //   : undefined
-    // switch (language) {
-    //   case 'fr': {
-    //     language = ELanguage.English
-    //     break
-    //   }
-    //   case 'en': {
-    //     language = ELanguage.French
-    //     break
-    //   }
-    //   default: {
-    //     language = ELanguage.English
-    //     break
-    //   }
-    // }
-    if (!email) throw new UnauthorizedException()
-    const user = this.authService.validateGoogleUser({
-      username,
-      email,
-      avatarUrl
-      // language
-    })
-    console.log('User found')
-    console.log(user)
-    return callback(null, await user)
+    const languageToCheck = profile._json.locale
+    let language: ELanguage | undefined = undefined
+    let user: User
+
+    if (languageToCheck)
+      language = checkLanguage(languageToCheck, {
+        English: 'en',
+        French: 'fr',
+        Spanish: 'es'
+      })
+
+    if (!email)
+      throw new ExceptionInvalidCredentials('Google OAuth20 failed: no email')
+    if (!username)
+      throw new ExceptionInvalidCredentials(
+        'Google OAuth20 failed: no username'
+      )
+
+    try {
+      user = await this.authService.validateGoogleUser({
+        username,
+        email,
+        avatarUrl,
+        language
+      })
+    } catch (e) {
+      throw e
+    }
+    if (!user) {
+      throw new ExceptionInvalidCredentials(
+        'Google OAuth20 failed: user not found'
+      )
+    }
+
+    this.loggingService.log('-- Google Auth --')
+    return callback(null, user)
   }
 }

@@ -10,11 +10,11 @@ import {
   ExceptionInvalidCredentials,
   ExceptionUnauthorizedStrategy
 } from 'src/common/exceptions/unauthorized-strategy.exception'
-import { User } from '@prisma/client'
+import { ELanguage, User } from '@prisma/client'
 import { PrismaService } from 'src/prisma/prisma.service'
 import {
   CreateUserAOuth20Input,
-  CreateUserAuthInput
+  CreateUserAuthLocalInput
 } from './dto/create-user-auth.input'
 import { randomBytes } from 'crypto'
 import { plainToClass } from 'class-transformer'
@@ -25,7 +25,7 @@ type GoogleUserParams = {
   email: string
   username: string
   avatarUrl?: string
-  language?: string
+  language?: ELanguage
 }
 
 type GithubUserParams = {
@@ -61,25 +61,36 @@ export class AuthService {
     return checkedUsername
   }
 
-  async createUser(
-    data: CreateUserAuthInput | CreateUserAOuth20Input
-  ): Promise<User> {
-    const dataClass = plainToClass(CreateUserAuthInput, data)
+  async createUserOAuth20(data: CreateUserAOuth20Input): Promise<User> {
+    const dataClass = plainToClass(CreateUserAOuth20Input, data)
     const error = await validate(dataClass)
+
     if (error.length) throw new ExceptionCustomClassValidator(error)
+
     return this.prisma.user.create({ data })
   }
 
-  async validateGoogleUser(profile: GoogleUserParams) {
+  async createUserLocal(data: CreateUserAuthLocalInput): Promise<User> {
+    const dataClass = plainToClass(CreateUserAuthLocalInput, data)
+    const error = await validate(dataClass)
+
+    if (error.length) throw new ExceptionCustomClassValidator(error)
+
+    data.password = bcrypt.hashSync(data.password, 10)
+    return this.prisma.user.create({ data })
+  }
+
+  async validateGoogleUser(profile: GoogleUserParams): Promise<User> {
     let user = await this.userService.findOnebyMail(profile.email)
     if (!user) {
       const username = await this.checkUsername(profile.username)
       let avatarUrl = profile.avatarUrl
       if (avatarUrl) avatarUrl = isURL(avatarUrl) ? avatarUrl : undefined
-      user = await this.createUser({
+      user = await this.createUserOAuth20({
         mail: profile.email,
         username: username,
         avatarUrl: avatarUrl,
+        languages: profile.language,
         googleAuth: true
       })
     } else if (!checkStrategy(EStrategy.google, user)) {
@@ -91,13 +102,13 @@ export class AuthService {
     return user
   }
 
-  async validateGitHubUser(profile: GithubUserParams) {
+  async validateGitHubUser(profile: GithubUserParams): Promise<User> {
     let user = await this.userService.findOnebyMail(profile.email)
     if (!user) {
       const username = await this.checkUsername(profile.username)
       let avatarUrl = profile.avatarUrl
       if (avatarUrl) avatarUrl = isURL(avatarUrl) ? avatarUrl : undefined
-      user = await this.createUser({
+      user = await this.createUserOAuth20({
         mail: profile.email,
         username: username,
         avatarUrl: avatarUrl,
@@ -112,13 +123,13 @@ export class AuthService {
     return user
   }
 
-  async validateSchool42(profile: School42UserParams) {
+  async validateSchool42(profile: School42UserParams): Promise<User> {
     let user = await this.userService.findOnebyMail(profile.email)
     if (!user) {
       const username = await this.checkUsername(profile.username)
       let avatarUrl = profile.avatarUrl
       if (avatarUrl) avatarUrl = isURL(avatarUrl) ? avatarUrl : undefined
-      user = await this.createUser({
+      user = await this.createUserOAuth20({
         mail: profile.email,
         username: username,
         avatarUrl: avatarUrl,
@@ -133,8 +144,8 @@ export class AuthService {
     return user
   }
 
-  async validateLocalUser(email: string, password: string) {
-    const user = await this.userService.findOnebyMail(email)
+  async validateLocalUser(mail: string, password: string): Promise<User> {
+    const user = await this.userService.findOnebyMail(mail)
     if (!user || !(await bcrypt.compare(password, user.password as string))) {
       throw new ExceptionInvalidCredentials('Mail or password is invalid')
     } else if (!checkStrategy(EStrategy.local, user)) {

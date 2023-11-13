@@ -21,13 +21,14 @@ export class UpdateUserInput {
   })
   avatarUrl?: string
 
-  @Field(() => String)
+  @Field(() => String, { nullable: true })
+  @IsOptional()
   @IsString({ message: '$property must be a string.' })
   @Length(1, 30, {
     message:
       '$property must be between $constraint1 and $constraint2 characters long.'
   })
-  username: string
+  username?: string
 
   @Field(() => EStatus, { nullable: true })
   @IsOptional()

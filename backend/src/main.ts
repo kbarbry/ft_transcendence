@@ -3,9 +3,11 @@ import { AppModule } from './app.module'
 import { ValidationPipe } from '@nestjs/common'
 import { GlobalExceptionFilter } from './common/filters/general.filter'
 import { ExceptionClassValidator } from './common/exceptions/class-validator.exception'
-import session from 'express-session'
 import { randomBytes } from 'crypto'
+import session from 'express-session'
 import passport from 'passport'
+import favicon from 'serve-favicon'
+import path from 'path'
 
 
 async function bootstrap() {
@@ -48,6 +50,7 @@ async function bootstrap() {
       }
     })
   )
+  app.use(favicon(path.join(__dirname, '..', 'public', 'favicon.ico')))
   app.use(passport.initialize())
   app.use(passport.session())
   await app.listen(3000)
