@@ -1,10 +1,26 @@
-import { User } from '@prisma/client'
+import { ELanguage, User } from '@prisma/client'
 
 export enum EStrategy {
   local = 'local',
   github = 'github',
   google = 'google',
   school42 = 'school42'
+}
+
+type LanguageName = {
+  French: string
+  English: string
+  Spanish: string
+}
+
+export function checkLanguage(
+  language: string,
+  languageName: LanguageName
+): ELanguage {
+  let langRes: ELanguage = ELanguage.English
+  if (language === languageName.French) langRes = ELanguage.French
+  // Spanish not active yet
+  return langRes
 }
 
 export function checkValidStrategies(user: User): EStrategy[] {

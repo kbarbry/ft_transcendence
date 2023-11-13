@@ -11,7 +11,7 @@ import {
 } from 'class-validator'
 
 @InputType()
-export class CreateUserAuthInput {
+class CreateUserAuthInput {
   @Field(() => String)
   @IsEmail({}, { message: '$property must be a valid email address.' })
   mail: string
@@ -32,6 +32,11 @@ export class CreateUserAuthInput {
       '$property must be between $constraint1 and $constraint2 characters long.'
   })
   username: string
+
+  @Field(() => ELanguage, { nullable: true })
+  @IsOptional()
+  @IsEnum(ELanguage, { message: '$property must be a valid ELanguage.' })
+  languages?: ELanguage
 }
 
 @InputType()
@@ -61,9 +66,4 @@ export class CreateUserAuthLocalInput extends CreateUserAuthInput {
       '$property must be between $constraint1 and $constraint2 characters long.'
   })
   password: string
-
-  @Field(() => ELanguage, { nullable: true })
-  @IsOptional()
-  @IsEnum(ELanguage, { message: '$property must be a valid ELanguage.' })
-  languages?: ELanguage
 }

@@ -1,12 +1,10 @@
-import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common'
-import { Request } from 'express'
+import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common'
 import { GoogleAuthGuard } from './guards/google.guard'
 import { School42AuthGuard } from './guards/42.guard'
 import { GithubGuard } from './guards/github.guard'
 import { LocalAuthGuard } from './guards/local.guard'
 import { AuthService } from './auth.service'
 import { CreateUserAuthLocalInput } from './dto/create-user-auth.input'
-import * as bcrypt from 'bcrypt'
 
 @Controller('auth')
 export class AuthController {
@@ -15,8 +13,7 @@ export class AuthController {
   @Post('signup')
   async postRegister(@Body() userInput: CreateUserAuthLocalInput) {
     try {
-      userInput.password = await bcrypt.hash(userInput.password, 10)
-      await this.authService.createUser(userInput)
+      await this.authService.createUserLocal(userInput)
     } catch (e) {
       throw e
     }
@@ -25,8 +22,8 @@ export class AuthController {
 
   @UseGuards(LocalAuthGuard)
   @Post('login')
-  async login(@Req() req: Request) {
-    return { msg: 'Local Auth Login', user: req.user }
+  async login() {
+    return { msg: 'Local Auth Login' }
   }
 
   @Get('42/login')
