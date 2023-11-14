@@ -1,28 +1,29 @@
-import React from 'react';
+// findUser.tsx
 import { useQuery, gql } from '@apollo/client';
+import React, { useState, useEffect } from 'react';
 
-const FIND_USER_BY_MAIL = gql`
-query($findOneUserId: String!) {
-  findOneUser(id: $findOneUserId) {
-    avatarUrl
-    createdAt
-    id
-    level
-    languages
-    mail
-    status
-    username
-  }
-}`
-;
 
-function findUser() {
-  const findOneUserId = 'sk8WUSairiEYG7m3dtykb';
-
+export function FindUser(id: string) {
+  const findOneUserId = id;
+  const FIND_USER_BY_MAIL = gql`
+    query($findOneUserId: String!) {
+      findOneUser(id: $findOneUserId) {
+        avatarUrl
+        createdAt
+        id
+        level
+        languages
+        mail
+        status
+        username
+      }
+    }
+  `;
+  
   const { loading, error, data } = useQuery(FIND_USER_BY_MAIL, {
     variables: { findOneUserId: findOneUserId },
   });
-
+  
   if (loading) {
     return <div>Loading...</div>;
   }
@@ -32,16 +33,12 @@ function findUser() {
   }
 
   const user = data.findOneUser;
-  const username = user.username;
-
   return (
     <div>
-      <h1>User Information</h1>
-      <p>Username: {username}</p>
-      <p>mail: {user.mail}</p>
-      <p>avatarUrl:   {user.avatarUrl}</p>
+      <p>Username: {user.username}</p>
+      <p>EMAIL: {user.mail}</p>
     </div>
   );
 }
 
-export default findUser;
+export default FindUser;

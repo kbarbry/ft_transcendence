@@ -12,6 +12,7 @@ export class AuthController {
 
   @Post('signup')
   async postRegister(@Body() userInput: CreateUserAuthLocalInput) {
+    console.log('signup')
     try {
       await this.authService.createUserLocal(userInput)
     } catch (e) {

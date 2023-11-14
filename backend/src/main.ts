@@ -12,11 +12,22 @@ import path from 'path'
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule)
-  const cors = require("cors");
-  app.use(cors({
-    origin: "http://localhost:5173/",
-    methods: ["GET", "POST"]
-  }));
+  // const cors = require("cors");
+  // app.use(cors({
+  //   origin: "http://localhost:5173",
+  //   methods: ["GET", "POST"]
+  // }));
+const cors = require('cors');
+
+// Configuration CORS
+const corsOptions = {
+  origin: 'http://localhost:5173', // Remplacez par l'URL de votre application front-end
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  credentials: true,
+  optionsSuccessStatus: 204, // Pour les demandes OPTIONS
+};
+
+app.use(cors(corsOptions));
   app.useGlobalFilters(new GlobalExceptionFilter())
   app.useGlobalPipes(
     new ValidationPipe({
