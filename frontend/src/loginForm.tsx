@@ -1,17 +1,17 @@
 import React, { useState } from 'react';
-import {createUser} from './createUser'
+import {LogUser} from './logUser'
 
 
-export const Signup = (props : any) => {
+export const Login = (props : any) => {
     const [email, setEmail] = useState('')
     const [pass, setPass] = useState('')
     const [username, setUsername] = useState('')
     const [userData, setUserData] = useState(null);
 
 
-    const handleCreateUserClick = () => {
+    const handleLogUserClick = () => {
         console.log('button clicked')
-        createUser(username, email, pass)
+        LogUser(username, email, pass)
           .then((userData) => {
             setUserData(userData);
           })
@@ -27,17 +27,17 @@ export const Signup = (props : any) => {
 
     return (
         <div className="auth-form-container">
-            <h2>Register</h2>
-            <form className="register-form" onSubmit={handleSubmit}>
+            <h2>Login</h2>
+            <form className="login-form" onSubmit={handleSubmit}>
                 <label htmlFor="email">email</label>
                 <input value={email} onChange={(e) => setEmail(e.target.value)}type="email" placeholder="youremail@gmail.com" id="email" name="email" />
                 <label htmlFor="username">username</label>
                 <input value={username} onChange={(e) => setUsername(e.target.value)}type="username" placeholder="username" id="username" name="username" />
                 <label htmlFor="password">password</label>
                 <input value={pass} onChange={(e) => setPass(e.target.value)} type="password" placeholder="********" id="password" name="password" />
-                <button onClick={handleCreateUserClick}>Créer un utilisateur</button>
+                <button onClick={handleLogUserClick}>Login</button>
             </form>
-            <button className="link-btn" onClick={() => props.onFormSwitch('Login')}>Already have an account? Log in here.</button>
+            <button className="link-btn" onClick={() => props.onFormSwitch('Signup')}>Don't have have an account ? Register here.</button>
         </div>
     )
 }

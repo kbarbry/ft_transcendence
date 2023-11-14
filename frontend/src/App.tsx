@@ -5,46 +5,33 @@ import './App.css';
 import { createUser } from './createUser'
 import { SignupForm } from './signUpForm'
 import { FindUser } from './findUser'
+import {Signup} from './signUpForm'
+import {LogUser} from './logUser'
+import {Login} from './loginForm'
 
 function App() {
-  const [count, setCount] = useState(0);
-  const [userData, setUserData] = useState(null);
-  const [userDetails, setUserDetails] = useState(null);
 
-  const handleCreateUserClick = () => {
-    console.log('button clicked')
-    createUser('Created_Username', 'votre_email2@example.com', '12345678')
-      .then((userData) => {
-        setUserData(userData);
-      })
-      .catch((error) => {
-        console.error('Erreur lors de la création de l\'utilisateur:', error);
-      });
-  };
+  const [currentForm, setCurrentForm] = useState('login');
+
+  const toggleForm = (formName : any) => {
+    setCurrentForm(formName);
+    console.log(formName)
+  }
+
+  return (
+    <div className="App">
+      {
+        currentForm === "Login" ? <Login onFormSwitch={toggleForm} /> : <Signup onFormSwitch={toggleForm} />
+      }
+    </div>
+  );
 
   return (
     <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-      </div>
-      <div>
+      {/* <div>
         <button onClick={handleCreateUserClick}>Créer un utilisateur</button>
-      </div>
-        {FindUser('uMfOIJgh_KALob-TUA1kl')}
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      </div> */}
+
     </>
   );
 }
