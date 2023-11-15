@@ -4,11 +4,11 @@ import {
   IsEnum,
   IsNumber,
   IsOptional,
-  IsString,
   IsUrl,
   Length,
   Min
 } from 'class-validator'
+import { CustomIsName } from 'src/common/pipes/username.pipe'
 
 @InputType()
 export class UpdateUserInput {
@@ -23,11 +23,7 @@ export class UpdateUserInput {
 
   @Field(() => String, { nullable: true })
   @IsOptional()
-  @IsString({ message: '$property must be a string.' })
-  @Length(1, 30, {
-    message:
-      '$property must be between $constraint1 and $constraint2 characters long.'
-  })
+  @CustomIsName()
   username?: string
 
   @Field(() => EStatus, { nullable: true })

@@ -3,33 +3,36 @@ import { InputType } from '@nestjs/graphql'
 import { plainToClass } from 'class-transformer'
 import {
   IsString,
-  Length,
   Matches,
-  ValidationOptions,
+  Length,
+  validateSync,
   registerDecorator,
-  validateSync
+  ValidationOptions
 } from 'class-validator'
 import { ExceptionCustomClassValidator } from '../exceptions/class-validator.exception'
 
 @InputType()
 class CustomValidationPipeDto {
   @IsString({ message: '$property must be a string.' })
-  @Length(1, 30, {
+  @Length(8, 30, {
     message:
       '$property must be between $constraint1 and $constraint2 characters long.'
   })
-  @Matches(/^[a-zA-Z0-9]+(?: [a-zA-Z0-9]+)*$/, {
-    message: '$property can only contain letters, numbers, and single spaces.'
-  })
-  username: string
+  @Matches(
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*()-_=+{};:'",<.>/?\\[\]`~])[^ ]*$/,
+    {
+      message: '$property must meet password complexity requirements.'
+    }
+  )
+  password: string
 }
 
 @Injectable()
-export class UsernameValidationPipe implements PipeTransform<string, string> {
+export class PasswordValidationPipe implements PipeTransform<string, string> {
   transform(value: string): string {
     const trimmedValue = value.trim()
     const dataClass = plainToClass(CustomValidationPipeDto, {
-      username: trimmedValue
+      password: trimmedValue
     })
     const error = validateSync(dataClass)
     if (error.length) throw new ExceptionCustomClassValidator(error)
@@ -37,17 +40,17 @@ export class UsernameValidationPipe implements PipeTransform<string, string> {
   }
 }
 
-export function CustomIsName(validationOptions?: ValidationOptions) {
+export function CustomIsPassword(validationOptions?: ValidationOptions) {
   return function (object: Record<string, any>, propertyName: string): void {
     registerDecorator({
-      name: 'customUsernameValidator',
+      name: 'customPasswordValidator',
       target: object.constructor,
       propertyName,
       options: validationOptions,
       validator: {
         async validate(value: any) {
           try {
-            new UsernameValidationPipe().transform(value)
+            new PasswordValidationPipe().transform(value)
             return true
           } catch (error) {
             return false

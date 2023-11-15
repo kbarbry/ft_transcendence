@@ -1,19 +1,14 @@
 import { InputType, Field } from '@nestjs/graphql'
 import { ELanguage } from '@prisma/client'
-import {
-  IsEnum,
-  IsOptional,
-  IsString,
-  IsUrl,
-  Length,
-  IsEmail,
-  IsBoolean
-} from 'class-validator'
+import { IsEnum, IsOptional, IsUrl, Length, IsBoolean } from 'class-validator'
+import { CustomIsEmail } from 'src/common/pipes/email.pipe'
+import { CustomIsPassword } from 'src/common/pipes/password.pipe'
+import { CustomIsName } from 'src/common/pipes/username.pipe'
 
 @InputType()
 class CreateUserAuthInput {
   @Field(() => String)
-  @IsEmail({}, { message: '$property must be a valid email address.' })
+  @CustomIsEmail({ message: '$property must be a valid email address.' })
   mail: string
 
   @Field(() => String, { nullable: true })
@@ -26,11 +21,7 @@ class CreateUserAuthInput {
   avatarUrl?: string
 
   @Field(() => String)
-  @IsString({ message: '$property must be a string.' })
-  @Length(1, 30, {
-    message:
-      '$property must be between $constraint1 and $constraint2 characters long.'
-  })
+  @CustomIsName()
   username: string
 
   @Field(() => ELanguage, { nullable: true })
@@ -60,10 +51,6 @@ export class CreateUserAOuth20Input extends CreateUserAuthInput {
 @InputType()
 export class CreateUserAuthLocalInput extends CreateUserAuthInput {
   @Field(() => String)
-  @IsString({ message: '$property must be a string.' })
-  @Length(6, 30, {
-    message:
-      '$property must be between $constraint1 and $constraint2 characters long.'
-  })
+  @CustomIsPassword()
   password: string
 }
