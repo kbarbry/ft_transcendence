@@ -5,7 +5,6 @@ import { CustomIsEmail } from 'src/common/pipes/email.pipe'
 import { CustomIsPassword } from 'src/common/pipes/password.pipe'
 import { CustomIsName } from 'src/common/pipes/username.pipe'
 
-@InputType()
 class CreateUserAuthInput {
   @Field(() => String)
   @CustomIsEmail({ message: '$property must be a valid email address.' })
@@ -21,7 +20,10 @@ class CreateUserAuthInput {
   avatarUrl?: string
 
   @Field(() => String)
-  @CustomIsName()
+  @CustomIsName({
+    message:
+      '$property must be between $constraint1 and $constraint2 characters long and must only contain letters, number and single spaces.'
+  })
   username: string
 
   @Field(() => ELanguage, { nullable: true })
@@ -34,23 +36,26 @@ class CreateUserAuthInput {
 export class CreateUserAOuth20Input extends CreateUserAuthInput {
   @Field(() => Boolean)
   @IsOptional()
-  @IsBoolean()
+  @IsBoolean({ message: '$property must be a boolean.' })
   googleAuth?: boolean
 
   @Field(() => Boolean)
   @IsOptional()
-  @IsBoolean()
+  @IsBoolean({ message: '$property must be a boolean.' })
   githubAuth?: boolean
 
   @Field(() => Boolean)
   @IsOptional()
-  @IsBoolean()
+  @IsBoolean({ message: '$property must be a boolean.' })
   school42Auth?: boolean
 }
 
 @InputType()
 export class CreateUserAuthLocalInput extends CreateUserAuthInput {
   @Field(() => String)
-  @CustomIsPassword()
+  @CustomIsPassword({
+    message:
+      "$property must be between 8 and 50 characters and contain at least 1 lowercase character, 1 uppercase character, 1 number and 1 special character (all special characters aren't authorized.)"
+  })
   password: string
 }

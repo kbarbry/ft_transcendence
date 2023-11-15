@@ -23,7 +23,10 @@ export class UpdateUserInput {
 
   @Field(() => String, { nullable: true })
   @IsOptional()
-  @CustomIsName()
+  @CustomIsName({
+    message:
+      '$property must be between $constraint1 and $constraint2 characters long and must only contain letters, number and single spaces.'
+  })
   username?: string
 
   @Field(() => EStatus, { nullable: true })

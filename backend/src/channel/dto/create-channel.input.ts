@@ -11,13 +11,16 @@ import {
   Max,
   Matches
 } from 'class-validator'
-import { CustomIsPassword } from 'src/common/pipes/password.pipe'
-import { CustomIsName } from 'src/common/pipes/username.pipe'
+import { CustomIsPassword } from '../../common/pipes/password.pipe'
+import { CustomIsName } from '../../common/pipes/username.pipe'
 
 @InputType()
 export class CreateChannelInput {
   @Field(() => String)
-  @CustomIsName()
+  @CustomIsName({
+    message:
+      '$property must be between $constraint1 and $constraint2 characters long and must only contain letters, number and single spaces.'
+  })
   name: string
 
   @Field(() => String, { nullable: true })

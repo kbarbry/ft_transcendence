@@ -14,16 +14,13 @@ import { ExceptionCustomClassValidator } from '../exceptions/class-validator.exc
 @InputType()
 class CustomValidationPipeDto {
   @IsString({ message: '$property must be a string.' })
-  @Length(8, 30, {
+  @Length(8, 50, {
     message:
       '$property must be between $constraint1 and $constraint2 characters long.'
   })
-  @Matches(
-    /^(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*()-_=+{};:'",<.>/?\\[\]`~])[^ ]*$/,
-    {
-      message: '$property must meet password complexity requirements.'
-    }
-  )
+  @Matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&+=]).*$/, {
+    message: '$property must meet password complexity requirements.'
+  })
   password: string
 }
 
@@ -31,6 +28,7 @@ class CustomValidationPipeDto {
 export class PasswordValidationPipe implements PipeTransform<string, string> {
   transform(value: string): string {
     const trimmedValue = value.trim()
+    console.log(value)
     const dataClass = plainToClass(CustomValidationPipeDto, {
       password: trimmedValue
     })
