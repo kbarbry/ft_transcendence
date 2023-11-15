@@ -1,5 +1,6 @@
 import { Field, InputType } from '@nestjs/graphql'
-import { IsOptional, IsString, IsUrl, Length, Matches } from 'class-validator'
+import { IsOptional, IsUrl, Length, Matches } from 'class-validator'
+import { CustomIsName } from 'src/common/pipes/username.pipe'
 
 @InputType()
 export class CreateChannelMemberInput {
@@ -14,11 +15,7 @@ export class CreateChannelMemberInput {
 
   @Field(() => String, { nullable: true })
   @IsOptional()
-  @IsString({ message: '$property must be a string.' })
-  @Length(1, 30, {
-    message:
-      '$property must be between $constraint1 and $constraint2 characters long.'
-  })
+  @CustomIsName()
   nickname?: string
 
   @Field(() => String)

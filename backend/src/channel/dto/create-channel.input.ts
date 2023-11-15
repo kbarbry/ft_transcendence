@@ -11,15 +11,13 @@ import {
   Max,
   Matches
 } from 'class-validator'
+import { CustomIsPassword } from 'src/common/pipes/password.pipe'
+import { CustomIsName } from 'src/common/pipes/username.pipe'
 
 @InputType()
 export class CreateChannelInput {
   @Field(() => String)
-  @IsString({ message: '$property must be a string.' })
-  @Length(1, 30, {
-    message:
-      '$property must be between $constraint1 and $constraint2 characters long.'
-  })
+  @CustomIsName()
   name: string
 
   @Field(() => String, { nullable: true })
@@ -42,11 +40,7 @@ export class CreateChannelInput {
 
   @Field(() => String, { nullable: true })
   @IsOptional()
-  @IsString({ message: '$property must be a string.' })
-  @Length(1, 30, {
-    message:
-      '$property must be between $constraint1 and $constraint2 characters long.'
-  })
+  @CustomIsPassword()
   password?: string
 
   @Field(() => String)
