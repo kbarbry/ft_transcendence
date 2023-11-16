@@ -6,6 +6,11 @@ import {
   UpdateChannelInput,
   UpdateChannelOwnerIdInput
 } from './dto/update-channel.input'
+import { ExceptionUserNotFound } from './exceptions/channel-member.exceptions'
+import {
+  ExceptionChannelMemberNotCreatedInChannelCreation,
+  ExceptionInvalidMaxUserInChannel
+} from './exceptions/channel.exception'
 
 @Injectable()
 export class ChannelService {
@@ -16,12 +21,39 @@ export class ChannelService {
   //**************************************************//
 
   async create(data: CreateChannelInput): Promise<Channel> {
-    return this.prisma.channel.create({
+    const channel = await this.prisma.channel.create({
       data
     })
+    const userOwner = await this.prisma.user.findUnique({
+      where: { id: data.ownerId }
+    })
+    if (!userOwner) throw new ExceptionUserNotFound()
+    const channelMember = await this.prisma.channelMember.create({
+      data: {
+        avatarUrl: userOwner.avatarUrl,
+        nickname: userOwner.username,
+        userId: userOwner.id,
+        channelId: channel.id,
+        type: 'Admin'
+      }
+    })
+    if (!channelMember) {
+      await this.prisma.channel.delete({ where: { id: channel.id } })
+      throw new ExceptionChannelMemberNotCreatedInChannelCreation()
+    }
+    return channel
   }
 
   async update(id: string, data: UpdateChannelInput): Promise<Channel> {
+    const userCount = (
+      await this.prisma.channelMember.findMany({
+        where: {
+          channelId: id
+        }
+      })
+    ).length
+    if (data.maxUsers && data.maxUsers < userCount)
+      throw new ExceptionInvalidMaxUserInChannel()
     return this.prisma.channel.update({
       where: {
         id
