@@ -15,7 +15,6 @@ describe('PrivateMessageResolver', () => {
     delete: jest.fn(),
     findOne: jest.fn(),
     findAllMessageWith: jest.fn(),
-    findAllMessageWithLiteVersion: jest.fn(),
     findPrivateMessageContain: jest.fn()
   }
   beforeAll(async () => {
@@ -36,7 +35,7 @@ describe('PrivateMessageResolver', () => {
     jest.clearAllMocks()
     privateMessageService.create.mockReset()
   })
-  it('PrivateMessage Resolver should be defined', () => {
+  it('privateMessage should be defined', () => {
     expect(privateMessageresolver).toBeDefined()
   })
 
@@ -48,31 +47,36 @@ describe('PrivateMessageResolver', () => {
         receiverId: '2'
       }
       const resExpected = { id: '1', ...data }
-      privateMessageService.create.mockReturnValue(resExpected)
 
+      privateMessageService.create.mockReturnValue(resExpected)
       const result = await privateMessageresolver.createPrivateMessage(data)
 
       expect(result).toStrictEqual(resExpected)
+      expect(privateMessageService.create).toHaveBeenCalledWith(data)
     })
     it('updatePrivateMessage', async () => {
       const data: UpdatePrivateMessageInput = {
         content: 'this is a message'
       }
       const resExpected = { id: '1', ...data }
-      privateMessageService.update.mockReturnValue(resExpected)
 
+      privateMessageService.update.mockReturnValue(resExpected)
       const result = await privateMessageresolver.updatePrivateMessage(
         '1',
         data
       )
+
+      expect(result).toStrictEqual(resExpected)
       expect(privateMessageService.update).toHaveBeenCalledWith('1', data)
     })
     it('deletePrivateMessage', async () => {
       const resExpected = { id: '1' }
-      privateMessageService.delete.mockReturnValue(resExpected)
 
+      privateMessageService.delete.mockReturnValue(resExpected)
       const result = await privateMessageresolver.deletePrivateMessage('1')
+
       expect(result).toStrictEqual(resExpected)
+      expect(privateMessageService.delete).toHaveBeenCalledWith('1')
     })
   })
   describe('Test Query', () => {
@@ -113,35 +117,6 @@ describe('PrivateMessageResolver', () => {
         '1',
         '2'
       )
-    })
-    it('findAllMessageWithLiteVersion', async () => {
-      const resExpected = [
-        {
-          senderId: '1',
-          receiverId: '2',
-          content: 'this is a message'
-        },
-        {
-          senderId: '12',
-          receiverId: '23',
-          content: 'this is a message'
-        }
-      ]
-
-      privateMessageService.findAllMessageWithLiteVersion.mockReturnValue(
-        resExpected
-      )
-
-      const result =
-        await privateMessageresolver.findAllPrivateMessageWithLiteVersion(
-          '1',
-          '2'
-        )
-
-      expect(result).toStrictEqual(resExpected)
-      expect(
-        privateMessageService.findAllMessageWithLiteVersion
-      ).toHaveBeenCalledWith('1', '2')
     })
     it('findPrivateMessageContain', async () => {
       const resExpected = [
@@ -450,10 +425,7 @@ describe('PrivateMessageResolver', () => {
           data: ''
         }
         const res = {
-          message: [
-            'content must be between 1 and 2000 characters long.',
-            'content must be a string.'
-          ],
+          message: ['content must be between 1 and 2000 characters long.'],
           error: 'Bad Request',
           statusCode: 400
         }
@@ -474,10 +446,7 @@ describe('PrivateMessageResolver', () => {
           data: ''
         }
         const res = {
-          message: [
-            'content must be between 1 and 2000 characters long.',
-            'content must be a string.'
-          ],
+          message: ['content must be between 1 and 2000 characters long.'],
           error: 'Bad Request',
           statusCode: 400
         }

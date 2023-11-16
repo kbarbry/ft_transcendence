@@ -62,19 +62,6 @@ export class PrivateMessageResolver {
   }
 
   @Query(() => [PrivateMessage])
-  findAllPrivateMessageWithLiteVersion(
-    @Args('senderId', { type: () => String }, NanoidValidationPipe)
-    senderId: string,
-    @Args('receiverId', { type: () => String }, NanoidValidationPipe)
-    receiverId: string
-  ): Promise<PrivateMessage[]> {
-    return this.privateMessageService.findAllMessageWithLiteVersion(
-      senderId,
-      receiverId
-    )
-  }
-
-  @Query(() => [PrivateMessage])
   findAllPrivateMessageContain(
     @Args('senderId', { type: () => String }, NanoidValidationPipe)
     senderId: string,
