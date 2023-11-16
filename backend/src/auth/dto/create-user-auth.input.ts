@@ -22,7 +22,7 @@ class CreateUserAuthInput {
   @Field(() => String)
   @CustomIsName({
     message:
-      '$property must be between $constraint1 and $constraint2 characters long and must only contain letters, number and single spaces.'
+      '$property must be between 1 and 30 characters long and must only contain letters, number and single spaces.'
   })
   username: string
 
