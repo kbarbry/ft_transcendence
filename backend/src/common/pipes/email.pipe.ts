@@ -32,7 +32,7 @@ export class EmailValidationPipe implements PipeTransform<string, string> {
     })
     const error = validateSync(dataClass)
     if (error.length) throw new ExceptionCustomClassValidator(error)
-    return value
+    return trimmedValue
   }
 }
 

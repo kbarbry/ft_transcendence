@@ -28,13 +28,12 @@ class CustomValidationPipeDto {
 export class PasswordValidationPipe implements PipeTransform<string, string> {
   transform(value: string): string {
     const trimmedValue = value.trim()
-    console.log(value)
     const dataClass = plainToClass(CustomValidationPipeDto, {
       password: trimmedValue
     })
     const error = validateSync(dataClass)
     if (error.length) throw new ExceptionCustomClassValidator(error)
-    return value
+    return trimmedValue
   }
 }
 

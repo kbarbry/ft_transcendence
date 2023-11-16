@@ -1,13 +1,12 @@
 import { Field, InputType } from '@nestjs/graphql'
-import { IsString, Length, Matches } from 'class-validator'
+import { Length, Matches } from 'class-validator'
+import { CustomIsMessage } from 'src/common/pipes/message.pipe'
 
 @InputType()
 export class CreatePrivateMessageInput {
   @Field(() => String)
-  @IsString({ message: '$property must be a string.' })
-  @Length(1, 2000, {
-    message:
-      '$property must be between $constraint1 and $constraint2 characters long.'
+  @CustomIsMessage({
+    message: '$property must be between 1 and 2000 characters long.'
   })
   content: string
 

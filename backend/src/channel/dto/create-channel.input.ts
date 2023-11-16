@@ -2,7 +2,6 @@ import { InputType, Field, Int } from '@nestjs/graphql'
 import { EChannelType } from '@prisma/client'
 import {
   IsOptional,
-  IsString,
   IsUrl,
   Length,
   IsNumber,
@@ -13,6 +12,7 @@ import {
 } from 'class-validator'
 import { CustomIsPassword } from '../../common/pipes/password.pipe'
 import { CustomIsName } from '../../common/pipes/username.pipe'
+import { CustomIsTopic } from 'src/common/pipes/topic.pipe'
 
 @InputType()
 export class CreateChannelInput {
@@ -34,10 +34,8 @@ export class CreateChannelInput {
 
   @Field(() => String, { nullable: true })
   @IsOptional()
-  @IsString({ message: '$property must be a string.' })
-  @Length(1, 1024, {
-    message:
-      '$property must be between $constraint1 and $constraint2 characters long.'
+  @CustomIsTopic({
+    message: '$property must be between 1 and 1024 characters long.'
   })
   topic?: string
 
