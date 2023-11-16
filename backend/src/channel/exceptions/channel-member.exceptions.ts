@@ -12,6 +12,15 @@ export class ExceptionTryingToUnmakeAdminAMember extends HttpException {
   }
 }
 
+export class ExceptionTryingToUnmakeAdminTheOwner extends HttpException {
+  constructor() {
+    super(
+      'You are trying to demote admin in the server owner',
+      HttpStatus.CONFLICT
+    )
+  }
+}
+
 export class ExceptionTryingToMuteAMuted extends HttpException {
   constructor() {
     super(

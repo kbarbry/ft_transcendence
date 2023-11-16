@@ -11,13 +11,14 @@ import { ExceptionUserBlockedInChannel } from '../channel/exceptions/blocked.exc
 import { ChannelService } from '../channel/channel.service'
 import { UserService } from '../user/user.service'
 import { ExceptionUserNotInvited } from '../channel/exceptions/invited.exception'
-import { ExceptionInvalidMaxUserInChannel } from '../channel/exceptions/channel.exception'
+import { ExceptionMaxUserReachedInChannel } from '../channel/exceptions/channel.exception'
 import {
   ExceptionTryingToMakeAdminAnAdmin,
   ExceptionTryingToMuteAMuted,
   ExceptionTryingToUnmuteAnUnmuted,
   ExceptionTryingToUnmakeAdminAMember,
-  ExceptionUserNotFound
+  ExceptionUserNotFound,
+  ExceptionTryingToUnmakeAdminTheOwner
 } from '../channel/exceptions/channel-member.exceptions'
 
 describe('ChannelMemberService', () => {
@@ -231,6 +232,22 @@ describe('ChannelMemberService', () => {
       expect(foundChannelMember).toBeDefined()
     })
 
+    it('should return user is owner', async () => {
+      const foundChannelMember = await channelMemberService.isOwner(
+        '567ayPlUh0qtDrePkJ87t',
+        'pihayPlUh0qtDrePkJ87t'
+      )
+      expect(foundChannelMember).toStrictEqual(true)
+    })
+
+    it('should return user is not owner', async () => {
+      const foundChannelMember = await channelMemberService.isOwner(
+        '765ayPlUh0qtDrePkJ87t',
+        'pihayPlUh0qtDrePkJ87t'
+      )
+      expect(foundChannelMember).toStrictEqual(false)
+    })
+
     it('should find all Channel', async () => {
       const channelUsers = await channelMemberService.findAllInChannel(
         'pihayPlUh0qtDrePkJ87t'
@@ -268,6 +285,15 @@ describe('ChannelMemberService', () => {
           'pihayPlUh0qtDrePkJ87t'
         )
       ).rejects.toThrow(ExceptionTryingToUnmakeAdminAMember)
+    })
+
+    it('trying to unmakeAdmin the owner', async () => {
+      await expect(
+        channelMemberService.unmakeAdmin(
+          '567ayPlUh0qtDrePkJ87t',
+          'pihayPlUh0qtDrePkJ87t'
+        )
+      ).rejects.toThrow(ExceptionTryingToUnmakeAdminTheOwner)
     })
 
     it('trying to mute an already muted user', async () => {
@@ -344,7 +370,7 @@ describe('ChannelMemberService', () => {
         channelId: 'dxb50bMlJwngXPUyc6yNX'
       }
       await expect(channelMemberService.create(invalidData)).rejects.toThrow(
-        ExceptionInvalidMaxUserInChannel
+        ExceptionMaxUserReachedInChannel
       )
     })
   })
