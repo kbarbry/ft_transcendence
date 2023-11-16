@@ -41,7 +41,10 @@ export class CreateChannelInput {
 
   @Field(() => String, { nullable: true })
   @IsOptional()
-  @CustomIsPassword()
+  @CustomIsPassword({
+    message:
+      "$property must be between 8 and 50 characters and contain at least 1 lowercase character, 1 uppercase character, 1 number and 1 special character (all special characters aren't authorized.)"
+  })
   password?: string
 
   @Field(() => String)
