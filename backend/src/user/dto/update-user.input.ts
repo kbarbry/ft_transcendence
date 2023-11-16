@@ -8,7 +8,7 @@ import {
   Length,
   Min
 } from 'class-validator'
-import { CustomIsName } from 'src/common/pipes/username.pipe'
+import { CustomIsName } from '../../common/pipes/username.pipe'
 
 @InputType()
 export class UpdateUserInput {

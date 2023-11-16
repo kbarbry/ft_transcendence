@@ -1,6 +1,6 @@
 import { Field, InputType } from '@nestjs/graphql'
 import { Length, Matches } from 'class-validator'
-import { CustomIsMessage } from 'src/common/pipes/message.pipe'
+import { CustomIsMessage } from '../../common/pipes/message.pipe'
 
 @InputType()
 export class CreateChannelMessageInput {

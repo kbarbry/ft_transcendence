@@ -1,9 +1,9 @@
 import { InputType, Field } from '@nestjs/graphql'
 import { ELanguage } from '@prisma/client'
 import { IsEnum, IsOptional, IsUrl, Length, IsBoolean } from 'class-validator'
-import { CustomIsEmail } from 'src/common/pipes/email.pipe'
-import { CustomIsPassword } from 'src/common/pipes/password.pipe'
-import { CustomIsName } from 'src/common/pipes/username.pipe'
+import { CustomIsEmail } from '../../common/pipes/email.pipe'
+import { CustomIsPassword } from '../../common/pipes/password.pipe'
+import { CustomIsName } from '../../common/pipes/username.pipe'
 
 class CreateUserAuthInput {
   @Field(() => String)

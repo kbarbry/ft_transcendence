@@ -12,7 +12,7 @@ import {
 } from 'class-validator'
 import { CustomIsPassword } from '../../common/pipes/password.pipe'
 import { CustomIsName } from '../../common/pipes/username.pipe'
-import { CustomIsTopic } from 'src/common/pipes/topic.pipe'
+import { CustomIsTopic } from '../../common/pipes/topic.pipe'
 
 @InputType()
 export class CreateChannelInput {
