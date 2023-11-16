@@ -59,7 +59,7 @@ describe('GameStatService', () => {
     expect(gameStatService).toBeDefined()
   })
 
-  it('PrismaSerice should be defined', () => {
+  it('prismaSerice should be defined', () => {
     expect(prismaService).toBeDefined()
   })
 
@@ -126,7 +126,7 @@ describe('GameStatService', () => {
   })
 
   describe('Test Error', () => {
-    it('Cannot make a game with the same player', async () => {
+    it('winnerId and loserId same id', async () => {
       const createInput: CreateGameStatInput = {
         type: EGameType.Classic,
         timePlayed: 12,
