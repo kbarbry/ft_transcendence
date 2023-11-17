@@ -102,26 +102,26 @@ describe('RelationBlockedService', () => {
         userBlockingId: 'qci4ayPwwUh12tDrePkJ9',
         userBlockedId: 'qci4ayPwwUh12tDrePkJ0'
       }
-      relationBlockedService.create(input)
-      expect(input).toStrictEqual(expectedRes)
+      const res = await relationBlockedService.create(input)
+      expect(res).toStrictEqual(expectedRes)
     })
   })
 
   describe('Test Query', () => {
-    it('should return isBlocked - false - unknown userA', async () => {
+    it('should return isBlocked - false', async () => {
       const result = await relationBlockedService.isBlocked(
-        'bcdefPlUh0qtDrePkJ87t',
-        'a2OayPlUh0qtDrePkJ87tt'
+        'a2OayPlUh0qtDrePkJ87t',
+        'eeeeyPlUh0qtDrePkJ87t'
       )
       expect(result).toStrictEqual(false)
     })
 
-    it('should return isBlocked - false - unknown userB', async () => {
+    it('should return isBlocked - false - wrong order test', async () => {
       const result = await relationBlockedService.isBlocked(
-        'ccccyPlUh0qtDrePkJ87t',
-        'jeanPlUh0qtDrePkJ87tt'
+        'baaayPlUh0qtDrePkJ87t',
+        'a2OayPlUh0qtDrePkJ87t'
       )
-      expect(result).toStrictEqual(false)
+      expect(result).toBe(false)
     })
 
     it('should return isBlocked - true', async () => {
@@ -140,7 +140,7 @@ describe('RelationBlockedService', () => {
       expect(findUsers).toStrictEqual(expectedRes)
     })
 
-    it('findAllBlockedUser - should find users blocked by ID', async () => {
+    it('findAllBlockedUser - should find multiple users blocked by ID', async () => {
       const blockedUsers = await relationBlockedService.findAllBlockedByUser(
         'eeeeyPlUh0qtDrePkJ87t'
       )
@@ -151,61 +151,6 @@ describe('RelationBlockedService', () => {
       ]
       expect(blockedUsers).toEqual(expectedBlockedUsers)
     })
-
-    it('should return isRequest - true', async () => {
-      const result = await prismaService.relationRequests.findUnique({
-        where: {
-          userSenderId_userReceiverId: {
-            userSenderId: 'a10ayPlUh0qtDrePkJ87t',
-            userReceiverId: 'baaayPlUh0qtDrePkJ87t'
-          }
-        }
-      })
-      const expected = {
-        userSenderId: 'a10ayPlUh0qtDrePkJ87t',
-        userReceiverId: 'baaayPlUh0qtDrePkJ87t'
-      }
-      expect(result).toStrictEqual(expected)
-    })
-
-    it('should create - RelationBlocked and delete request A to B', async () => {
-      const input: RelationBlockedInput = {
-        userBlockingId: 'a10ayPlUh0qtDrePkJ87t',
-        userBlockedId: 'j6-X94_NVjmzVm9QL3k4r'
-      }
-      const expectedRes = {
-        userBlockingId: 'a10ayPlUh0qtDrePkJ87t',
-        userBlockedId: 'j6-X94_NVjmzVm9QL3k4r'
-      }
-      expect(input).toStrictEqual(expectedRes)
-    })
-
-    it('should return isFriend - true', async () => {
-      const result = await prismaService.relationFriend.findUnique({
-        where: {
-          userAId_userBId: {
-            userAId: 'e10eyPlUh0qtDrePkJ87t',
-            userBId: 'ccccyPlUh0qtDrePkJ87t'
-          }
-        }
-      })
-      const expected = {
-        userAId: 'e10eyPlUh0qtDrePkJ87t',
-        userBId: 'ccccyPlUh0qtDrePkJ87t'
-      }
-      expect(result).toStrictEqual(expected)
-    })
-    it('should create - RelationBlocked and delete relationFriend A to B', async () => {
-      const input: RelationBlockedInput = {
-        userBlockingId: 'e10eyPlUh0qtDrePkJ87t',
-        userBlockedId: 'ccccyPlUh0qtDrePkJ87t'
-      }
-      const expectedRes = {
-        userBlockingId: 'e10eyPlUh0qtDrePkJ87t',
-        userBlockedId: 'ccccyPlUh0qtDrePkJ87t'
-      }
-      expect(input).toStrictEqual(expectedRes)
-    })
   })
 
   describe('Test Error', () => {
@@ -214,9 +159,9 @@ describe('RelationBlockedService', () => {
         userBlockingId: 'aaaayPlUh0qtDrePkJ87t',
         userBlockedId: 'aaaayPlUh0qtDrePkJ87t'
       }
-      await expect(async () => {
-        await relationBlockedService.create(input)
-      }).rejects.toThrow(ExceptionBlockedYourself)
+      await expect(relationBlockedService.create(input)).rejects.toThrow(
+        ExceptionBlockedYourself
+      )
     })
 
     it('should return ExceptionAlreadyBlocked', async () => {
@@ -224,37 +169,29 @@ describe('RelationBlockedService', () => {
         userBlockingId: 'a2OayPlUh0qtDrePkJ87t',
         userBlockedId: 'j6-X94_NVjmzVm9QL3k4r'
       }
-      await expect(async () => {
-        await relationBlockedService.create(input)
-      }).rejects.toThrow(ExceptionAlreadyBlocked)
-    })
-
-    it('should return isBlocked - false - wrong order test', async () => {
-      const result = await relationBlockedService.isBlocked(
-        'baaayPlUh0qtDrePkJ87t',
-        'a2OayPlUh0qtDrePkJ87t'
+      await expect(relationBlockedService.create(input)).rejects.toThrow(
+        ExceptionAlreadyBlocked
       )
-      expect(result).toBe(false)
     })
 
     it('should fail - userA does not exist', async () => {
       const input: RelationBlockedInput = {
-        userBlockingId: 'j6-X94_NVjmzVm9QL3k4r',
-        userBlockedId: 'qci4ayPwwUh12tDre1234'
+        userBlockingId: '1234ayPwwUh12tDre1234',
+        userBlockedId: 'j6-X94_NVjmzVm9QL3k4r'
       }
-      await expect(async () => {
-        await relationBlockedService.create(input)
-      }).rejects.toThrow(PrismaClientKnownRequestError)
+      await expect(relationBlockedService.create(input)).rejects.toThrow(
+        PrismaClientKnownRequestError
+      )
     })
 
     it('should fail - userB does not exist', async () => {
       const input: RelationBlockedInput = {
-        userBlockingId: '1234ayPwwUh12tDre1234',
-        userBlockedId: 'j6-X94_NVjmzVm9QL3k4r'
+        userBlockingId: 'j6-X94_NVjmzVm9QL3k4r',
+        userBlockedId: 'qci4ayPwwUh12tDre1234'
       }
-      await expect(async () => {
-        await relationBlockedService.create(input)
-      }).rejects.toThrow(PrismaClientKnownRequestError)
+      await expect(relationBlockedService.create(input)).rejects.toThrow(
+        PrismaClientKnownRequestError
+      )
     })
   })
 })

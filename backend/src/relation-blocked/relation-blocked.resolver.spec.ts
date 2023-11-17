@@ -29,7 +29,7 @@ describe('UserBlockedResolver', () => {
     )
   })
 
-  it('UserBlocked Resolver should be defined', () => {
+  it('relationBlocked should be defined', () => {
     expect(relationBlockedresolver).toBeDefined()
   })
   describe('Test Mutation', () => {

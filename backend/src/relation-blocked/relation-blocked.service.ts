@@ -15,7 +15,7 @@ export class RelationBlockedService {
   //**************************************************//
 
   async create(data: RelationBlockedInput): Promise<RelationBlocked> {
-    if (data.userBlockingId == data.userBlockedId)
+    if (data.userBlockingId === data.userBlockedId)
       throw new ExceptionBlockedYourself()
     const userAlreadyBlocked = await this.isBlocked(
       data.userBlockingId,
@@ -62,7 +62,7 @@ export class RelationBlockedService {
       })
     }
 
-    const BIsFriend = await this.prisma.relationFriend.findUnique({
+    const IsFriend = await this.prisma.relationFriend.findUnique({
       where: {
         userAId_userBId: {
           userAId: data.userBlockingId,
@@ -70,7 +70,7 @@ export class RelationBlockedService {
         }
       }
     })
-    if (BIsFriend) {
+    if (IsFriend) {
       await this.prisma.relationFriend.delete({
         where: {
           userAId_userBId: {
