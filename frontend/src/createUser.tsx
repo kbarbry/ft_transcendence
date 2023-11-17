@@ -6,6 +6,7 @@ export async function createUser(username: string, mail: string, password: strin
             headers: {
                 'Content-Type': 'application/json',
             },
+            credentials: 'include',
             body: JSON.stringify({
                 username,
                 mail,
@@ -16,6 +17,7 @@ export async function createUser(username: string, mail: string, password: strin
 
         if (response.ok) {
             const userData = await response.json();
+            console.log(response.headers)
             return userData;
         }
     } catch (error) {

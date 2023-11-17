@@ -34,7 +34,6 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
         'Local OAuth20 failed: user not found'
       )
     }
-
     this.loggingService.log('-- Local Auth --')
     return callback(null, user)
   }

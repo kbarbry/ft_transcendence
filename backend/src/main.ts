@@ -12,14 +12,7 @@ import path from 'path'
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule)
-  // const cors = require("cors");
-  // app.use(cors({
-  //   origin: "http://localhost:5173",
-  //   methods: ["GET", "POST"]
-  // }));
 const cors = require('cors');
-
-// Configuration CORS
 const corsOptions = {
   origin: 'http://localhost:5173', // Remplacez par l'URL de votre application front-end
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
@@ -48,16 +41,16 @@ app.use(cors(corsOptions));
   app.use(
     session({
       secret: randomBytes(16).toString('hex'),
-      saveUninitialized: false,
-      resave: false,
+      //saveUninitialized: false,
+      //resave: false,
       name: 'trans_session',
-      rolling: true,
-      unset: 'destroy',
+      //rolling: true,
+      //unset: 'destroy',
       cookie: {
-        httpOnly: true,
+        httpOnly: false,
         maxAge: 60000,
-        sameSite: 'strict',
-        signed: true
+        //sameSite: 'strict',
+        //signed: true
       }
     })
   )
