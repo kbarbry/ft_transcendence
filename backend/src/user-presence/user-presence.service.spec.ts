@@ -69,6 +69,7 @@ describe('UserPresenceService', () => {
       const userPresence = await userPresenceService.create(userPresenceData)
       expect(userPresence).toBeDefined()
       expect(userPresence.userId).toStrictEqual(userPresenceData.userId)
+      expect(userPresence.disconnectedAt).toStrictEqual(null)
     })
 
     it('should update disconnected value', async () => {
