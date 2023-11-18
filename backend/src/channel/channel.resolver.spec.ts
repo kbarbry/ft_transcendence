@@ -288,7 +288,7 @@ describe('ChannelResolver', () => {
       }
       const res = {
         message: [
-          'name must be between $constraint1 and $constraint2 characters long and must only contain letters, number and single spaces.',
+          'name must be between 1 and 30 characters long and must only contain letters, number and single spaces.',
           'ownerId must be exactly 21 characters long.',
           'Invalid nanoid characters.'
         ],
@@ -314,7 +314,7 @@ describe('ChannelResolver', () => {
         }
         const res = {
           message: [
-            'name must be between $constraint1 and $constraint2 characters long and must only contain letters, number and single spaces.'
+            'name must be between 1 and 30 characters long and must only contain letters, number and single spaces.'
           ],
           error: 'Bad Request',
           statusCode: 400
@@ -337,7 +337,7 @@ describe('ChannelResolver', () => {
         }
         const res = {
           message: [
-            'name must be between $constraint1 and $constraint2 characters long and must only contain letters, number and single spaces.'
+            'name must be between 1 and 30 characters long and must only contain letters, number and single spaces.'
           ],
           error: 'Bad Request',
           statusCode: 400
@@ -360,7 +360,7 @@ describe('ChannelResolver', () => {
         }
         const res = {
           message: [
-            'name must be between $constraint1 and $constraint2 characters long and must only contain letters, number and single spaces.'
+            'name must be between 1 and 30 characters long and must only contain letters, number and single spaces.'
           ],
           error: 'Bad Request',
           statusCode: 400
@@ -382,7 +382,7 @@ describe('ChannelResolver', () => {
         }
         const res = {
           message: [
-            'name must be between $constraint1 and $constraint2 characters long and must only contain letters, number and single spaces.'
+            'name must be between 1 and 30 characters long and must only contain letters, number and single spaces.'
           ],
           error: 'Bad Request',
           statusCode: 400
