@@ -1,7 +1,7 @@
 import React from 'react';
 import './App.css';
 import { Link, Route, RouteComponentProps } from 'wouter';
-// import Authentication from './auth/Authentication';
+import Authentication from './auth/Authentication';
 import {Login} from './auth/Login/LoginForm'
 import {Signup} from './auth/Signup/SignupForm'
 
@@ -24,6 +24,8 @@ function App() {
       <Route path="/"  component={Home}/>
       <Route path="/auth/Login" component={Login}/>
       <Route path="/auth/Signup" component={Signup}/>
+      <Route path="/auth" component={Authentication}/>
+
     </div>
   );
 }
