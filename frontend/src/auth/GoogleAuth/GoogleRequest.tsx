@@ -4,13 +4,12 @@ export async function LogGoogle() {
 
     try {
         console.log('Log called 1 : ')
-        const response = await fetch('http://127.0.0.1:3000/api/auth/42/login', {
+        const response = await fetch('http://127.0.0.1:3000/api/auth/google/login', {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
-            },
-            credentials: 'include',
-            
+                
+           },            
         });
         console.log('Log called 2')
 
