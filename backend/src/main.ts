@@ -11,6 +11,13 @@ import path from 'path'
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule)
+  const corsOptions = {
+    origin: 'http://127.0.0.1:5173',
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    credentials: true,
+    optionsSuccessStatus: 204
+  }
+  app.enableCors(corsOptions)
   app.useGlobalFilters(new GlobalExceptionFilter())
   app.useGlobalPipes(
     new ValidationPipe({
@@ -37,10 +44,12 @@ async function bootstrap() {
       rolling: true,
       unset: 'destroy',
       cookie: {
-        httpOnly: true,
+        sameSite: 'lax',
+        httpOnly: false, //todo set true
         maxAge: 60000,
-        sameSite: 'strict',
-        signed: true
+        secure: 'auto',
+        signed: true,
+        path: '/'
       }
     })
   )
