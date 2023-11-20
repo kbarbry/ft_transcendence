@@ -1,14 +1,6 @@
 import { Field, InputType, Int } from '@nestjs/graphql'
 import { EGameType } from '@prisma/client'
-import {
-  IsEnum,
-  IsNotEmpty,
-  IsNumber,
-  IsOptional,
-  Matches,
-  Length,
-  Min
-} from 'class-validator'
+import { IsEnum, IsNumber, Matches, Length, Min } from 'class-validator'
 
 @InputType()
 export class CreateGameStatInput {

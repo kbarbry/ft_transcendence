@@ -4,7 +4,7 @@ import { PrismaService } from '../prisma/prisma.service'
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library'
 import { cleanDataBase } from '../../test/setup-environment'
 import { ExceptionTryingToBlockChannelOwner } from '../channel/exceptions/blocked.exception'
-import { CreateChannelBlockedInput } from './dto/create-channel-blocked.input'
+
 describe('ChannelBlockedService', () => {
   let channelBlockedService: ChannelBlockedService
   let prismaService: PrismaService
@@ -66,9 +66,10 @@ describe('ChannelBlockedService', () => {
 
   describe('Test Mutation', () => {
     it('should create ChannelBlocked', async () => {
-      const channelBlockedInput = new CreateChannelBlockedInput()
-      channelBlockedInput.userId = 'fdpvTLhbNpjA39Pc7wwtn'
-      channelBlockedInput.channelId = 'pihayPlUh0qtDrePkJ87t'
+      const channelBlockedInput = {
+        userId: 'fdpvTLhbNpjA39Pc7wwtn',
+        channelId: 'pihayPlUh0qtDrePkJ87t'
+      }
       const res = await channelBlockedService.create(channelBlockedInput)
       const expectedRes = {
         userId: 'fdpvTLhbNpjA39Pc7wwtn',

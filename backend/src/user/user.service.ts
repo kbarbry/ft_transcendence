@@ -62,10 +62,8 @@ export class UserService {
         username
       }
     })
-    if (user !== null) {
-      return true
-    }
-    return false
+
+    return user !== null
   }
 
   async findUsersByUserIds(userIds: string[]): Promise<User[]> {

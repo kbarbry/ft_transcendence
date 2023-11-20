@@ -15,7 +15,6 @@ describe('UserResolver', () => {
     findAll: jest.fn(),
     findWin: jest.fn(),
     findLose: jest.fn(),
-    findUsersByUserIds: jest.fn(),
     findClassic: jest.fn(),
     findSpecial: jest.fn()
   }
@@ -57,6 +56,7 @@ describe('UserResolver', () => {
       const result = await gameStatResolver.createGameStat(data)
 
       expect(result).toStrictEqual(resExpected)
+      expect(gameStatService.create).toHaveBeenCalledWith(data)
     })
   })
   describe('Test Query', () => {
@@ -140,22 +140,25 @@ describe('UserResolver', () => {
       expect(gameStatService.findSpecial).toHaveBeenCalledWith('1')
     })
   })
-  it('createUser', async () => {
-    const data = {
-      type: EGameType.Classic,
-      timePlayed: 1,
-      scoreWinner: 12,
-      scoreLoser: 10,
-      loserId: '111111111111111111111',
-      winnerId: '222222222222222222222'
-    }
-    const metadata: ArgumentMetadata = {
-      type: 'body',
-      metatype: CreateGameStatInput,
-      data: ''
-    }
-    const response = await validationPipe.transform(data, metadata)
-    expect(response).toStrictEqual(data)
+
+  describe('Test ValidationPipe', () => {
+    it('createGameStat', async () => {
+      const data = {
+        type: EGameType.Classic,
+        timePlayed: 1,
+        scoreWinner: 12,
+        scoreLoser: 10,
+        loserId: '111111111111111111111',
+        winnerId: '222222222222222222222'
+      }
+      const metadata: ArgumentMetadata = {
+        type: 'body',
+        metatype: CreateGameStatInput,
+        data: ''
+      }
+      const response = await validationPipe.transform(data, metadata)
+      expect(response).toStrictEqual(data)
+    })
   })
 
   describe('Test Error', () => {

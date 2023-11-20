@@ -37,9 +37,10 @@ describe('RelationFriendResolver', () => {
     relationFriendService.create.mockReset()
   })
 
-  it('RelationFriendResolver should be defined', () => {
+  it('relationFriend should be defined', () => {
     expect(relationFriendResolver).toBeDefined()
   })
+
   describe('Test Mutation', () => {
     it('createRelationFriend', async () => {
       const data: RelationFriendInput = {
@@ -52,14 +53,16 @@ describe('RelationFriendResolver', () => {
       const result = await relationFriendResolver.createRelationFriend(data)
 
       expect(result).toStrictEqual(resExpected)
+      expect(relationFriendService.create).toHaveBeenCalledWith(data)
     })
-    it('delete RelationFriend', async () => {
+    it('deleteRelationFriend', async () => {
       const resExpected = { userBlockingId: '1' }
       relationFriendService.delete.mockReturnValue(resExpected)
 
       const result = await relationFriendResolver.deleteRelationFriend('1', '2')
 
       expect(result).toStrictEqual(resExpected)
+      expect(relationFriendService.delete).toHaveBeenCalledWith('1', '2')
     })
   })
   describe('Test Query', () => {

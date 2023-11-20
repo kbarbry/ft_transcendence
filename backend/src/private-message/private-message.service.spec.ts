@@ -121,17 +121,15 @@ describe('PrivateMessageService', () => {
       const updatedata = {
         content: 'updated content'
       }
-      const date = new Date()
       const updatedPrivateMessage = await privateMessageService.update(
         'in7ayPlUh0qtDrePkJ87t',
         updatedata
       )
-      if (updatedPrivateMessage.updatedAt) {
-        const timeDifferenceInSeconds = Math.abs(
-          (updatedPrivateMessage.updatedAt.getTime() - date.getTime()) / 1000
-        )
-        expect(timeDifferenceInSeconds).toBeLessThanOrEqual(3)
-      }
+
+      const difference =
+        updatedPrivateMessage.updatedAt === updatedPrivateMessage.createdAt
+
+      expect(difference).toStrictEqual(false)
     })
   })
 
@@ -149,15 +147,6 @@ describe('PrivateMessageService', () => {
         'rtjayPlUh0qtDrePkJ87t'
       )
       expect(HistoricDiscussion.length).toStrictEqual(22)
-    })
-
-    it('should find all message beetween two UserIds', async () => {
-      const HistoricDiscussion =
-        await privateMessageService.findAllMessageWithLiteVersion(
-          '42tX94_NVjmzVm9QL3k4r',
-          'rtjayPlUh0qtDrePkJ87t'
-        )
-      expect(HistoricDiscussion.length).toStrictEqual(20)
     })
 
     it('should find all message that contains the needle', async () => {

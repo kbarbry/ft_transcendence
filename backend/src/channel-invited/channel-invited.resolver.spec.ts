@@ -38,7 +38,7 @@ describe('ChannelInvitedResolver', () => {
     channelInvitedService.create.mockReset()
   })
 
-  it('should be defined', () => {
+  it('channelInvitedResolver should be defined', () => {
     expect(channelInvitedResolver).toBeDefined()
   })
 

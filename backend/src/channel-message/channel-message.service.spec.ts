@@ -70,6 +70,10 @@ describe('ChannelMessageService', () => {
     await prismaService.$disconnect()
   })
 
+  it('channelMessageService should be defined', () => {
+    expect(channelMessageService).toBeDefined()
+  })
+
   describe('Test channel-message Mutation', () => {
     it('should create a ChannelMessage', async () => {
       const newMessageInput: CreateChannelMessageInput = {
@@ -77,13 +81,13 @@ describe('ChannelMessageService', () => {
         senderId: 'au7d4ec6daffd64a2d4ca',
         channelId: 'ac7d4ec6daffd64a2d4ca'
       }
-
       const messageDB = {
         senderId: 'au7d4ec6daffd64a2d4ca',
         channelId: 'ac7d4ec6daffd64a2d4ca',
         content: 'New Message from au7d4'
       }
       const dbret = await channelMessageService.create(newMessageInput)
+
       expect(dbret.senderId).toStrictEqual(messageDB.senderId)
       expect(dbret.channelId).toStrictEqual(messageDB.channelId)
       expect(dbret.content).toStrictEqual(messageDB.content)

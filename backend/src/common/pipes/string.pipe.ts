@@ -17,9 +17,12 @@ class CustomValidationPipeDto {
 @Injectable()
 export class StringValidationPipe implements PipeTransform<string, string> {
   transform(value: string): string {
-    const dataClass = plainToClass(CustomValidationPipeDto, { string: value })
+    const trimmedValue = value.trim()
+    const dataClass = plainToClass(CustomValidationPipeDto, {
+      string: trimmedValue
+    })
     const error = validateSync(dataClass)
     if (error.length) throw new ExceptionCustomClassValidator(error)
-    return value
+    return trimmedValue
   }
 }

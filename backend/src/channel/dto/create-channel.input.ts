@@ -2,7 +2,6 @@ import { InputType, Field, Int } from '@nestjs/graphql'
 import { EChannelType } from '@prisma/client'
 import {
   IsOptional,
-  IsString,
   IsUrl,
   Length,
   IsNumber,
@@ -11,14 +10,16 @@ import {
   Max,
   Matches
 } from 'class-validator'
+import { CustomIsPassword } from '../../common/pipes/password.pipe'
+import { CustomIsName } from '../../common/pipes/username.pipe'
+import { CustomIsTopic } from '../../common/pipes/topic.pipe'
 
 @InputType()
 export class CreateChannelInput {
   @Field(() => String)
-  @IsString({ message: '$property must be a string.' })
-  @Length(1, 30, {
+  @CustomIsName({
     message:
-      '$property must be between $constraint1 and $constraint2 characters long.'
+      '$property must be between 1 and 30 characters long and must only contain letters, number and single spaces.'
   })
   name: string
 
@@ -33,19 +34,16 @@ export class CreateChannelInput {
 
   @Field(() => String, { nullable: true })
   @IsOptional()
-  @IsString({ message: '$property must be a string.' })
-  @Length(1, 1024, {
-    message:
-      '$property must be between $constraint1 and $constraint2 characters long.'
+  @CustomIsTopic({
+    message: '$property must be between 1 and 1024 characters long.'
   })
   topic?: string
 
   @Field(() => String, { nullable: true })
   @IsOptional()
-  @IsString({ message: '$property must be a string.' })
-  @Length(1, 30, {
+  @CustomIsPassword({
     message:
-      '$property must be between $constraint1 and $constraint2 characters long.'
+      "$property must be between 8 and 50 characters and contain at least 1 lowercase character, 1 uppercase character, 1 number and 1 special character (all special characters aren't authorized.)"
   })
   password?: string
 

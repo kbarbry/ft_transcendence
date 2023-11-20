@@ -9,13 +9,14 @@ import { ChannelService } from '../channel/channel.service'
 import { UserService } from '../user/user.service'
 import { ExceptionUserBlockedInChannel } from '../channel/exceptions/blocked.exception'
 import { ExceptionUserNotInvited } from '../channel/exceptions/invited.exception'
-import { ExceptionInvalidMaxUserInChannel } from '../channel/exceptions/channel.exception'
+import { ExceptionMaxUserReachedInChannel } from '../channel/exceptions/channel.exception'
 import {
   ExceptionTryingToMakeAdminAnAdmin,
   ExceptionTryingToMuteAMuted,
   ExceptionTryingToUnmuteAnUnmuted,
   ExceptionTryingToUnmakeAdminAMember,
-  ExceptionUserNotFound
+  ExceptionUserNotFound,
+  ExceptionTryingToUnmakeAdminTheOwner
 } from '../channel/exceptions/channel-member.exceptions'
 
 @Injectable()
@@ -62,7 +63,7 @@ export class ChannelMemberService {
       else throw new ExceptionUserNotInvited()
     }
     if (channel && numberMembers >= channel.maxUsers) {
-      throw new ExceptionInvalidMaxUserInChannel()
+      throw new ExceptionMaxUserReachedInChannel()
     }
 
     let nickname = data.nickname
@@ -104,6 +105,8 @@ export class ChannelMemberService {
     })
     if (channelMember?.type === EMemberType.Member)
       throw new ExceptionTryingToUnmakeAdminAMember()
+    if (await this.isOwner(userId, channelId))
+      throw new ExceptionTryingToUnmakeAdminTheOwner()
     return this.prisma.channelMember.update({
       where: {
         userId_channelId: {
@@ -205,6 +208,14 @@ export class ChannelMemberService {
         }
       }
     })
+  }
+
+  async isOwner(userId: string, channelId: string): Promise<boolean> {
+    const channel = await this.prisma.channel.findUnique({
+      where: { id: channelId }
+    })
+    if (channel?.ownerId === userId) return true
+    return false
   }
 
   async findAllInChannel(channelId: string): Promise<ChannelMember[]> {

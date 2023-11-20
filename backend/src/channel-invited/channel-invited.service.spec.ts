@@ -8,7 +8,6 @@ import {
   ExceptionUserAlreadyInChannel
 } from '../channel/exceptions/invited.exception'
 import { ExceptionUserBlockedInChannel } from '../channel/exceptions/blocked.exception'
-import { CreateChannelInvitedInput } from './dto/create-channel-invited.input'
 
 describe('ChannelInvitedService', () => {
   let channelInvitedService: ChannelInvitedService
@@ -83,9 +82,10 @@ describe('ChannelInvitedService', () => {
 
   describe('Test Mutation', () => {
     it('should create ChannelInvited', async () => {
-      const channelInvitedInput = new CreateChannelInvitedInput()
-      channelInvitedInput.userId = 'fdpvTLhbNpjA39Pc7wwtn'
-      channelInvitedInput.channelId = 'pihayPlUh0qtDrePkJ87t'
+      const channelInvitedInput = {
+        userId: 'fdpvTLhbNpjA39Pc7wwtn',
+        channelId: 'pihayPlUh0qtDrePkJ87t'
+      }
       const resRequest = await channelInvitedService.create(channelInvitedInput)
       const expectedRes = {
         userId: 'fdpvTLhbNpjA39Pc7wwtn',

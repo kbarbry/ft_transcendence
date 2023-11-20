@@ -41,11 +41,13 @@ describe('UserPresenceService', () => {
     //**************************************************//
     //  USER PRESENCE CREATION
     //**************************************************//
-    await prismaService.$executeRaw`INSERT INTO "public"."UserPresence" VALUES ('drfOayPwwUh12tDrePkJ8', 'd2OayPlUh0qtDrePkJ87t', '2023-09-13 10:00:00', null);`
-    await prismaService.$executeRaw`INSERT INTO "public"."UserPresence" VALUES ('qci4ayPwwUh12tDrePkJ8', 'j6-X94_NVjmzVm9QL3k4r', '2023-09-13 11:00:00', null);`
-    await prismaService.$executeRaw`INSERT INTO "public"."UserPresence" VALUES ('yui1ayPwwUh12tDrePkJ8', '_U0vTLhbNpjA39Pc7wwtn', '2023-09-13 12:00:00', null);`
-    await prismaService.$executeRaw`INSERT INTO "public"."UserPresence" VALUES ('gru1ayPwwUh12tDrePkJ8', '_U0vTLhbNpjA39Pc7wwtn', '2023-09-13 13:00:00', null);`
-    await prismaService.$executeRaw`INSERT INTO "public"."UserPresence" VALUES ('poupouPwwUh12tDrePkJ8', '_U0vTLhbNpjA39Pc7wwtn', '2023-09-13 13:00:00', '2023-09-13 14:00:00');`
+    await prismaService.$executeRaw`
+      INSERT INTO "public"."UserPresence"
+      VALUES ('drfOayPwwUh12tDrePkJ8', 'd2OayPlUh0qtDrePkJ87t', '2023-09-13 10:00:00', null),
+      ('qci4ayPwwUh12tDrePkJ8', 'j6-X94_NVjmzVm9QL3k4r', '2023-09-13 11:00:00', null),
+      ('yui1ayPwwUh12tDrePkJ8', '_U0vTLhbNpjA39Pc7wwtn', '2023-09-13 12:00:00', null),
+      ('gru1ayPwwUh12tDrePkJ8', '_U0vTLhbNpjA39Pc7wwtn', '2023-09-13 13:00:00', null),
+      ('poupouPwwUh12tDrePkJ8', '_U0vTLhbNpjA39Pc7wwtn', '2023-09-13 13:00:00', '2023-09-13 14:00:00');`
   })
 
   afterAll(async () => {
@@ -69,6 +71,7 @@ describe('UserPresenceService', () => {
       const userPresence = await userPresenceService.create(userPresenceData)
       expect(userPresence).toBeDefined()
       expect(userPresence.userId).toStrictEqual(userPresenceData.userId)
+      expect(userPresence.disconnectedAt).toStrictEqual(null)
     })
 
     it('should update disconnected value', async () => {

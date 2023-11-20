@@ -223,9 +223,9 @@ describe('RelationRequestsService', () => {
         userSenderId: '537d4ec6daffd64a2d4c-',
         userReceiverId: '4376f06677b65d3168d6-'
       }
-      await expect(async () => {
-        await relationRequestsService.create(input)
-      }).rejects.toThrow(PrismaClientKnownRequestError)
+      await expect(relationRequestsService.create(input)).rejects.toThrow(
+        PrismaClientKnownRequestError
+      )
     })
 
     it('trying to request yourself (miskina)', async () => {
@@ -233,9 +233,9 @@ describe('RelationRequestsService', () => {
         userSenderId: '537d4ec6daffd64a2d4c-',
         userReceiverId: '537d4ec6daffd64a2d4c-'
       }
-      await expect(async () => {
-        await relationRequestsService.create(input)
-      }).rejects.toThrow(ExceptionRequestingYourself)
+      await expect(relationRequestsService.create(input)).rejects.toThrow(
+        ExceptionRequestingYourself
+      )
     })
 
     it('trying to request someone blocked', async () => {
@@ -243,9 +243,9 @@ describe('RelationRequestsService', () => {
         userSenderId: '537d4ec6daffd64a2d4c-',
         userReceiverId: 'df87734d323ac71c6efb-'
       }
-      await expect(async () => {
-        await relationRequestsService.create(input)
-      }).rejects.toThrow(ExceptionUserBlocked)
+      await expect(relationRequestsService.create(input)).rejects.toThrow(
+        ExceptionUserBlocked
+      )
     })
 
     it('trying to request someone who blocked you', async () => {
@@ -253,9 +253,9 @@ describe('RelationRequestsService', () => {
         userSenderId: 'f488e59aef615c5df6df-',
         userReceiverId: '4376f06677b65d3168d6-'
       }
-      await expect(async () => {
-        await relationRequestsService.create(input)
-      }).rejects.toThrow(ExceptionUserBlockedYou)
+      await expect(relationRequestsService.create(input)).rejects.toThrow(
+        ExceptionUserBlockedYou
+      )
     })
 
     it('trying to request someone you are already friend with A->B', async () => {
@@ -263,9 +263,9 @@ describe('RelationRequestsService', () => {
         userSenderId: 'ec178ef86d29197b6ffd-',
         userReceiverId: '4376f06677b65d3168d6-'
       }
-      await expect(async () => {
-        await relationRequestsService.create(input)
-      }).rejects.toThrow(ExceptionUsersAlreadyFriend)
+      await expect(relationRequestsService.create(input)).rejects.toThrow(
+        ExceptionUsersAlreadyFriend
+      )
     })
 
     it('trying to request someone you are already friend with B->A', async () => {
@@ -273,9 +273,9 @@ describe('RelationRequestsService', () => {
         userSenderId: '4376f06677b65d3168d6-',
         userReceiverId: 'ec178ef86d29197b6ffd-'
       }
-      await expect(async () => {
-        await relationRequestsService.create(input)
-      }).rejects.toThrow(ExceptionUsersAlreadyFriend)
+      await expect(relationRequestsService.create(input)).rejects.toThrow(
+        ExceptionUsersAlreadyFriend
+      )
     })
   })
 })

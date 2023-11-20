@@ -70,24 +70,6 @@ export class PrivateMessageService {
     })
   }
 
-  async findAllMessageWithLiteVersion(
-    senderId: string,
-    receiverId: string
-  ): Promise<PrivateMessage[]> {
-    return this.prisma.privateMessage.findMany({
-      where: {
-        OR: [
-          { AND: [{ senderId }, { receiverId }] },
-          { AND: [{ senderId: receiverId }, { receiverId: senderId }] }
-        ]
-      },
-      orderBy: {
-        createdAt: 'desc'
-      },
-      take: 20
-    })
-  }
-
   async findPrivateMessageContain(
     senderId: string,
     receiverId: string,

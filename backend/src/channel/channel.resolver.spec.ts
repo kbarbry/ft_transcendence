@@ -42,7 +42,7 @@ describe('ChannelResolver', () => {
     channelService.create.mockReset()
   })
 
-  it('should be defined', () => {
+  it('channelResolver should be defined', () => {
     expect(channelResolver).toBeDefined()
   })
 
@@ -226,7 +226,7 @@ describe('ChannelResolver', () => {
         name: 'Channel Name',
         avatarUrl: 'http://www.pic.com/pic.png',
         topic: 'The topic',
-        password: 'Yes',
+        password: 'Password59!',
         ownerId: '564ayPlUh0qtDrePkJ87t',
         maxUsers: 10,
         type: EChannelType.Protected
@@ -247,7 +247,7 @@ describe('ChannelResolver', () => {
         name: 'Channel Name',
         avatarUrl: 'http://www.pic.com/pic.png',
         topic: 'The topic',
-        password: 'Yes',
+        password: 'Password59!',
         maxUsers: 10,
         type: EChannelType.Protected
       }
@@ -288,8 +288,7 @@ describe('ChannelResolver', () => {
       }
       const res = {
         message: [
-          'name must be between 1 and 30 characters long.',
-          'name must be a string.',
+          'name must be between 1 and 30 characters long and must only contain letters, number and single spaces.',
           'ownerId must be exactly 21 characters long.',
           'Invalid nanoid characters.'
         ],
@@ -314,7 +313,9 @@ describe('ChannelResolver', () => {
           data: ''
         }
         const res = {
-          message: ['name must be between 1 and 30 characters long.'],
+          message: [
+            'name must be between 1 and 30 characters long and must only contain letters, number and single spaces.'
+          ],
           error: 'Bad Request',
           statusCode: 400
         }
@@ -335,7 +336,9 @@ describe('ChannelResolver', () => {
           data: ''
         }
         const res = {
-          message: ['name must be between 1 and 30 characters long.'],
+          message: [
+            'name must be between 1 and 30 characters long and must only contain letters, number and single spaces.'
+          ],
           error: 'Bad Request',
           statusCode: 400
         }
@@ -357,8 +360,7 @@ describe('ChannelResolver', () => {
         }
         const res = {
           message: [
-            'name must be between 1 and 30 characters long.',
-            'name must be a string.'
+            'name must be between 1 and 30 characters long and must only contain letters, number and single spaces.'
           ],
           error: 'Bad Request',
           statusCode: 400
@@ -380,8 +382,7 @@ describe('ChannelResolver', () => {
         }
         const res = {
           message: [
-            'name must be between 1 and 30 characters long.',
-            'name must be a string.'
+            'name must be between 1 and 30 characters long and must only contain letters, number and single spaces.'
           ],
           error: 'Bad Request',
           statusCode: 400
@@ -516,7 +517,7 @@ describe('ChannelResolver', () => {
       it('password - too long', async () => {
         const data = {
           name: 'Channel Name',
-          password: 'looooooooooooooooooooooooooooooooooooooong',
+          password: 'loooooooooooooooooooooooooooooooooooooooooooooooong',
           ownerId: '564ayPlUh0qtDrePkJ87t'
         }
         const metadata: ArgumentMetadata = {
@@ -525,7 +526,9 @@ describe('ChannelResolver', () => {
           data: ''
         }
         const res = {
-          message: ['password must be between 1 and 30 characters long.'],
+          message: [
+            "password must be between 8 and 50 characters and contain at least 1 lowercase character, 1 uppercase character, 1 number and 1 special character (all special characters aren't authorized.)"
+          ],
           error: 'Bad Request',
           statusCode: 400
         }
@@ -547,7 +550,129 @@ describe('ChannelResolver', () => {
           data: ''
         }
         const res = {
-          message: ['password must be between 1 and 30 characters long.'],
+          message: [
+            "password must be between 8 and 50 characters and contain at least 1 lowercase character, 1 uppercase character, 1 number and 1 special character (all special characters aren't authorized.)"
+          ],
+          error: 'Bad Request',
+          statusCode: 400
+        }
+        const thrownError = await validationPipe
+          .transform(data, metadata)
+          .catch((error) => error)
+        expect(thrownError.getResponse()).toStrictEqual(res)
+      })
+
+      it('password - no uppercase', async () => {
+        const data = {
+          name: 'Channel Name',
+          password: 'password59!',
+          ownerId: '564ayPlUh0qtDrePkJ87t'
+        }
+        const metadata: ArgumentMetadata = {
+          type: 'body',
+          metatype: CreateChannelInput,
+          data: ''
+        }
+        const res = {
+          message: [
+            "password must be between 8 and 50 characters and contain at least 1 lowercase character, 1 uppercase character, 1 number and 1 special character (all special characters aren't authorized.)"
+          ],
+          error: 'Bad Request',
+          statusCode: 400
+        }
+        const thrownError = await validationPipe
+          .transform(data, metadata)
+          .catch((error) => error)
+        expect(thrownError.getResponse()).toStrictEqual(res)
+      })
+
+      it('password - no lowercase', async () => {
+        const data = {
+          name: 'Channel Name',
+          password: 'PASSWORD59!',
+          ownerId: '564ayPlUh0qtDrePkJ87t'
+        }
+        const metadata: ArgumentMetadata = {
+          type: 'body',
+          metatype: CreateChannelInput,
+          data: ''
+        }
+        const res = {
+          message: [
+            "password must be between 8 and 50 characters and contain at least 1 lowercase character, 1 uppercase character, 1 number and 1 special character (all special characters aren't authorized.)"
+          ],
+          error: 'Bad Request',
+          statusCode: 400
+        }
+        const thrownError = await validationPipe
+          .transform(data, metadata)
+          .catch((error) => error)
+        expect(thrownError.getResponse()).toStrictEqual(res)
+      })
+
+      it('password - no special character', async () => {
+        const data = {
+          name: 'Channel Name',
+          password: 'Password59',
+          ownerId: '564ayPlUh0qtDrePkJ87t'
+        }
+        const metadata: ArgumentMetadata = {
+          type: 'body',
+          metatype: CreateChannelInput,
+          data: ''
+        }
+        const res = {
+          message: [
+            "password must be between 8 and 50 characters and contain at least 1 lowercase character, 1 uppercase character, 1 number and 1 special character (all special characters aren't authorized.)"
+          ],
+          error: 'Bad Request',
+          statusCode: 400
+        }
+        const thrownError = await validationPipe
+          .transform(data, metadata)
+          .catch((error) => error)
+        expect(thrownError.getResponse()).toStrictEqual(res)
+      })
+
+      it('password - no number', async () => {
+        const data = {
+          name: 'Channel Name',
+          password: 'Password!',
+          ownerId: '564ayPlUh0qtDrePkJ87t'
+        }
+        const metadata: ArgumentMetadata = {
+          type: 'body',
+          metatype: CreateChannelInput,
+          data: ''
+        }
+        const res = {
+          message: [
+            "password must be between 8 and 50 characters and contain at least 1 lowercase character, 1 uppercase character, 1 number and 1 special character (all special characters aren't authorized.)"
+          ],
+          error: 'Bad Request',
+          statusCode: 400
+        }
+        const thrownError = await validationPipe
+          .transform(data, metadata)
+          .catch((error) => error)
+        expect(thrownError.getResponse()).toStrictEqual(res)
+      })
+
+      it('password - invalid special character', async () => {
+        const data = {
+          name: 'Channel Name',
+          password: 'Password59°',
+          ownerId: '564ayPlUh0qtDrePkJ87t'
+        }
+        const metadata: ArgumentMetadata = {
+          type: 'body',
+          metatype: CreateChannelInput,
+          data: ''
+        }
+        const res = {
+          message: [
+            "password must be between 8 and 50 characters and contain at least 1 lowercase character, 1 uppercase character, 1 number and 1 special character (all special characters aren't authorized.)"
+          ],
           error: 'Bad Request',
           statusCode: 400
         }

@@ -42,6 +42,10 @@ describe('relationRequestResolver', () => {
     relationRequestsService.create.mockReset()
   })
 
+  it('relationRequestResolver should be defined', () => {
+    expect(relationRequestResolver).toBeDefined()
+  })
+
   describe('Test Mutation', () => {
     it('createRelationRequests', async () => {
       const data: RelationRequestsInput = {

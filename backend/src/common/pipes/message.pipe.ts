@@ -4,7 +4,6 @@ import { plainToClass } from 'class-transformer'
 import {
   IsString,
   Length,
-  Matches,
   ValidationOptions,
   registerDecorator,
   validateSync
@@ -14,22 +13,19 @@ import { ExceptionCustomClassValidator } from '../exceptions/class-validator.exc
 @InputType()
 class CustomValidationPipeDto {
   @IsString({ message: '$property must be a string.' })
-  @Length(1, 30, {
+  @Length(1, 2000, {
     message:
       '$property must be between $constraint1 and $constraint2 characters long.'
   })
-  @Matches(/^[a-zA-Z0-9]+(?: [a-zA-Z0-9]+)*$/, {
-    message: '$property can only contain letters, numbers, and single spaces.'
-  })
-  username: string
+  message: string
 }
 
 @Injectable()
-export class UsernameValidationPipe implements PipeTransform<string, string> {
+export class MessageValidationPipe implements PipeTransform<string, string> {
   transform(value: string): string {
     const trimmedValue = value.trim()
     const dataClass = plainToClass(CustomValidationPipeDto, {
-      username: trimmedValue
+      message: trimmedValue
     })
     const error = validateSync(dataClass)
     if (error.length) throw new ExceptionCustomClassValidator(error)
@@ -37,17 +33,17 @@ export class UsernameValidationPipe implements PipeTransform<string, string> {
   }
 }
 
-export function CustomIsName(validationOptions?: ValidationOptions) {
+export function CustomIsMessage(validationOptions?: ValidationOptions) {
   return function (object: Record<string, any>, propertyName: string): void {
     registerDecorator({
-      name: 'customUsernameValidator',
+      name: 'customMessageValidator',
       target: object.constructor,
       propertyName,
       options: validationOptions,
       validator: {
         async validate(value: any) {
           try {
-            new UsernameValidationPipe().transform(value)
+            new MessageValidationPipe().transform(value)
             return true
           } catch (error) {
             return false

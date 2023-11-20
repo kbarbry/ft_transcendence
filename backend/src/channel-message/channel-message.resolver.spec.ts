@@ -39,7 +39,7 @@ describe('UserResolver', () => {
     channelMessageService.create.mockReset()
   })
 
-  it('should be defined', () => {
+  it('channelMessageResolver should be defined', () => {
     expect(channelMessageResolver).toBeDefined()
   })
 
@@ -61,7 +61,7 @@ describe('UserResolver', () => {
 
     it('updateChannelMessage', async () => {
       const data: UpdateChannelMessageInput = {
-        content: 'Simple message'
+        content: 'Simple message 2'
       }
       const resExpected = { id: 1, ...data }
 
@@ -78,7 +78,7 @@ describe('UserResolver', () => {
     it('deleteChannelMessage', async () => {
       const resExpected = {
         id: '1',
-        content: 'Simple message',
+        content: 'Simple message 2',
         senderId: '765ayPlUh0qtDrePkJ87t',
         channelId: 'pihayPlUh0qtDrePkJ87t'
       }
@@ -280,10 +280,7 @@ describe('UserResolver', () => {
           data: ''
         }
         const res = {
-          message: [
-            'content must be between 1 and 2000 characters long.',
-            'content must be a string.'
-          ],
+          message: ['content must be between 1 and 2000 characters long.'],
           error: 'Bad Request',
           statusCode: 400
         }

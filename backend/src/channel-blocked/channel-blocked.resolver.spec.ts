@@ -35,7 +35,7 @@ describe('ChannelBlockedResolver', () => {
     channelBlockedService.create.mockReset()
   })
 
-  it('should be defined', () => {
+  it('channelBlockedResolver should be defined', () => {
     expect(channelBlockedResolver).toBeDefined()
   })
 

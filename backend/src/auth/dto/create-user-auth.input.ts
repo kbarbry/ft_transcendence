@@ -1,19 +1,13 @@
 import { InputType, Field } from '@nestjs/graphql'
 import { ELanguage } from '@prisma/client'
-import {
-  IsEnum,
-  IsOptional,
-  IsString,
-  IsUrl,
-  Length,
-  IsEmail,
-  IsBoolean
-} from 'class-validator'
+import { IsEnum, IsOptional, IsUrl, Length, IsBoolean } from 'class-validator'
+import { CustomIsEmail } from '../../common/pipes/email.pipe'
+import { CustomIsPassword } from '../../common/pipes/password.pipe'
+import { CustomIsName } from '../../common/pipes/username.pipe'
 
-@InputType()
 class CreateUserAuthInput {
   @Field(() => String)
-  @IsEmail({}, { message: '$property must be a valid email address.' })
+  @CustomIsEmail({ message: '$property must be a valid email address.' })
   mail: string
 
   @Field(() => String, { nullable: true })
@@ -26,10 +20,9 @@ class CreateUserAuthInput {
   avatarUrl?: string
 
   @Field(() => String)
-  @IsString({ message: '$property must be a string.' })
-  @Length(1, 30, {
+  @CustomIsName({
     message:
-      '$property must be between $constraint1 and $constraint2 characters long.'
+      '$property must be between 1 and 30 characters long and must only contain letters, number and single spaces.'
   })
   username: string
 
@@ -43,27 +36,26 @@ class CreateUserAuthInput {
 export class CreateUserAOuth20Input extends CreateUserAuthInput {
   @Field(() => Boolean)
   @IsOptional()
-  @IsBoolean()
+  @IsBoolean({ message: '$property must be a boolean.' })
   googleAuth?: boolean
 
   @Field(() => Boolean)
   @IsOptional()
-  @IsBoolean()
+  @IsBoolean({ message: '$property must be a boolean.' })
   githubAuth?: boolean
 
   @Field(() => Boolean)
   @IsOptional()
-  @IsBoolean()
+  @IsBoolean({ message: '$property must be a boolean.' })
   school42Auth?: boolean
 }
 
 @InputType()
 export class CreateUserAuthLocalInput extends CreateUserAuthInput {
   @Field(() => String)
-  @IsString({ message: '$property must be a string.' })
-  @Length(6, 30, {
+  @CustomIsPassword({
     message:
-      '$property must be between $constraint1 and $constraint2 characters long.'
+      "$property must be between 8 and 50 characters and contain at least 1 lowercase character, 1 uppercase character, 1 number and 1 special character (all special characters aren't authorized.)"
   })
   password: string
 }

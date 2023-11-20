@@ -48,7 +48,7 @@ describe('ChannelMemberResolver', () => {
     channelMemberService.create.mockReset()
   })
 
-  it('should be defined', () => {
+  it('channelMemberResolver should be defined', () => {
     expect(channelMemberResolver).toBeDefined()
   })
 
@@ -354,7 +354,7 @@ describe('ChannelMemberResolver', () => {
     describe('nickname - string', () => {
       it('nickname - too long', async () => {
         const data = {
-          nickname: 'Really      too     long       nickname',
+          nickname: 'Niiiccccccckkkkkknnaaammmmmmmeeeeeeee',
           userId: '765ayPlUh0qtDrePkJ87t',
           channelId: 'pihayPlUh0qtDrePkJ87t'
         }
@@ -364,7 +364,9 @@ describe('ChannelMemberResolver', () => {
           data: ''
         }
         const res = {
-          message: ['nickname must be between 1 and 30 characters long.'],
+          message: [
+            'nickname must be between 1 and 30 characters long and must only contain letters, number and single spaces.'
+          ],
           error: 'Bad Request',
           statusCode: 400
         }
@@ -386,7 +388,9 @@ describe('ChannelMemberResolver', () => {
           data: ''
         }
         const res = {
-          message: ['nickname must be between 1 and 30 characters long.'],
+          message: [
+            'nickname must be between 1 and 30 characters long and must only contain letters, number and single spaces.'
+          ],
           error: 'Bad Request',
           statusCode: 400
         }
@@ -409,8 +413,7 @@ describe('ChannelMemberResolver', () => {
         }
         const res = {
           message: [
-            'nickname must be between 1 and 30 characters long.',
-            'nickname must be a string.'
+            'nickname must be between 1 and 30 characters long and must only contain letters, number and single spaces.'
           ],
           error: 'Bad Request',
           statusCode: 400
