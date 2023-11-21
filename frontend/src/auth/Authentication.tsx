@@ -31,6 +31,8 @@
 import React from 'react';
 //import { GoogleLogin } from '@react-oauth/google';
 import { Log42 } from './GoogleAuth/GoogleRequest'
+import { Link, Route, RouteComponentProps } from 'wouter';
+
 
 const Authentication = () => {
 
@@ -44,12 +46,17 @@ const Authentication = () => {
 
   return (
     <div>
-      <h2>React Google Login</h2>
+      <h2>Auth page</h2>
       <br />
+      <Link href="/auth/login">
+        <a>Login</a>
+      </Link>
+      <p></p>
+      <Link href="/auth/Signup">
+        <a>Signup</a>
+      </Link>
       <br />
-      <p>GOOGLE !!!</p>
-      <button onClick={handleLogUserClick}>Créer un utilisateur</button>
-      <br></br>
+        <br></br>
       <a href="http://localhost:3000/api/auth/42/login" >42Login</a>
       <br></br>
       <a href="http://localhost:3000/api/auth/google/login" >GoogleLogin</a>
