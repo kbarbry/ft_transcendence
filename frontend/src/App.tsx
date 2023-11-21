@@ -1,11 +1,12 @@
 import React from 'react';
 import './App.css';
-import { Link, Route, RouteComponentProps, Switch } from 'wouter';
+import { Link, Route, Switch } from 'wouter';
 import Authentication from './auth/Authentication';
+
 import {Login} from './auth/Login/LoginForm'
 import {Signup} from './auth/Signup/SignupForm'
-
 import {Home} from './home'
+import {NotFound} from './ErrorPages/404'
 
 function App() {
   return (
@@ -19,13 +20,12 @@ function App() {
       </Link>
       <br></br>
       <br></br>
+      <Switch>
       <Route path="/"  component={Home}/>
       <Route path="/auth/Login" component={Login}/>
       <Route path="/auth/Signup" component={Signup}/>
       <Route path="/auth" component={Authentication}/>
-      <Switch>
-      <Route path="/about">...</Route>
-      <Route>404, Not Found!</Route>
+      <Route component={NotFound}/>
       </Switch>
 
 
