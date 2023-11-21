@@ -1,22 +1,16 @@
 
-export async function LogGoogle() {
+export async function Log42() {
     //const [cookies, setCookie] = useCookies(["user"]);
 
     try {
         console.log('Log called 1 : ')
-        const response = await fetch('http://127.0.0.1:3000/api/auth/google/login', {
+        const response = await fetch('http://127.0.0.1:3000/api/auth/42/login', {
             method: 'GET',
             headers: {
-                'Content-Type': 'application/json',
-                
+                'Content-Type': 'application/json'
            },            
         });
         console.log('Log called 2')
-
-        // const cookies = Cookies.get('trans_session');
-        // console.log('COKIES22 =>> ', cookies)
-
-        //console.log(cookies.user)
 
         if (response.ok) {
             const userData = await response.json();

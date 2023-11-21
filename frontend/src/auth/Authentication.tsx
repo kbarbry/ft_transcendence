@@ -30,13 +30,13 @@
 
 import React from 'react';
 //import { GoogleLogin } from '@react-oauth/google';
-import { LogGoogle } from './GoogleAuth/GoogleRequest'
+import { Log42 } from './GoogleAuth/GoogleRequest'
 
 const Authentication = () => {
 
   const handleLogUserClick = () => {
     console.log('button clicked')
-    LogGoogle()
+    Log42()
       .catch((error) => {
         console.error('Erreur lors de la création de l\'utilisateur:', error);
       });
@@ -49,6 +49,13 @@ const Authentication = () => {
       <br />
       <p>GOOGLE !!!</p>
       <button onClick={handleLogUserClick}>Créer un utilisateur</button>
+      <br></br>
+      <a href="http://localhost:3000/api/auth/42/login" >42Login</a>
+      <br></br>
+      <a href="http://localhost:3000/api/auth/google/login" >GoogleLogin</a>
+      <br></br>
+      <a href="http://localhost:3000/api/auth/github/login" >GithubLogin</a>
+
 
     </div>
   );

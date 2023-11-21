@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common'
+import { Body, Controller, Get, Post, UseGuards, Res, Req } from '@nestjs/common'
 import { GoogleAuthGuard } from './guards/google.guard'
 import { School42AuthGuard } from './guards/42.guard'
 import { GithubGuard } from './guards/github.guard'
@@ -34,26 +34,27 @@ export class AuthController {
 
   @Get('42/redirect')
   @UseGuards(School42AuthGuard)
-  ftRedirect() {
-    return { msg: '42 OK' }
+  ftRedirect(@Req() req : any, @Res() res : any) {
+    return res.redirect('http://127.0.0.1:5173/auth')
   }
 
   @UseGuards(GoogleAuthGuard)
   @Get('google/login')
-  getGoogleAuth() {
-    return { msg: 'Google Auth Login' }
+  getGoogleAuth(@Res() res : any) {
+    return res.status(200).json({ msg: 'Google Auth Login' });
   }
 
   @UseGuards(GoogleAuthGuard)
   @Get('google/redirect')
-  getGoogleCallback() {
-    return { msg: 'Google OK' }
+  getGoogleCallback(@Req() req : any, @Res() res : any) {
+  return res.redirect('http://127.0.0.1:5173/auth')
+
   }
 
   @Get('github/login')
   @UseGuards(GithubGuard)
-  async getGithubAuth() {
-    return { msg: 'GitHub Auth Login' }
+  async getGithubAuth(@Req() req : any, @Res() res : any) {
+    return res.redirect('http://127.0.0.1:5173/auth')
   }
 
   @Get('github/redirect')
