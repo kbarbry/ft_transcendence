@@ -11,7 +11,6 @@ import App from './App.tsx'
 import './index.css'
 import { GraphQLWsLink } from '@apollo/client/link/subscriptions'
 import { createClient } from 'graphql-ws'
-// import { onError } from '@apollo/client/link/error'
 import { getMainDefinition } from '@apollo/client/utilities'
 
 const httpLink = new HttpLink({ uri: 'http://127.0.0.1:3000/graphql' })
@@ -29,17 +28,6 @@ const splitLink = split(
   wsLink,
   httpLink
 )
-
-// const errorLink = onError(({ graphQLErrors, networkError }) => {
-//   if (graphQLErrors)
-//     graphQLErrors.forEach(({ message, locations, path }) =>
-//       console.log(
-//         `[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`
-//       )
-//     )
-
-//   if (networkError) console.log(`[Network error]: ${networkError}`)
-// })
 
 const client = new ApolloClient({
   link: splitLink,
