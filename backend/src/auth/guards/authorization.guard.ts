@@ -12,7 +12,6 @@ import { GqlExecutionContext } from '@nestjs/graphql'
 export class AuthorizationGuard implements CanActivate {
   async canActivate(context: GqlExecutionContext) {
     try {
-      console.log('Authorization guard')
       const gqlContext = GqlExecutionContext.create(context)
       const request = gqlContext.getContext().req
 
