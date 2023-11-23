@@ -43,8 +43,7 @@ export class AuthController {
   @Get('42/redirect')
   @UseGuards(School42AuthGuard)
   ftRedirect(@Req() req: any, @Res() res: any) {
-    console.log(res)
-    return res.redirect('http://127.0.0.1:5173/auth/valid')
+    return res.redirect('http://127.0.0.1:5173/auth')
   }
 
   @UseGuards(GoogleAuthGuard)
