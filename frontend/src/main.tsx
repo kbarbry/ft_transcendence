@@ -6,6 +6,7 @@ import './index.css'
 
 const client = new ApolloClient({
   uri: 'http://127.0.0.1:3000/graphql',
+  credentials: 'include',
   cache: new InMemoryCache(),
 });
 

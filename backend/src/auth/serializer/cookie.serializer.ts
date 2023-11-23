@@ -33,6 +33,7 @@ export class SessionSerializer extends PassportSerializer {
   serializeUser(user: User, done: CallableFunction) {
     const minimalUserData: MinimalUserData = this.setMinimalUserData(user)
     try {
+      console.log('serializer called')
       this.loggingService.log(JSON.stringify(minimalUserData))
       done(null, minimalUserData)
     } catch (e) {
@@ -44,6 +45,7 @@ export class SessionSerializer extends PassportSerializer {
   async deserializeUser(payload: MinimalUserData, done: CallableFunction) {
     try {
       const user = await this.userService.findOne(payload.id)
+      console.log('Deserializer called', payload.id)
       if (!user)
         throw new ExceptionInvalidCredentials('OAuth20 failed: user not found')
       const minimalUserData: MinimalUserData = this.setMinimalUserData(user)
