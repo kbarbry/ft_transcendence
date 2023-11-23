@@ -7,6 +7,7 @@ import { Login } from './auth/Login/LoginForm'
 import { Signup } from './auth/Signup/SignupForm'
 import { Home } from './home'
 import { NotFound } from './ErrorPages/404'
+import { FindUser } from './auth/IsAuth'
 import PrivateMessage from './chat/PrivateMessage'
 
 function App() {
@@ -15,6 +16,10 @@ function App() {
       <Link href='/'>
         <a>Home</a>
       </Link>
+      <br />
+      <Link href='/testUser'>
+        <a>Test getUser</a>
+      </Link>
       <p></p>
       <Link href='/auth'>
         <a>Auth</a>
@@ -22,6 +27,7 @@ function App() {
       <br></br>
       <br></br>
       <Switch>
+        <Route path='/testUser' component={FindUser} />
         <Route path='/' component={Home} />
         <Route path='/auth/Login' component={Login} />
         <Route path='/auth/Signup' component={Signup} />
