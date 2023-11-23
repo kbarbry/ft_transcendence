@@ -31,7 +31,6 @@ const splitLink = split(
 
 const client = new ApolloClient({
   credentials: 'include',
-  cache: new InMemoryCache(),
   link: splitLink,
   cache: new InMemoryCache()
 })
