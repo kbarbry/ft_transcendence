@@ -1,4 +1,4 @@
-import { Resolver, Query, Mutation, Args } from '@nestjs/graphql'
+import { Resolver, Query, Mutation, Args, Context } from '@nestjs/graphql'
 import { UserService } from './user.service'
 import { User } from './entities/user.entity'
 import { UseGuards, ValidationPipe } from '@nestjs/common'
@@ -40,6 +40,12 @@ export class UserResolver {
   findOneUser(
     @Args('id', { type: () => String }, NanoidValidationPipe) id: string
   ): Promise<User | null> {
+    return this.userService.findOne(id)
+  }
+
+  @Query(() => User)
+  findOneUserByContext(@Context() ctx: any): Promise<User | null> {
+    const id = ctx.user.id
     return this.userService.findOne(id)
   }
 

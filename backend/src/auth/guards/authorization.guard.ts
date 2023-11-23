@@ -26,10 +26,10 @@ export class ChannelAdminGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     try {
       const request = context.switchToHttp().getRequest()
-      const userId = request.session?.user?.id as string
+      const userId = request?.user?.id as string
       console.log(request)
       // wrong data, must be tested
-      const channelId = request.params.channelId as string
+      const channelId = request?.params?.channelId as string
 
       if (!userId || !channelId) {
         throw new UnauthorizedException('Invalid user or channel information')
@@ -58,10 +58,10 @@ export class ChannelOwnerGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     try {
       const request = context.switchToHttp().getRequest()
-      const userId = request.session?.user?.id as string
+      const userId = request?.user?.id as string
       console.log(request)
       // wrong data, must be tested
-      const channelId = request.params.channelId as string
+      const channelId = request?.params?.channelId as string
 
       if (!userId || !channelId) {
         throw new UnauthorizedException('Invalid user or channel information')
