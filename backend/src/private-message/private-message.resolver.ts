@@ -1,12 +1,4 @@
-import {
-  Resolver,
-  Query,
-  Mutation,
-  Args,
-  Subscription,
-  ObjectType,
-  Field
-} from '@nestjs/graphql'
+import { Resolver, Query, Mutation, Args, Subscription } from '@nestjs/graphql'
 import { PrivateMessageService } from './private-message.service'
 import { PrivateMessage } from './entities/private-message.entity'
 import { CreatePrivateMessageInput } from './dto/create-private-message.input'
@@ -17,17 +9,8 @@ import { StringValidationPipe } from '../common/pipes/string.pipe'
 import { AuthorizationGuard } from '../auth/guards/authorization.guard'
 import { PubSub } from 'graphql-subscriptions'
 
-@ObjectType()
-export class ResTest {
-  @Field(() => String)
-  id: string
-
-  @Field(() => String)
-  titre: string
-}
-
 @Resolver(() => PrivateMessage)
-// @UseGuards(AuthorizationGuard)
+@UseGuards(AuthorizationGuard)
 export class PrivateMessageResolver {
   constructor(
     private readonly privateMessageService: PrivateMessageService,

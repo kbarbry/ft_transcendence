@@ -1,17 +1,7 @@
 import { useSubscription } from '@apollo/client'
 import React, { useState } from 'react'
-import { gql } from '@apollo/client'
+import { privateMessageCreation } from './graphql'
 
-const privateMessageCreation = gql`
-  subscription privateMessageCreation {
-    privateMessageCreation {
-      content
-      createdAt
-      senderId
-      id
-    }
-  }
-`
 const PrivateMessage: React.FC = () => {
   const [chat, addMessageToChat] = useState<any[]>([])
 
@@ -42,14 +32,6 @@ const PrivateMessage: React.FC = () => {
   }
 
   return null
-  // if (error) return <div>Error: {error?.message}</div>
-  // const message = data?.privateMessageCreation
-  // if (!message) return <div>No new message ...</div>
-  // return (
-  //   <>
-  //     <div>{JSON.stringify(data)}</div>
-  //   </>
-  // )
 }
 
 export default PrivateMessage
