@@ -8,6 +8,7 @@ import { Signup } from './auth/Signup/SignupForm'
 import { Home } from './home'
 import { NotFound } from './ErrorPages/404'
 import { FindUser } from './auth/IsAuth'
+import PrivateMessage from './chat/PrivateMessage'
 
 function App() {
   return (
@@ -31,6 +32,7 @@ function App() {
         <Route path='/auth/Login' component={Login} />
         <Route path='/auth/Signup' component={Signup} />
         <Route path='/auth' component={Authentication} />
+        <Route path='/chat' component={PrivateMessage} />
         <Route component={NotFound} />
       </Switch>
     </div>
@@ -38,7 +40,3 @@ function App() {
 }
 
 export default App
-
-{
-  /* <Authentication onFormSwitch={handleFormSwitch} /> */
-}

@@ -1,4 +1,4 @@
-import { Resolver, Query, Mutation, Args } from '@nestjs/graphql'
+import { Resolver, Query, Mutation, Args, Subscription } from '@nestjs/graphql'
 import { PrivateMessageService } from './private-message.service'
 import { PrivateMessage } from './entities/private-message.entity'
 import { CreatePrivateMessageInput } from './dto/create-private-message.input'
@@ -7,11 +7,25 @@ import { UpdatePrivateMessageInput } from './dto/update-private-message.input'
 import { NanoidValidationPipe } from '../common/pipes/nanoid.pipe'
 import { StringValidationPipe } from '../common/pipes/string.pipe'
 import { AuthorizationGuard } from '../auth/guards/authorization.guard'
+import { PubSub } from 'graphql-subscriptions'
 
 @Resolver(() => PrivateMessage)
 @UseGuards(AuthorizationGuard)
 export class PrivateMessageResolver {
-  constructor(private readonly privateMessageService: PrivateMessageService) {}
+  constructor(
+    private readonly privateMessageService: PrivateMessageService,
+    private readonly pubSub: PubSub
+  ) {}
+  //**************************************************//
+  //  SUBSCRIPTION
+  //**************************************************//
+  @Subscription(() => PrivateMessage, {
+    resolve: (payload) => (payload?.res !== undefined ? payload.res : null)
+  })
+  privateMessageCreation() {
+    console.log('Subscription Payload:')
+    return this.pubSub.asyncIterator('messageReceived')
+  }
 
   //**************************************************//
   //  MUTATION
@@ -21,7 +35,10 @@ export class PrivateMessageResolver {
     @Args('data', { type: () => CreatePrivateMessageInput }, ValidationPipe)
     data: CreatePrivateMessageInput
   ): Promise<PrivateMessage> {
-    return this.privateMessageService.create(data)
+    const res = await this.privateMessageService.create(data)
+
+    await this.pubSub.publish('messageReceived', { res })
+    return res
   }
 
   @Mutation(() => PrivateMessage)
