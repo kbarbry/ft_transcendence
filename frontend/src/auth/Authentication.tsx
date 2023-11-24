@@ -6,11 +6,11 @@ export const Authentication = () => {
     <div>
       <h2>Auth page</h2>
       <br />
-      <Link href='/auth/login'>
+      <Link href='/login'>
         <a>Local Login</a>
       </Link>
       <br></br>
-      <Link href='/auth/Signup'>
+      <Link href='/ignup'>
         <a>Local Signup</a>
       </Link>
       <br />
