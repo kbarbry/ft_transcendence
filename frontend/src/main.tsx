@@ -12,6 +12,8 @@ import './index.css'
 import { GraphQLWsLink } from '@apollo/client/link/subscriptions'
 import { createClient } from 'graphql-ws'
 import { getMainDefinition } from '@apollo/client/utilities'
+import { Provider } from 'react-redux'
+import { store } from './store/store.tsx'
 
 const httpLink = new HttpLink({ uri: 'http://127.0.0.1:3000/graphql' })
 const wsLink = new GraphQLWsLink(
@@ -37,7 +39,9 @@ const client = new ApolloClient({
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <ApolloProvider client={client}>
-      <App />
+      <Provider store={store}>
+        <App />
+      </Provider>
     </ApolloProvider>
   </React.StrictMode>
 )
