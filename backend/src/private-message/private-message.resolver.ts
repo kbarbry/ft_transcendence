@@ -23,7 +23,6 @@ export class PrivateMessageResolver {
     resolve: (payload) => (payload?.res !== undefined ? payload.res : null)
   })
   privateMessageCreation() {
-    console.log('Subscription Payload:')
     return this.pubSub.asyncIterator('messageReceived')
   }
 
