@@ -13,7 +13,7 @@ import PrivateMessage from './chat/PrivateMessage'
 function App() {
   return (
     <div className='App'>
-      <Link href='/'>
+      <Link href='/home'>
         <a>Home</a>
       </Link>
       <br />
@@ -25,18 +25,18 @@ function App() {
         <a>Test getUser</a>
       </Link>
       <p></p>
-      <Link href='/auth'>
+      <Link href='/'>
         <a>Auth</a>
       </Link>
       <br></br>
       <br></br>
       <Switch>
-        <Route path='/testUser' component={FindUser} />
-        <Route path='/' component={Home} />
-        <Route path='/auth/Login' component={Login} />
-        <Route path='/auth/Signup' component={Signup} />
-        <Route path='/auth' component={Authentication} />
+        <Route path='/' component={Authentication} />
+        <Route path='/login' component={Login} />
+        <Route path='/signup' component={Signup} />
+        <Route path='/home' component={Home} />
         <Route path='/chat' component={PrivateMessage} />
+        <Route path='/testUser' component={FindUser} />
         <Route component={NotFound} />
       </Switch>
     </div>
