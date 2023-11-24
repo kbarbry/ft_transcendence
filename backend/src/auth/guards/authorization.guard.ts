@@ -6,12 +6,15 @@ import {
 } from '@nestjs/common'
 import { EMemberType } from '@prisma/client'
 import { PrismaService } from '../../prisma/prisma.service'
+import { GqlExecutionContext } from '@nestjs/graphql'
 
 @Injectable()
 export class AuthorizationGuard implements CanActivate {
-  async canActivate(context: ExecutionContext) {
+  async canActivate(context: GqlExecutionContext) {
     try {
-      const request = context.switchToHttp().getRequest()
+      const gqlContext = GqlExecutionContext.create(context)
+      const request = gqlContext.getContext().req
+
       if (request.user) return true
       throw new UnauthorizedException('User not authenticated')
     } catch (e) {

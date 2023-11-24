@@ -15,7 +15,10 @@ import { getMainDefinition } from '@apollo/client/utilities'
 import { Provider } from 'react-redux'
 import { store } from './store/store.tsx'
 
-const httpLink = new HttpLink({ uri: 'http://127.0.0.1:3000/graphql' })
+const httpLink = new HttpLink({
+  uri: 'http://127.0.0.1:3000/graphql',
+  credentials: 'include'
+})
 const wsLink = new GraphQLWsLink(
   createClient({ url: 'ws://127.0.0.1:3000/graphql' })
 )
