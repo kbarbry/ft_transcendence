@@ -5,7 +5,7 @@ import Authentication from './auth/Authentication'
 
 import { Login } from './auth/Login/LoginForm'
 import { Signup } from './auth/Signup/SignupForm'
-import { Home } from './home'
+import { Home } from './home/Home'
 import { NotFound } from './ErrorPages/404'
 import { FindUser } from './auth/IsAuth'
 import PrivateMessage from './chat/PrivateMessage'
@@ -15,6 +15,10 @@ function App() {
     <div className='App'>
       <Link href='/'>
         <a>Home</a>
+      </Link>
+      <br />
+      <Link href='/chat'>
+        <a>Chat Discussion</a>
       </Link>
       <br />
       <Link href='/testUser'>
