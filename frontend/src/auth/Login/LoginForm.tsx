@@ -49,7 +49,7 @@ export const Login = (props: any) => {
         <button onClick={handleLogUserClick}>Login</button>
       </form>
       <p>Don't have an account yet ?</p>
-      <Link href='/auth/Signup'>
+      <Link href='/signup'>
         <a>Signup Here </a>
       </Link>
     </div>
