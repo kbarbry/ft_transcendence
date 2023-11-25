@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { drawBall, drawRackets, drawScores, drawTime } from "./draw-elements";
 
 export const Pong: React.FC = () => {
 
@@ -21,8 +22,6 @@ const CanvasPong: React.FC<{}> = () =>
 {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const canvasCtxRef = useRef<CanvasRenderingContext2D | null>(null)
-  document.addEventListener("keydown", keyDownHandler, false)
-  document.addEventListener("keyup", keyUpHandler, false)
   let elapsed: DOMHighResTimeStamp
 
   const playfield =
@@ -30,20 +29,28 @@ const CanvasPong: React.FC<{}> = () =>
     width: CANVAS_WIDTH,
     height: CANVAS_WIDTH - (CANVAS_WIDTH / 4)
   }
-  const racket =
+  const racket1 =
   {
     width: 10,
     height: 60,
     hPos: 50,
     vPos: (playfield.height / 2) - 30,
-    velocity: 5
+    velocity: 3
+  }
+  const racket2 =
+  {
+    width: 10,
+    height: 60,
+    hPos: playfield.width - 50,
+    vPos: (playfield.height / 2) - 30,
+    velocity: 3
   }
   const ball = 
   {
     radius: playfield.height * 0.02,
     hPos: playfield.width / 2,
     vPos: playfield.height / 2 - playfield.height * 0.01,
-    dir: {x: 200, y:200}
+    dir: {x: 100, y:100}
   }
   const controls =
   {
@@ -73,10 +80,10 @@ const CanvasPong: React.FC<{}> = () =>
     if (e.key == "ArrowDown"){controls.Down_Key = false}
   }
 
-  function updateElements()
+  function updateElements(delta: number)
   {
-    //ball actualisation
-    //  ball up and down  collision
+    //ball update
+    //  ball playfield top and bottom collision
     if ((ball.hPos < ball.radius))
     {
       ball.dir.x = -ball.dir.x;
@@ -91,60 +98,58 @@ const CanvasPong: React.FC<{}> = () =>
       ball.vPos = playfield.height / 2 - ball.radius;
       player1Score += 1;
     }
-    //  ball racket collision
-    if (true)
-    {}
-    //  ball left and right playfield collision
+    //  ball racket1 collision
+    if ((ball.vPos >= racket1.vPos && ball.vPos <= (racket1.vPos + racket1.height))
+      && (ball.hPos > (racket1.hPos + racket1.width) && ball.hPos < (racket1.hPos + racket1.width + ball.radius)))
+    {
+      ball.hPos = racket1.hPos + racket1.width + ball.radius
+      ball.dir.x = -ball.dir.x
+    }
+    //  ball racket2 collision
+    if ((ball.vPos >= racket2.vPos && ball.vPos <= (racket2.vPos + racket2.height))
+    && (ball.hPos < racket2.hPos && ball.hPos > racket2.hPos - ball.radius))
+    {
+      ball.hPos = racket2.hPos - ball.radius
+      ball.dir.x = -ball.dir.x
+    }
+
+    //  ball playfield left and right collision
     if ((ball.vPos < ball.radius) || (ball.vPos > playfield.height - ball.radius))
     {
       ball.dir.y = -ball.dir.y;
     }
-    ball.hPos += (ball.dir.x * previousFrameTime);
-    ball.vPos += (ball.dir.y * previousFrameTime);
+    ball.hPos += (ball.dir.x * delta);
+    ball.vPos += (ball.dir.y * delta);
 
-    //racket actualisation
-    if (racket.vPos > 0 && (controls.Z_Key || controls.Up_Key))
+    //racket1 update
+    if (racket1.vPos > 0 && (controls.Z_Key || controls.Up_Key))
     {
-      racket.vPos -= racket.velocity;
+      racket1.vPos -= racket1.velocity;
     }
-    if (racket.vPos < (playfield.height - (racket.height)) && (controls.S_Key || controls.Down_Key))
+    if (racket1.vPos < (playfield.height - (racket1.height)) && (controls.S_Key || controls.Down_Key))
     {
-      racket.vPos += racket.velocity;
+      racket1.vPos += racket1.velocity;
     }
-  }
 
-  function drawRackets(ctx: CanvasRenderingContext2D)
-  {
-    ctx.fillRect(racket.hPos, racket.vPos, racket.width, racket.height)
-  }
-
-  function drawBall(ctx: CanvasRenderingContext2D)
-  {
-    ctx.beginPath();
-    ctx.arc(ball.hPos, ball.vPos, ball.radius, 0, 2 * Math.PI);
-    ctx.closePath();
-    ctx.fill();
-  }
-
-  function drawScores(ctx: CanvasRenderingContext2D)
-  {
-    ctx.fillText(player1Score.toString(), 300, 200);
-    ctx.fillText(player2Score.toString(), 500, 200);
-  }
-
-  function drawTime(ctx: CanvasRenderingContext2D)
-  {
-    let second: number = (elapsed / 1000)
-    ctx.fillText(second.toFixed(0), 400, 100)
+    //racket2 update
+    if (racket2.vPos > 0 && (controls.O_Key))
+    {
+      racket2.vPos -= racket2.velocity;
+    }
+    if (racket2.vPos < (playfield.height - (racket2.height)) && (controls.L_Key))
+    {
+      racket2.vPos += racket2.velocity;
+    }
   }
 
   function drawElements(ctx: CanvasRenderingContext2D)
   {
     ctx.clearRect(0, 0, playfield.width, playfield.width);
-    drawTime(ctx);
-    drawScores(ctx);
-    drawBall(ctx);
-    drawRackets(ctx);
+    drawTime(ctx, elapsed);
+    drawScores(ctx, player1Score, player2Score);
+    drawBall(ctx, ball);
+    drawRackets(ctx, racket1);
+    drawRackets(ctx, racket2);
   }
 
   useEffect(() =>
@@ -163,21 +168,22 @@ const CanvasPong: React.FC<{}> = () =>
         ctx!.font = "100px sans-serif"
         ctx!.textAlign = "center";
 
-        //read input
-        updateElements()
+        updateElements(previousFrameTime)
         drawElements(ctx!)
       }
 
       previousTimeStamp = timeStamp;
       window.requestAnimationFrame(frameStep);
     }
-    
+
     //init game
     previousTimeStamp = performance.now();
     start = previousTimeStamp;
-    window.requestAnimationFrame(frameStep); //TODO maybe call frameStep here as: function frameStep(performance.now())
+    frameStep(performance.now()); //TODO maybe call frameStep here as: function frameStep(performance.now())
   }, []);
 
+  document.addEventListener("keydown", keyDownHandler, false)
+  document.addEventListener("keyup", keyUpHandler, false)
   return (
     <>
       <div id='pong-players'>
