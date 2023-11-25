@@ -6,12 +6,15 @@ import {
 } from '@nestjs/common'
 import { EMemberType } from '@prisma/client'
 import { PrismaService } from '../../prisma/prisma.service'
+import { GqlExecutionContext } from '@nestjs/graphql'
 
 @Injectable()
 export class AuthorizationGuard implements CanActivate {
-  async canActivate(context: ExecutionContext) {
+  async canActivate(context: GqlExecutionContext) {
     try {
-      const request = context.switchToHttp().getRequest()
+      const gqlContext = GqlExecutionContext.create(context)
+      const request = gqlContext.getContext().req
+
       if (request.user) return true
       throw new UnauthorizedException('User not authenticated')
     } catch (e) {
@@ -26,10 +29,10 @@ export class ChannelAdminGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     try {
       const request = context.switchToHttp().getRequest()
-      const userId = request.session?.user?.id as string
+      const userId = request?.user?.id as string
       console.log(request)
       // wrong data, must be tested
-      const channelId = request.params.channelId as string
+      const channelId = request?.params?.channelId as string
 
       if (!userId || !channelId) {
         throw new UnauthorizedException('Invalid user or channel information')
@@ -58,10 +61,10 @@ export class ChannelOwnerGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     try {
       const request = context.switchToHttp().getRequest()
-      const userId = request.session?.user?.id as string
+      const userId = request?.user?.id as string
       console.log(request)
       // wrong data, must be tested
-      const channelId = request.params.channelId as string
+      const channelId = request?.params?.channelId as string
 
       if (!userId || !channelId) {
         throw new UnauthorizedException('Invalid user or channel information')

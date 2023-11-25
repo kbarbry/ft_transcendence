@@ -1,7 +1,18 @@
-import { Resolver, Query, Mutation, Args } from '@nestjs/graphql'
+import {
+  Resolver,
+  Query,
+  Mutation,
+  Args,
+  Context,
+  GqlExecutionContext
+} from '@nestjs/graphql'
 import { UserService } from './user.service'
 import { User } from './entities/user.entity'
-import { UseGuards, ValidationPipe } from '@nestjs/common'
+import {
+  UnauthorizedException,
+  UseGuards,
+  ValidationPipe
+} from '@nestjs/common'
 import { UpdateUserInput } from './dto/update-user.input'
 import { NanoidValidationPipe } from '../common/pipes/nanoid.pipe'
 import { NanoidsValidationPipe } from '../common/pipes/nanoids.pipe'
@@ -41,6 +52,12 @@ export class UserResolver {
     @Args('id', { type: () => String }, NanoidValidationPipe) id: string
   ): Promise<User | null> {
     return this.userService.findOne(id)
+  }
+
+  @Query(() => User)
+  findOneUserByContext(@Context() ctx: any): Promise<User | null> {
+    if (!ctx?.req?.user?.id) throw new UnauthorizedException('User not found')
+    return this.userService.findOne(ctx.req.user.id)
   }
 
   @Query(() => User)
