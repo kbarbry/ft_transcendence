@@ -125,10 +125,18 @@ const CanvasPong: React.FC<{}> = () =>
     if (racket1.vPos > 0 && (controls.Z_Key || controls.Up_Key))
     {
       racket1.vPos -= racket1.velocity;
+      if (racket1.vPos < 0)
+      {
+        racket1.vPos = 0
+      }
     }
-    if (racket1.vPos < (playfield.height - (racket1.height)) && (controls.S_Key || controls.Down_Key))
+    if (racket1.vPos < (playfield.height - racket1.height) && (controls.S_Key || controls.Down_Key))
     {
       racket1.vPos += racket1.velocity;
+      if (racket1.vPos > (playfield.height - racket1.height))
+      {
+        racket1.vPos = playfield.height - racket1.height
+      }
     }
 
     //racket2 update
