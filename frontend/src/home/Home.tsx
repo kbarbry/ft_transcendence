@@ -43,7 +43,7 @@ export const Home: React.FC = () => {
     }
     if (error) {
       // Redirect to the login page if there is an error
-      setLocation('/login', { replace: true })
+      setLocation('/auth', { replace: true })
     }
     // You have to use dispatch to call a reducer or nothing will happen
   }, [dispatch, loading, error, data, location, setLocation])
