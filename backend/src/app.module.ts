@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common'
-import { AppService } from './app.service'
 
 import { PrismaModule } from './prisma/prisma.module'
 import { ChannelModule } from './channel/channel.module'
@@ -50,19 +49,13 @@ import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin
       plugins: [ApolloServerPluginLandingPageLocalDefault()],
       subscriptions: {
         'graphql-ws': {
-          path: `/graphql`,
-          onConnect: () => {
-            console.log(`OnConnect`)
-          }
+          path: `/graphql`
         }
       }
     }),
     PassportModule.register({ session: true })
   ],
   controllers: [],
-  providers: [
-    AppService,
-    { provide: APP_FILTER, useClass: GlobalExceptionFilter }
-  ]
+  providers: [{ provide: APP_FILTER, useClass: GlobalExceptionFilter }]
 })
 export class AppModule {}

@@ -20,7 +20,12 @@ const httpLink = new HttpLink({
   credentials: 'include'
 })
 const wsLink = new GraphQLWsLink(
-  createClient({ url: 'ws://127.0.0.1:3000/graphql' })
+  createClient({
+    url: 'ws://127.0.0.1:3000/graphql',
+    connectionParams: {
+      credentials: 'include'
+    }
+  })
 )
 const splitLink = split(
   ({ query }) => {
