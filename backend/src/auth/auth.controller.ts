@@ -34,6 +34,14 @@ export class AuthController {
     return res.status(200).json({ msg: 'Local Auth Login' })
   }
 
+  @Get('logout')
+  logout(@Req() req: any, @Res() res: any) {
+
+    req.session.destroy()
+    console.log('logout')
+    return res.redirect('http://127.0.0.1:5173/home')
+  }
+
   @Get('42/login')
   @UseGuards(School42AuthGuard)
   ftLogin(@Res() res: any) {

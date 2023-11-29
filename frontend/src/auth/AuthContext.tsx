@@ -33,7 +33,7 @@ interface Props {
 export const AuthProvider = ({ children }: Props) => {
   const client = useApolloClient()
   const [authenticated, setAuthenticated] = useState(false)
-  const [, setLocation] = useLocation()
+  const [setLocation] = useLocation()
 
   const checkAuthentication = async () => {
     try {
@@ -48,7 +48,7 @@ export const AuthProvider = ({ children }: Props) => {
         `
       })
 
-      const isAuthenticated = !!data.findOneUserByContext
+      const isAuthenticated = data.findOneUserByContext
 
       setAuthenticated(isAuthenticated)
     } catch (error) {
