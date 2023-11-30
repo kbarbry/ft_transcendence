@@ -1,0 +1,74 @@
+import React from 'react'
+import './App.css'
+import { Link, Route, Switch } from 'wouter'
+import Authentication from './auth/Authentication'
+import { Home } from './home/Home'
+import { NotFound } from './ErrorPages/404'
+import { FindUser } from './auth/IsAuth'
+import PrivateMessage from './chat/PrivateMessage'
+
+import { AuthProvider, useAuth } from './auth/AuthContext'
+import { Welcome } from './Test/Test_welcome'
+import { Game } from './Test/Test_game'
+
+function App_private() {
+  const authenticated = useAuth()
+
+  const handleLogout = async () => {
+    try {
+      window.location.href = 'http://127.0.0.1:3000/api/auth/logout'
+      localStorage.removeItem('userInfo')
+      sessionStorage.removeItem('userInfo')
+    } catch (error) {
+      console.error('Erreur lors de la déconnexion', error)
+    }
+  }
+  if (!authenticated) {
+    return (window.location.href = 'http://127.0.0.1:5173/forbidden')
+  }
+
+  return (
+    <div className='App_private'>
+      <h2>Private APP</h2>
+
+      <Link href='/home'>
+        <a>Home</a>
+      </Link>
+      <br />
+      <Link href='/chat'>
+        <a>Chat Discussion</a>
+      </Link>
+      <br />
+      <Link href='/testUser'>
+        <a>Test getUser</a>
+      </Link>
+      <br />
+      <br />
+      <Link href='/game'>
+        <a>Game</a>
+      </Link>
+      <br />
+      <br />
+      <Link href='/'>
+        <a>WelcomePage</a>
+      </Link>
+      <br />
+      <button onClick={handleLogout}>Logout</button>
+
+      <br></br>
+      <br></br>
+      <br></br>
+      <Switch>
+        <Route path='/' component={Welcome} />
+        <Route path='/home' component={Home} />
+        <Route path='/chat' component={PrivateMessage} />
+        <Route path='/testUser' component={FindUser} />
+        <Route path='/game' component={Game} />
+
+        <Route component={NotFound} />
+      </Switch>
+    </div>
+  )
+}
+
+export default App_private

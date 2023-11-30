@@ -34,6 +34,13 @@ export class AuthController {
     return res.status(200).json({ msg: 'Local Auth Login' })
   }
 
+  @Get('logout')
+  logout(@Req() req: any, @Res() res: any) {
+
+    req.session.destroy()
+    return res.redirect('http://127.0.0.1:5173/')
+  }
+
   @Get('42/login')
   @UseGuards(School42AuthGuard)
   ftLogin(@Res() res: any) {
@@ -43,7 +50,7 @@ export class AuthController {
   @Get('42/redirect')
   @UseGuards(School42AuthGuard)
   ftRedirect(@Req() req: any, @Res() res: any) {
-    return res.redirect('http://127.0.0.1:5173/home')
+    return res.redirect('http://127.0.0.1:5173')
   }
 
   @UseGuards(GoogleAuthGuard)
@@ -55,7 +62,7 @@ export class AuthController {
   @UseGuards(GoogleAuthGuard)
   @Get('google/redirect')
   getGoogleCallback(@Req() req: any, @Res() res: any) {
-    return res.redirect('http://127.0.0.1:5173/home')
+    return res.redirect('http://127.0.0.1:5173')
   }
 
   @Get('github/login')
@@ -67,6 +74,6 @@ export class AuthController {
   @UseGuards(GithubGuard)
   @Get('github/redirect')
   async getGithubAuthCallback(@Req() req: any, @Res() res: any) {
-    return res.redirect('http://127.0.0.1:5173/home')
+    return res.redirect('http://127.0.0.1:5173')
   }
 }
