@@ -13,19 +13,22 @@ function App_public() {
     <div className='App_public'>
         <h2>Public APP</h2>
       <br />
-      <Link href='/auth'>
+      <Link href='/'>
         <a>Auth</a>
       </Link>
       <br></br>
       <br></br>
       <Switch>
-        <Route path='/auth' component={Authentication} />
+        <Route path='/' component={Authentication} />
         <Route path='/home' component={Home} />
         <Route path='/signup' component={Signup} />
         <Route path='/login' component={Login} />
         <Route path='/chat' component={ForbiddenAccess} />
         <Route path='/testUser' component={ForbiddenAccess} />
         <Route path='/forbidden' component={ForbiddenAccess} />
+        <Route path='/Welcome' component={ForbiddenAccess} />
+        <Route path='/Game' component={ForbiddenAccess} />
+
 
 
         <Route component={NotFound} />

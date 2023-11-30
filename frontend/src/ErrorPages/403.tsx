@@ -5,7 +5,7 @@ export const ForbiddenAccess = () => {
   const [location, setLocation] = useLocation();
 
   useEffect(() => {
-    setLocation('/forbidden', { replace: true });
+    setLocation('/', { replace: true });
   }, []);
 
   return (

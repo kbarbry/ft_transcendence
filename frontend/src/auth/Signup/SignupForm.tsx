@@ -7,14 +7,12 @@ export const Signup = (props: any) => {
   const [pass, setPass] = useState('')
   const [username, setUsername] = useState('')
   const [userData, setUserData] = useState(null)
-  const [redirect, setRedirect] = useState(false)
 
   const handleCreateUserClick = () => {
     console.log('button clicked')
     createUser(username, email, pass)
       .then((userData) => {
         setUserData(userData)
-        setRedirect(true)
       })
       .catch((error) => {
         console.error("Erreur lors de la création de l'utilisateur:", error)
@@ -23,10 +21,7 @@ export const Signup = (props: any) => {
 
   const handleSubmit = (e: any) => {
     e.preventDefault()
-    console.log(email)
   }
-
-  if (redirect) return <Redirect to='/login' />
 
   return (
     <div className='auth-form-container'>

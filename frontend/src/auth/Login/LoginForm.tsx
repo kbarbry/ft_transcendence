@@ -5,12 +5,10 @@ import { Link } from 'wouter'
 export const Login = (props: any) => {
   const [email, setEmail] = useState('')
   const [pass, setPass] = useState('')
-  const [username, setUsername] = useState('')
   const [userData, setUserData] = useState(null)
 
   const handleLogUserClick = () => {
-    console.log('button clicked')
-    LogUser(username, email, pass)
+    LogUser( email, pass)
       .then((userData) => {
         setUserData(userData)
       })
@@ -21,7 +19,6 @@ export const Login = (props: any) => {
 
   const handleSubmit = (e: any) => {
     e.preventDefault()
-    console.log(email)
   }
 
   return (
