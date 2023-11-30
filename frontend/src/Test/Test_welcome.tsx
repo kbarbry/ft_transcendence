@@ -1,8 +1,5 @@
-import React, { useEffect } from 'react';
+import React from 'react'
 
-export const Welcome = () => {
-
-  return (
-    <h1>This is a WelcomePage</h1>
-  );
-};
+export const Welcome: React.FC = () => {
+  return <h1>This is a WelcomePage</h1>
+}

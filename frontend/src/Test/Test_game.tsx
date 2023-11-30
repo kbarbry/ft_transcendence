@@ -1,10 +1,9 @@
-import React, { useEffect } from 'react';
+import React from 'react'
 
-export const Game = () => {
-
+export const Game: React.FC = () => {
   return (
     <div>
       <h1>This is a gamePage</h1>
     </div>
-  );
-};
+  )
+}

@@ -3,7 +3,7 @@ import { AuthProvider, useAuth } from './auth/AuthContext'
 import App_private from './App_private'
 import App_public from './App_public'
 
-const App = () => {
+const App: React.FC = () => {
   const authenticated = useAuth()
 
   return (

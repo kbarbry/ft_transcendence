@@ -8,10 +8,10 @@ import { ForbiddenAccess } from './ErrorPages/403'
 import { Signup } from './auth/Signup/SignupForm'
 import { Login } from './auth/Login/LoginForm'
 
-function App_public() {
+const App_public: React.FC = () => {
   return (
     <div className='App_public'>
-        <h2>Public APP</h2>
+      <h2>Public APP</h2>
       <br />
       <Link href='/'>
         <a>Auth</a>
@@ -28,8 +28,6 @@ function App_public() {
         <Route path='/forbidden' component={ForbiddenAccess} />
         <Route path='/Welcome' component={ForbiddenAccess} />
         <Route path='/Game' component={ForbiddenAccess} />
-
-
 
         <Route component={NotFound} />
       </Switch>

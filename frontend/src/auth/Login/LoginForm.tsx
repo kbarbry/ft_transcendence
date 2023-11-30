@@ -2,13 +2,13 @@ import React, { useState } from 'react'
 import { LogUser } from './logUser'
 import { Link } from 'wouter'
 
-export const Login = (props: any) => {
+export const Login: React.FC = () => {
   const [email, setEmail] = useState('')
   const [pass, setPass] = useState('')
-  const [userData, setUserData] = useState(null)
+  const [, setUserData] = useState(null)
 
   const handleLogUserClick = () => {
-    LogUser( email, pass)
+    LogUser(email, pass)
       .then((userData) => {
         setUserData(userData)
       })

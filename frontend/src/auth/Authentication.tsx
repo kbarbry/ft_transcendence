@@ -1,7 +1,7 @@
 import React from 'react'
 import { Link } from 'wouter'
 
-export const Authentication = () => {
+export const Authentication: React.FC = () => {
   return (
     <div>
       <h2>Auth page</h2>

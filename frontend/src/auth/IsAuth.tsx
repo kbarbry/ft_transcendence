@@ -1,4 +1,3 @@
-// findUser.tsx
 import { useQuery, gql } from '@apollo/client'
 import React from 'react'
 

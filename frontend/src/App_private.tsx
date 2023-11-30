@@ -1,18 +1,19 @@
 import React from 'react'
 import './App.css'
 import { Link, Route, Switch } from 'wouter'
-import Authentication from './auth/Authentication'
 import { Home } from './home/Home'
 import { NotFound } from './ErrorPages/404'
 import { FindUser } from './auth/IsAuth'
 import PrivateMessage from './chat/PrivateMessage'
 
-import { AuthProvider, useAuth } from './auth/AuthContext'
+import { useAuth } from './auth/AuthContext'
 import { Welcome } from './Test/Test_welcome'
 import { Game } from './Test/Test_game'
+import useLocation from 'wouter/use-location'
 
-function App_private() {
+const App_private: React.FC = () => {
   const authenticated = useAuth()
+  const [, setLocation] = useLocation()
 
   const handleLogout = async () => {
     try {
@@ -24,7 +25,7 @@ function App_private() {
     }
   }
   if (!authenticated) {
-    return (window.location.href = 'http://127.0.0.1:5173/forbidden')
+    setLocation('/forbidden', { replace: true })
   }
 
   return (

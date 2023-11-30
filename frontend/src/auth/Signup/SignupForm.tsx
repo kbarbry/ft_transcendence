@@ -1,12 +1,12 @@
 import React, { useState } from 'react'
 import { createUser } from './createUser'
-import { useLocation, Link, Redirect } from 'wouter'
+import { Link } from 'wouter'
 
-export const Signup = (props: any) => {
+export const Signup: React.FC = () => {
   const [email, setEmail] = useState('')
   const [pass, setPass] = useState('')
   const [username, setUsername] = useState('')
-  const [userData, setUserData] = useState(null)
+  const [, setUserData] = useState(null)
 
   const handleCreateUserClick = () => {
     console.log('button clicked')
