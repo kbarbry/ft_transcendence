@@ -10,7 +10,7 @@ export const Authentication = () => {
         <a>Local Login</a>
       </Link>
       <br></br>
-      <Link href='/ignup'>
+      <Link href='/signup'>
         <a>Local Signup</a>
       </Link>
       <br />

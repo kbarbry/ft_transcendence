@@ -1,5 +1,4 @@
 export async function LogUser(
-  username: string,
   mail: string,
   password: string
 ) {
@@ -12,17 +11,16 @@ export async function LogUser(
       credentials: 'include',
 
       body: JSON.stringify({
-        username,
         mail,
         password
       })
     })
     if (response.ok) {
       const userData = await response.json()
+      window.location.href = 'http://127.0.0.1:5173'
       return userData
     }
   } catch (error) {
-    console.error("Erreur lors de la création de l'utilisateur2", error)
     throw error
   }
 }
