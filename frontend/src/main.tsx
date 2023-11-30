@@ -20,7 +20,12 @@ const httpLink = new HttpLink({
   credentials: 'include'
 })
 const wsLink = new GraphQLWsLink(
-  createClient({ url: 'ws://127.0.0.1:3000/graphql' })
+  createClient({
+    url: 'ws://127.0.0.1:3000/graphql',
+    connectionParams: {
+      credentials: 'include'
+    }
+  })
 )
 const splitLink = split(
   ({ query }) => {
@@ -34,7 +39,7 @@ const splitLink = split(
   httpLink
 )
 
-const client = new ApolloClient({
+export const client = new ApolloClient({
   link: splitLink,
   cache: new InMemoryCache()
 })
