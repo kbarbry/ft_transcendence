@@ -57,7 +57,6 @@ export const Home: React.FC = () => {
 
   const allLoadingComplete = Object.values(loading).every((load) => !load)
 
-
   if (!allLoadingComplete) return <p>Loading... {JSON.stringify(loading)}</p>
   if (loading.isError) return <p>Error</p>
 

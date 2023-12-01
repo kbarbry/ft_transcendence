@@ -1,29 +1,31 @@
-import React, { useState } from 'react';
-import { LogUser } from './Login/logUser';
-import { Link, useLocation } from 'wouter';
+import React, { useState } from 'react'
+import { LogUser } from './Login/logUser'
+import { Link, useLocation } from 'wouter'
 
 export const Authentication: React.FC = () => {
-  const [email, setEmail] = useState('');
-  const [pass, setPass] = useState('');
-  const [, setUserData] = useState(null);
-  const [, setLocation] = useLocation(); // Ajoutez useLocation ici
+  const [email, setEmail] = useState('')
+  const [pass, setPass] = useState('')
+  const [, setUserData] = useState(null)
+  const [, setLocation] = useLocation()
 
   const handleLogUserClick = () => {
     LogUser(email, pass)
       .then((userData) => {
         if (userData !== null) {
-          setLocation('http://127.0.0.1:5173', { replace: true });
+          console.log('redirect')
+          setLocation('http://127.0.0.1:5173/', { replace: true })
+          window.location.reload()
         }
       })
       .catch((error) => {
-        console.error("Erreur lors de la création de l'utilisateur:", error);
-      });
+        console.error("Erreur lors de la création de l'utilisateur:", error)
+      })
   }
 
   const handleSubmit = (e: any) => {
     e.preventDefault()
   }
-  
+
   return (
     <div>
       <h1>Auth page</h1>
@@ -64,7 +66,7 @@ export const Authentication: React.FC = () => {
       <br></br>
       <a href='http://localhost:3000/api/auth/github/login'>GithubLogin</a>
     </div>
-  );
+  )
 }
 
 export default Authentication
