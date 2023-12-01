@@ -10,6 +10,8 @@ import { useAuth } from './auth/AuthContext'
 import { Welcome } from './Test/Test_welcome'
 import { Game } from './Test/Test_game'
 import useLocation from 'wouter/use-location'
+import Relations from './relations/Relations'
+import Channels from './chat/Channels'
 
 const App_private: React.FC = () => {
   const authenticated = useAuth()
@@ -37,7 +39,15 @@ const App_private: React.FC = () => {
       </Link>
       <br />
       <Link href='/privateChannel'>
-        <a>Private Channels</a>
+        <a>Private Messages</a>
+      </Link>
+      <br />
+      <Link href='/channel'>
+        <a>Channels</a>
+      </Link>
+      <br />
+      <Link href='/relations'>
+        <a>Friends</a>
       </Link>
       <br />
       <Link href='/testUser'>
@@ -63,6 +73,8 @@ const App_private: React.FC = () => {
         <Route path='/' component={Welcome} />
         <Route path='/home' component={Home} />
         <Route path='/privateChannel' component={PrivateChannel} />
+        <Route path='/channel' component={Channels} />
+        <Route path='/relations' component={Relations} />
         <Route path='/testUser' component={FindUser} />
         <Route path='/game' component={Game} />
 

@@ -21,7 +21,7 @@ import { PubSub } from 'graphql-subscriptions'
 import {
   ExceptionPrivateMessageDoesNotExist,
   ExceptionPrivateMessageForbiddenAccess
-} from 'src/channel/exceptions/private-message.exception'
+} from '../channel/exceptions/private-message.exception'
 
 @Resolver(() => PrivateMessage)
 @UseGuards(AuthorizationGuard)
