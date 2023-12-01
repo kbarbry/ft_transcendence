@@ -1,8 +1,10 @@
 import React from 'react'
-import { IMessage } from '../PrivateMessage'
+import { PrivateMessage } from '../../gql/graphql'
+import { UserInformations } from '../../store/slices/user-informations.slice'
 
-interface MessageItemProps {
-  message: IMessage
+interface MessageComponentProps {
+  message: PrivateMessage
+  sender: UserInformations
   userId: string
   onEdit: (messageId: string, newContent: string) => void
   onDelete: (messageId: string) => void
@@ -14,8 +16,9 @@ interface MessageItemProps {
   }
 }
 
-export const MessageComponent: React.FC<MessageItemProps> = ({
+const MessageComponent: React.FC<MessageComponentProps> = ({
   message,
+  sender,
   userId,
   onEdit,
   onDelete,
@@ -58,7 +61,7 @@ export const MessageComponent: React.FC<MessageItemProps> = ({
         </>
       ) : (
         <>
-          <strong>{message.senderId}</strong> {message.content}
+          <strong>{sender.username}</strong> {message.content}
           {!editionMode.editionInfos && message.senderId === userId && (
             <>
               <button
@@ -79,3 +82,5 @@ export const MessageComponent: React.FC<MessageItemProps> = ({
     </div>
   )
 }
+
+export default MessageComponent
