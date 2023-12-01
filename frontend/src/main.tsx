@@ -13,7 +13,8 @@ import { GraphQLWsLink } from '@apollo/client/link/subscriptions'
 import { createClient } from 'graphql-ws'
 import { getMainDefinition } from '@apollo/client/utilities'
 import { Provider } from 'react-redux'
-import { store } from './store/store.tsx'
+import { persistor, store } from './store/store.tsx'
+import { PersistGate } from 'redux-persist/integration/react'
 
 const httpLink = new HttpLink({
   uri: 'http://127.0.0.1:3000/graphql',
@@ -48,7 +49,9 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <ApolloProvider client={client}>
       <Provider store={store}>
-        <App />
+        <PersistGate loading={null} persistor={persistor}>
+          <App />
+        </PersistGate>
       </Provider>
     </ApolloProvider>
   </React.StrictMode>

@@ -1,22 +1,9 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { client } from '../../main'
 import { findUserByContext } from '../graphql'
+import { ELanguage, EStatus } from '../../gql/graphql'
 
 const PROFILE_PICTURE_URL = 'http://127.0.0.1:5173/DefaultProfilePicture.svg'
-
-// All enums MUST be perfectly equal to the ones in the backend
-export enum EStatus {
-  Online = 'Online',
-  Invisble = 'Invisble',
-  Idle = 'Idle',
-  DoNotDisturb = 'DoNotDisturb'
-}
-
-export enum ELanguage {
-  English = 'English',
-  French = 'French',
-  Spanish = 'Spanish'
-}
 
 export interface UserInformations {
   id: string
