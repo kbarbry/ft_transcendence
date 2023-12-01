@@ -8,8 +8,6 @@ import {
   subscriptionOnMessageDeletion,
   subscriptionOnMessageEdition
 } from './graphql'
-import { useSelector } from 'react-redux'
-import { RootState } from '../store/store'
 import {
   CreatePrivateMessageMutation,
   CreatePrivateMessageMutationVariables,
@@ -18,17 +16,28 @@ import {
   UpdatePrivateMessageMutation,
   UpdatePrivateMessageMutationVariables
 } from '../gql/graphql'
+import { useAppSelector } from '../store/hooks'
+import { MessageComponent } from './components/MessageComponent'
+
+export interface IMessage {
+  content: string
+  createdAt: Date
+  id: string
+  receiverId: string
+  senderId: string
+  updatedAt: Date
+}
 
 const PrivateMessage: React.FC = () => {
   const [message, setMessage] = useState('')
-  const [chat, setChat] = useState<any[]>([])
-  const [editingMessage, setEditingMessage] = useState<{
+  const [chat, setChat] = useState<IMessage[]>([])
+  const [editionInfos, setEditionsInfos] = useState<{
     id: string
     content: string
   } | null>(null)
-  const userInfos = useSelector((state: RootState) => state.userInformations)
 
-  const senderId = userInfos.user?.id
+  const userInfos = useAppSelector((state) => state.userInformations.user)
+  const senderId = userInfos?.id
   const receiverId = 'FVF8OkvJkHvnS2RNkCABh'
 
   const { loading, error } = useSubscription(subscriptionOnMessageCreation, {
@@ -90,7 +99,7 @@ const PrivateMessage: React.FC = () => {
   >(mutationDeletePrivateMessage)
 
   const handleSendMessage = async () => {
-    if (!senderId) return
+    if (!senderId) throw new Error()
     await sendMessage({
       variables: {
         data: {
@@ -105,15 +114,21 @@ const PrivateMessage: React.FC = () => {
   }
 
   const handleEditMessage = async (messageId: string, newContent: string) => {
-    if (editingMessage !== null) {
+    const index = chat.findIndex((message) => message.id === messageId)
+    const oldMessage = chat[index].content
+
+    try {
       await editMessage({
         variables: {
           updatePrivateMessageId: messageId,
           data: { content: newContent }
         }
       })
+      setEditionsInfos(null)
+    } catch {
+      chat[index].content = oldMessage
+      setEditionsInfos(null)
     }
-    setEditingMessage(null)
   }
 
   const handleDeleteMessage = async (messageId: string) => {
@@ -124,57 +139,20 @@ const PrivateMessage: React.FC = () => {
     })
   }
 
-  const listItems = chat.map((comment, index) => (
-    <li key={index}>
-      <div>
-        {editingMessage !== null && editingMessage?.id === comment.id ? (
-          <>
-            <input
-              type='text'
-              value={editingMessage.content}
-              onChange={(e) =>
-                setEditingMessage((prev) =>
-                  prev !== null ? { ...prev, content: e.target.value } : null
-                )
-              }
-              onKeyDown={(e) => {
-                if (e.key === 'Enter')
-                  handleEditMessage(editingMessage.id, editingMessage.content)
-              }}
-            />
-            <button
-              onClick={() =>
-                handleEditMessage(editingMessage.id, editingMessage.content)
-              }
-            >
-              Save
-            </button>
-          </>
-        ) : (
-          <>
-            <strong>Boubou:</strong> {comment.content}
-            {!editingMessage && comment.senderId === senderId && (
-              <>
-                <button
-                  onClick={() =>
-                    setEditingMessage({
-                      id: comment.id,
-                      content: comment.content
-                    })
-                  }
-                >
-                  Edit
-                </button>
-                <button onClick={() => handleDeleteMessage(comment.id)}>
-                  Delete
-                </button>
-              </>
-            )}
-          </>
-        )}
-      </div>
-    </li>
-  ))
+  const listItems = chat.map((message, index) => {
+    if (!senderId) throw new Error()
+    return (
+      <li key={index}>
+        <MessageComponent
+          message={message}
+          userId={senderId}
+          onEdit={handleEditMessage}
+          onDelete={handleDeleteMessage}
+          editionMode={{ editionInfos, setEditionsInfos }}
+        />
+      </li>
+    )
+  })
 
   return (
     <>
