@@ -1,3 +1,6 @@
+import { useLocation } from 'wouter'
+import React, { useEffect } from 'react'
+
 export async function LogUser(mail: string, password: string) {
   try {
     const response = await fetch('http://127.0.0.1:3000/api/auth/login', {
@@ -14,9 +17,8 @@ export async function LogUser(mail: string, password: string) {
     })
     if (response.ok) {
       const userData = await response.json()
-      window.location.href = 'http://127.0.0.1:5173' // replace with setLocation('/', { replace: true }) ?
       return userData
-    }
+    } else return null
   } catch (error) {
     throw error
   }

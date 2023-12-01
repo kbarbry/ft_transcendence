@@ -34,7 +34,7 @@ const App_private: React.FC = () => {
     <div className='App_private'>
       <h2>Private APP</h2>
 
-      <Link href='/home'>
+      <Link href='/'>
         <a>Home</a>
       </Link>
       <br />
@@ -70,11 +70,11 @@ const App_private: React.FC = () => {
       <br></br>
       <br></br>
       <Switch>
-        <Route path='/' component={Welcome} />
-        <Route path='/home' component={Home} />
         <Route path='/privateChannel' component={PrivateChannel} />
         <Route path='/channel' component={Channels} />
         <Route path='/relations' component={Relations} />
+        <Route path='/welcome' component={Welcome} />
+        <Route path='/' component={Home} />
         <Route path='/testUser' component={FindUser} />
         <Route path='/game' component={Game} />
 
