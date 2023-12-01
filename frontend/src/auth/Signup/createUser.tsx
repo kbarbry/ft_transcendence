@@ -18,9 +18,10 @@ export async function createUser(
 
     if (response.ok) {
       const userData = await response.json()
-      window.location.href = 'http://127.0.0.1:5173/login' // replace with setLocation('/login', { replace: true }) ?
       return userData
     }
+    else 
+      return null
   } catch (error) {
     throw error
   }

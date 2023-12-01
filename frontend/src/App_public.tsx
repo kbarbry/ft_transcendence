@@ -2,11 +2,9 @@ import React from 'react'
 import './App.css'
 import { Link, Route, Switch } from 'wouter'
 import Authentication from './auth/Authentication'
-import { Home } from './home/Home'
 import { NotFound } from './ErrorPages/404'
 import { ForbiddenAccess } from './ErrorPages/403'
 import { Signup } from './auth/Signup/SignupForm'
-import { Login } from './auth/Login/LoginForm'
 
 const App_public: React.FC = () => {
   return (
@@ -20,9 +18,8 @@ const App_public: React.FC = () => {
       <br></br>
       <Switch>
         <Route path='/' component={Authentication} />
-        <Route path='/home' component={Home} />
         <Route path='/signup' component={Signup} />
-        <Route path='/login' component={Login} />
+        <Route path='/home' component={ForbiddenAccess} />
         <Route path='/chat' component={ForbiddenAccess} />
         <Route path='/testUser' component={ForbiddenAccess} />
         <Route path='/forbidden' component={ForbiddenAccess} />

@@ -1,18 +1,22 @@
 import React, { useState } from 'react'
 import { createUser } from './createUser'
-import { Link } from 'wouter'
+import { Link, useLocation } from 'wouter'
 
 export const Signup: React.FC = () => {
   const [email, setEmail] = useState('')
   const [pass, setPass] = useState('')
   const [username, setUsername] = useState('')
   const [, setUserData] = useState(null)
+  const [, setLocation] = useLocation(); 
 
   const handleCreateUserClick = () => {
     console.log('button clicked')
     createUser(username, email, pass)
       .then((userData) => {
         setUserData(userData)
+        if (userData !== null) {
+          setLocation('http://127.0.0.1:5173', { replace: true });
+        }
       })
       .catch((error) => {
         console.error("Erreur lors de la création de l'utilisateur:", error)
