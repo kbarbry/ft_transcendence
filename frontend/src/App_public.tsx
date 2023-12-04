@@ -1,24 +1,16 @@
 import React from 'react'
 import './App.css'
 import { Link, Route, Switch } from 'wouter'
-import Authentication from './auth/Authentication'
 import { NotFound } from './ErrorPages/404'
 import { ForbiddenAccess } from './ErrorPages/403'
-import { Signup } from './auth/Signup/SignupForm'
+import Auth from './auth/Auth'
 
 const App_public: React.FC = () => {
   return (
-    <div className='App_public'>
-      <h2>Public APP</h2>
-      <br />
-      <Link href='/'>
-        <a>Auth</a>
-      </Link>
-      <br></br>
-      <br></br>
+    <div className='App_public unselectable'>
+      <Link href='/'></Link>
       <Switch>
-        <Route path='/' component={Authentication} />
-        <Route path='/signup' component={Signup} />
+        <Route path='/' component={Auth} />
         <Route path='/home' component={ForbiddenAccess} />
         <Route path='/chat' component={ForbiddenAccess} />
         <Route path='/testUser' component={ForbiddenAccess} />
