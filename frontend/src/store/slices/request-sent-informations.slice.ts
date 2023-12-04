@@ -1,22 +1,22 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { UserInformations } from './user-informations.slice'
 import { client } from '../../main'
-import { findAllRelationRequest, findUsersByUserIds } from '../graphql'
+import { findAllRelationRequestsSent, findUsersByUserIds } from '../graphql'
 
-export interface RequestInformations {
-  requests: UserInformations[] | null
+export interface RequestSentInformations {
+  requestSent: UserInformations[] | null
 }
 
-const initialState: RequestInformations = {
-  requests: null
+const initialState: RequestSentInformations = {
+  requestSent: null
 }
 
-export const setRequestInformations = createAsyncThunk(
+export const setRequestSentInformations = createAsyncThunk(
   'requestInformations/fetchRequestInformations',
   async (userId: string) => {
     try {
       const { data: dataRequestsIds } = await client.query({
-        query: findAllRelationRequest,
+        query: findAllRelationRequestsSent,
         variables: { userSenderId: userId }
       })
 
@@ -26,8 +26,8 @@ export const setRequestInformations = createAsyncThunk(
         variables: { userIds }
       })
 
-      const requests: UserInformations[] = dataRequests.findUsersByUserIds
-      return requests
+      const requestSent: UserInformations[] = dataRequests.findUsersByUserIds
+      return requestSent
     } catch (e) {
       console.log('ERROR: ', e)
       throw e
@@ -35,15 +35,15 @@ export const setRequestInformations = createAsyncThunk(
   }
 )
 
-export const requestInformationsSlice = createSlice({
+export const requestSentInformationsSlice = createSlice({
   name: 'requestInformations',
   initialState,
   reducers: {},
   extraReducers: (builder) => {
-    builder.addCase(setRequestInformations.fulfilled, (state, action) => {
-      state.requests = action.payload
+    builder.addCase(setRequestSentInformations.fulfilled, (state, action) => {
+      state.requestSent = action.payload
     })
   }
 })
 
-export default requestInformationsSlice.reducer
+export default requestSentInformationsSlice.reducer

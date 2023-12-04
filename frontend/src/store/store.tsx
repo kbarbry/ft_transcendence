@@ -1,7 +1,8 @@
 import { combineReducers, configureStore } from '@reduxjs/toolkit'
 import userInformationsReducer from './slices/user-informations.slice'
 import friendInformationsReducer from './slices/friend-informations.slice'
-import requestInformationsReducer from './slices/request-informations.slice'
+import requestSentInformationsReducer from './slices/request-sent-informations.slice'
+import requestReceivedInformationsReducer from './slices/request-received-informations.slice'
 import blockedInformationsReducer from './slices/blocked-informations.slice'
 import { persistReducer, persistStore } from 'redux-persist'
 import storage from 'redux-persist/lib/storage'
@@ -15,7 +16,8 @@ const persistConfig = {
 const rootReducer = combineReducers({
   userInformations: userInformationsReducer,
   friendInformations: friendInformationsReducer,
-  requestInformations: requestInformationsReducer,
+  requestSentInformations: requestSentInformationsReducer,
+  requestReceivedInformations: requestReceivedInformationsReducer,
   blockedInformations: blockedInformationsReducer
 })
 
