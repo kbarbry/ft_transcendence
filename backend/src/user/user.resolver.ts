@@ -1,11 +1,4 @@
-import {
-  Resolver,
-  Query,
-  Mutation,
-  Args,
-  Context,
-  GqlExecutionContext
-} from '@nestjs/graphql'
+import { Resolver, Query, Mutation, Args, Context } from '@nestjs/graphql'
 import { UserService } from './user.service'
 import { User } from './entities/user.entity'
 import {
@@ -18,7 +11,10 @@ import { NanoidValidationPipe } from '../common/pipes/nanoid.pipe'
 import { NanoidsValidationPipe } from '../common/pipes/nanoids.pipe'
 import { EmailValidationPipe } from '../common/pipes/email.pipe'
 import { UsernameValidationPipe } from '../common/pipes/username.pipe'
-import { AuthorizationGuard } from '../auth/guards/authorization.guard'
+import {
+  AuthorizationGuard,
+  Unprotected
+} from '../auth/guards/authorization.guard'
 
 @Resolver(() => User)
 @UseGuards(AuthorizationGuard)
@@ -76,11 +72,21 @@ export class UserResolver {
   }
 
   @Query(() => Boolean)
+  @Unprotected()
   isUserUsernameUsed(
     @Args('username', { type: () => String }, UsernameValidationPipe)
     username: string
   ): Promise<boolean> {
     return this.userService.isUsernameUsed(username)
+  }
+
+  @Query(() => Boolean)
+  @Unprotected()
+  isUserMailUsed(
+    @Args('mail', { type: () => String }, EmailValidationPipe)
+    mail: string
+  ): Promise<boolean> {
+    return this.userService.isMailUsed(mail)
   }
 
   @Query(() => [User])

@@ -3,7 +3,6 @@ import './App.css'
 import { Link, Route, Switch } from 'wouter'
 import { Home } from './home/Home'
 import { NotFound } from './ErrorPages/404'
-import { FindUser } from './auth/IsAuth'
 import PrivateChannel from './chat/PrivateChannels'
 
 import { useAuth } from './auth/AuthContext'
@@ -50,11 +49,6 @@ const App_private: React.FC = () => {
         <a>Friends</a>
       </Link>
       <br />
-      <Link href='/testUser'>
-        <a>Test getUser</a>
-      </Link>
-      <br />
-      <br />
       <Link href='/game'>
         <a>Game</a>
       </Link>
@@ -75,7 +69,6 @@ const App_private: React.FC = () => {
         <Route path='/relations' component={Relations} />
         <Route path='/welcome' component={Welcome} />
         <Route path='/' component={Home} />
-        <Route path='/testUser' component={FindUser} />
         <Route path='/game' component={Game} />
 
         <Route component={NotFound} />
