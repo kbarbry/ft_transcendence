@@ -19,7 +19,8 @@ class CustomValidationPipeDto {
       '$property must be between $constraint1 and $constraint2 characters long.'
   })
   @Matches(/^[a-zA-Z0-9_\-\.]+( [a-zA-Z0-9_\-\.]+)?$/, {
-    message: '$property can only contain letters, numbers, and single spaces.'
+    message:
+      '$property can only contain letters, numbers, single spaces and "_-.".'
   })
   username: string
 }

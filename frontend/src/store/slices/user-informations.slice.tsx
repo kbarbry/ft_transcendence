@@ -3,7 +3,8 @@ import { client } from '../../main'
 import { findUserByContext } from '../graphql'
 import { ELanguage, EStatus } from '../../gql/graphql'
 
-const PROFILE_PICTURE_URL = 'http://127.0.0.1:5173/DefaultProfilePicture.svg'
+export const PROFILE_PICTURE_URL =
+  'http://127.0.0.1:5173/DefaultProfilePicture.svg'
 
 export interface UserInformations {
   id: string
