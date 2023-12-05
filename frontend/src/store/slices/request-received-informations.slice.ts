@@ -12,12 +12,12 @@ const initialState: RequestReceivedInformations = {
 }
 
 export const setRequestReceivedInformations = createAsyncThunk(
-  'requestInformations/fetchRequestInformations',
+  'requestReceivedInformations/fetchRequestReceivedInformations',
   async (userId: string) => {
     try {
       const { data: dataRequestsIds } = await client.query({
         query: findAllRelationRequestsReceived,
-        variables: { userSenderId: userId }
+        variables: { userReceiverId: userId }
       })
 
       const userIds = dataRequestsIds.findAllRelationRequestsReceived

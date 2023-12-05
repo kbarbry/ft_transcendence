@@ -96,7 +96,7 @@ export class PrivateMessageResolver {
     data: CreatePrivateMessageInput,
     @Context() ctx: any
   ): Promise<PrivateMessage> {
-    if (ctx.req.user.id !== data.senderId)
+    if (ctx?.req?.user?.id !== data.senderId)
       throw new ExceptionPrivateMessageForbiddenAccess()
 
     const { senderId, receiverId } = data
@@ -124,7 +124,7 @@ export class PrivateMessageResolver {
     const msg = await this.findOnePrivateMessage(id)
     if (!msg) throw new ExceptionPrivateMessageDoesNotExist()
 
-    if (ctx.req.user.id !== msg.senderId)
+    if (ctx?.req?.user?.id !== msg.senderId)
       throw new ExceptionPrivateMessageForbiddenAccess()
 
     const { senderId, receiverId } = msg
@@ -149,7 +149,7 @@ export class PrivateMessageResolver {
     const msg = await this.findOnePrivateMessage(id)
     if (!msg) throw new ExceptionPrivateMessageDoesNotExist()
 
-    if (ctx.req.user.id !== msg.senderId)
+    if (ctx?.req?.user?.id !== msg.senderId)
       throw new ExceptionPrivateMessageForbiddenAccess()
 
     const { senderId, receiverId } = msg

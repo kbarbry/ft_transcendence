@@ -8,7 +8,7 @@ import {
   EyeInvisibleOutlined,
   EyeTwoTone
 } from '@ant-design/icons'
-import { queryIsUserMailUser, queryIsUserUsernameUsed } from '../graphql'
+import { queryIsUserMailUsed, queryIsUserUsernameUsed } from '../graphql'
 import { useLazyQuery } from '@apollo/client'
 // import { PROFILE_PICTURE_URL } from '../../store/slices/user-informations.slice'
 
@@ -37,7 +37,7 @@ const SignUp: React.FC = () => {
     }
   })
 
-  const [checkMailAvailability] = useLazyQuery(queryIsUserMailUser, {
+  const [checkMailAvailability] = useLazyQuery(queryIsUserMailUsed, {
     onCompleted: (data: any) => {
       console.log(data)
       setIsMailUsed(data.isUserMailUsed)

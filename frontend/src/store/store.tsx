@@ -12,7 +12,6 @@ const persistConfig = {
   storage
 }
 
-// This store will store all the different slices, no need to make another one
 const rootReducer = combineReducers({
   userInformations: userInformationsReducer,
   friendInformations: friendInformationsReducer,

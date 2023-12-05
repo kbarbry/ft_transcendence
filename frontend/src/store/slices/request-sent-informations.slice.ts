@@ -12,7 +12,7 @@ const initialState: RequestSentInformations = {
 }
 
 export const setRequestSentInformations = createAsyncThunk(
-  'requestInformations/fetchRequestInformations',
+  'requestSentInformations/fetchRequestSentInformations',
   async (userId: string) => {
     try {
       const { data: dataRequestsIds } = await client.query({

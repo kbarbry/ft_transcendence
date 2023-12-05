@@ -1,19 +1,22 @@
 import React from 'react'
-import { useSelector } from 'react-redux'
-import { RootState } from '../store/store'
 import RequestReceived from './components/RequestReceived'
+import { useAppSelector } from '../store/hooks'
 
 const RequestsReceived: React.FC = () => {
-  const requestsReceived = useSelector(
-    (state: RootState) => state.requestReceivedInformations.requestReceived
+  const requestsReceived = useAppSelector(
+    (state) => state.requestReceivedInformations.requestReceived
   )
+
   return (
     <div>
       <h2>Requests Received Component</h2>
       {requestsReceived && requestsReceived.length > 0 ? (
         <ul>
           {requestsReceived.map((requestReceived) => (
-            <RequestReceived key={requestReceived.id} />
+            <RequestReceived
+              key={requestReceived.id}
+              requestReceived={requestReceived}
+            />
           ))}
           <ul />
         </ul>

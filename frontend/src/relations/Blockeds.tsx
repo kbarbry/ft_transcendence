@@ -1,19 +1,17 @@
 import React from 'react'
-import { useSelector } from 'react-redux'
-import { RootState } from '../store/store'
 import Blocked from './components/Blocked'
+import { useAppSelector } from '../store/hooks'
 
 const Blockeds: React.FC = () => {
-  const blockeds = useSelector(
-    (state: RootState) => state.blockedInformations.blockeds
-  )
+  const blockeds = useAppSelector((state) => state.blockedInformations.blockeds)
+
   return (
     <div>
       <h2>Blocked Component</h2>
       {blockeds && blockeds.length > 0 ? (
         <ul>
           {blockeds.map((blocked) => (
-            <Blocked key={blocked.id} />
+            <Blocked key={blocked.id} blocked={blocked} />
           ))}
           <ul />
         </ul>

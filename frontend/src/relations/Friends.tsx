@@ -1,19 +1,16 @@
 import React from 'react'
-import { useSelector } from 'react-redux'
-import { RootState } from '../store/store'
 import Friend from './components/Friend'
+import { useAppSelector } from '../store/hooks'
 
 const Friends: React.FC = () => {
-  const friends = useSelector(
-    (state: RootState) => state.friendInformations.friends
-  )
+  const friends = useAppSelector((state) => state.friendInformations.friends)
   return (
     <div>
       <h2>Friends Component</h2>
       {friends && friends.length > 0 ? (
         <ul>
           {friends.map((friend) => (
-            <Friend key={friend.id} />
+            <Friend key={friend.id} friend={friend} />
           ))}
           <ul />
         </ul>
