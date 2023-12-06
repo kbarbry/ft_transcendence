@@ -39,16 +39,6 @@ export class RelationBlockedResolver {
     return this.pubSub.asyncIterator('blockedReceived-' + userId)
   }
 
-  @Subscription(() => RelationBlocked, {
-    resolve: (payload) => (payload?.res !== undefined ? payload.res : null)
-  })
-  @Unprotected()
-  relationBlockedDeleted(
-    @Args('userId', { type: () => String }, NanoidValidationPipe) userId: string
-  ) {
-    return this.pubSub.asyncIterator('blockedDeleted-' + userId)
-  }
-
   //**************************************************//
   //  MUTATION
   //**************************************************//
@@ -82,11 +72,6 @@ export class RelationBlockedResolver {
       throw new ExceptionRelationBlockedForbiddenAccess()
 
     const res = await this.relationBlockedService.delete(userAId, userBId)
-
-    if (res)
-      await this.pubSub.publish('blockedDeleted-' + userBId, {
-        res
-      })
     return res
   }
 

@@ -5,10 +5,20 @@ import Blockeds from './Blockeds'
 import Friends from './Friends'
 import { useLazyQuery, useMutation } from '@apollo/client'
 import { createRelationRequest, findOneUserByUsername } from './graphql'
-import { useAppSelector } from '../store/hooks'
+import { useAppDispatch, useAppSelector } from '../store/hooks'
+import { setRequestSentInformations } from '../store/slices/request-sent-informations.slice'
 
 const Relations: React.FC = () => {
+  const dispatch = useAppDispatch()
   const user = useAppSelector((state) => state.userInformations.user)
+  const friends = useAppSelector((state) => state.friendInformations.friends)
+  const blockeds = useAppSelector((state) => state.blockedInformations.blockeds)
+  const requestsSent = useAppSelector(
+    (state) => state.requestSentInformations.requestSent
+  )
+  const requestsReceived = useAppSelector(
+    (state) => state.requestReceivedInformations.requestReceived
+  )
   const [selectedItem, setSelectedItem] = useState<string | null>(null)
   const [usernameInput, setUsernameInput] = useState<string>('')
   const [foundUser, setFoundUser] = useState<boolean>(true)
@@ -16,7 +26,8 @@ const Relations: React.FC = () => {
   const [createRequest] = useMutation(createRelationRequest)
   const [findUserByUsername] = useLazyQuery(findOneUserByUsername)
 
-  if (!user) throw new Error()
+  if (!user || !friends || !blockeds || !requestsSent || !requestsReceived)
+    throw new Error()
 
   const handleItemClick = (item: string) => {
     setSelectedItem(item)
@@ -39,15 +50,14 @@ const Relations: React.FC = () => {
         variables: { username: usernameInput }
       })
       const foundUserData = userByUsername.data?.findOneUserByUsername || null
-      console.log(userByUsername.data?.findOneUserByUsername)
       if (foundUserData) {
-        console.log('create')
         await createRequest({
           variables: {
             data: { userSenderId: user.id, userReceiverId: foundUserData.id }
           }
         })
 
+        await dispatch(setRequestSentInformations(user.id))
         setFoundUser(true)
         setUsernameInput('')
       } else {
@@ -56,7 +66,7 @@ const Relations: React.FC = () => {
     } catch (error) {
       setUsernameInput('')
       setFoundUser(true)
-      console.error('Error adding friend:', error)
+      console.error('Error adding friend: ', error)
     }
   }
 
@@ -103,10 +113,26 @@ const Relations: React.FC = () => {
           )}
         </div>
         <div>
-          {selectedItem === 'Friends' && <Friends />}
-          {selectedItem === 'RequestsReceived' && <RequestsReceived />}
-          {selectedItem === 'RequestsSent' && <RequestsSent />}
-          {selectedItem === 'Blockeds' && <Blockeds />}
+          {selectedItem === 'Friends' && (
+            <Friends key='friends' friends={friends} userId={user.id} />
+          )}
+          {selectedItem === 'RequestsReceived' && (
+            <RequestsReceived
+              key='requestsReceived'
+              requestsReceived={requestsReceived}
+              userId={user.id}
+            />
+          )}
+          {selectedItem === 'RequestsSent' && (
+            <RequestsSent
+              key='requestsSent'
+              requestsSent={requestsSent}
+              userId={user.id}
+            />
+          )}
+          {selectedItem === 'Blockeds' && (
+            <Blockeds key='blockeds' blockeds={blockeds} userId={user.id} />
+          )}
         </div>
       </div>
     </>

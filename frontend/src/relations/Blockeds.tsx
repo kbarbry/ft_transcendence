@@ -1,17 +1,20 @@
 import React from 'react'
 import Blocked from './components/Blocked'
-import { useAppSelector } from '../store/hooks'
+import { UserInformations } from '../store/slices/user-informations.slice'
 
-const Blockeds: React.FC = () => {
-  const blockeds = useAppSelector((state) => state.blockedInformations.blockeds)
+interface BlockedsProps {
+  userId: string
+  blockeds: UserInformations[]
+}
 
+const Blockeds: React.FC<BlockedsProps> = React.memo(({ userId, blockeds }) => {
   return (
     <div>
       <h2>Blocked Component</h2>
-      {blockeds && blockeds.length > 0 ? (
+      {blockeds.length > 0 ? (
         <ul>
           {blockeds.map((blocked) => (
-            <Blocked key={blocked.id} blocked={blocked} />
+            <Blocked key={blocked.id} blocked={blocked} userId={userId} />
           ))}
           <ul />
         </ul>
@@ -20,6 +23,6 @@ const Blockeds: React.FC = () => {
       )}
     </div>
   )
-}
+})
 
 export default Blockeds

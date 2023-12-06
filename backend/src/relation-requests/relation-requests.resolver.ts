@@ -7,8 +7,10 @@ import {
   Context
 } from '@nestjs/graphql'
 import { RelationRequestsService } from './relation-requests.service'
-import { RelationRequests } from './entities/relation-requests.entity'
-import { RelationFriend } from '../relation-friend/entities/relation-friend.entity'
+import {
+  ECreationType,
+  RelationRequests
+} from './entities/relation-requests.entity'
 import { RelationRequestsInput } from './dto/create-relation-requests.input'
 import { UseGuards, ValidationPipe } from '@nestjs/common'
 import { NanoidValidationPipe } from '../common/pipes/nanoid.pipe'
@@ -53,21 +55,41 @@ export class RelationRequestsResolver {
   //**************************************************//
   //  MUTATION
   //**************************************************//
+
   @Mutation(() => RelationRequests)
   async createRelationRequests(
     @Args('data', { type: () => RelationRequestsInput }, ValidationPipe)
     data: RelationRequestsInput,
     @Context() ctx: any
-  ): Promise<RelationRequests | RelationFriend> {
+  ): Promise<RelationRequests> {
     if (ctx?.req?.user?.id !== data.userSenderId)
       throw new ExceptionRelationRequestForbiddenAccess()
 
-    const res = await this.relationRequestsService.create(data)
-
-    if (res)
-      await this.pubSub.publish('requestReceived-' + data.userReceiverId, {
+    const resRequest = await this.relationRequestsService.create(data)
+    let res: RelationRequests
+    const resSub = 'userBId' in resRequest
+    if (resSub) {
+      res = {
+        userReceiverId: data.userReceiverId,
+        userSenderId: data.userSenderId,
+        type: ECreationType.friend
+      }
+      await this.pubSub.publish('requestReceived-' + resRequest.userAId, {
         res
       })
+      await this.pubSub.publish('requestReceived-' + resRequest.userBId, {
+        res
+      })
+    } else {
+      res = {
+        userReceiverId: resRequest.userReceiverId,
+        userSenderId: resRequest.userSenderId,
+        type: ECreationType.friend
+      }
+      await this.pubSub.publish('requestReceived-' + res.userReceiverId, {
+        res
+      })
+    }
     return res
   }
 
@@ -79,7 +101,10 @@ export class RelationRequestsResolver {
     userReceiverId: string,
     @Context() ctx: any
   ): Promise<RelationRequests> {
-    if (ctx?.req?.user?.id !== userSenderId)
+    if (
+      ctx?.req?.user?.id !== userSenderId &&
+      ctx?.req?.user?.id !== userReceiverId
+    )
       throw new ExceptionRelationRequestForbiddenAccess()
 
     const res = await this.relationRequestsService.delete(
@@ -87,10 +112,14 @@ export class RelationRequestsResolver {
       userReceiverId
     )
 
-    if (res)
+    if (res) {
+      await this.pubSub.publish('requestDeleted-' + userSenderId, {
+        res
+      })
       await this.pubSub.publish('requestDeleted-' + userReceiverId, {
         res
       })
+    }
     return res
   }
 

@@ -33,7 +33,6 @@ const MessageComponent: React.FC<MessageComponentProps> = ({
       trimmedMessage &&
       trimmedMessage !== ''
     ) {
-      console.log('onEdit')
       onEdit(editionMode.editionInfos.id, trimmedMessage)
     } else {
       editionMode.setEditionsInfos(null)

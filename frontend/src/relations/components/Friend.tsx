@@ -1,44 +1,59 @@
 import React from 'react'
 import { useMutation } from '@apollo/client'
 import { UserInformations } from '../../store/slices/user-informations.slice'
-import { useAppDispatch, useAppSelector } from '../../store/hooks'
+import { useAppDispatch } from '../../store/hooks'
 import { createRelationBlocked, deleteRelationFriend } from '../graphql'
 import { setFriendInformations } from '../../store/slices/friend-informations.slice'
 import { setBlockedInformations } from '../../store/slices/blocked-informations.slice'
+import {
+  CreateRelationBlockedMutation,
+  CreateRelationBlockedMutationVariables,
+  DeleteRelationFriendMutation,
+  DeleteRelationFriendMutationVariables
+} from '../../gql/graphql'
 
 interface FriendProps {
+  userId: string
   friend: UserInformations
 }
 
-const Friend: React.FC<FriendProps> = ({ friend }) => {
-  const user = useAppSelector((state) => state.userInformations.user)
+const Friend: React.FC<FriendProps> = ({ userId, friend }) => {
   const dispatch = useAppDispatch()
 
-  if (!user) throw new Error()
+  const [removeFriend] = useMutation<
+    DeleteRelationFriendMutation,
+    DeleteRelationFriendMutationVariables
+  >(deleteRelationFriend)
+  const [blockFriend] = useMutation<
+    CreateRelationBlockedMutation,
+    CreateRelationBlockedMutationVariables
+  >(createRelationBlocked)
 
-  const [removeFriend] = useMutation(deleteRelationFriend, {
-    onCompleted: async () => {
-      await dispatch(setFriendInformations(user.id))
+  const handleRemoveFriendClick = async () => {
+    try {
+      await removeFriend({ variables: { userAId: userId, userBId: friend.id } })
+
+      await dispatch(setFriendInformations(userId))
+    } catch (e) {
+      console.log('Error in Friend.tsx RemoveFriend: ', e)
+      throw e
     }
-  })
-
-  const [blockFriend] = useMutation(createRelationBlocked, {
-    onCompleted: async () => {
-      await dispatch(setFriendInformations(user.id))
-      await dispatch(setBlockedInformations(user.id))
-    }
-  })
-
-  const handleRemoveFriendClick = () => {
-    removeFriend({ variables: { userAId: user.id, userBId: friend.id } })
   }
 
-  const handleBlockFriendClick = () => {
-    blockFriend({
-      variables: {
-        data: { userBlockingId: user.id, userBlockedId: friend.id }
-      }
-    })
+  const handleBlockFriendClick = async () => {
+    try {
+      await blockFriend({
+        variables: {
+          data: { userBlockingId: userId, userBlockedId: friend.id }
+        }
+      })
+
+      await dispatch(setFriendInformations(userId))
+      await dispatch(setBlockedInformations(userId))
+    } catch (e) {
+      console.log('Error in Friend.tsx BlockFriend: ', e)
+      throw e
+    }
   }
 
   return (
@@ -55,11 +70,9 @@ const Friend: React.FC<FriendProps> = ({ friend }) => {
       />
 
       <span style={{ marginRight: '10px' }}>{friend.username}</span>
-
       <span style={{ marginRight: '10px' }}>{friend.status}</span>
 
       <button onClick={handleRemoveFriendClick}>Remove Friend</button>
-
       <button onClick={handleBlockFriendClick}>Block Friend</button>
     </div>
   )

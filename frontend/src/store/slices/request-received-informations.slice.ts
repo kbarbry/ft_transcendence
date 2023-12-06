@@ -17,7 +17,8 @@ export const setRequestReceivedInformations = createAsyncThunk(
     try {
       const { data: dataRequestsIds } = await client.query({
         query: findAllRelationRequestsReceived,
-        variables: { userReceiverId: userId }
+        variables: { userReceiverId: userId },
+        fetchPolicy: 'network-only'
       })
 
       const userIds = dataRequestsIds.findAllRelationRequestsReceived
@@ -30,7 +31,7 @@ export const setRequestReceivedInformations = createAsyncThunk(
         dataRequests.findUsersByUserIds
       return requestReceived
     } catch (e) {
-      console.log('ERROR: ', e)
+      console.log('Error requestsReceived slice: ', e)
       throw e
     }
   }
@@ -44,7 +45,10 @@ export const requestReceivedInformationsSlice = createSlice({
     builder.addCase(
       setRequestReceivedInformations.fulfilled,
       (state, action) => {
-        state.requestReceived = action.payload
+        return {
+          ...state,
+          requestReceived: action.payload
+        }
       }
     )
   }

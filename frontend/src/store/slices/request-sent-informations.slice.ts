@@ -17,7 +17,8 @@ export const setRequestSentInformations = createAsyncThunk(
     try {
       const { data: dataRequestsIds } = await client.query({
         query: findAllRelationRequestsSent,
-        variables: { userSenderId: userId }
+        variables: { userSenderId: userId },
+        fetchPolicy: 'network-only'
       })
 
       const userIds = dataRequestsIds.findAllRelationRequestsSent
@@ -29,7 +30,7 @@ export const setRequestSentInformations = createAsyncThunk(
       const requestSent: UserInformations[] = dataRequests.findUsersByUserIds
       return requestSent
     } catch (e) {
-      console.log('ERROR: ', e)
+      console.log('Error requestsSent slice: ', e)
       throw e
     }
   }
@@ -41,7 +42,10 @@ export const requestSentInformationsSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder.addCase(setRequestSentInformations.fulfilled, (state, action) => {
-      state.requestSent = action.payload
+      return {
+        ...state,
+        requestSent: action.payload
+      }
     })
   }
 })

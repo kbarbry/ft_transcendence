@@ -2,27 +2,37 @@ import React from 'react'
 import { useMutation } from '@apollo/client'
 import { UserInformations } from '../../store/slices/user-informations.slice'
 import { deleteRelationBlocked } from '../graphql'
-import { useAppDispatch, useAppSelector } from '../../store/hooks'
+import { useAppDispatch } from '../../store/hooks'
 import { setBlockedInformations } from '../../store/slices/blocked-informations.slice'
+import {
+  DeleteRelationBlockedMutation,
+  DeleteRelationBlockedMutationVariables
+} from '../../gql/graphql'
 
 interface BlockedProps {
+  userId: string
   blocked: UserInformations
 }
 
-const Blocked: React.FC<BlockedProps> = ({ blocked }) => {
-  const user = useAppSelector((state) => state.userInformations.user)
+const Blocked: React.FC<BlockedProps> = ({ userId, blocked }) => {
   const dispatch = useAppDispatch()
 
-  if (!user) throw new Error()
+  const [unblockUser] = useMutation<
+    DeleteRelationBlockedMutation,
+    DeleteRelationBlockedMutationVariables
+  >(deleteRelationBlocked)
 
-  const [unblockUser] = useMutation(deleteRelationBlocked, {
-    onCompleted: async () => {
-      await dispatch(setBlockedInformations(user.id))
+  const handleUnblockClick = async () => {
+    try {
+      await unblockUser({
+        variables: { userAId: userId, userBId: blocked.id }
+      })
+
+      await dispatch(setBlockedInformations(userId))
+    } catch (e) {
+      console.log('Error in Blocked.tsx Unblock: ', e)
+      throw e
     }
-  })
-
-  const handleUnblockClick = () => {
-    unblockUser({ variables: { userAId: user.id, userBId: blocked.id } })
   }
 
   return (

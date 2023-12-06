@@ -29,7 +29,8 @@ export const setUserInformations = createAsyncThunk(
   async () => {
     try {
       const { data: dataUser } = await client.query({
-        query: findUserByContext
+        query: findUserByContext,
+        fetchPolicy: 'network-only'
       })
 
       const user: UserInformations = dataUser.findOneUserByContext
@@ -67,7 +68,10 @@ export const userInformationsSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder.addCase(setUserInformations.fulfilled, (state, action) => {
-      state.user = { ...action.payload }
+      return {
+        ...state,
+        user: action.payload
+      }
     })
   }
 })

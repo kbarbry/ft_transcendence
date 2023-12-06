@@ -1,16 +1,20 @@
 import React from 'react'
 import Friend from './components/Friend'
-import { useAppSelector } from '../store/hooks'
+import { UserInformations } from '../store/slices/user-informations.slice'
 
-const Friends: React.FC = () => {
-  const friends = useAppSelector((state) => state.friendInformations.friends)
+interface FriendsProps {
+  userId: string
+  friends: UserInformations[]
+}
+
+const Friends: React.FC<FriendsProps> = React.memo(({ userId, friends }) => {
   return (
     <div>
       <h2>Friends Component</h2>
-      {friends && friends.length > 0 ? (
+      {friends.length > 0 ? (
         <ul>
           {friends.map((friend) => (
-            <Friend key={friend.id} friend={friend} />
+            <Friend key={friend.id} friend={friend} userId={userId} />
           ))}
           <ul />
         </ul>
@@ -19,6 +23,6 @@ const Friends: React.FC = () => {
       )}
     </div>
   )
-}
+})
 
 export default Friends

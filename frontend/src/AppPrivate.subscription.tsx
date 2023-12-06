@@ -1,15 +1,25 @@
 import React, { useState, useEffect } from 'react'
 import { useSubscription } from '@apollo/client'
+import { useAppDispatch } from './store/hooks'
+import {
+  subscriptionOnBlockedReceived,
+  subscriptionOnFriendDeleted,
+  subscriptionOnRequestCreated,
+  subscriptionOnRequestDeleted
+} from './graphql'
 
+import PrivateChannel from './chat/PrivateChannels'
 import Relations from './relations/Relations'
 import Channels from './chat/Channels'
-import PrivateChannel from './chat/PrivateChannels'
 import { Welcome } from './Test/Test_welcome'
-import { Game } from './Test/Test_game'
 import { Link, Route, Switch } from 'wouter'
-import { Home } from './home/Home'
 import { NotFound } from './ErrorPages/404'
-import { subscriptionOnBlockedReceived } from './graphql'
+import { Game } from './Test/Test_game'
+import { Home } from './home/Home'
+
+import { setRequestReceivedInformations } from './store/slices/request-received-informations.slice'
+import { setRequestSentInformations } from './store/slices/request-sent-informations.slice'
+import { setFriendInformations } from './store/slices/friend-informations.slice'
 
 interface AppPrivateSubscriptionProps {
   userId: string
@@ -17,11 +27,17 @@ interface AppPrivateSubscriptionProps {
 
 interface LoadingSubscriptionState {
   blockedReceived: boolean
+  friendDeleted: boolean
+  requestCreated: boolean
+  requestDeleted: boolean
   isError: boolean
 }
 
 const LoadingSubscriptionStateInitial: LoadingSubscriptionState = {
   blockedReceived: true,
+  friendDeleted: true,
+  requestCreated: true,
+  requestDeleted: true,
   isError: false
 }
 
@@ -30,17 +46,88 @@ const AppPrivateSubscription: React.FC<AppPrivateSubscriptionProps> = ({
 }) => {
   const [loadingSubscription, setLoadingSubscription] =
     useState<LoadingSubscriptionState>(LoadingSubscriptionStateInitial)
+  const dispatch = useAppDispatch()
 
   const { error: subBlockedReceived } = useSubscription(
     subscriptionOnBlockedReceived,
     {
       variables: { userId },
-      onData: (received) => {
-        const receivedMessage = received.data.data.relationBlockedCreation
-
-        console.log(receivedMessage)
+      onData: async (received) => {
+        received.data.data.relationBlockedCreation
+        await dispatch(setFriendInformations(userId))
+        await dispatch(setRequestSentInformations(userId))
+        await dispatch(setRequestReceivedInformations(userId))
       },
-      onError: () => {
+      onError: (e) => {
+        console.log(
+          'Error in AppPrivate.subscription.tsx subscriptionOnBlockedReceived : ',
+          e
+        )
+        setLoadingSubscription((prevLoading) => ({
+          ...prevLoading,
+          isError: true
+        }))
+      }
+    }
+  )
+
+  const { error: subFriendDeleted } = useSubscription(
+    subscriptionOnFriendDeleted,
+    {
+      variables: { userId },
+      onData: async (received) => {
+        received.data.data.relationFriendDeleted
+        await dispatch(setFriendInformations(userId))
+      },
+      onError: (e) => {
+        console.log(
+          'Error in AppPrivate.subscription.tsx subscriptionOnFriendDeleted : ',
+          e
+        )
+        setLoadingSubscription((prevLoading) => ({
+          ...prevLoading,
+          isError: true
+        }))
+      }
+    }
+  )
+
+  const { error: subRequestCreated } = useSubscription(
+    subscriptionOnRequestCreated,
+    {
+      variables: { userId },
+      onData: async (received) => {
+        received.data.data.relationRequestCreation
+        await dispatch(setFriendInformations(userId))
+        await dispatch(setRequestSentInformations(userId))
+        await dispatch(setRequestReceivedInformations(userId))
+      },
+      onError: (e) => {
+        console.log(
+          'Error in AppPrivate.subscription.tsx subscriptionOnRequestCreated : ',
+          e
+        )
+        setLoadingSubscription((prevLoading) => ({
+          ...prevLoading,
+          isError: true
+        }))
+      }
+    }
+  )
+
+  const { error: subRequestDeleted } = useSubscription(
+    subscriptionOnRequestDeleted,
+    {
+      variables: { userId },
+      onData: async (received) => {
+        received.data.data.relationRequestDeleted
+        await dispatch(setRequestReceivedInformations(userId))
+      },
+      onError: (e) => {
+        console.log(
+          'Error in AppPrivate.subscription.tsx subscriptionOnRequestDeleted : ',
+          e
+        )
         setLoadingSubscription((prevLoading) => ({
           ...prevLoading,
           isError: true
@@ -55,7 +142,22 @@ const AppPrivateSubscription: React.FC<AppPrivateSubscriptionProps> = ({
         ...prevLoading,
         blockedReceived: false
       }))
-  }, [subBlockedReceived])
+    if (!subFriendDeleted)
+      setLoadingSubscription((prevLoading) => ({
+        ...prevLoading,
+        friendDeleted: false
+      }))
+    if (!subRequestCreated)
+      setLoadingSubscription((prevLoading) => ({
+        ...prevLoading,
+        requestCreated: false
+      }))
+    if (!subRequestDeleted)
+      setLoadingSubscription((prevLoading) => ({
+        ...prevLoading,
+        requestDeleted: false
+      }))
+  }, [])
 
   const allLoadingSubscriptionComplete = Object.values(
     loadingSubscription
@@ -66,8 +168,9 @@ const AppPrivateSubscription: React.FC<AppPrivateSubscriptionProps> = ({
       window.location.href = 'http://127.0.0.1:3000/api/auth/logout'
       localStorage.removeItem('userInfo')
       sessionStorage.removeItem('userInfo')
-    } catch (error) {
-      console.error('Erreur lors de la déconnexion', error)
+    } catch (e) {
+      console.error('Error in AppPrivate.subscription.tsx handleLogout : ', e)
+      throw e
     }
   }
 

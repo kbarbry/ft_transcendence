@@ -17,7 +17,8 @@ export const setBlockedInformations = createAsyncThunk(
     try {
       const { data: dataBlockedsIds } = await client.query({
         query: findAllRelationBlocked,
-        variables: { findAllRelationBlockedByUserId: userId }
+        variables: { findAllRelationBlockedByUserId: userId },
+        fetchPolicy: 'network-only'
       })
 
       const userIds = dataBlockedsIds.findAllRelationBlockedByUser
@@ -30,7 +31,7 @@ export const setBlockedInformations = createAsyncThunk(
       const blockeds: UserInformations[] = dataBlockeds.findUsersByUserIds
       return blockeds
     } catch (e) {
-      console.log('ERROR: ', e)
+      console.log('Error blockeds slice: ', e)
       throw e
     }
   }
@@ -40,10 +41,12 @@ export const blockedInformationsSlice = createSlice({
   name: 'blockedInformations',
   initialState,
   reducers: {},
-  // Reducers can't be asynchronous, so we connect an asynchronous function to an extraReducer to make it work
   extraReducers: (builder) => {
     builder.addCase(setBlockedInformations.fulfilled, (state, action) => {
-      state.blockeds = action.payload
+      return {
+        ...state,
+        blockeds: action.payload
+      }
     })
   }
 })

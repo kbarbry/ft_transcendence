@@ -27,7 +27,6 @@ const SignUp: React.FC = () => {
 
   const [checkUsernameAvailability] = useLazyQuery(queryIsUserUsernameUsed, {
     onCompleted: (data: any) => {
-      console.log(data)
       setIsUsernameUsed(data.isUserUsernameUsed)
       setIsButtonDisabled(false)
     },
@@ -39,7 +38,6 @@ const SignUp: React.FC = () => {
 
   const [checkMailAvailability] = useLazyQuery(queryIsUserMailUsed, {
     onCompleted: (data: any) => {
-      console.log(data)
       setIsMailUsed(data.isUserMailUsed)
       setIsButtonDisabled(false)
     },
@@ -110,7 +108,6 @@ const SignUp: React.FC = () => {
   const onFinishedFailed = () => {}
 
   const handleCreateUserClick = () => {
-    console.log('called')
     if (isMailUsed || isUsernameUsed) return
     const validAvatarUrl = undefined
     // const validAvatarUrl = isValidAvatarUrl ? avatarUrl : undefined
