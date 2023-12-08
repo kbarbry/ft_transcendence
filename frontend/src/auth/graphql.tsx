@@ -5,13 +5,13 @@ import { gql } from '@apollo/client'
 //**************************************************//
 
 export const queryIsUserUsernameUsed = gql`
-  query Query($username: String!) {
+  query IsUserUsernameUsed($username: String!) {
     isUserUsernameUsed(username: $username)
   }
 `
 
-export const queryIsUserMailUser = gql`
-  query Query($mail: String!) {
+export const queryIsUserMailUsed = gql`
+  query IsUserMailUsed($mail: String!) {
     isUserMailUsed(mail: $mail)
   }
 `

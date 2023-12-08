@@ -61,12 +61,14 @@ export class RelationBlockedService {
         }
       })
     }
-
+    let userAId = data.userBlockedId
+    let userBId = data.userBlockingId
+    if (userAId > userBId) [userAId, userBId] = [userBId, userAId]
     const IsFriend = await this.prisma.relationFriend.findUnique({
       where: {
         userAId_userBId: {
-          userAId: data.userBlockingId,
-          userBId: data.userBlockedId
+          userAId,
+          userBId
         }
       }
     })
@@ -74,8 +76,8 @@ export class RelationBlockedService {
       await this.prisma.relationFriend.delete({
         where: {
           userAId_userBId: {
-            userAId: data.userBlockingId,
-            userBId: data.userBlockedId
+            userAId,
+            userBId
           }
         }
       })

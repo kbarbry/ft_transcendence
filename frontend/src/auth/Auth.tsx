@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { Tabs, Card, TabsProps } from 'antd'
 import SignIn from './Login/SignInForm'
-import SignUp from './Signup/SignUpForm'
+import SignUp from './Signup/SignupForm'
 
 const Auth: React.FC = () => {
   const [, setActiveTab] = useState('SignIn')
@@ -16,8 +16,22 @@ const Auth: React.FC = () => {
   ]
 
   return (
-    <Card style={{ boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}>
-      <h2>Transcendence</h2>
+    <Card
+      style={{
+        boxShadow: '0 16px 32px rgba(0, 0, 0, 0.4)',
+        width: '400px',
+        maxWidth: '400px',
+        margin: '0 auto',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center'
+      }}
+    >
+      <h2>Ft_Transcendence</h2>
+      Welcome to this very tedious project, we are very proud to introduce you
+      to our transcendence !
+      <br />
       <br />
       <Tabs
         type='line'
@@ -26,6 +40,7 @@ const Auth: React.FC = () => {
         defaultActiveKey='1'
         onChange={handleTabChange}
       />
+      <br />
     </Card>
   )
 }
