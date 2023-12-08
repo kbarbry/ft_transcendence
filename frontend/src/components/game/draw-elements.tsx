@@ -1,4 +1,4 @@
-import { ball, racket } from './interfaces'
+import { Ball, Racket } from '../../gql/graphql'
 
 function drawTime(ctx: CanvasRenderingContext2D, time: number) {
   let second: number = time / 1000
@@ -14,11 +14,11 @@ function drawScores(
   ctx.fillText(p2Score.toString(), 500, 200)
 }
 
-function drawRackets(ctx: CanvasRenderingContext2D, racket: racket) {
+function drawRackets(ctx: CanvasRenderingContext2D, racket: Racket) {
   ctx.fillRect(racket.hPos, racket.vPos, racket.width, racket.height)
 }
 
-function drawBall(ctx: CanvasRenderingContext2D, ball: ball) {
+function drawBall(ctx: CanvasRenderingContext2D, ball: Ball) {
   ctx.beginPath()
   ctx.arc(ball.hPos, ball.vPos, ball.radius, 0, 2 * Math.PI)
   ctx.fill()
