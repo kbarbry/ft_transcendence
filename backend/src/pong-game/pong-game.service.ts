@@ -15,11 +15,20 @@ const playerQueue: Array<PlayerWaiting> = new Array<PlayerWaiting>()
 @Injectable()
 export class PongGameService {
   constructor(private readonly pubsub: PubSub) {
-    setInterval(this.gamesUpdate, 1000)
+    setInterval(this.gamesUpdate.bind(this), 20)
+  }
+
+  isPlayerInQueue(targetId: string) {
+    for (const player of playerQueue) {
+      if (player.id == targetId) {
+        return true
+      }
+    }
+    return false
   }
 
   async addPlayerToGameQueue(playerWaiting: PlayerWaiting): Promise<boolean> {
-    if (playerQueue.indexOf(playerWaiting) !== -1) {
+    if (this.isPlayerInQueue(playerWaiting.id)) {
       console.log(
         'Service: addPlayerToGameQueue: player already in queue : ' +
           playerWaiting.nickname
@@ -71,26 +80,26 @@ export class PongGameService {
     return null
   }
 
-  setPresenceInGame(gameId: string, playerId: string) {
+  setPresenceInGame(gameId: string, playerId: string, presence: boolean) {
     const game: PongGame | undefined = gamesMap.get(gameId)
 
-    //TODO if game not present
+    console.log('setPresenceInGame: game = ' + JSON.stringify(game))
+
     if (game === undefined) {
       return false
     }
 
-    //TODO if already in
-
     //TODO if game is full
 
     if (game.player1.id === playerId) {
-      game.player1.presence = true
-    }
-    if (game.player2.id === playerId) {
-      game.player2.presence = true
+      game.player1.presence = presence
+    } else if (game.player2.id === playerId) {
+      game.player2.presence = presence
     }
     if (game.player1.presence === true && game.player2.presence === true) {
       game.isRunning = true
+    } else {
+      game.isRunning = false
     }
     return true
   }
@@ -110,7 +119,7 @@ export class PongGameService {
     p1nick: string,
     p2nick: string
   ): PongGame | undefined {
-    gamesMap.set(gameId, new PongGame(gameId, p1nick, p2nick))
+    gamesMap.set(gameId, new PongGame(gameId, p1nick, p1nick, p2nick, p2nick))
     return gamesMap.get(gameId)
   }
 
@@ -131,18 +140,20 @@ export class PongGameService {
   }
 
   //update data of every game where gameRunning is true
-  gamesUpdate() {
+  async gamesUpdate() {
     for (const [gameId, game] of gamesMap) {
-      console.log('Service: gamesUpdate: ')
+      console.log(
+        'gamesUpdate: gameId = ' +
+          game.gameId +
+          ', isRuuning = ' +
+          game.isRunning
+      )
       if (!game.isRunning) {
-        console.log('Service: gamesUpdate: continue')
+        //TODO check for how many time the game is innactive and delete it if needed
         continue
       }
-      console.log(
-        'Service: gamesUpdate: ' + gameId + ' = ' + JSON.stringify(game)
-      )
       game.update()
-      this.pubsub.publish(game.gameId, game)
+      await this.pubsub.publish(game.gameId, { data: game })
     }
   }
 }
