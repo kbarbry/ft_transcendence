@@ -13,7 +13,7 @@ import { EmailValidationPipe } from '../common/pipes/email.pipe'
 import { UsernameValidationPipe } from '../common/pipes/username.pipe'
 import {
   AuthorizationGuard,
-  Unprotected
+  Unprotected2fa
 } from '../auth/guards/authorization.guard'
 
 @Resolver(() => User)
@@ -51,6 +51,7 @@ export class UserResolver {
   }
 
   @Query(() => User)
+  @Unprotected2fa()
   findOneUserByContext(@Context() ctx: any): Promise<User | null> {
     if (!ctx?.req?.user?.id) throw new UnauthorizedException('User not found')
     return this.userService.findOne(ctx.req.user.id)
