@@ -35,6 +35,7 @@ export class RelationFriendResolver {
   relationFriendDeleted(
     @Args('userId', { type: () => String }, NanoidValidationPipe) userId: string
   ) {
+    console.log('relationFriendDeleted')
     return this.pubSub.asyncIterator('friendDeleted-' + userId)
   }
 
@@ -53,11 +54,11 @@ export class RelationFriendResolver {
       throw new ExceptionRelationFriendForbiddenAccess()
 
     const res = await this.relationFriendService.delete(userAId, userBId)
+    console.log('deleteRelationFriend')
 
-    if (res) {
-      await this.pubSub.publish('friendDeleted-' + userAId, { res })
-      await this.pubSub.publish('friendDeleted-' + userBId, { res })
-    }
+    await this.pubSub.publish('friendDeleted-' + userAId, { res })
+    await this.pubSub.publish('friendDeleted-' + userBId, { res })
+
     return res
   }
 
@@ -68,6 +69,7 @@ export class RelationFriendResolver {
   findAllRelationFriend(
     @Args('id', { type: () => String }, NanoidValidationPipe) id: string
   ): Promise<string[]> {
+    console.log('findAllRelationFriend')
     return this.relationFriendService.findAll(id)
   }
 

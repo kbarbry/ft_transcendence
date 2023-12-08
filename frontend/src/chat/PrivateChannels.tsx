@@ -1,14 +1,21 @@
 import React, { useState } from 'react'
 import { useAppSelector } from '../store/hooks'
 import PrivateChannel from './components/PrivateChannel'
-import { UserInformations } from '../store/slices/user-informations.slice'
+import { User } from '../gql/graphql'
 
 const PrivateChannels: React.FC = () => {
   const friends = useAppSelector((state) => state.friendInformations.friends)
+  const userInfos = useAppSelector((state) => state.userInformations.user)
+  const [selectedFriend, setSelectedFriend] = useState<User | null>(null)
 
-  const [selectedFriend, setSelectedFriend] = useState<UserInformations | null>(
-    null
-  )
+  if (!userInfos || !friends) throw new Error()
+
+  if (
+    selectedFriend &&
+    !friends.find((friend) => friend.id === selectedFriend.id)
+  ) {
+    setSelectedFriend(null)
+  }
 
   return (
     <>
@@ -16,19 +23,22 @@ const PrivateChannels: React.FC = () => {
         <div style={{ width: '200px', marginRight: '20px' }}>
           <h2>Direct Messages</h2>
           <ul>
-            {friends &&
-              friends.map((friend) => (
-                <li key={friend.id}>
-                  <button onClick={() => setSelectedFriend(friend)}>
-                    {friend.username}
-                  </button>
-                </li>
-              ))}
+            {friends.map((friend) => (
+              <li key={friend.id}>
+                <button onClick={() => setSelectedFriend(friend)}>
+                  {friend.username}
+                </button>
+              </li>
+            ))}
           </ul>
         </div>
         <div>
           {selectedFriend ? (
-            <PrivateChannel friend={selectedFriend} />
+            <PrivateChannel
+              key={selectedFriend.id}
+              userInfos={userInfos}
+              friend={selectedFriend}
+            />
           ) : (
             <p>select a friend to start chatting</p>
           )}

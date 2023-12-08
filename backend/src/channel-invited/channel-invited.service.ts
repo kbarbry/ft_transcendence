@@ -59,6 +59,14 @@ export class ChannelInvitedService {
     })
   }
 
+  async findAllChannelInvitedofUser(userId: string): Promise<ChannelInvited[]> {
+    return this.prisma.channelInvited.findMany({
+      where: {
+        userId
+      }
+    })
+  }
+
   async findAllInChannel(channelId: string): Promise<ChannelInvited[]> {
     return this.prisma.channelInvited.findMany({
       where: {

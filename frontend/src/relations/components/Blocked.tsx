@@ -1,17 +1,18 @@
 import React from 'react'
 import { useMutation } from '@apollo/client'
-import { UserInformations } from '../../store/slices/user-informations.slice'
 import { deleteRelationBlocked } from '../graphql'
 import { useAppDispatch } from '../../store/hooks'
 import { setBlockedInformations } from '../../store/slices/blocked-informations.slice'
 import {
   DeleteRelationBlockedMutation,
-  DeleteRelationBlockedMutationVariables
+  DeleteRelationBlockedMutationVariables,
+  User
 } from '../../gql/graphql'
+import DefaultProfilePicture from '/DefaultProfilePicture.svg'
 
 interface BlockedProps {
   userId: string
-  blocked: UserInformations
+  blocked: User
 }
 
 const Blocked: React.FC<BlockedProps> = ({ userId, blocked }) => {
@@ -38,7 +39,7 @@ const Blocked: React.FC<BlockedProps> = ({ userId, blocked }) => {
   return (
     <div style={{ display: 'flex', alignItems: 'center' }}>
       <img
-        src={blocked.avatarUrl}
+        src={blocked?.avatarUrl ? blocked.avatarUrl : DefaultProfilePicture}
         alt='Profile'
         style={{
           width: '40px',

@@ -36,7 +36,6 @@ export class AuthController {
 
   @Get('logout')
   logout(@Req() req: any, @Res() res: any) {
-
     req.session.destroy()
     return res.redirect('http://127.0.0.1:5173/')
   }

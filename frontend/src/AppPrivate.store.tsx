@@ -6,8 +6,10 @@ import { setRequestSentInformations } from './store/slices/request-sent-informat
 import { setRequestReceivedInformations } from './store/slices/request-received-informations.slice'
 import { setBlockedInformations } from './store/slices/blocked-informations.slice'
 import AppPrivateSubscription from './AppPrivate.subscription'
+import { setChannelInformations } from './store/slices/channel-informations.slice'
 
 interface LoadingStoreState {
+  channels: boolean
   friends: boolean
   requestsSent: boolean
   requestsReceived: boolean
@@ -20,6 +22,7 @@ interface AppPrivateStoreProps {
 }
 
 const LoadingStoreStateInitial: LoadingStoreState = {
+  channels: true,
   friends: true,
   requestsSent: true,
   requestsReceived: true,
@@ -31,6 +34,9 @@ const AppPrivateStore: React.FC<AppPrivateStoreProps> = ({ userId }) => {
   const dispatch = useAppDispatch()
   const [loadingStore, setLoadingStore] = useState<LoadingStoreState>(
     LoadingStoreStateInitial
+  )
+  const channels = useAppSelector(
+    (state) => state.channelInformations.channelsInfos
   )
   const friends = useAppSelector((state) => state.friendInformations.friends)
   const requestsSent = useAppSelector(
@@ -44,11 +50,23 @@ const AppPrivateStore: React.FC<AppPrivateStoreProps> = ({ userId }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        await dispatch(setChannelInformations(userId))
         await dispatch(setFriendInformations(userId))
         await dispatch(setRequestSentInformations(userId))
         await dispatch(setRequestReceivedInformations(userId))
         await dispatch(setBlockedInformations(userId))
 
+        if (channels)
+          setLoadingStore((prevLoading) => ({
+            ...prevLoading,
+            channels: false
+          }))
+
+        if (friends)
+          setLoadingStore((prevLoading) => ({
+            ...prevLoading,
+            friends: false
+          }))
         if (friends)
           setLoadingStore((prevLoading) => ({
             ...prevLoading,
@@ -87,7 +105,9 @@ const AppPrivateStore: React.FC<AppPrivateStoreProps> = ({ userId }) => {
     return <p>Loading... {JSON.stringify(loadingStore)}</p>
   if (loadingStore.isError) return <p>Error</p>
 
-  return <AppPrivateSubscription userId={userId} />
+  if (!channels) throw new Error()
+
+  return <AppPrivateSubscription userId={userId} key={userId} />
 }
 
 export default AppPrivateStore

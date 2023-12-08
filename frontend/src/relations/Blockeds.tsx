@@ -1,10 +1,10 @@
 import React from 'react'
 import Blocked from './components/Blocked'
-import { UserInformations } from '../store/slices/user-informations.slice'
+import { User } from '../gql/graphql'
 
 interface BlockedsProps {
   userId: string
-  blockeds: UserInformations[]
+  blockeds: User[]
 }
 
 const Blockeds: React.FC<BlockedsProps> = React.memo(({ userId, blockeds }) => {

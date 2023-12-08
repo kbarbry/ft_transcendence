@@ -7,6 +7,8 @@ import { useLazyQuery, useMutation } from '@apollo/client'
 import { createRelationRequest, findOneUserByUsername } from './graphql'
 import { useAppDispatch, useAppSelector } from '../store/hooks'
 import { setRequestSentInformations } from '../store/slices/request-sent-informations.slice'
+import { setRequestReceivedInformations } from '../store/slices/request-received-informations.slice'
+import { setFriendInformations } from '../store/slices/friend-informations.slice'
 
 const Relations: React.FC = () => {
   const dispatch = useAppDispatch()
@@ -19,15 +21,15 @@ const Relations: React.FC = () => {
   const requestsReceived = useAppSelector(
     (state) => state.requestReceivedInformations.requestReceived
   )
-  const [selectedItem, setSelectedItem] = useState<string | null>(null)
-  const [usernameInput, setUsernameInput] = useState<string>('')
-  const [foundUser, setFoundUser] = useState<boolean>(true)
-
-  const [createRequest] = useMutation(createRelationRequest)
-  const [findUserByUsername] = useLazyQuery(findOneUserByUsername)
 
   if (!user || !friends || !blockeds || !requestsSent || !requestsReceived)
     throw new Error()
+
+  const [selectedItem, setSelectedItem] = useState<string | null>(null)
+  const [usernameInput, setUsernameInput] = useState<string>('')
+
+  const [createRequest] = useMutation(createRelationRequest)
+  const [findUserByUsername] = useLazyQuery(findOneUserByUsername)
 
   const handleItemClick = (item: string) => {
     setSelectedItem(item)
@@ -36,13 +38,11 @@ const Relations: React.FC = () => {
   const handleUsernameInputChange = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
-    setFoundUser(true)
     setUsernameInput(event.target.value)
   }
 
   const handleAddFriendClick = async () => {
-    if (!usernameInput || usernameInput.trim() === '') {
-      setFoundUser(true)
+    if (usernameInput.trim() === '') {
       return
     }
     try {
@@ -57,15 +57,13 @@ const Relations: React.FC = () => {
           }
         })
 
+        await dispatch(setFriendInformations(user.id))
         await dispatch(setRequestSentInformations(user.id))
-        setFoundUser(true)
+        await dispatch(setRequestReceivedInformations(user.id))
         setUsernameInput('')
-      } else {
-        setFoundUser(false)
       }
     } catch (error) {
       setUsernameInput('')
-      setFoundUser(true)
       console.error('Error adding friend: ', error)
     }
   }
@@ -106,11 +104,6 @@ const Relations: React.FC = () => {
             placeholder='Enter username'
           />
           <button onClick={handleAddFriendClick}>Add Friend</button>
-          {foundUser && (
-            <div>
-              <p>User Found: {foundUser}</p>
-            </div>
-          )}
         </div>
         <div>
           {selectedItem === 'Friends' && (

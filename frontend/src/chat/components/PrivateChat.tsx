@@ -13,58 +13,71 @@ import {
   CreatePrivateMessageMutationVariables,
   DeletePrivateMessageMutation,
   DeletePrivateMessageMutationVariables,
-  EStatus,
   PrivateMessage,
+  PrivateMessageCreationSubscription,
+  PrivateMessageCreationSubscriptionVariables,
+  PrivateMessageDeletionSubscription,
+  PrivateMessageDeletionSubscriptionVariables,
+  PrivateMessageEditionSubscription,
+  PrivateMessageEditionSubscriptionVariables,
   UpdatePrivateMessageMutation,
-  UpdatePrivateMessageMutationVariables
+  UpdatePrivateMessageMutationVariables,
+  User
 } from '../../gql/graphql'
-import MessageComponent from './Message'
-import { UserInformations } from '../../store/slices/user-informations.slice'
+import PrivateMessageComponent from './PrivateMessage'
 
-export interface IMessageUser {
-  id: string
-  username: string
-  avatarUrl: string
-  status: EStatus
-}
-
-interface ChatComponentProps {
-  userInfos: UserInformations
-  receiver: UserInformations
+interface PrivateChatProps {
+  userInfos: User
+  receiver: User
   chatState: {
     chat: PrivateMessage[]
     setChat: React.Dispatch<React.SetStateAction<PrivateMessage[]>>
   }
 }
 
-const ChatComponent: React.FC<ChatComponentProps> = ({
+const PrivateChat: React.FC<PrivateChatProps> = ({
   userInfos,
   receiver,
   chatState
 }) => {
-  const [message, setMessage] = useState('')
+  const [messageInput, setMessageInput] = useState('')
 
   const [editionInfos, setEditionsInfos] = useState<{
     id: string
     content: string
   } | null>(null)
 
-  const senderId = userInfos?.id
+  const senderId = userInfos.id
   const receiverId = receiver.id
 
-  const { error } = useSubscription(subscriptionOnMessageCreation, {
+  const setChatWithLimit = (message: PrivateMessage) => {
+    const updatedChat = [...chatState.chat, message].slice(-50)
+    chatState.setChat(updatedChat)
+  }
+
+  const { error: errorMessageCreation } = useSubscription<
+    PrivateMessageCreationSubscription,
+    PrivateMessageCreationSubscriptionVariables
+  >(subscriptionOnMessageCreation, {
     variables: { senderId, receiverId },
     onData: (received) => {
-      const receivedMessage = received.data.data.privateMessageCreation
+      const receivedMessage = received.data.data?.privateMessageCreation
 
-      chatState.setChat((messages) => [...messages, receivedMessage])
+      if (!receivedMessage) return
+
+      setChatWithLimit(receivedMessage)
     }
   })
 
-  useSubscription(subscriptionOnMessageEdition, {
+  const { error: errorMessageEdition } = useSubscription<
+    PrivateMessageEditionSubscription,
+    PrivateMessageEditionSubscriptionVariables
+  >(subscriptionOnMessageEdition, {
     variables: { senderId, receiverId },
     onData: (received) => {
-      const receivedMessage = received.data.data.privateMessageEdition
+      const receivedMessage = received.data.data?.privateMessageEdition
+
+      if (!receivedMessage) return
 
       const index = chatState.chat.findIndex(
         (message) => message.id === receivedMessage.id
@@ -81,10 +94,15 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
     }
   })
 
-  useSubscription(subscriptionOnMessageDeletion, {
+  const { error: errorMessageDeletion } = useSubscription<
+    PrivateMessageDeletionSubscription,
+    PrivateMessageDeletionSubscriptionVariables
+  >(subscriptionOnMessageDeletion, {
     variables: { senderId, receiverId },
     onData: (received) => {
-      const receivedMessage = received.data.data.privateMessageDeletion
+      const receivedMessage = received.data.data?.privateMessageDeletion
+
+      if (!receivedMessage) return
 
       const index = chatState.chat.findIndex(
         (message) => message.id === receivedMessage.id
@@ -114,18 +132,21 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
   >(mutationDeletePrivateMessage)
 
   const handleSendMessage = async () => {
-    if (!senderId) throw new Error()
-    await sendMessage({
-      variables: {
-        data: {
-          senderId,
-          receiverId,
-          content: message
+    try {
+      await sendMessage({
+        variables: {
+          data: {
+            senderId,
+            receiverId,
+            content: messageInput
+          }
         }
-      }
-    })
+      })
+    } catch (e) {
+      throw e
+    }
 
-    setMessage('')
+    setMessageInput('')
   }
 
   const handleEditMessage = async (messageId: string, newContent: string) => {
@@ -142,18 +163,23 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
         }
       })
       setEditionsInfos(null)
-    } catch {
+    } catch (e) {
       chatState.chat[index].content = oldMessage
       setEditionsInfos(null)
+      throw e
     }
   }
 
   const handleDeleteMessage = async (messageId: string) => {
-    await deleteMessage({
-      variables: {
-        deletePrivateMessageId: messageId
-      }
-    })
+    try {
+      await deleteMessage({
+        variables: {
+          deletePrivateMessageId: messageId
+        }
+      })
+    } catch (e) {
+      throw e
+    }
   }
 
   const sender = (id: string) => {
@@ -161,16 +187,16 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
   }
 
   const listItems = chatState.chat.map((message, index) => {
-    if (!senderId) throw new Error()
     return (
       <li key={index}>
-        <MessageComponent
+        <PrivateMessageComponent
           message={message}
           sender={sender(message.senderId)}
           userId={senderId}
           onEdit={handleEditMessage}
           onDelete={handleDeleteMessage}
           editionMode={{ editionInfos, setEditionsInfos }}
+          key={message.id}
         />
       </li>
     )
@@ -182,8 +208,8 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
       <div>
         <input
           type='text'
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
+          value={messageInput}
+          onChange={(e) => setMessageInput(e.target.value)}
           placeholder='Type your message...'
           onKeyDown={(e) => {
             if (e.key === 'Enter') handleSendMessage()
@@ -191,9 +217,11 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
         />
         <button onClick={handleSendMessage}>Send</button>
       </div>
-      {error && <div>Error: {JSON.stringify(error)}</div>}
+      {(errorMessageCreation ||
+        errorMessageEdition ||
+        errorMessageDeletion) && <div>Error: subscription failed</div>}
     </>
   )
 }
 
-export default ChatComponent
+export default PrivateChat

@@ -1,10 +1,9 @@
 import React from 'react'
-import { PrivateMessage } from '../../gql/graphql'
-import { UserInformations } from '../../store/slices/user-informations.slice'
+import { ChannelMember, ChannelMessage } from '../../gql/graphql'
 
-interface MessageComponentProps {
-  message: PrivateMessage
-  sender: UserInformations
+interface ChannelMessageProps {
+  message: ChannelMessage
+  sender: ChannelMember
   userId: string
   onEdit: (messageId: string, newContent: string) => void
   onDelete: (messageId: string) => void
@@ -16,7 +15,7 @@ interface MessageComponentProps {
   }
 }
 
-const MessageComponent: React.FC<MessageComponentProps> = ({
+const ChannelMessageComponent: React.FC<ChannelMessageProps> = ({
   message,
   sender,
   userId,
@@ -24,7 +23,7 @@ const MessageComponent: React.FC<MessageComponentProps> = ({
   onDelete,
   editionMode
 }) => {
-  const onHandleEdit = () => {
+  const handleOnEdit = () => {
     const trimmedMessage = editionMode.editionInfos?.content.trim()
 
     if (
@@ -40,7 +39,7 @@ const MessageComponent: React.FC<MessageComponentProps> = ({
   }
 
   return (
-    <div>
+    <>
       {editionMode.editionInfos !== null &&
       editionMode.editionInfos?.id === message.id ? (
         <>
@@ -53,14 +52,14 @@ const MessageComponent: React.FC<MessageComponentProps> = ({
               )
             }
             onKeyDown={(e) => {
-              if (e.key === 'Enter') onHandleEdit()
+              if (e.key === 'Enter') handleOnEdit()
             }}
           />
-          <button onClick={() => onHandleEdit()}>Save</button>
+          <button onClick={() => handleOnEdit()}>Save</button>
         </>
       ) : (
         <>
-          <strong>{sender.username}</strong> {message.content}
+          <strong>{sender.nickname}</strong> {message.content}
           {!editionMode.editionInfos && message.senderId === userId && (
             <>
               <button
@@ -78,8 +77,8 @@ const MessageComponent: React.FC<MessageComponentProps> = ({
           )}
         </>
       )}
-    </div>
+    </>
   )
 }
 
-export default MessageComponent
+export default ChannelMessageComponent
