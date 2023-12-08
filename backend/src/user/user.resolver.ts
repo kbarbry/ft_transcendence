@@ -73,7 +73,7 @@ export class UserResolver {
   }
 
   @Query(() => Boolean)
-  @Unprotected()
+  @Unprotected2fa()
   isUserUsernameUsed(
     @Args('username', { type: () => String }, UsernameValidationPipe)
     username: string
@@ -82,7 +82,7 @@ export class UserResolver {
   }
 
   @Query(() => Boolean)
-  @Unprotected()
+  @Unprotected2fa()
   isUserMailUsed(
     @Args('mail', { type: () => String }, EmailValidationPipe)
     mail: string

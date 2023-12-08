@@ -3,9 +3,9 @@ import {
   Length,
   IsNumber,
   IsOptional,
-  Matches
+  Matches,
+  IsNumberString
 } from 'class-validator'
-
 
 export class Validation2fauth {
   @Field(() => String)
@@ -13,9 +13,9 @@ export class Validation2fauth {
   @Length(6, 6, {
     message: '$property must be $constraint1 characters long.'
   })
-  @IsNumber(
-    { allowInfinity: false, allowNaN: false },
-    { message: '$property must be a number.' }
+  @IsNumberString(
+    { no_symbols: true },
+    { message: '$property must contain only numbers.' }
   )
   otp?: string
 
