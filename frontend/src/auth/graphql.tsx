@@ -4,6 +4,7 @@ export const getId = gql`
   query GetId {
     findOneUserByContext {
       id
+      validation2fa
     }
   }
 `

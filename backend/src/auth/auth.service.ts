@@ -154,7 +154,6 @@ export class AuthService {
     const user = await this.userService.findOne(id)
     if (!user) throw error()
     const user2fa = user.doubleA
-    console.log(user2fa)
     return user2fa
   }
 
@@ -184,8 +183,6 @@ export class AuthService {
   async GenerateOTP(id: string, res: Response): Promise<any> {
     try {
       const user_id = id
-      console.log('USER_ID => ', user_id)
-
       const user = await this.userService.findOne(user_id)
 
       if (!user) {
@@ -196,10 +193,11 @@ export class AuthService {
       }
 
       const base32_secret = await this.generateRandomBase32()
+      const userMail = user.mail
 
       const totp = new OTPAuth.TOTP({
-        issuer: 'codevoweb.com',
-        label: 'CodevoWeb',
+        issuer: userMail,
+        label: 'Transcendance',
         algorithm: 'SHA1',
         digits: 6,
         secret: base32_secret
@@ -242,14 +240,15 @@ export class AuthService {
         })
       }
 
+      const userMail = user.mail
+
       const totp = new OTPAuth.TOTP({
-        issuer: 'codevoweb.com',
-        label: 'CodevoWeb',
+        issuer: userMail,
+        label: 'Transcendance',
         algorithm: 'SHA1',
         digits: 6,
         secret: user.otp!
       })
-
       const delta = totp.validate({ token })
 
       if (delta === null) {
@@ -258,7 +257,6 @@ export class AuthService {
           message
         })
       }
-      console.log('intels => ', id, secret)
 
       await this.prisma.user.update({
         where: {
@@ -299,9 +297,11 @@ export class AuthService {
           message
         })
       }
+      const userMail = user.mail
+
       const totp = new OTPAuth.TOTP({
-        issuer: 'codevoweb.com',
-        label: 'CodevoWeb',
+        issuer: userMail,
+        label: 'Transcendance',
         algorithm: 'SHA1',
         digits: 6,
         secret: user.otp!
@@ -315,7 +315,6 @@ export class AuthService {
           message
         })
       }
-      console.log('intels => ', id, secret)
 
       res.status(200).json({
         otp_valid: true

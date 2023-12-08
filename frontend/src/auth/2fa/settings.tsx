@@ -1,22 +1,22 @@
 import React, { useState } from 'react'
-import { authSecret } from './getToken'
+import { getToken } from './getToken'
 import QRCode from 'qrcode.react'
 import { useAppSelector } from '../../store/hooks'
 import { verifySecret } from './verifyToken'
+import { useLocation } from 'wouter'
 
 export const Settings: React.FC = () => {
   const [otpCode, setOtpCode] = useState('')
   const [otpAuthURL, setOtpAuthURL] = useState('')
-
+  const [, setLocation] = useLocation()
 
   const user = useAppSelector((state) => state.userInformations.user)
   const userId = user?.id
-  // if (!user) throw new Error()
+  if (!user) throw new Error()
 
   const handleGetSecretClick = async () => {
     try {
-      const response = await authSecret(userId)
-      console.log('response => ', response)
+      const response = await getToken(userId)
       if (response && response.base32) {
         const otpAuthURL = response.otpauth_url
         setOtpAuthURL(otpAuthURL)
@@ -28,28 +28,23 @@ export const Settings: React.FC = () => {
 
   const handleVerifySecretClick = async () => {
     try {
-      const response = await verifySecret(userId, otpCode)
-      console.log('response => ', response)
+      const isVerified = await verifySecret(userId, otpCode)
+      if (isVerified) {
+        setLocation('http://127.0.0.1:5173', { replace: true })
+      }
     } catch (error) {
       console.error('Erreur lors de la récupération du secret:', error)
     }
   }
 
-  
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    handleValidateClick(otpCode)
-  }
-
-  const handleValidateClick = (code: string) => {
-    console.log('Code OTP à valider:', code)
   }
 
   return (
     <div>
       <h1>THIS IS SETTINGS PAGE</h1>
-      <button onClick={handleGetSecretClick}>Get Secret and QR Code</button>
+      <button onClick={handleGetSecretClick}>Get your own QR Code!</button>
 
       {otpAuthURL && (
         <div>
@@ -67,7 +62,9 @@ export const Settings: React.FC = () => {
           value={otpCode}
           onChange={(e) => setOtpCode(e.target.value)}
         />
-        <button  onClick={handleVerifySecretClick} type='submit'>Validate</button>
+        <button onClick={handleVerifySecretClick} type='submit'>
+          Validate
+        </button>
       </form>
     </div>
   )

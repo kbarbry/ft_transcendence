@@ -1,7 +1,6 @@
 export async function verifySecret(userId : any, token : any) {
     try {
   
-      console.log('INTELS =>> ' , userId, token)
       const response = await fetch(
         'http://127.0.0.1:3000/api/auth/2fa/verify',
         {
@@ -15,7 +14,6 @@ export async function verifySecret(userId : any, token : any) {
       )
   
       if (response.ok) {
-        console.log('RESPONSE => ' , response)
         const data = await response.json()
         return data
       } else {

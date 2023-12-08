@@ -1,6 +1,5 @@
-export async function authSecret(userId : any) {
+export async function getToken(userId: any) {
   try {
-
     const response = await fetch(
       'http://127.0.0.1:3000/api/auth/2fa/getsecret',
       {

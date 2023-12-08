@@ -42,9 +42,7 @@ export class AuthController {
   @Post('2fa/verify')
   async verifyOtp(@Req() req: any, @Res() res: any) {
     try {
-      console.log('REQUEST : ', req.body.id)
       await this.authService.VerifyOTP(req.body.id, req.body.token, res)
-      console.log('go out')
     } catch (e) {
       throw e
     }
@@ -54,7 +52,6 @@ export class AuthController {
   @Post('2fa/validate')
   async validateOtp(@Req() req: any, @Res() res: any) {
     try {
-      console.log('REQUEST 12: ', req.id, req.token)
       await this.authService.ValidateOTP(req.body.id, req.body.token, res)
     } catch (e) {
       throw e
@@ -68,7 +65,6 @@ export class AuthController {
     const is2fa = await this.authService.isUser2fa(req.user.id)
     if (is2fa === true) {
       this.authService.unset2faValidation(req.user.id)
-      return res.redirect('http://127.0.0.1:5173/2fa/login')
     }
     return res.status(200).json({ msg: 'Local Auth Login' })
   }

@@ -26,6 +26,7 @@ export interface UserInformations {
   status: EStatus
   languages: ELanguage
   level: number
+  validation2fa: boolean
 }
 
 interface UserState {
@@ -64,6 +65,7 @@ export const setUserInformations = createAsyncThunk(
         status: user.status,
         languages: user.languages,
         level: user.level,
+        validation2fa: user.validation2fa,
         avatarUrl
       }
     } catch (e) {

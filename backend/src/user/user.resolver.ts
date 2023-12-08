@@ -61,7 +61,6 @@ export class UserResolver {
   @Unprotected2fa()
   findOneUserByContext(@Context() ctx: any): Promise<User | null> {
     if (!ctx?.req?.user?.id) throw new UnauthorizedException('User not found')
-    console.log(ctx.req.user.validation2fa)
     return this.userService.findOne(ctx.req.user.id)
   }
 

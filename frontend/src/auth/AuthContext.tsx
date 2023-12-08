@@ -1,4 +1,3 @@
-// AuthContext.js
 import React, {
   createContext,
   useContext,
@@ -52,10 +51,8 @@ export const AuthProvider = ({ children }: Props) => {
 
       const isAuthenticated = data.findOneUserByContext
       const is2favalid = data.findOneUserByContext.validation2fa
-      console.log(data.findOneUserByContext.validation2fa)
       setAuthenticated(isAuthenticated)
-      if (is2favalid === false)
-      setAuthenticated(false)
+      if (is2favalid === false) setAuthenticated(false)
     } catch (error) {
       setAuthenticated(false)
     }

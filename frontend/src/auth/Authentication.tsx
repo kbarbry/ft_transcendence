@@ -1,34 +1,37 @@
 import React, { useState } from 'react'
 import { LogUser } from './Login/logUser'
 import { Link, useLocation } from 'wouter'
-import { authSecret } from './2fa/getToken'
+import { GetIdQuery, GetIdQueryVariables } from '../gql/graphql'
+import { client } from '../main'
+import { getId } from './graphql'
 
 export const Authentication: React.FC = () => {
   const [email, setEmail] = useState('')
   const [pass, setPass] = useState('')
-  const [, setUserData] = useState(null)
   const [, setLocation] = useLocation()
 
-  const handleLogUserClick = () => {
-    LogUser(email, pass)
-      .then((userData) => {
-        if (userData !== null) {
-          console.log('redirect')
+  const handleLogUserClick = async () => {
+    try {
+      const user = await LogUser(email, pass)
+
+      if (user) {
+        const { data: dataGetId } = await client.query<
+          GetIdQuery,
+          GetIdQueryVariables
+        >({ query: getId })
+        const user2fa = dataGetId.findOneUserByContext.validation2fa
+
+        if (user2fa === false) {
+          setLocation('http://127.0.0.1:5173/2fa/login', { replace: true })
+        } else {
           setLocation('http://127.0.0.1:5173/', { replace: true })
           window.location.reload()
         }
-      })
-      .catch((error) => {
-        console.error("Erreur lors de la création de l'utilisateur:", error)
-      })
+      }
+    } catch (error) {
+      console.error("Erreur lors de la création de l'utilisateur:", error)
+    }
   }
-
-  // const handleGetSecretClick = () => {
-  //   const secret = authSecret()
-  //   console.log('FINAL secret = > ', secret)
-  //   // catch((error) => {
-  //   //   console.error("Erreur lors de la création de l'utilisateur:", error)
-  // }
 
   const handleSubmit = (e: any) => {
     e.preventDefault()
@@ -65,10 +68,7 @@ export const Authentication: React.FC = () => {
         <a>Signup Here </a>
       </Link>
       <br></br>
-      {/* <button onClick={handleGetSecretClick}>getSecret</button> */}
-
       <br />
-
       <a href='http://localhost:3000/api/auth/42/login'>42Login</a>
       <br></br>
       <a href='http://localhost:3000/api/auth/google/login'>GoogleLogin</a>
