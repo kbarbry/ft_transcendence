@@ -22,8 +22,7 @@ import { AuthModule } from './auth/auth.module'
 import { PassportModule } from '@nestjs/passport'
 import { PubSubModule } from './common/ws/pubsub.module'
 import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin/landingPage/default'
-import { Check2faCompletedMiddleware } from './auth/middlewares/Check2faMiddleware'
-import { School42AuthGuard } from './auth/guards/42.guard'
+
 @Module({
   imports: [
     AuthModule,
