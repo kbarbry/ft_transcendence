@@ -16,6 +16,7 @@ import {
   CreateUserAOuth20Input,
   CreateUserAuthLocalInput
 } from './dto/create-user-auth.input'
+import { Validation2fauth } from './dto/auth-2fa-input'
 import { randomBytes } from 'crypto'
 import { plainToClass } from 'class-transformer'
 import { ExceptionCustomClassValidator } from 'src/common/exceptions/class-validator.exception'
@@ -74,6 +75,14 @@ export class AuthService {
     if (error.length) throw new ExceptionCustomClassValidator(error)
 
     return this.prisma.user.create({ data })
+  }
+
+  async OtpValidation(data: Validation2fauth) {
+    const otp = plainToClass(Validation2fauth, data)
+    const error = await validate(otp)
+
+    if (error.length) throw new ExceptionCustomClassValidator(error)
+    return otp
   }
 
   async createUserLocal(data: CreateUserAuthLocalInput): Promise<User> {
@@ -183,6 +192,13 @@ export class AuthService {
   async GenerateOTP(id: string, res: Response): Promise<any> {
     try {
       const user_id = id
+
+      //Validation for otp
+      const otp = await this.OtpValidation({
+        id: user_id
+      })
+      this.OtpValidation(otp)
+
       const user = await this.userService.findOne(user_id)
 
       if (!user) {
@@ -231,6 +247,14 @@ export class AuthService {
     try {
       const user_id = id
       const token = secret
+
+      //Validation for otp
+      const otp = await this.OtpValidation({
+        otp: token,
+        id: user_id
+      })
+      this.OtpValidation(otp)
+
       const user = await this.userService.findOne(user_id)
       const message = "Token is invalid or user doesn't exist"
       if (!user) {
