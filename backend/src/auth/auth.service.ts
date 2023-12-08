@@ -68,6 +68,24 @@ export class AuthService {
     return checkedUsername
   }
 
+  async checkAvatarUrl(avatarUrl?: string): Promise<string | undefined> {
+    if (!avatarUrl) return
+    const checkedAvatarUrl = avatarUrl.trim()
+
+    if (checkedAvatarUrl === '') return
+    try {
+      if (!isURL(checkedAvatarUrl)) return
+      const response = await fetch(avatarUrl)
+      const contentType = response.headers.get('Content-Type')
+
+      if (!response.ok || (contentType && !contentType.startsWith('image/')))
+        return
+    } catch (e) {
+      return
+    }
+    return checkedAvatarUrl
+  }
+
   async createUserOAuth20(data: CreateUserAOuth20Input): Promise<User> {
     const dataClass = plainToClass(CreateUserAOuth20Input, data)
     const error = await validate(dataClass)
@@ -99,8 +117,7 @@ export class AuthService {
     let user = await this.userService.findOnebyMail(profile.email)
     if (!user) {
       const username = await this.checkUsername(profile.username)
-      let avatarUrl = profile.avatarUrl
-      if (avatarUrl) avatarUrl = isURL(avatarUrl) ? avatarUrl : undefined
+      const avatarUrl = await this.checkAvatarUrl(profile.avatarUrl)
       user = await this.createUserOAuth20({
         mail: profile.email,
         username: username,
@@ -121,8 +138,7 @@ export class AuthService {
     let user = await this.userService.findOnebyMail(profile.email)
     if (!user) {
       const username = await this.checkUsername(profile.username)
-      let avatarUrl = profile.avatarUrl
-      if (avatarUrl) avatarUrl = isURL(avatarUrl) ? avatarUrl : undefined
+      const avatarUrl = await this.checkAvatarUrl(profile.avatarUrl)
       user = await this.createUserOAuth20({
         mail: profile.email,
         username: username,
@@ -142,8 +158,7 @@ export class AuthService {
     let user = await this.userService.findOnebyMail(profile.email)
     if (!user) {
       const username = await this.checkUsername(profile.username)
-      let avatarUrl = profile.avatarUrl
-      if (avatarUrl) avatarUrl = isURL(avatarUrl) ? avatarUrl : undefined
+      const avatarUrl = await this.checkAvatarUrl(profile.avatarUrl)
       user = await this.createUserOAuth20({
         mail: profile.email,
         username: username,

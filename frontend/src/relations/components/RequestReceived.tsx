@@ -1,6 +1,5 @@
 import React from 'react'
 import { useMutation } from '@apollo/client'
-import { UserInformations } from '../../store/slices/user-informations.slice'
 import { useAppDispatch } from '../../store/hooks'
 import {
   createRelationBlocked,
@@ -16,13 +15,15 @@ import {
   CreateRelationRequestsMutation,
   CreateRelationRequestsMutationVariables,
   DeleteRelationRequestsMutation,
-  DeleteRelationRequestsMutationVariables
+  DeleteRelationRequestsMutationVariables,
+  User
 } from '../../gql/graphql'
 import { setRequestSentInformations } from '../../store/slices/request-sent-informations.slice'
+import DefaultProfilePicture from '/DefaultProfilePicture.svg'
 
 interface RequestReceivedProps {
   userId: string
-  requestReceived: UserInformations
+  requestReceived: User
 }
 
 const RequestReceived: React.FC<RequestReceivedProps> = ({
@@ -98,7 +99,11 @@ const RequestReceived: React.FC<RequestReceivedProps> = ({
   return (
     <div style={{ display: 'flex', alignItems: 'center' }}>
       <img
-        src={requestReceived.avatarUrl}
+        src={
+          requestReceived?.avatarUrl
+            ? requestReceived.avatarUrl
+            : DefaultProfilePicture
+        }
         alt='Avatar'
         style={{
           width: '40px',

@@ -47,7 +47,7 @@ const App_private: React.FC = () => {
     }
 
     fetchData()
-  }, [user])
+  }, [])
 
   const allLoadingStoreComplete = Object.values(loadingStore).every(
     (load) => !load
@@ -57,7 +57,14 @@ const App_private: React.FC = () => {
     return <p>Loading... {JSON.stringify(loadingStore)}</p>
   if (loadingStore.isError) return <p>Error</p>
 
-  return <> {user && <AppPrivateStore userId={user.id} />}</>
+  if (!user) throw new Error()
+
+  return (
+    <>
+      {' '}
+      <AppPrivateStore userId={user.id} key={user.id} />
+    </>
+  )
 }
 
 export default App_private

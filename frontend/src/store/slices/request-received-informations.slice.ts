@@ -1,10 +1,15 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-import { UserInformations } from './user-informations.slice'
 import { client } from '../../main'
 import { findAllRelationRequestsReceived, findUsersByUserIds } from '../graphql'
+import {
+  FindAllRelationRequestsReceivedQuery,
+  FindUsersByUserIdsQuery,
+  User
+} from '../../gql/graphql'
+import { validateAvatarUrl } from '../utils'
 
 export interface RequestReceivedInformations {
-  requestReceived: UserInformations[] | null
+  requestReceived: User[] | null
 }
 
 const initialState: RequestReceivedInformations = {
@@ -15,21 +20,32 @@ export const setRequestReceivedInformations = createAsyncThunk(
   'requestReceivedInformations/fetchRequestReceivedInformations',
   async (userId: string) => {
     try {
-      const { data: dataRequestsIds } = await client.query({
-        query: findAllRelationRequestsReceived,
-        variables: { userReceiverId: userId },
-        fetchPolicy: 'network-only'
-      })
+      const { data: dataRequestsIds } =
+        await client.query<FindAllRelationRequestsReceivedQuery>({
+          query: findAllRelationRequestsReceived,
+          variables: { userReceiverId: userId },
+          fetchPolicy: 'network-only'
+        })
 
       const userIds = dataRequestsIds.findAllRelationRequestsReceived
-      const { data: dataRequests } = await client.query({
-        query: findUsersByUserIds,
-        variables: { userIds }
-      })
+      const { data: dataRequests } =
+        await client.query<FindUsersByUserIdsQuery>({
+          query: findUsersByUserIds,
+          variables: { userIds }
+        })
 
-      const requestReceived: UserInformations[] =
-        dataRequests.findUsersByUserIds
-      return requestReceived
+      const requestReceived = dataRequests.findUsersByUserIds
+
+      const requestVerified = await Promise.all(
+        requestReceived.map(async (user) => {
+          return (user = {
+            ...user,
+            avatarUrl: await validateAvatarUrl(user.avatarUrl)
+          })
+        })
+      )
+
+      return requestVerified
     } catch (e) {
       console.log('Error requestsReceived slice: ', e)
       throw e

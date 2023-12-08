@@ -4,17 +4,18 @@ import { useAppDispatch } from '../../store/hooks'
 import { createRelationBlocked, deleteRelationRequest } from '../graphql'
 import { setRequestSentInformations } from '../../store/slices/request-sent-informations.slice'
 import { setBlockedInformations } from '../../store/slices/blocked-informations.slice'
-import { UserInformations } from '../../store/slices/user-informations.slice'
 import {
   CreateRelationBlockedMutation,
   CreateRelationBlockedMutationVariables,
   DeleteRelationRequestsMutation,
-  DeleteRelationRequestsMutationVariables
+  DeleteRelationRequestsMutationVariables,
+  User
 } from '../../gql/graphql'
+import DefaultProfilePicture from '/DefaultProfilePicture.svg'
 
 interface RequestSentProps {
   userId: string
-  requestSent: UserInformations
+  requestSent: User
 }
 
 const RequestSent: React.FC<RequestSentProps> = ({ userId, requestSent }) => {
@@ -61,7 +62,9 @@ const RequestSent: React.FC<RequestSentProps> = ({ userId, requestSent }) => {
   return (
     <div style={{ display: 'flex', alignItems: 'center' }}>
       <img
-        src={requestSent.avatarUrl}
+        src={
+          requestSent?.avatarUrl ? requestSent.avatarUrl : DefaultProfilePicture
+        }
         alt='Avatar'
         style={{
           width: '40px',

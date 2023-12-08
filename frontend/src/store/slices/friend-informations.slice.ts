@@ -1,10 +1,15 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-import { UserInformations } from './user-informations.slice'
 import { client } from '../../main'
 import { findAllRelationFriend, findUsersByUserIds } from '../graphql'
+import {
+  FindAllRelationFriendQuery,
+  FindUsersByUserIdsQuery,
+  User
+} from '../../gql/graphql'
+import { validateAvatarUrl } from '../utils'
 
 export interface FriendInformations {
-  friends: UserInformations[] | null
+  friends: User[] | null
 }
 
 const initialState: FriendInformations = {
@@ -15,19 +20,33 @@ export const setFriendInformations = createAsyncThunk(
   'friendInformations/fetchFriendInformations',
   async (userId: string) => {
     try {
-      const { data: dataFriendsIds } = await client.query({
-        query: findAllRelationFriend,
-        variables: { findAllRelationFriendId: userId },
-        fetchPolicy: 'network-only'
-      })
+      const { data: dataFriendsIds } =
+        await client.query<FindAllRelationFriendQuery>({
+          query: findAllRelationFriend,
+          variables: { findAllRelationFriendId: userId },
+          fetchPolicy: 'network-only'
+        })
 
       const userIds = dataFriendsIds.findAllRelationFriend
-      const { data: dataFriends } = await client.query({
-        query: findUsersByUserIds,
-        variables: { userIds }
-      })
-      const friends: UserInformations[] = dataFriends.findUsersByUserIds
-      return friends
+
+      const { data: dataFriends } = await client.query<FindUsersByUserIdsQuery>(
+        {
+          query: findUsersByUserIds,
+          variables: { userIds }
+        }
+      )
+      const friends = dataFriends.findUsersByUserIds
+
+      const requestVerified = await Promise.all(
+        friends.map(async (user) => {
+          return (user = {
+            ...user,
+            avatarUrl: await validateAvatarUrl(user.avatarUrl)
+          })
+        })
+      )
+
+      return requestVerified
     } catch (e) {
       console.log('Error friends slice: ', e)
       throw e

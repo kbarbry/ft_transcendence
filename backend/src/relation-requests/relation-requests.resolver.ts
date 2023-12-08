@@ -66,6 +66,7 @@ export class RelationRequestsResolver {
       throw new ExceptionRelationRequestForbiddenAccess()
 
     const resRequest = await this.relationRequestsService.create(data)
+
     let res: RelationRequests
     const resSub = 'userBId' in resRequest
     if (resSub) {
@@ -112,14 +113,13 @@ export class RelationRequestsResolver {
       userReceiverId
     )
 
-    if (res) {
-      await this.pubSub.publish('requestDeleted-' + userSenderId, {
-        res
-      })
-      await this.pubSub.publish('requestDeleted-' + userReceiverId, {
-        res
-      })
-    }
+    await this.pubSub.publish('requestDeleted-' + userSenderId, {
+      res
+    })
+    await this.pubSub.publish('requestDeleted-' + userReceiverId, {
+      res
+    })
+
     return res
   }
 

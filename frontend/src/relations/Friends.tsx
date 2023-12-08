@@ -1,10 +1,10 @@
 import React from 'react'
 import Friend from './components/Friend'
-import { UserInformations } from '../store/slices/user-informations.slice'
+import { User } from '../gql/graphql'
 
 interface FriendsProps {
   userId: string
-  friends: UserInformations[]
+  friends: User[]
 }
 
 const Friends: React.FC<FriendsProps> = React.memo(({ userId, friends }) => {

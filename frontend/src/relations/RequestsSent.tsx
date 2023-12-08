@@ -1,10 +1,10 @@
 import React from 'react'
 import RequestSent from './components/RequestSent'
-import { UserInformations } from '../store/slices/user-informations.slice'
+import { User } from '../gql/graphql'
 
 interface RequestsSentProps {
   userId: string
-  requestsSent: UserInformations[]
+  requestsSent: User[]
 }
 
 const RequestsSent: React.FC<RequestsSentProps> = React.memo(

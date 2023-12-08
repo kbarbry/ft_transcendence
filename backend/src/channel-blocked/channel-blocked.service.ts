@@ -62,6 +62,14 @@ export class ChannelBlockedService {
     })
   }
 
+  async findAllChannelBlockedofUser(userId: string): Promise<ChannelBlocked[]> {
+    return this.prisma.channelBlocked.findMany({
+      where: {
+        userId
+      }
+    })
+  }
+
   async findAllInChannel(channelId: string): Promise<ChannelBlocked[]> {
     return this.prisma.channelBlocked.findMany({
       where: {

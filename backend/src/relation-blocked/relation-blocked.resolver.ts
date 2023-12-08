@@ -53,10 +53,9 @@ export class RelationBlockedResolver {
 
     const res = await this.relationBlockedService.create(data)
 
-    if (res)
-      await this.pubSub.publish('blockedReceived-' + data.userBlockedId, {
-        res
-      })
+    await this.pubSub.publish('blockedReceived-' + data.userBlockedId, {
+      res
+    })
     return res
   }
 

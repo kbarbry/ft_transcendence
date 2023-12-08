@@ -1,6 +1,5 @@
 import React from 'react'
 import { useMutation } from '@apollo/client'
-import { UserInformations } from '../../store/slices/user-informations.slice'
 import { useAppDispatch } from '../../store/hooks'
 import { createRelationBlocked, deleteRelationFriend } from '../graphql'
 import { setFriendInformations } from '../../store/slices/friend-informations.slice'
@@ -9,12 +8,14 @@ import {
   CreateRelationBlockedMutation,
   CreateRelationBlockedMutationVariables,
   DeleteRelationFriendMutation,
-  DeleteRelationFriendMutationVariables
+  DeleteRelationFriendMutationVariables,
+  User
 } from '../../gql/graphql'
+import DefaultProfilePicture from '/DefaultProfilePicture.svg'
 
 interface FriendProps {
   userId: string
-  friend: UserInformations
+  friend: User
 }
 
 const Friend: React.FC<FriendProps> = ({ userId, friend }) => {
@@ -59,7 +60,7 @@ const Friend: React.FC<FriendProps> = ({ userId, friend }) => {
   return (
     <div style={{ display: 'flex', alignItems: 'center' }}>
       <img
-        src={friend.avatarUrl}
+        src={friend?.avatarUrl ? friend.avatarUrl : DefaultProfilePicture}
         alt='Profile'
         style={{
           width: '40px',
