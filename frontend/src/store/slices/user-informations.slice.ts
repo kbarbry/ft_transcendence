@@ -47,3 +47,4 @@ export const userInformationsSlice = createSlice({
 })
 
 export default userInformationsSlice.reducer
+

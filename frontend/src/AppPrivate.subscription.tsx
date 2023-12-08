@@ -20,6 +20,7 @@ import Relations from './relations/Relations'
 import Channels from './chat/Channels'
 import { Welcome } from './Test/Test_welcome'
 import { Link, Route, Switch } from 'wouter'
+import { Settings } from './auth/2fa/settings'
 import { NotFound } from './ErrorPages/404'
 import { Game } from './Test/Test_game'
 import { Home } from './home/Home'
@@ -427,6 +428,10 @@ const AppPrivateSubscription: React.FC<AppPrivateSubscriptionProps> = ({
     <>
       <h2>Private APP</h2>
 
+      <Link href='/settings'>
+        <a>Settings</a>
+      </Link>
+      <br />
       <Link href='/'>
         <a>Home</a>
       </Link>
@@ -458,6 +463,7 @@ const AppPrivateSubscription: React.FC<AppPrivateSubscriptionProps> = ({
       <br></br>
       <br></br>
       <Switch>
+        <Route path='/settings' component={Settings} />
         <Route path='/privateChannel' component={PrivateChannel} />
         <Route path='/channel' component={Channels} />
         <Route path='/relations' component={Relations} />

@@ -18,6 +18,11 @@ model User {
   githubAuth        Boolean            @default(false)
   school42Auth      Boolean            @default(false)
   doubleA           Boolean            @default(false)
+  otp               String?
+  otpUrl            String?
+  validation2fa     Boolean            @default(true)
+
+
 
   status            EStatus            @default(Online)
   languages         ELanguage          @default(English)

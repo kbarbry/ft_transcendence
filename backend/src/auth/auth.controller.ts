@@ -5,7 +5,8 @@ import {
   Post,
   UseGuards,
   Res,
-  Req
+  Req,
+  UseInterceptors
 } from '@nestjs/common'
 import { GoogleAuthGuard } from './guards/google.guard'
 import { School42AuthGuard } from './guards/42.guard'
@@ -28,9 +29,43 @@ export class AuthController {
     return { msg: 'Local SignUp OK' }
   }
 
+  @Post('2fa/getsecret')
+  async getSecret(@Req() req: any, @Res() res: any) {
+    try {
+      await this.authService.GenerateOTP(req.body.id, res)
+    } catch (e) {
+      throw e
+    }
+    return { msg: 'secret set OK' }
+  }
+
+  @Post('2fa/verify')
+  async verifyOtp(@Req() req: any, @Res() res: any) {
+    try {
+      await this.authService.VerifyOTP(req.body.id, req.body.token, res)
+    } catch (e) {
+      throw e
+    }
+    return { msg: 'secret set OK' }
+  }
+
+  @Post('2fa/validate')
+  async validateOtp(@Req() req: any, @Res() res: any) {
+    try {
+      await this.authService.ValidateOTP(req.body.id, req.body.token, res)
+    } catch (e) {
+      throw e
+    }
+    return true
+  }
+
   @UseGuards(LocalAuthGuard)
   @Post('login')
-  async login(@Res() res: any) {
+  async login(@Req() req: any, @Res() res: any) {
+    const is2fa = await this.authService.isUser2fa(req.user.id)
+    if (is2fa === true) {
+      this.authService.unset2faValidation(req.user.id)
+    }
     return res.status(200).json({ msg: 'Local Auth Login' })
   }
 
@@ -48,7 +83,12 @@ export class AuthController {
 
   @Get('42/redirect')
   @UseGuards(School42AuthGuard)
-  ftRedirect(@Req() req: any, @Res() res: any) {
+  async ftRedirect(@Req() req: any, @Res() res: any) {
+    const is2fa = await this.authService.isUser2fa(req.user.id)
+    if (is2fa === true) {
+      this.authService.unset2faValidation(req.user.id)
+      return res.redirect('http://127.0.0.1:5173/2fa/login')
+    }
     return res.redirect('http://127.0.0.1:5173')
   }
 
@@ -60,7 +100,12 @@ export class AuthController {
 
   @UseGuards(GoogleAuthGuard)
   @Get('google/redirect')
-  getGoogleCallback(@Req() req: any, @Res() res: any) {
+  async getGoogleCallback(@Req() req: any, @Res() res: any) {
+    const is2fa = await this.authService.isUser2fa(req.user.id)
+    if (is2fa === true) {
+      this.authService.unset2faValidation(req.user.id)
+      return res.redirect('http://127.0.0.1:5173/2fa/login')
+    }
     return res.redirect('http://127.0.0.1:5173')
   }
 
@@ -73,6 +118,11 @@ export class AuthController {
   @UseGuards(GithubGuard)
   @Get('github/redirect')
   async getGithubAuthCallback(@Req() req: any, @Res() res: any) {
+    const is2fa = await this.authService.isUser2fa(req.user.id)
+    if (is2fa === true) {
+      this.authService.unset2faValidation(req.user.id)
+      return res.redirect('http://127.0.0.1:5173/2fa/login')
+    }
     return res.redirect('http://127.0.0.1:5173')
   }
 }

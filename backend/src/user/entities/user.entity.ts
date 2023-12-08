@@ -18,6 +18,9 @@ export class User {
   @Field(() => EStatus)
   status: EStatus
 
+  @Field(() => Boolean)
+  validation2fa: boolean
+
   @Field(() => ELanguage)
   languages: ELanguage
 

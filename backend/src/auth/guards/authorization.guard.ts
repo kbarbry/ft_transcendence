@@ -20,13 +20,20 @@ export class AuthorizationGuard implements CanActivate {
         'unprotected',
         context.getHandler()
       )
+      const isUnprotected2fa = this.reflector.get<boolean>(
+        'unprotected2fa',
+        context.getHandler()
+      )
+
       if (isUnprotected) {
         return true // Skip guard for operations marked as unprotected
       }
+
       const gqlContext = GqlExecutionContext.create(context)
       const request = gqlContext.getContext().req
 
-      if (request.user) return true
+      if (isUnprotected2fa && request.user) return true
+      if (request.user && request.user.validation2fa === true) return true
       throw new UnauthorizedException('User not authenticated')
     } catch (e) {
       throw new UnauthorizedException('User authentication failed')
@@ -35,6 +42,7 @@ export class AuthorizationGuard implements CanActivate {
 }
 
 export const Unprotected = () => SetMetadata('unprotected', true)
+export const Unprotected2fa = () => SetMetadata('unprotected2fa', true)
 
 @Injectable()
 export class ChannelAdminGuard implements CanActivate {

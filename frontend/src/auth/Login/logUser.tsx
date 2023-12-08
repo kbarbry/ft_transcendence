@@ -1,6 +1,3 @@
-import { useLocation } from 'wouter'
-import React, { useEffect } from 'react'
-
 export async function LogUser(mail: string, password: string) {
   try {
     const response = await fetch('http://127.0.0.1:3000/api/auth/login', {

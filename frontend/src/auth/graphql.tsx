@@ -15,3 +15,12 @@ export const queryIsUserMailUsed = gql`
     isUserMailUsed(mail: $mail)
   }
 `
+
+export const getId = gql`
+  query GetId {
+    findOneUserByContext {
+      id
+      validation2fa
+    }
+  }
+`
