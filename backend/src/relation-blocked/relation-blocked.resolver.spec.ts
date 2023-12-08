@@ -4,6 +4,7 @@ import { RelationBlockedService } from './relation-blocked.service'
 import { ArgumentMetadata, ValidationPipe } from '@nestjs/common'
 import { PrismaService } from '../prisma/prisma.service'
 import { RelationBlockedInput } from './dto/create-relation-blocked.input'
+import { PubSubModule } from '../common/ws/pubsub.module'
 
 describe('UserBlockedResolver', () => {
   let relationBlockedresolver: RelationBlockedResolver
@@ -21,7 +22,8 @@ describe('UserBlockedResolver', () => {
         RelationBlockedResolver,
         { provide: RelationBlockedService, useValue: relationBlockedService },
         PrismaService
-      ]
+      ],
+      imports: [PubSubModule]
     }).compile()
 
     relationBlockedresolver = module.get<RelationBlockedResolver>(
@@ -38,21 +40,39 @@ describe('UserBlockedResolver', () => {
         userBlockingId: '1',
         userBlockedId: '2'
       }
+      const mockContext = {
+        req: {
+          user: {
+            id: '1'
+          }
+        }
+      }
       const resExpected = { id: '1', ...data }
       relationBlockedService.create.mockReturnValue(resExpected)
 
-      const result = await relationBlockedresolver.createRelationBlocked(data)
+      const result = await relationBlockedresolver.createRelationBlocked(
+        data,
+        mockContext
+      )
 
       expect(result).toStrictEqual(resExpected)
       expect(relationBlockedService.create).toHaveBeenCalledWith(data)
     })
     it('delete RelationBlocked', async () => {
+      const mockContext = {
+        req: {
+          user: {
+            id: '1'
+          }
+        }
+      }
       const resExpected = { userBlockingId: '1' }
       relationBlockedService.delete.mockReturnValue(resExpected)
 
       const result = await relationBlockedresolver.deleteRelationBlocked(
         '1',
-        '2'
+        '2',
+        mockContext
       )
 
       expect(result).toStrictEqual(resExpected)

@@ -17,7 +17,8 @@ export const setFriendInformations = createAsyncThunk(
     try {
       const { data: dataFriendsIds } = await client.query({
         query: findAllRelationFriend,
-        variables: { findAllRelationFriendId: userId }
+        variables: { findAllRelationFriendId: userId },
+        fetchPolicy: 'network-only'
       })
 
       const userIds = dataFriendsIds.findAllRelationFriend
@@ -25,11 +26,10 @@ export const setFriendInformations = createAsyncThunk(
         query: findUsersByUserIds,
         variables: { userIds }
       })
-
       const friends: UserInformations[] = dataFriends.findUsersByUserIds
       return friends
     } catch (e) {
-      console.log('ERROR: ', e)
+      console.log('Error friends slice: ', e)
       throw e
     }
   }
@@ -41,7 +41,10 @@ export const friendInformationsSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder.addCase(setFriendInformations.fulfilled, (state, action) => {
-      state.friends = action.payload
+      return {
+        ...state,
+        friends: action.payload
+      }
     })
   }
 })
