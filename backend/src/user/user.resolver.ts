@@ -18,7 +18,10 @@ import { NanoidValidationPipe } from '../common/pipes/nanoid.pipe'
 import { NanoidsValidationPipe } from '../common/pipes/nanoids.pipe'
 import { EmailValidationPipe } from '../common/pipes/email.pipe'
 import { UsernameValidationPipe } from '../common/pipes/username.pipe'
-import { AuthorizationGuard } from '../auth/guards/authorization.guard'
+import {
+  AuthorizationGuard,
+  Unprotected2fa
+} from '../auth/guards/authorization.guard'
 
 @Resolver(() => User)
 @UseGuards(AuthorizationGuard)
@@ -55,8 +58,10 @@ export class UserResolver {
   }
 
   @Query(() => User)
+  @Unprotected2fa()
   findOneUserByContext(@Context() ctx: any): Promise<User | null> {
     if (!ctx?.req?.user?.id) throw new UnauthorizedException('User not found')
+    console.log(ctx.req.user.validation2fa)
     return this.userService.findOne(ctx.req.user.id)
   }
 

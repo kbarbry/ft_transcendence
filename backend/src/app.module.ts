@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common'
+import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common'
 
 import { PrismaModule } from './prisma/prisma.module'
 import { ChannelModule } from './channel/channel.module'
@@ -22,7 +22,8 @@ import { AuthModule } from './auth/auth.module'
 import { PassportModule } from '@nestjs/passport'
 import { PubSubModule } from './common/ws/pubsub.module'
 import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin/landingPage/default'
-
+import { Check2faCompletedMiddleware } from './auth/middlewares/Check2faMiddleware'
+import { School42AuthGuard } from './auth/guards/42.guard'
 @Module({
   imports: [
     AuthModule,
@@ -58,4 +59,9 @@ import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin
   controllers: [],
   providers: [{ provide: APP_FILTER, useClass: GlobalExceptionFilter }]
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    // consumer.apply(School42AuthGuard).forRoutes('api/auth/42/redirect')
+    // consumer.apply(Check2faCompletedMiddleware).forRoutes('auth/42/redirect') // Then, apply Check2faCompletedMiddleware
+  }
+}

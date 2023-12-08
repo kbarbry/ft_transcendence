@@ -20,6 +20,12 @@ import { randomBytes } from 'crypto'
 import { plainToClass } from 'class-transformer'
 import { ExceptionCustomClassValidator } from 'src/common/exceptions/class-validator.exception'
 import * as bcrypt from 'bcrypt'
+import crypto from 'crypto'
+import { encode } from 'hi-base32'
+import * as OTPAuth from 'otpauth'
+import { Request, Response, NextFunction } from 'express'
+import { Context } from '@nestjs/graphql'
+import { error } from 'console'
 
 type GoogleUserParams = {
   email: string
@@ -144,6 +150,14 @@ export class AuthService {
     return user
   }
 
+  async isUser2fa(id: string): Promise<boolean> {
+    const user = await this.userService.findOne(id)
+    if (!user) throw error()
+    const user2fa = user.doubleA
+    console.log(user2fa)
+    return user2fa
+  }
+
   async validateLocalUser(mail: string, password: string): Promise<User> {
     const user = await this.userService.findOnebyMail(mail)
     if (!user || !(await bcrypt.compare(password, user.password as string))) {
@@ -155,5 +169,185 @@ export class AuthService {
       )
     }
     return user
+  }
+
+  async twoFactorAuth(): Promise<string> {
+    return 'test'
+  }
+
+  async generateRandomBase32(): Promise<string> {
+    const buffer = crypto.randomBytes(15)
+    const base32 = encode(buffer).replace(/=/g, '').substring(0, 24)
+    return base32
+  }
+
+  async GenerateOTP(id: string, res: Response): Promise<any> {
+    try {
+      const user_id = id
+      console.log('USER_ID => ', user_id)
+
+      const user = await this.userService.findOne(user_id)
+
+      if (!user) {
+        return res.status(404).json({
+          status: 'fail',
+          message: 'No user with that email exists'
+        })
+      }
+
+      const base32_secret = await this.generateRandomBase32()
+
+      const totp = new OTPAuth.TOTP({
+        issuer: 'codevoweb.com',
+        label: 'CodevoWeb',
+        algorithm: 'SHA1',
+        digits: 6,
+        secret: base32_secret
+      })
+
+      const otpauth_url = totp.toString()
+
+      await this.prisma.user.update({
+        where: {
+          id: user_id
+        },
+        data: {
+          otpUrl: otpauth_url,
+          otp: base32_secret
+        }
+      })
+
+      res.status(200).json({
+        base32: base32_secret,
+        otpauth_url
+      })
+    } catch (error) {
+      res.status(500).json({
+        status: 'error',
+        message: error.message
+      })
+    }
+  }
+
+  async VerifyOTP(id: string, secret: string, res: Response) {
+    try {
+      const user_id = id
+      const token = secret
+      const user = await this.userService.findOne(user_id)
+      const message = "Token is invalid or user doesn't exist"
+      if (!user) {
+        return res.status(401).json({
+          status: 'fail',
+          message
+        })
+      }
+
+      const totp = new OTPAuth.TOTP({
+        issuer: 'codevoweb.com',
+        label: 'CodevoWeb',
+        algorithm: 'SHA1',
+        digits: 6,
+        secret: user.otp!
+      })
+
+      const delta = totp.validate({ token })
+
+      if (delta === null) {
+        return res.status(401).json({
+          status: 'fail',
+          message
+        })
+      }
+      console.log('intels => ', id, secret)
+
+      await this.prisma.user.update({
+        where: {
+          id: user_id
+        },
+        data: {
+          doubleA: true,
+          validation2fa: true
+        }
+      })
+
+      res.status(200).json({
+        otp_verified: true,
+        user: {
+          id: user.id,
+          name: user.username,
+          email: user.mail,
+          otp_enabled: user.doubleA
+        }
+      })
+    } catch (error) {
+      res.status(500).json({
+        status: 'error',
+        message: error.message
+      })
+    }
+  }
+
+  async ValidateOTP(id: string, secret: string, res: Response) {
+    try {
+      const user_id = id
+      const token = secret
+      const user = await this.userService.findOne(user_id)
+      const message = "Token is invalid or user doesn't exist"
+      if (!user) {
+        return res.status(401).json({
+          status: 'fail',
+          message
+        })
+      }
+      const totp = new OTPAuth.TOTP({
+        issuer: 'codevoweb.com',
+        label: 'CodevoWeb',
+        algorithm: 'SHA1',
+        digits: 6,
+        secret: user.otp!
+      })
+
+      const delta = totp.validate({ token })
+
+      if (delta === null) {
+        return res.status(401).json({
+          status: 'fail',
+          message
+        })
+      }
+      console.log('intels => ', id, secret)
+
+      res.status(200).json({
+        otp_valid: true
+      })
+    } catch (error) {
+      res.status(500).json({
+        status: 'error',
+        message: error.message
+      })
+    }
+  }
+  async unset2faValidation(id: string) {
+    const user_id = id
+    await this.prisma.user.update({
+      where: {
+        id: user_id
+      },
+      data: {
+        validation2fa: false
+      }
+    })
+  }
+
+  async set2faValidation(id: string) {
+    const user_id = id
+    await this.prisma.user.update({
+      where: {
+        id: user_id
+      },
+      data: {
+        validation2fa: false
+      }
+    })
   }
 }

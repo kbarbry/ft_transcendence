@@ -9,6 +9,7 @@ import PrivateMessage from './chat/PrivateMessage'
 import { useAuth } from './auth/AuthContext'
 import { Welcome } from './Test/Test_welcome'
 import { Game } from './Test/Test_game'
+import { Settings } from './auth/2fa/settings'
 import useLocation from 'wouter/use-location'
 
 const App_private: React.FC = () => {
@@ -45,6 +46,11 @@ const App_private: React.FC = () => {
       </Link>
       <br />
       <br />
+      <Link href='/settings'>
+        <a>Settings</a>
+      </Link>
+      <br />
+      <br />
       <Link href='/game'>
         <a>Game</a>
       </Link>
@@ -60,6 +66,7 @@ const App_private: React.FC = () => {
       <br></br>
       <br></br>
       <Switch>
+        <Route path='/settings' component={Settings} />
         <Route path='/welcome' component={Welcome} />
         <Route path='/' component={Home} />
         <Route path='/chat' component={PrivateMessage} />

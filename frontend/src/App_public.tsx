@@ -4,6 +4,7 @@ import { Link, Route, Switch } from 'wouter'
 import Authentication from './auth/Authentication'
 import { NotFound } from './ErrorPages/404'
 import { ForbiddenAccess } from './ErrorPages/403'
+import { validation2fa } from './auth/2fa/2fLogin'
 import { Signup } from './auth/Signup/SignupForm'
 
 const App_public: React.FC = () => {
@@ -19,6 +20,7 @@ const App_public: React.FC = () => {
       <Switch>
         <Route path='/' component={Authentication} />
         <Route path='/signup' component={Signup} />
+        <Route path='/2fa/login' component={validation2fa} />
         <Route path='/home' component={ForbiddenAccess} />
         <Route path='/chat' component={ForbiddenAccess} />
         <Route path='/testUser' component={ForbiddenAccess} />

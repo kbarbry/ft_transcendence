@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { LogUser } from './Login/logUser'
 import { Link, useLocation } from 'wouter'
+import { authSecret } from './2fa/getToken'
 
 export const Authentication: React.FC = () => {
   const [email, setEmail] = useState('')
@@ -21,6 +22,13 @@ export const Authentication: React.FC = () => {
         console.error("Erreur lors de la création de l'utilisateur:", error)
       })
   }
+
+  // const handleGetSecretClick = () => {
+  //   const secret = authSecret()
+  //   console.log('FINAL secret = > ', secret)
+  //   // catch((error) => {
+  //   //   console.error("Erreur lors de la création de l'utilisateur:", error)
+  // }
 
   const handleSubmit = (e: any) => {
     e.preventDefault()
@@ -57,6 +65,7 @@ export const Authentication: React.FC = () => {
         <a>Signup Here </a>
       </Link>
       <br></br>
+      {/* <button onClick={handleGetSecretClick}>getSecret</button> */}
 
       <br />
 
