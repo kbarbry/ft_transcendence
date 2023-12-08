@@ -7,6 +7,7 @@ import { UserService } from 'src/user/user.service'
 
 export class MinimalUserData {
   id: string
+  validation2fa: boolean
   mail: string
   username: string
   createdAt: Date
@@ -17,6 +18,7 @@ export function setMinimalUserData(user: User): MinimalUserData {
   return {
     id: user.id,
     mail: user.mail,
+    validation2fa: user.validation2fa,
     username: user.username,
     createdAt: user.createdAt,
     secretMessage: 'Too bad... We thought about it...'
