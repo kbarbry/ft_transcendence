@@ -1,11 +1,4 @@
-import {
-  Resolver,
-  Query,
-  Mutation,
-  Args,
-  Context,
-  GqlExecutionContext
-} from '@nestjs/graphql'
+import { Resolver, Query, Mutation, Args, Context } from '@nestjs/graphql'
 import { UserService } from './user.service'
 import { User } from './entities/user.entity'
 import {
@@ -80,11 +73,21 @@ export class UserResolver {
   }
 
   @Query(() => Boolean)
+  @Unprotected()
   isUserUsernameUsed(
     @Args('username', { type: () => String }, UsernameValidationPipe)
     username: string
   ): Promise<boolean> {
     return this.userService.isUsernameUsed(username)
+  }
+
+  @Query(() => Boolean)
+  @Unprotected()
+  isUserMailUsed(
+    @Args('mail', { type: () => String }, EmailValidationPipe)
+    mail: string
+  ): Promise<boolean> {
+    return this.userService.isMailUsed(mail)
   }
 
   @Query(() => [User])

@@ -89,3 +89,20 @@ export const mutationDeletePrivateMessage = gql`
     }
   }
 `
+
+//**************************************************//
+//  QUERY
+//**************************************************//
+
+export const queryFindAllPrivateMessageWith = gql`
+  query FindAllPrivateMessageWith($receiverId: String!, $senderId: String!) {
+    findAllPrivateMessageWith(receiverId: $receiverId, senderId: $senderId) {
+      content
+      createdAt
+      id
+      senderId
+      receiverId
+      updatedAt
+    }
+  }
+`

@@ -2,6 +2,7 @@ import React from 'react'
 import { AuthProvider, useAuth } from './auth/AuthContext'
 import App_private from './App_private'
 import App_public from './App_public'
+import { ConfigProvider, theme } from 'antd'
 
 const App: React.FC = () => {
   const authenticated = useAuth()
@@ -22,7 +23,9 @@ const App: React.FC = () => {
 const AppWithAuthProvider = () => {
   return (
     <AuthProvider>
-      <App />
+      <ConfigProvider theme={{ algorithm: theme.darkAlgorithm }}>
+        <App />
+      </ConfigProvider>
     </AuthProvider>
   )
 }

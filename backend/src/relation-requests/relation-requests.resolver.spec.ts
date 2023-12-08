@@ -6,6 +6,7 @@ import { RelationRequestsInput } from './dto/create-relation-requests.input'
 import { PrismaService } from '../prisma/prisma.service'
 import { RelationBlockedService } from '../relation-blocked/relation-blocked.service'
 import { RelationFriendService } from '../relation-friend/relation-friend.service'
+import { PubSubModule } from '../common/ws/pubsub.module'
 
 describe('relationRequestResolver', () => {
   let relationRequestResolver: RelationRequestsResolver
@@ -28,7 +29,8 @@ describe('relationRequestResolver', () => {
         PrismaService,
         RelationBlockedService,
         RelationFriendService
-      ]
+      ],
+      imports: [PubSubModule]
     }).compile()
 
     relationRequestResolver = module.get<RelationRequestsResolver>(
@@ -52,10 +54,20 @@ describe('relationRequestResolver', () => {
         userSenderId: '1',
         userReceiverId: '2'
       }
+      const mockContext = {
+        req: {
+          user: {
+            id: '1'
+          }
+        }
+      }
       const resExpected = { id: '1', ...data }
       relationRequestsService.create.mockReturnValue(resExpected)
 
-      const result = await relationRequestResolver.createRelationRequests(data)
+      const result = await relationRequestResolver.createRelationRequests(
+        data,
+        mockContext
+      )
 
       expect(result).toStrictEqual(resExpected)
       expect(relationRequestsService.create).toHaveBeenCalledWith(data)
@@ -63,11 +75,19 @@ describe('relationRequestResolver', () => {
 
     it('deleteRelationRequests', async () => {
       const resExpected = { id: '1' }
+      const mockContext = {
+        req: {
+          user: {
+            id: '1'
+          }
+        }
+      }
       relationRequestsService.delete.mockReturnValue(resExpected)
 
       const result = await relationRequestResolver.deleteRelationRequests(
         '1',
-        '2'
+        '2',
+        mockContext
       )
       expect(result).toStrictEqual(resExpected)
       expect(relationRequestsService.delete).toHaveBeenCalledWith('1', '2')

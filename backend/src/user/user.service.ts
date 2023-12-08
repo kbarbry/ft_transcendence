@@ -66,6 +66,16 @@ export class UserService {
     return user !== null
   }
 
+  async isMailUsed(mail: string): Promise<boolean> {
+    const user = await this.prisma.user.findUnique({
+      where: {
+        mail
+      }
+    })
+
+    return user !== null
+  }
+
   async findUsersByUserIds(userIds: string[]): Promise<User[]> {
     return this.prisma.user.findMany({
       where: {

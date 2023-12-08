@@ -1,5 +1,9 @@
 import { gql } from '@apollo/client'
 
+//**************************************************//
+//  QUERY
+//**************************************************//
+
 export const findUserByContext = gql`
   query FindOneUserByContext {
     findOneUserByContext {
@@ -34,9 +38,15 @@ export const findAllRelationFriend = gql`
   }
 `
 
-export const findAllRelationRequest = gql`
-  query FindAllRelationRequest($userSenderId: String!) {
+export const findAllRelationRequestsSent = gql`
+  query FindAllRelationRequestsSent($userSenderId: String!) {
     findAllRelationRequestsSent(userSenderId: $userSenderId)
+  }
+`
+
+export const findAllRelationRequestsReceived = gql`
+  query FindAllRelationRequestsReceived($userReceiverId: String!) {
+    findAllRelationRequestsReceived(userReceiverId: $userReceiverId)
   }
 `
 

@@ -11,7 +11,7 @@ export const sessionConfig = session({
   cookie: {
     sameSite: 'lax',
     httpOnly: true,
-    maxAge: 60000,
+    maxAge: 60 * 60 * 1000,
     secure: 'auto',
     signed: true,
     path: '/'

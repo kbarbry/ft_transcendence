@@ -1,22 +1,10 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { client } from '../../main'
 import { findUserByContext } from '../graphql'
+import { ELanguage, EStatus } from '../../gql/graphql'
 
-const PROFILE_PICTURE_URL = 'http://127.0.0.1:5173/DefaultProfilePicture.svg'
-
-// All enums MUST be perfectly equal to the ones in the backend
-export enum EStatus {
-  Online = 'Online',
-  Invisble = 'Invisble',
-  Idle = 'Idle',
-  DoNotDisturb = 'DoNotDisturb'
-}
-
-export enum ELanguage {
-  English = 'English',
-  French = 'French',
-  Spanish = 'Spanish'
-}
+export const PROFILE_PICTURE_URL =
+  'http://127.0.0.1:5173/DefaultProfilePicture.svg'
 
 export interface UserInformations {
   id: string
@@ -42,7 +30,8 @@ export const setUserInformations = createAsyncThunk(
   async () => {
     try {
       const { data: dataUser } = await client.query({
-        query: findUserByContext
+        query: findUserByContext,
+        fetchPolicy: 'network-only'
       })
 
       const user: UserInformations = dataUser.findOneUserByContext
@@ -81,7 +70,10 @@ export const userInformationsSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder.addCase(setUserInformations.fulfilled, (state, action) => {
-      state.user = { ...action.payload }
+      return {
+        ...state,
+        user: action.payload
+      }
     })
   }
 })
