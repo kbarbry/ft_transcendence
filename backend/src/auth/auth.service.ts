@@ -263,16 +263,12 @@ export class AuthService {
       const user_id = id
       const token = secret
 
-      console.log('intels => ', token, user_id)
-
       //Validation for otp
       const otp = await this.OtpValidation({
         otp: token,
         id: user_id
       })
       this.OtpValidation(otp)
-
-      console.log('intels => ', token, user_id)
 
       const user = await this.userService.findOne(user_id)
       const message = "Token is invalid or user doesn't exist"
@@ -333,16 +329,12 @@ export class AuthService {
       const user_id = id
       const token = secret
 
-      console.log('intels => ', token, user_id)
-
       //Validation for otp
       const otp = await this.OtpValidation({
         otp: token,
         id: user_id
       })
       this.OtpValidation(otp)
-
-      console.log('intels => ', token, user_id)
 
       const user = await this.userService.findOne(user_id)
       const message = "Token is invalid or user doesn't exist"
