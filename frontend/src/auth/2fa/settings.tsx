@@ -4,6 +4,8 @@ import QRCode from 'qrcode.react'
 import { useAppSelector } from '../../store/hooks'
 import { verifySecret } from './verifyToken'
 import { useLocation } from 'wouter'
+import { unset2fa } from './unset2fa'
+import { validateSecret } from './validateToken'
 
 export const Settings: React.FC = () => {
   const [otpCode, setOtpCode] = useState('')
@@ -22,13 +24,24 @@ export const Settings: React.FC = () => {
         setOtpAuthURL(otpAuthURL)
       }
     } catch (error) {
+      console.error('Erreur lors de la creation du secret:', error)
+    }
+  }
+
+  const handleValidateSecretClick = async () => {
+    try {
+      const isVerified = await validateSecret(userId, otpCode)
+      if (isVerified) {
+        setLocation('http://127.0.0.1:5173', { replace: true })
+      }
+    } catch (error) {
       console.error('Erreur lors de la récupération du secret:', error)
     }
   }
 
-  const handleVerifySecretClick = async () => {
+  const handleUnset2faClick = async () => {
     try {
-      const isVerified = await verifySecret(userId, otpCode)
+      const isVerified = await unset2fa(userId, otpCode)
       if (isVerified) {
         setLocation('http://127.0.0.1:5173', { replace: true })
       }
@@ -49,10 +62,10 @@ export const Settings: React.FC = () => {
       {otpAuthURL && (
         <div>
           <p>QR Code:</p>
-          <QRCode value={otpAuthURL} size={200} />
+          <QRCode value={otpAuthURL} size={250} />
         </div>
       )}
-
+<br></br>
       <form onSubmit={handleSubmit}>
         <label htmlFor='otpCode'>Enter OTP Code:</label>
         <input
@@ -62,8 +75,11 @@ export const Settings: React.FC = () => {
           value={otpCode}
           onChange={(e) => setOtpCode(e.target.value)}
         />
-        <button onClick={handleVerifySecretClick} type='submit'>
+        <button onClick={handleValidateSecretClick} type='submit'>
           Validate
+        </button>
+        <button onClick={handleUnset2faClick} type='submit'>
+          Disable 2fa
         </button>
       </form>
     </div>

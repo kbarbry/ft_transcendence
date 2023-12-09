@@ -46,7 +46,7 @@ export class AuthController {
     } catch (e) {
       throw e
     }
-    return { msg: 'secret set OK' }
+    return { msg: 'verified Otp' }
   }
 
   @Post('2fa/validate')
@@ -56,7 +56,20 @@ export class AuthController {
     } catch (e) {
       throw e
     }
-    return true
+    return { msg: 'validate Otp' }
+  }
+
+  @Post('2fa/disable')
+  async disableOtp(@Req() req: any, @Res() res: any) {
+    try {
+      const is2fa = await this.authService.isUser2fa(req.user.id)
+      if (is2fa === true) {
+        await this.authService.unset2fa(req.body.id, req.body.token, res)
+      }
+    } catch (e) {
+      throw e
+    }
+    return { msg: '2fa disabled' }
   }
 
   @UseGuards(LocalAuthGuard)

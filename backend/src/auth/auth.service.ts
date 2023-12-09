@@ -241,8 +241,8 @@ export class AuthService {
           id: user_id
         },
         data: {
-          otpUrl: otpauth_url,
-          otp: base32_secret
+          notValidateOtpUrl: otpauth_url,
+          notValidateOtp: base32_secret
         }
       })
 
@@ -263,12 +263,16 @@ export class AuthService {
       const user_id = id
       const token = secret
 
+      console.log('intels => ', token, user_id)
+
       //Validation for otp
       const otp = await this.OtpValidation({
         otp: token,
         id: user_id
       })
       this.OtpValidation(otp)
+
+      console.log('intels => ', token, user_id)
 
       const user = await this.userService.findOne(user_id)
       const message = "Token is invalid or user doesn't exist"
@@ -286,7 +290,7 @@ export class AuthService {
         label: 'Transcendance',
         algorithm: 'SHA1',
         digits: 6,
-        secret: user.otp!
+        secret: user.ValidateOtp!
       })
       const delta = totp.validate({ token })
 
@@ -328,6 +332,18 @@ export class AuthService {
     try {
       const user_id = id
       const token = secret
+
+      console.log('intels => ', token, user_id)
+
+      //Validation for otp
+      const otp = await this.OtpValidation({
+        otp: token,
+        id: user_id
+      })
+      this.OtpValidation(otp)
+
+      console.log('intels => ', token, user_id)
+
       const user = await this.userService.findOne(user_id)
       const message = "Token is invalid or user doesn't exist"
       if (!user) {
@@ -336,6 +352,7 @@ export class AuthService {
           message
         })
       }
+
       const userMail = user.mail
 
       const totp = new OTPAuth.TOTP({
@@ -343,9 +360,8 @@ export class AuthService {
         label: 'Transcendance',
         algorithm: 'SHA1',
         digits: 6,
-        secret: user.otp!
+        secret: user.notValidateOtp!
       })
-
       const delta = totp.validate({ token })
 
       if (delta === null) {
@@ -355,8 +371,26 @@ export class AuthService {
         })
       }
 
+      await this.prisma.user.update({
+        where: {
+          id: user_id
+        },
+        data: {
+          doubleA: true,
+          validation2fa: true,
+          ValidateOtp: user.notValidateOtp,
+          notValidateOtpUrl: user.notValidateOtpUrl
+        }
+      })
+
       res.status(200).json({
-        otp_valid: true
+        otp_verified: true,
+        user: {
+          id: user.id,
+          name: user.username,
+          email: user.mail,
+          otp_enabled: user.doubleA
+        }
       })
     } catch (error) {
       res.status(500).json({
@@ -365,6 +399,77 @@ export class AuthService {
       })
     }
   }
+
+  async unset2fa(id: string, secret: string, res: Response) {
+    try {
+      const user_id = id
+      const token = secret
+
+      //Validation for otp
+      const otp = await this.OtpValidation({
+        otp: token,
+        id: user_id
+      })
+      this.OtpValidation(otp)
+
+      const user = await this.userService.findOne(user_id)
+      const message = "Token is invalid or user doesn't exist"
+      if (!user) {
+        return res.status(401).json({
+          status: 'fail',
+          message
+        })
+      }
+
+      const userMail = user.mail
+
+      const totp = new OTPAuth.TOTP({
+        issuer: userMail,
+        label: 'Transcendance',
+        algorithm: 'SHA1',
+        digits: 6,
+        secret: user.ValidateOtp!
+      })
+      const delta = totp.validate({ token })
+
+      if (delta === null) {
+        return res.status(401).json({
+          status: 'fail',
+          message
+        })
+      }
+
+      await this.prisma.user.update({
+        where: {
+          id: user_id
+        },
+        data: {
+          doubleA: false,
+          validation2fa: true,
+          notValidateOtp: null,
+          notValidateOtpUrl: null,
+          ValidateOtp: null,
+          ValidateOtpUrl: null
+        }
+      })
+
+      res.status(200).json({
+        otp_verified: true,
+        user: {
+          id: user.id,
+          name: user.username,
+          email: user.mail,
+          otp_enabled: user.doubleA
+        }
+      })
+    } catch (error) {
+      res.status(500).json({
+        status: 'error',
+        message: error.message
+      })
+    }
+  }
+
   async unset2faValidation(id: string) {
     const user_id = id
     await this.prisma.user.update({

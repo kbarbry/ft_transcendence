@@ -18,8 +18,10 @@ model User {
   githubAuth        Boolean            @default(false)
   school42Auth      Boolean            @default(false)
   doubleA           Boolean            @default(false)
-  otp               String?
-  otpUrl            String?
+  notValidateOtp    String?
+  notValidateOtpUrl String?
+  ValidateOtp       String?
+  ValidateOtpUrl    String?
   validation2fa     Boolean            @default(true)
 
 
