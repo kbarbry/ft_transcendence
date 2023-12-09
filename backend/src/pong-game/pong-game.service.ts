@@ -113,7 +113,6 @@ export class PongGameService {
     this.pubsub.publish(subTopic, { data: gameInfo })
   }
 
-  //Init a new game with gameId and add it to the gamesMap
   gameInit(
     gameId: string,
     p1nick: string,
@@ -142,12 +141,12 @@ export class PongGameService {
   //update data of every game where gameRunning is true
   async gamesUpdate() {
     for (const [gameId, game] of gamesMap) {
-      console.log(
-        'gamesUpdate: gameId = ' +
-          game.gameId +
-          ', isRuuning = ' +
-          game.isRunning
-      )
+      // console.log(
+      //   'gamesUpdate: gameId = ' +
+      //     game.gameId +
+      //     ', isRuuning = ' +
+      //     game.isRunning
+      // )
       if (!game.isRunning) {
         //TODO check for how many time the game is innactive and delete it if needed
         continue

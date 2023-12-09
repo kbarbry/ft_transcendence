@@ -1,15 +1,11 @@
 import React, { useState } from 'react'
 import { WaitingGame } from './waiting-game'
 import { GameSelection } from './username-form'
-//enter a username
-//click on button
-//it listen to the matchmakingSubscription
-//once subscription is received it send mutation to join matchmaking
 
 type Props = {
   username: string
   handleChange: (event: React.ChangeEvent<HTMLInputElement>) => void
-  setGameId: React.Dispatch<React.SetStateAction<string>>
+  setGameId: React.Dispatch<React.SetStateAction<string | null>>
 }
 
 export const Matchmaking: React.FC<Props> = (props) => {
@@ -28,11 +24,7 @@ export const Matchmaking: React.FC<Props> = (props) => {
   if (gameType !== '') {
     return (
       <>
-        <WaitingGame
-          username={props.username}
-          setGameId={props.setGameId}
-          gameType={setGameType}
-        />
+        <WaitingGame username={props.username} setGameId={props.setGameId} />
       </>
     )
   }

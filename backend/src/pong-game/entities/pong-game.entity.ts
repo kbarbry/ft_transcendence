@@ -1,4 +1,4 @@
-import { ObjectType, Field, Int } from '@nestjs/graphql'
+import { ObjectType, Field, Int, InputType } from '@nestjs/graphql'
 
 @ObjectType()
 class playfield {
@@ -21,11 +21,11 @@ class racket {
   @Field(() => Int)
   height = 60
 
-  @Field(() => Int)
+  @Field(() => Number)
   hPos: number
 
-  @Field(() => Int)
-  vPos = 570
+  @Field(() => Number)
+  vPos = 270
 
   @Field(() => Int)
   velocity = 6
@@ -36,12 +36,13 @@ class ball {
   @Field(() => Int)
   radius = 16
 
-  @Field(() => Int)
-  hPos = 792
+  @Field(() => Number)
+  hPos = 392
 
-  @Field(() => Int)
-  vPos = 592
-  dir: { x: number; y: number } = { x: 1, y: 1 }
+  @Field(() => Number)
+  vPos = 292
+
+  dir: { x: number; y: number } = { x: 100, y: 100 }
 }
 
 @ObjectType()
@@ -61,8 +62,9 @@ export class Controls {
 
 @ObjectType()
 export class PongPlayer {
-  constructor(nickname: string, presence: boolean) {
+  constructor(nickname: string, id: string, presence: boolean) {
     this.nickname = nickname
+    this.id = id
     this.presence = presence
   }
 
@@ -84,10 +86,16 @@ export class PongPlayer {
 
 @ObjectType()
 export class PongGame {
-  constructor(gameId: string, p1nick: string, p2nick: string) {
+  constructor(
+    gameId: string,
+    p1nick: string,
+    p1id: string,
+    p2nick: string,
+    p2id: string
+  ) {
     this.gameId = gameId
-    this.player1 = new PongPlayer(p1nick, false)
-    this.player2 = new PongPlayer(p2nick, false)
+    this.player1 = new PongPlayer(p1nick, p1id, false)
+    this.player2 = new PongPlayer(p2nick, p2id, false)
   }
 
   @Field(() => String)
@@ -102,13 +110,13 @@ export class PongGame {
   @Field(() => Boolean)
   isRunning = false
 
-  @Field(() => Int)
+  @Field(() => Number)
   time = 0
 
-  @Field(() => Int, { nullable: true })
+  @Field(() => PongPlayer, { nullable: true })
   player1: PongPlayer
 
-  @Field(() => Int, { nullable: true })
+  @Field(() => PongPlayer, { nullable: true })
   player2: PongPlayer
 
   @Field(() => playfield)
@@ -124,6 +132,87 @@ export class PongGame {
   p2racket: racket = new racket(750)
 
   update() {
-    console.log('game update : ' + this.gameId)
+    //console.log('PongGame: update(): gameId = ' + this.gameId)
+    const delta = 0.016
+    //ball update
+    //  ball playfield left and right collision
+    if (this.ball.hPos > this.playfield.width - this.ball.radius) {
+      this.ball.dir.x = -this.ball.dir.x //Add random angle up and down
+      this.ball.hPos = this.playfield.width / 2
+      this.ball.vPos = this.playfield.height / 2 - this.ball.radius
+      this.player1.score += 1
+    }
+    if (this.ball.hPos < this.ball.radius) {
+      this.ball.dir.x = -this.ball.dir.x
+      this.ball.hPos = this.playfield.width / 2
+      this.ball.vPos = this.playfield.height / 2 - this.ball.radius
+      this.player2.score += 1
+    }
+    //  ball racket1 collision
+    if (
+      this.ball.vPos >= this.p1racket.vPos &&
+      this.ball.vPos <= this.p1racket.vPos + this.p1racket.height &&
+      this.ball.hPos > this.p1racket.hPos + this.p1racket.width &&
+      this.ball.hPos <
+        this.p1racket.hPos + this.p1racket.width + this.ball.radius
+    ) {
+      this.ball.hPos =
+        this.p1racket.hPos + this.p1racket.width + this.ball.radius
+      this.ball.dir.x = -this.ball.dir.x
+    }
+    //  ball racket2 collision
+    if (
+      this.ball.vPos >= this.p2racket.vPos &&
+      this.ball.vPos <= this.p2racket.vPos + this.p2racket.height &&
+      this.ball.hPos < this.p2racket.hPos &&
+      this.ball.hPos > this.p2racket.hPos - this.ball.radius
+    ) {
+      this.ball.hPos = this.p2racket.hPos - this.ball.radius
+      this.ball.dir.x = -this.ball.dir.x
+    }
+
+    //  ball playfield up and bottom collision
+    if (
+      this.ball.vPos < this.ball.radius ||
+      this.ball.vPos > this.playfield.height - this.ball.radius
+    ) {
+      this.ball.dir.y = -this.ball.dir.y
+    }
+    this.ball.hPos += this.ball.dir.x * delta
+    this.ball.vPos += this.ball.dir.y * delta
+
+    //this.p1racket update
+    if (this.p1racket.vPos > 0 && this.player1.controls.Z_Key) {
+      this.p1racket.vPos -= this.p1racket.velocity
+    }
+    if (this.p1racket.vPos < 0) {
+      this.p1racket.vPos = 0
+    }
+    if (
+      this.p1racket.vPos < this.playfield.height - this.p1racket.height &&
+      this.player1.controls.S_Key
+    ) {
+      this.p1racket.vPos += this.p1racket.velocity
+    }
+    if (this.p1racket.vPos > this.playfield.height - this.p1racket.height) {
+      this.p1racket.vPos = this.playfield.height - this.p1racket.height
+    }
+
+    //this.p2racket update
+    if (this.p2racket.vPos > 0 && this.player2.controls.Z_Key) {
+      this.p2racket.vPos -= this.p2racket.velocity
+    }
+    if (this.p2racket.vPos < 0) {
+      this.p2racket.vPos = 0
+    }
+    if (
+      this.p2racket.vPos < this.playfield.height - this.p2racket.height &&
+      this.player2.controls.S_Key
+    ) {
+      this.p2racket.vPos += this.p2racket.velocity
+    }
+    if (this.p2racket.vPos > this.playfield.height - this.p2racket.height) {
+      this.p2racket.vPos = this.playfield.height - this.p2racket.height
+    }
   }
 }

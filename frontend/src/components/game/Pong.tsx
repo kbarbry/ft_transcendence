@@ -20,8 +20,6 @@ export const Pong: React.FC<Props> = (props) => {
   return (
     <>
       <h1>Pong</h1>
-      <p>Player 1</p>
-      <p>Player 2</p>
       <button
         onClick={() => {
           sendReady({
@@ -29,9 +27,9 @@ export const Pong: React.FC<Props> = (props) => {
           })
         }}
       >
-        Set Presence True
+        Ready
       </button>
-      <CanvasPong gameId={props.gameId} />
+      <CanvasPong gameId={props.gameId} playerId={props.username} />
       <button onClick={props.quitHandler}>Quit</button>
     </>
   )

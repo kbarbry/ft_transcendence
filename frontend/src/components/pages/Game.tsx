@@ -2,17 +2,17 @@ import React, { useState } from 'react'
 import { Pong } from '../game/Pong'
 import { Matchmaking } from '../matchmaking/Matchmaking'
 
-// NOTE
+// NOTE pour update les infos en fin de partie :
 // changer le lev en bdd
 // dispatch(setUserInformations())
 
 export const Game: React.FC = () => {
-  const [username, setUsername] = useState('') //TODO useState<String | null>('')
-  const [gameId, setGameId] = useState('')
+  const [username, setUsername] = useState('')
+  const [gameId, setGameId] = useState<string | null>(null)
 
   console.log('Game: gameId = ' + gameId)
   function quitGame() {
-    setGameId('')
+    setGameId(null)
   }
 
   function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
@@ -21,9 +21,8 @@ export const Game: React.FC = () => {
     event.preventDefault()
   }
 
-  if (gameId !== '') {
-    //replace matched by game id
-    return <Pong quitHandler={quitGame} />
+  if (gameId !== null) {
+    return <Pong quitHandler={quitGame} gameId={gameId} username={username} />
   }
   return (
     <>

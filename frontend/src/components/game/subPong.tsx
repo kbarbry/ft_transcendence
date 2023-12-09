@@ -9,11 +9,8 @@ type Props = {
 }
 
 export const SubPong: React.FC<Props> = (props: Props) => {
-  console.log('SubPong: props.gameId = ' + props.gameId)
-
   function listenPongData(options: OnDataOptions<any>) {
     let data = options.data.data.pongData as PongGame
-    console.log('SubMatchmaking: listenPongData: onData()')
     props.updateGameElement(data)
   }
 

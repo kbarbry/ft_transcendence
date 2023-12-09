@@ -1,6 +1,6 @@
 import { gql } from '@apollo/client'
 
-export const pongData = gql`
+export const pongDataSubscription = gql`
   subscription PongData($gameId: String!) {
     pongData(gameId: $gameId) {
       ball {
@@ -25,8 +25,24 @@ export const pongData = gql`
         velocity
         width
       }
-      player1
-      player2
+      player1 {
+        controls {
+          Down_Key
+          S_Key
+          Up_Key
+          Z_Key
+        }
+        id
+        nickname
+        presence
+        score
+      }
+      player2 {
+        id
+        nickname
+        presence
+        score
+      }
       playfield {
         height
         width
@@ -39,5 +55,18 @@ export const pongData = gql`
 export const readyForGame = gql`
   mutation readyForGame($gameId: String!, $playerId: String!) {
     readyForGame(gameId: $gameId, playerId: $playerId)
+  }
+`
+export const updatePlayerInputs = gql`
+  mutation UpdatePlayerInputs(
+    $controls: ControlsInput!
+    $gameId: String!
+    $playerId: String!
+  ) {
+    updatePlayerInputs(
+      controls: $controls
+      gameId: $gameId
+      playerId: $playerId
+    )
   }
 `

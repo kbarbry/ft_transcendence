@@ -1,7 +1,8 @@
 import { Args, Mutation, Resolver, Subscription } from '@nestjs/graphql'
 import { PubSub } from 'graphql-subscriptions'
-import { Controls, PongGame } from './entities/pong-game.entity'
+import { PongGame } from './entities/pong-game.entity'
 import { PongGameService } from './pong-game.service'
+import { ControlsInput } from './dto/player-controls.input'
 
 @Resolver(() => PongGame)
 export class PongGameResolver {
@@ -31,13 +32,14 @@ export class PongGameResolver {
     resolve: (payload) => (payload?.data !== undefined ? payload.data : null)
   })
   pongData(@Args('gameId', { type: () => String }) gameId: string) {
+    console.log('Subscription: pongData:  gameId = ' + gameId)
     return this.pubSub.asyncIterator(gameId)
   }
 
   //**************************************************//
   //  MUTATION
   //**************************************************//
-  @Mutation(() => String)
+  @Mutation(() => String) //TODO delete this mutation
   async testPongSubscribeMessage(
     @Args('playerId', { type: () => String }) playerId: string
   ): Promise<string> {
@@ -49,6 +51,23 @@ export class PongGameResolver {
     )
     await this.pubSub.publish(triggerName, { data: res })
     return triggerName
+  }
+
+  @Mutation(() => String) //TODO delete this mutation
+  async testPongDataSubscribtion(
+    @Args('gameId', { type: () => String }) gameId: string
+  ): Promise<string> {
+    const res: PongGame = new PongGame(
+      'idTestGame',
+      'playerOne',
+      'playerOne',
+      'playerTwo',
+      'playerTwo'
+    )
+
+    console.log('Mutation: testPongDataSubscribtion: gameId = ' + gameId)
+    await this.pubSub.publish(gameId, { data: res })
+    return JSON.stringify(PongGame)
   }
 
   @Mutation(() => Boolean)
@@ -72,22 +91,31 @@ export class PongGameResolver {
   async readyForGame(
     @Args('gameId', { type: () => String }) gameId: string,
     @Args('playerId', { type: () => String }) playerId: string
+    //TODO add presence arg
   ): Promise<boolean> {
     console.log(
       'Mutation: readyForGame: gameid = ' + gameId + ', playerId = ' + playerId
     )
-    this.pongService.setPresenceInGame(gameId, playerId)
-    return false //TODO update return
+    const presenceValidattion = this.pongService.setPresenceInGame(
+      gameId,
+      playerId,
+      true
+    )
+    return presenceValidattion
   }
 
   @Mutation(() => Boolean)
-  async gameInputs(
-    //Set player in his game as ready
+  async updatePlayerInputs(
     @Args('gameId', { type: () => String }) gameId: string,
     @Args('playerId', { type: () => String }) playerId: string,
-    @Args('controls', { type: () => String }) controls: Controls
+    @Args('controls', { type: () => ControlsInput }) controls: ControlsInput
   ): Promise<boolean> {
-    this.pongService.setPlayerInputs(gameId, playerId, controls)
-    return false //TODO update return
+    console.log('Resolver: updatePlayerInputs:')
+    const isInputUpdated: boolean = this.pongService.setPlayerInputs(
+      gameId,
+      playerId,
+      controls
+    )
+    return isInputUpdated
   }
 }

@@ -1,14 +1,15 @@
 import { useEffect, useRef } from 'react'
 import { drawBall, drawRackets, drawScores, drawTime } from './draw-elements'
-import { Controls, PongGame } from '../../gql/graphql'
+import { ControlsInput, PongGame } from '../../gql/graphql'
 import { SubPong } from './subPong'
-import { useMutation } from '@apollo/client'
+import { ControlsUpdate } from './controls-update'
 
 let start: DOMHighResTimeStamp
 let previousTimeStamp: DOMHighResTimeStamp
 
 type Props = {
   gameId: string
+  playerId: string
 }
 
 export const CanvasPong: React.FC<Props> = (props: Props) => {
@@ -17,25 +18,26 @@ export const CanvasPong: React.FC<Props> = (props: Props) => {
   const canvasCtxRef = useRef<CanvasRenderingContext2D | null>(null)
   let elapsed: DOMHighResTimeStamp
   let pongGameData: PongGame | null = null
-  let up: boolean = false
-  let down: boolean = false
+  let up = false
+  let down = false
 
-  //TODO useMutation(sendInput)
+  const controls: ControlsInput = {
+    Down_Key: false,
+    S_Key: false,
+    Up_Key: false,
+    Z_Key: false
+  }
+
+  function getControls() {
+    return controls
+  }
 
   function setPongGameData(pongData: PongGame) {
     pongGameData = pongData
   }
 
-  const controls: Controls = {
-    Z_Key: false,
-    S_Key: false,
-    Up_Key: false,
-    Down_Key: false
-  }
-
   function keyDownHandler(e: KeyboardEvent) {
     up = false
-    console.log('keyDownHandler')
     if (e.key == 'z') {
       controls.Z_Key = true
     }
@@ -51,14 +53,13 @@ export const CanvasPong: React.FC<Props> = (props: Props) => {
       controls.Down_Key = true
     }
     if (down === false) {
-      //send controls mutation
+      console.log('keyDownHandler')
+      down = true
     }
-    down = true
   }
 
   function keyUpHandler(e: KeyboardEvent) {
     down = false
-    console.log('keyUpHandler')
     if (e.key == 'z') {
       controls.Z_Key = false
     }
@@ -72,9 +73,9 @@ export const CanvasPong: React.FC<Props> = (props: Props) => {
       controls.Down_Key = false
     }
     if (up == false) {
-      //send controls mutation
+      console.log('keyUpHandler')
+      up = true
     }
-    up = true
   }
 
   function drawElements(ctx: CanvasRenderingContext2D) {
@@ -115,16 +116,25 @@ export const CanvasPong: React.FC<Props> = (props: Props) => {
       window.requestAnimationFrame(frameStep)
     }
 
+    document.addEventListener('keydown', keyDownHandler, false)
+    document.addEventListener('keyup', keyUpHandler, false)
     previousTimeStamp = performance.now()
     start = previousTimeStamp
     frameStep(performance.now())
-  })
+    return () => {
+      document.removeEventListener('keydown', keyDownHandler)
+      document.removeEventListener('keyup', keyUpHandler)
+    }
+  }, [keyDownHandler, keyUpHandler])
 
-  document.addEventListener('keydown', keyDownHandler, false)
-  document.addEventListener('keyup', keyUpHandler, false)
   return (
     <>
       <SubPong gameId={props.gameId} updateGameElement={setPongGameData} />
+      <ControlsUpdate
+        getControls={getControls}
+        gameId={props.gameId}
+        playerId={props.playerId}
+      />
       <canvas ref={canvasRef} width={800} height={600}></canvas>
     </>
   )
