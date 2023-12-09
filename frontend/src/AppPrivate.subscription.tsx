@@ -5,8 +5,10 @@ import {
   subscriptionOnBlockedReceived,
   subscriptionOnChannelBlockedCreation,
   subscriptionOnChannelBlockedDeletion,
+  subscriptionOnChannelDeletion,
   subscriptionOnChannelEdition,
   subscriptionOnChannelInvitedCreation,
+  subscriptionOnChannelInvitedDeletion,
   subscriptionOnChannelMemberCreation,
   subscriptionOnChannelMemberDeletion,
   subscriptionOnChannelMemberEdition,
@@ -218,13 +220,23 @@ const AppPrivateSubscription: React.FC<AppPrivateSubscriptionProps> = ({
         const res = received.data.data?.channelEdition
         await dispatch(setChannelChannelInformations(res.id))
       }
+    },
+    onError: (e) => {
+      console.log(
+        'Error in AppPrivate.subscription.tsx subscriptionOnChannelEdition : ',
+        e
+      )
+      setLoadingSubscription((prevLoading) => ({
+        ...prevLoading,
+        isError: true
+      }))
     }
   })
 
   const { error: errorChannelDeletions } = useSubscription<
     ChannelDeletionSubscription,
     ChannelDeletionSubscriptionVariables
-  >(subscriptionOnChannelEdition, {
+  >(subscriptionOnChannelDeletion, {
     variables: { channelDeletionId: userId },
     onData: async (received) => {
       console.log('ChannelDeleted')
@@ -232,6 +244,16 @@ const AppPrivateSubscription: React.FC<AppPrivateSubscriptionProps> = ({
         const res = received.data.data?.channelDeletion
         await dispatch(setChannelChannelInformations(res.id))
       }
+    },
+    onError: (e) => {
+      console.log(
+        'Error in AppPrivate.subscription.tsx subscriptionOnChannelDeletion : ',
+        e
+      )
+      setLoadingSubscription((prevLoading) => ({
+        ...prevLoading,
+        isError: true
+      }))
     }
   })
 
@@ -246,6 +268,16 @@ const AppPrivateSubscription: React.FC<AppPrivateSubscriptionProps> = ({
         const res = received.data.data?.channelMemberCreation
         await dispatch(setChannelMembersInformations(res.channelId))
       }
+    },
+    onError: (e) => {
+      console.log(
+        'Error in AppPrivate.subscription.tsx subscriptionOnChannelMemberCreation : ',
+        e
+      )
+      setLoadingSubscription((prevLoading) => ({
+        ...prevLoading,
+        isError: true
+      }))
     }
   })
 
@@ -260,6 +292,16 @@ const AppPrivateSubscription: React.FC<AppPrivateSubscriptionProps> = ({
         const res = received.data.data?.channelMemberEdition
         await dispatch(setChannelMembersInformations(res.channelId))
       }
+    },
+    onError: (e) => {
+      console.log(
+        'Error in AppPrivate.subscription.tsx subscriptionOnChannelMemberEdition : ',
+        e
+      )
+      setLoadingSubscription((prevLoading) => ({
+        ...prevLoading,
+        isError: true
+      }))
     }
   })
 
@@ -274,6 +316,16 @@ const AppPrivateSubscription: React.FC<AppPrivateSubscriptionProps> = ({
         const res = received.data.data?.channelMemberDeletion
         await dispatch(setChannelMembersInformations(res.channelId))
       }
+    },
+    onError: (e) => {
+      console.log(
+        'Error in AppPrivate.subscription.tsx subscriptionOnChannelMemberDeletion : ',
+        e
+      )
+      setLoadingSubscription((prevLoading) => ({
+        ...prevLoading,
+        isError: true
+      }))
     }
   })
 
@@ -288,13 +340,23 @@ const AppPrivateSubscription: React.FC<AppPrivateSubscriptionProps> = ({
         const res = received.data.data?.channelInvitedCreation
         await dispatch(setChannelInvitedsInformations(res.channelId))
       }
+    },
+    onError: (e) => {
+      console.log(
+        'Error in AppPrivate.subscription.tsx subscriptionOnChannelInvitedCreation : ',
+        e
+      )
+      setLoadingSubscription((prevLoading) => ({
+        ...prevLoading,
+        isError: true
+      }))
     }
   })
 
   const { error: errorChannelInvitedDeletion } = useSubscription<
     ChannelInvitedDeletionSubscription,
     ChannelInvitedDeletionSubscriptionVariables
-  >(subscriptionOnChannelEdition, {
+  >(subscriptionOnChannelInvitedDeletion, {
     variables: { channelInvitedDeletionId: userId },
     onData: async (received) => {
       console.log('ChannelInvitedDeletion')
@@ -302,6 +364,16 @@ const AppPrivateSubscription: React.FC<AppPrivateSubscriptionProps> = ({
         const res = received.data.data?.channelInvitedDeletion
         await dispatch(setChannelInvitedsInformations(res.channelId))
       }
+    },
+    onError: (e) => {
+      console.log(
+        'Error in AppPrivate.subscription.tsx subscriptionOnChannelInvitedDeletion : ',
+        e
+      )
+      setLoadingSubscription((prevLoading) => ({
+        ...prevLoading,
+        isError: true
+      }))
     }
   })
 
@@ -316,6 +388,16 @@ const AppPrivateSubscription: React.FC<AppPrivateSubscriptionProps> = ({
         const res = received.data.data?.channelBlockedCreation
         await dispatch(setChannelBlockedsInformations(res.channelId))
       }
+    },
+    onError: (e) => {
+      console.log(
+        'Error in AppPrivate.subscription.tsx subscriptionOnChannelBlockedCreation : ',
+        e
+      )
+      setLoadingSubscription((prevLoading) => ({
+        ...prevLoading,
+        isError: true
+      }))
     }
   })
 
@@ -330,6 +412,16 @@ const AppPrivateSubscription: React.FC<AppPrivateSubscriptionProps> = ({
         const res = received.data.data?.channelBlockedDeletion
         await dispatch(setChannelBlockedsInformations(res.channelId))
       }
+    },
+    onError: (e) => {
+      console.log(
+        'Error in AppPrivate.subscription.tsx subscriptionOnChannelBlockedDeletion : ',
+        e
+      )
+      setLoadingSubscription((prevLoading) => ({
+        ...prevLoading,
+        isError: true
+      }))
     }
   })
 

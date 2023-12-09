@@ -248,7 +248,6 @@ export const setChannelMembersInformations = createAsyncThunk(
             return existingChannelInfo
           }
         )
-
         return updatedChannelsInfos
       }
       return channelsInfos

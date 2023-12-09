@@ -26,7 +26,7 @@ export const setUserInformations = createAsyncThunk(
       user = { ...user, avatarUrl: await validateAvatarUrl(user.avatarUrl) }
       return user
     } catch (e) {
-      console.log('error setUserInformations: ', e)
+      console.log('Error in setUserInformations: ', e)
       throw e
     }
   }
@@ -47,4 +47,3 @@ export const userInformationsSlice = createSlice({
 })
 
 export default userInformationsSlice.reducer
-

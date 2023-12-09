@@ -1,7 +1,5 @@
 import React, { useState } from 'react'
 import {
-  Channel,
-  ChannelMember,
   ChannelMessage,
   FindAllChannelMessageInChannelQuery,
   FindAllChannelMessageInChannelQueryVariables
@@ -9,25 +7,29 @@ import {
 import { useQuery } from '@apollo/client'
 import { queryFindAllChannelMessageInChannel } from '../graphql'
 import ChannelChat from './ChannelChat'
+import { ChannelAndChannelMember } from '../../store/slices/channel-informations.slice'
 interface ChannelProps {
-  channel: Channel
-  channelMemberUser: ChannelMember
-  channelMembers: ChannelMember[]
+  channelsInfos: ChannelAndChannelMember[]
+  channelId: string
 }
 
 const ChannelComponent: React.FC<ChannelProps> = ({
-  channel,
-  channelMemberUser,
-  channelMembers
+  channelsInfos,
+  channelId
 }) => {
   const [chat, setChat] = useState<ChannelMessage[]>([])
+  const channelInfo = channelsInfos.find(
+    (channelInfo) => channelInfo.channel.id === channelId
+  )
+
+  if (!channelInfo) throw new Error()
 
   try {
     const { loading, error } = useQuery<
       FindAllChannelMessageInChannelQuery,
       FindAllChannelMessageInChannelQueryVariables
     >(queryFindAllChannelMessageInChannel, {
-      variables: { channelId: channel.id },
+      variables: { channelId },
       fetchPolicy: 'network-only',
       onCompleted: (result) => {
         setChat([...result.findAllChannelMessageInChannel].reverse() || [])
@@ -37,7 +39,7 @@ const ChannelComponent: React.FC<ChannelProps> = ({
     return (
       <>
         <div>
-          <h2>{channel.name}</h2>
+          <h2>{channelInfo.channel.name}</h2>
           {loading && <p>Loading conversation...</p>}
           {error && (
             <p>
@@ -46,11 +48,10 @@ const ChannelComponent: React.FC<ChannelProps> = ({
             </p>
           )}
           <ChannelChat
-            channel={channel}
-            channelMemberUser={channelMemberUser}
-            channelMembers={channelMembers}
+            channelsInfos={channelsInfos}
+            channelId={channelId}
             chatState={{ chat, setChat }}
-            key={channel.id}
+            key={channelInfo.channel.id}
           />
         </div>
       </>

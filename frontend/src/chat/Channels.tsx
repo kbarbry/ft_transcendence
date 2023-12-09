@@ -27,12 +27,20 @@ const Channels: React.FC = () => {
   const channelsInfos = useAppSelector(
     (state) => state.channelInformations.channelsInfos
   )
-
   if (!user || !channelsInfos) throw new Error()
 
   const [selectedChannel, setSelectedChannel] =
     useState<ChannelAndChannelMember | null>(null)
   const [channelNameInput, setChannelNameInput] = useState<string>('')
+
+  if (
+    selectedChannel &&
+    !channelsInfos.find(
+      (channelInfos) => channelInfos.channel.id === selectedChannel.channel.id
+    )
+  ) {
+    setSelectedChannel(null)
+  }
 
   const [createChannel] = useMutation<
     CreateChannelMutation,
@@ -128,10 +136,9 @@ const Channels: React.FC = () => {
         <div>
           {selectedChannel ? (
             <Channel
+              channelsInfos={channelsInfos}
+              channelId={selectedChannel.channel.id}
               key={selectedChannel.channel.id}
-              channel={selectedChannel.channel}
-              channelMemberUser={selectedChannel.channelMemberUser}
-              channelMembers={selectedChannel.channelMembers}
             />
           ) : (
             <p>select a channel to start chatting</p>

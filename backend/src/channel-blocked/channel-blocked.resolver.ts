@@ -29,7 +29,7 @@ export class ChannelBlockedResolver {
     @Args('id', { type: () => String }, NanoidValidationPipe)
     id: string
   ) {
-    console.log('channelBlockedEdition sub')
+    console.log('channelBlockedCreation sub')
     return this.pubSub.asyncIterator('channelBlockedCreation-' + id)
   }
 
