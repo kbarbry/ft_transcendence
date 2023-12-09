@@ -1,8 +1,4 @@
 import React from 'react'
-//enter a username
-//click on button
-//it listen to the matchmakingSubscription
-//once subscription is received it send mutation to join matchmaking
 
 type Props = {
   username: string

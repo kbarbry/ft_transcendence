@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { WaitingGame } from './waiting-game'
-import { GameSelection } from './username-form'
+import { GameSelection } from './game-selection'
 
 type Props = {
   username: string

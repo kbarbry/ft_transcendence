@@ -138,15 +138,8 @@ export class PongGameService {
     return false
   }
 
-  //update data of every game where gameRunning is true
   async gamesUpdate() {
     for (const [gameId, game] of gamesMap) {
-      // console.log(
-      //   'gamesUpdate: gameId = ' +
-      //     game.gameId +
-      //     ', isRuuning = ' +
-      //     game.isRunning
-      // )
       if (!game.isRunning) {
         //TODO check for how many time the game is innactive and delete it if needed
         continue

@@ -8,13 +8,8 @@ type Props = {
 }
 
 export const SubMatchmaking: React.FC<Props> = (props: Props) => {
-  console.log('SubMatchmaking:')
-
   function listenMatchmaking(options: OnDataOptions<any>) {
     let res = options.data.data.matchmakingNotification
-    console.log(
-      'SubMatchmaking: listenMatchmaking: res = ' + JSON.stringify(res)
-    )
     props.setGameId(res)
   }
 
