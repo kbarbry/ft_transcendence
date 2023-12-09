@@ -110,7 +110,6 @@ export class PongGameResolver {
     @Args('playerId', { type: () => String }) playerId: string,
     @Args('controls', { type: () => ControlsInput }) controls: ControlsInput
   ): Promise<boolean> {
-    console.log('Resolver: updatePlayerInputs:')
     const isInputUpdated: boolean = this.pongService.setPlayerInputs(
       gameId,
       playerId,
