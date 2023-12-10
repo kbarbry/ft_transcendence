@@ -1,24 +1,26 @@
 import React, { useState } from 'react'
 import { Pong } from '../game/Pong'
 import { Matchmaking } from '../matchmaking/matchmaking'
+import { useAppSelector } from '../../store/hooks'
 
 // NOTE pour update les infos en fin de partie :
 // changer le lev en bdd
 // dispatch(setUserInformations())
 
 export const Game: React.FC = () => {
-  const [username, setUsername] = useState('')
-  const [gameId, setGameId] = useState<string | null>(null)
+  const username: string | undefined = useAppSelector(
+    (state) => state.userInformations.user?.username
+  )
+
+  if (username === undefined) {
+    return <p>Error : Username is not set.</p>
+  }
+
+  const [gameId, setGameId] = useState<string | null>(null) //TODO use store instead
 
   console.log('Game: gameId = ' + gameId)
   function quitGame() {
     setGameId(null)
-  }
-
-  function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
-    setUsername(event.target.value)
-    console.log('handleChange')
-    event.preventDefault()
   }
 
   if (gameId !== null) {
@@ -26,11 +28,7 @@ export const Game: React.FC = () => {
   }
   return (
     <>
-      <Matchmaking
-        username={username}
-        handleChange={handleChange}
-        setGameId={setGameId}
-      />
+      <Matchmaking username={username} setGameId={setGameId} />
     </>
   )
 }

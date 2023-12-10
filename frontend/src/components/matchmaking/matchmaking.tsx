@@ -4,7 +4,6 @@ import { GameSelection } from './game-selection'
 
 type Props = {
   username: string
-  handleChange: (event: React.ChangeEvent<HTMLInputElement>) => void
   setGameId: React.Dispatch<React.SetStateAction<string | null>>
 }
 
@@ -15,11 +14,7 @@ export const Matchmaking: React.FC<Props> = (props) => {
   if (gameType === null) {
     return (
       <>
-        <GameSelection
-          username={props.username}
-          handleChange={props.handleChange}
-          setGameType={setGameType}
-        />
+        <GameSelection username={props.username} setGameType={setGameType} />
       </>
     )
   }
