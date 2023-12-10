@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { Pong } from '../game/Pong'
-import { Matchmaking } from '../matchmaking/Matchmaking'
+import { Matchmaking } from '../matchmaking/matchmaking'
 
 // NOTE pour update les infos en fin de partie :
 // changer le lev en bdd
