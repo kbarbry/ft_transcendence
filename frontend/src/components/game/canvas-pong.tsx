@@ -1,5 +1,11 @@
 import { useEffect, useRef } from 'react'
-import { drawBall, drawRackets, drawScores, drawTime } from './draw-elements'
+import {
+  drawBall,
+  drawRackets,
+  drawScores,
+  drawTime,
+  drawWinner
+} from './draw-elements'
 import { ControlsInput, PongGame } from '../../gql/graphql'
 import { ControlsUpdate } from './controls-update'
 
@@ -80,8 +86,16 @@ export const CanvasPong: React.FC<Props> = (props: Props) => {
       0,
       0,
       pongGameData.playfield.width,
-      pongGameData.playfield.width
+      pongGameData.playfield.height
     )
+    ctx.fillStyle = 'black'
+    ctx.fillRect(
+      0,
+      0,
+      pongGameData.playfield.width,
+      pongGameData.playfield.height
+    )
+    ctx.fillStyle = 'ghostwhite'
     drawTime(ctx, elapsed)
     if (pongGameData.player1 && pongGameData.player2) {
       drawScores(ctx, pongGameData.player1.score, pongGameData.player2.score)
@@ -91,12 +105,33 @@ export const CanvasPong: React.FC<Props> = (props: Props) => {
     drawRackets(ctx, pongGameData.p2racket)
   }
 
+  function drawWinScreen(ctx: CanvasRenderingContext2D, winner: String) {
+    if (pongGameData === null) {
+      return
+    }
+    ctx.clearRect(
+      0,
+      0,
+      pongGameData.playfield.width,
+      pongGameData.playfield.height
+    )
+    ctx.fillStyle = 'black'
+    ctx.fillRect(
+      0,
+      0,
+      pongGameData.playfield.width,
+      pongGameData.playfield.height
+    )
+    ctx.fillStyle = 'ghostwhite'
+    ctx!.font = '50px sans-serif'
+    drawWinner(ctx, winner)
+  }
+
   useEffect(() => {
     function frameStep(timeStamp: DOMHighResTimeStamp) {
       pongGameData = props.getPongData()
       elapsed = timeStamp - start
 
-      //code here
       if (canvasRef.current) {
         canvasCtxRef.current = canvasRef.current.getContext('2d')
         let ctx = canvasCtxRef.current
@@ -104,7 +139,11 @@ export const CanvasPong: React.FC<Props> = (props: Props) => {
         ctx!.font = '100px sans-serif'
         ctx!.textAlign = 'center'
 
-        drawElements(ctx!)
+        if (pongGameData?.winner) {
+          drawWinScreen(ctx!, pongGameData.winner)
+        } else {
+          drawElements(ctx!)
+        }
       }
 
       previousTimeStamp = timeStamp

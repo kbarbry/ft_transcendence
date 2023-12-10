@@ -25,4 +25,9 @@ function drawBall(ctx: CanvasRenderingContext2D, ball: Ball) {
   ctx.closePath()
 }
 
-export { drawTime, drawScores, drawRackets, drawBall }
+function drawWinner(ctx: CanvasRenderingContext2D, winner: String) {
+  let text: string = 'Winner is : ' + winner
+  ctx.fillText(text, 400, 300)
+}
+
+export { drawTime, drawScores, drawRackets, drawBall, drawWinner }

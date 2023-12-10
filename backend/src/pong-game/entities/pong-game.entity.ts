@@ -1,4 +1,4 @@
-import { ObjectType, Field, Int, InputType } from '@nestjs/graphql'
+import { ObjectType, Field, Int } from '@nestjs/graphql'
 
 @ObjectType()
 class playfield {
@@ -147,6 +147,16 @@ export class PongGame {
       this.ball.hPos = this.playfield.width / 2
       this.ball.vPos = this.playfield.height / 2 - this.ball.radius
       this.player2.score += 1
+    }
+    //TODO set winner and handle vicotry at 12 points
+    if (this.player1.score === 12) {
+      this.winner = this.player1.nickname
+      this.isRunning = false
+      return
+    } else if (this.player2.score === 12) {
+      this.winner = this.player2.nickname
+      this.isRunning = false
+      return
     }
     //  ball racket1 collision
     if (
