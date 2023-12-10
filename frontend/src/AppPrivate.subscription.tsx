@@ -22,7 +22,7 @@ import { Welcome } from './Test/Test_welcome'
 import { Link, Route, Switch } from 'wouter'
 import { Settings } from './auth/2fa/settings'
 import { NotFound } from './ErrorPages/404'
-import { Game } from './Test/Test_game'
+import { Game } from './components/pages/game'
 import { Home } from './home/Home'
 
 import { setRequestReceivedInformations } from './store/slices/request-received-informations.slice'
