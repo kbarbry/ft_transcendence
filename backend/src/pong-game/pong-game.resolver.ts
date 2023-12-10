@@ -39,36 +39,6 @@ export class PongGameResolver {
   //**************************************************//
   //  MUTATION
   //**************************************************//
-  @Mutation(() => String) //TODO delete this mutation
-  async testPongSubscribeMessage(
-    @Args('playerId', { type: () => String }) playerId: string
-  ): Promise<string> {
-    const res = 'gameId' + playerId
-    const triggerName = 'queue' + playerId
-
-    console.log(
-      'Mutation: testPongSubscribeMessage: triggerName = ' + triggerName
-    )
-    await this.pubSub.publish(triggerName, { data: res })
-    return triggerName
-  }
-
-  @Mutation(() => String) //TODO delete this mutation
-  async testPongDataSubscribtion(
-    @Args('gameId', { type: () => String }) gameId: string
-  ): Promise<string> {
-    const res: PongGame = new PongGame(
-      'idTestGame',
-      'playerOne',
-      'playerOne',
-      'playerTwo',
-      'playerTwo'
-    )
-
-    console.log('Mutation: testPongDataSubscribtion: gameId = ' + gameId)
-    await this.pubSub.publish(gameId, { data: res })
-    return JSON.stringify(PongGame)
-  }
 
   @Mutation(() => Boolean)
   async addPlayerToMatchmakingQueue(
