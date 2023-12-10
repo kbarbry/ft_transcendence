@@ -4,6 +4,7 @@ import { GameSelection } from './game-selection'
 
 type Props = {
   username: string
+  playerId: string
   setGameId: React.Dispatch<React.SetStateAction<string | null>>
 }
 
@@ -18,5 +19,11 @@ export const Matchmaking: React.FC<Props> = (props) => {
       </>
     )
   }
-  return <WaitingGame username={props.username} setGameId={props.setGameId} />
+  return (
+    <WaitingGame
+      username={props.username}
+      playerId={props.playerId}
+      setGameId={props.setGameId}
+    />
+  )
 }

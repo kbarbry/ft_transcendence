@@ -7,6 +7,7 @@ import {
 
 type Props = {
   username: string
+  playerId: string
   setGameId: React.Dispatch<React.SetStateAction<string | null>>
 }
 
@@ -29,7 +30,7 @@ export const QueueStatus: React.FC<Props> = (props: Props) => {
     <button
       onClick={() => {
         addPlayerToMatchmaking({
-          variables: { nickname: props.username, playerId: props.username }
+          variables: { nickname: props.username, playerId: props.playerId }
         })
       }}
     >

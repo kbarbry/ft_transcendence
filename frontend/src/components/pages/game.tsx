@@ -11,8 +11,11 @@ export const Game: React.FC = () => {
   const username: string | undefined = useAppSelector(
     (state) => state.userInformations.user?.username
   )
+  const playerId: string | undefined = useAppSelector(
+    (state) => state.userInformations.user?.id
+  )
 
-  if (username === undefined) {
+  if (username === undefined || playerId === undefined) {
     return <p>Error : Username is not set.</p>
   }
 
@@ -28,7 +31,11 @@ export const Game: React.FC = () => {
   }
   return (
     <>
-      <Matchmaking username={username} setGameId={setGameId} />
+      <Matchmaking
+        username={username}
+        playerId={playerId}
+        setGameId={setGameId}
+      />
     </>
   )
 }

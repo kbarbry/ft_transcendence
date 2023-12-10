@@ -10,6 +10,7 @@ import {
 
 type Props = {
   username: string
+  playerId: string
   setGameId: React.Dispatch<React.SetStateAction<string | null>>
 }
 
@@ -23,7 +24,7 @@ export const WaitingGame: React.FC<Props> = (props: Props) => {
     MatchmakingNotificationSubscription,
     MatchmakingNotificationSubscriptionVariables
   >(matchmakingNotification, {
-    variables: { playerId: props.username },
+    variables: { playerId: props.playerId },
     onData: listenMatchmaking
   })
 
@@ -34,7 +35,11 @@ export const WaitingGame: React.FC<Props> = (props: Props) => {
     return (
       <>
         <h1>Waiting Game</h1>
-        <QueueStatus username={props.username} setGameId={props.setGameId} />
+        <QueueStatus
+          username={props.username}
+          playerId={props.playerId}
+          setGameId={props.setGameId}
+        />
       </>
     )
   }
