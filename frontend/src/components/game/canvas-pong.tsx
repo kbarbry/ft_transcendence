@@ -1,7 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { drawBall, drawRackets, drawScores, drawTime } from './draw-elements'
 import { ControlsInput, PongGame } from '../../gql/graphql'
-import { SubPong } from './subPong'
 import { ControlsUpdate } from './controls-update'
 
 let start: DOMHighResTimeStamp
@@ -10,6 +9,7 @@ let previousTimeStamp: DOMHighResTimeStamp
 type Props = {
   gameId: string
   playerId: string
+  getPongData: () => PongGame | null
 }
 
 export const CanvasPong: React.FC<Props> = (props: Props) => {
@@ -30,10 +30,6 @@ export const CanvasPong: React.FC<Props> = (props: Props) => {
 
   function getControls() {
     return controls
-  }
-
-  function setPongGameData(pongData: PongGame) {
-    pongGameData = pongData
   }
 
   function keyDownHandler(e: KeyboardEvent) {
@@ -99,6 +95,7 @@ export const CanvasPong: React.FC<Props> = (props: Props) => {
 
   useEffect(() => {
     function frameStep(timeStamp: DOMHighResTimeStamp) {
+      pongGameData = props.getPongData()
       elapsed = timeStamp - start
 
       //code here
@@ -129,7 +126,6 @@ export const CanvasPong: React.FC<Props> = (props: Props) => {
 
   return (
     <>
-      <SubPong gameId={props.gameId} updateGameElement={setPongGameData} />
       <ControlsUpdate
         getControls={getControls}
         gameId={props.gameId}
