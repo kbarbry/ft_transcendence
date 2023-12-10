@@ -52,7 +52,11 @@ export class ChannelMessageService {
     return this.prisma.channelMessage.findMany({
       where: {
         channelId
-      }
+      },
+      orderBy: {
+        createdAt: 'desc'
+      },
+      take: 50
     })
   }
 
@@ -63,7 +67,11 @@ export class ChannelMessageService {
     return this.prisma.channelMessage.findMany({
       where: {
         AND: [{ channelId, senderId }]
-      }
+      },
+      orderBy: {
+        createdAt: 'desc'
+      },
+      take: 50
     })
   }
 
@@ -79,7 +87,11 @@ export class ChannelMessageService {
             content: { contains: containingText }
           }
         ]
-      }
+      },
+      orderBy: {
+        createdAt: 'desc'
+      },
+      take: 50
     })
   }
 }

@@ -10,8 +10,8 @@ export const sessionConfig = session({
   unset: 'destroy',
   cookie: {
     sameSite: 'lax',
-    httpOnly: false, //todo set true
-    maxAge: 60000,
+    httpOnly: true,
+    maxAge: 60 * 60 * 1000,
     secure: 'auto',
     signed: true,
     path: '/'

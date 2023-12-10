@@ -23,3 +23,12 @@ export class ExceptionBlockedYourself extends HttpException {
     super('You can not block yourself', HttpStatus.CONFLICT)
   }
 }
+
+export class ExceptionRelationBlockedForbiddenAccess extends HttpException {
+  constructor() {
+    super(
+      "You are trying to reach data that you're not authorized to access or edit",
+      HttpStatus.CONFLICT
+    )
+  }
+}

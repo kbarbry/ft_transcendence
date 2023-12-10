@@ -6,7 +6,8 @@ import {
   IsOptional,
   IsUrl,
   Length,
-  Min
+  Min,
+  isString
 } from 'class-validator'
 import { CustomIsName } from '../../common/pipes/username.pipe'
 
@@ -28,6 +29,10 @@ export class UpdateUserInput {
       '$property must be between 1 and 30 characters long and must only contain letters, number and single spaces.'
   })
   username?: string
+
+  @Field(() => Boolean)
+  @IsOptional()
+  doubleA?: boolean
 
   @Field(() => EStatus, { nullable: true })
   @IsOptional()

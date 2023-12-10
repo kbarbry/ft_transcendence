@@ -1,46 +1,33 @@
 import React from 'react'
-import './App.css'
-import { Link, Route, Switch } from 'wouter'
-import Authentication from './auth/Authentication'
+import { AuthProvider, useAuth } from './auth/AuthContext'
+import App_private from './App_private'
+import App_public from './App_public'
+import { ConfigProvider, theme } from 'antd'
 
-import { Login } from './auth/Login/LoginForm'
-import { Signup } from './auth/Signup/SignupForm'
-import { Home } from './home/Home'
-import { NotFound } from './ErrorPages/404'
-import { FindUser } from './auth/IsAuth'
-import PrivateMessage from './chat/PrivateMessage'
+const App: React.FC = () => {
+  const authenticated = useAuth()
 
-function App() {
   return (
-    <div className='App'>
-      <Link href='/home'>
-        <a>Home</a>
-      </Link>
-      <br />
-      <Link href='/chat'>
-        <a>Chat Discussion</a>
-      </Link>
-      <br />
-      <Link href='/testUser'>
-        <a>Test getUser</a>
-      </Link>
-      <p></p>
-      <Link href='/'>
-        <a>Auth</a>
-      </Link>
-      <br></br>
-      <br></br>
-      <Switch>
-        <Route path='/' component={Authentication} />
-        <Route path='/login' component={Login} />
-        <Route path='/signup' component={Signup} />
-        <Route path='/home' component={Home} />
-        <Route path='/chat' component={PrivateMessage} />
-        <Route path='/testUser' component={FindUser} />
-        <Route component={NotFound} />
-      </Switch>
+    <div>
+      {authenticated ? (
+        <App_private />
+      ) : (
+        <>
+          <App_public />
+        </>
+      )}
     </div>
   )
 }
 
-export default App
+const AppWithAuthProvider = () => {
+  return (
+    <AuthProvider>
+      <ConfigProvider theme={{ algorithm: theme.darkAlgorithm }}>
+        <App />
+      </ConfigProvider>
+    </AuthProvider>
+  )
+}
+
+export default AppWithAuthProvider

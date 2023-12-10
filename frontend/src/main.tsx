@@ -13,14 +13,20 @@ import { GraphQLWsLink } from '@apollo/client/link/subscriptions'
 import { createClient } from 'graphql-ws'
 import { getMainDefinition } from '@apollo/client/utilities'
 import { Provider } from 'react-redux'
-import { store } from './store/store.tsx'
+import { persistor, store } from './store/store.tsx'
+import { PersistGate } from 'redux-persist/integration/react'
 
 const httpLink = new HttpLink({
   uri: 'http://127.0.0.1:3000/graphql',
   credentials: 'include'
 })
 const wsLink = new GraphQLWsLink(
-  createClient({ url: 'ws://127.0.0.1:3000/graphql' })
+  createClient({
+    url: 'ws://127.0.0.1:3000/graphql',
+    connectionParams: {
+      credentials: 'include'
+    }
+  })
 )
 const splitLink = split(
   ({ query }) => {
@@ -34,7 +40,7 @@ const splitLink = split(
   httpLink
 )
 
-const client = new ApolloClient({
+export const client = new ApolloClient({
   link: splitLink,
   cache: new InMemoryCache()
 })
@@ -43,7 +49,9 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <ApolloProvider client={client}>
       <Provider store={store}>
-        <App />
+        <PersistGate loading={null} persistor={persistor}>
+          <App />
+        </PersistGate>
       </Provider>
     </ApolloProvider>
   </React.StrictMode>

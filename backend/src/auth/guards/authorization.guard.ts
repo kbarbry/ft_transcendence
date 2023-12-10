@@ -7,21 +7,42 @@ import {
 import { EMemberType } from '@prisma/client'
 import { PrismaService } from '../../prisma/prisma.service'
 import { GqlExecutionContext } from '@nestjs/graphql'
+import { SetMetadata } from '@nestjs/common'
+import { Reflector } from '@nestjs/core'
 
 @Injectable()
 export class AuthorizationGuard implements CanActivate {
+  constructor(private readonly reflector: Reflector) {}
+
   async canActivate(context: GqlExecutionContext) {
     try {
+      const isUnprotected = this.reflector.get<boolean>(
+        'unprotected',
+        context.getHandler()
+      )
+      const isUnprotected2fa = this.reflector.get<boolean>(
+        'unprotected2fa',
+        context.getHandler()
+      )
+
+      if (isUnprotected) {
+        return true // Skip guard for operations marked as unprotected
+      }
+
       const gqlContext = GqlExecutionContext.create(context)
       const request = gqlContext.getContext().req
 
-      if (request.user) return true
+      if (isUnprotected2fa && request.user) return true
+      if (request.user && request.user.validation2fa === true) return true
       throw new UnauthorizedException('User not authenticated')
     } catch (e) {
       throw new UnauthorizedException('User authentication failed')
     }
   }
 }
+
+export const Unprotected = () => SetMetadata('unprotected', true)
+export const Unprotected2fa = () => SetMetadata('unprotected2fa', true)
 
 @Injectable()
 export class ChannelAdminGuard implements CanActivate {
@@ -30,7 +51,6 @@ export class ChannelAdminGuard implements CanActivate {
     try {
       const request = context.switchToHttp().getRequest()
       const userId = request?.user?.id as string
-      console.log(request)
       // wrong data, must be tested
       const channelId = request?.params?.channelId as string
 
@@ -62,7 +82,6 @@ export class ChannelOwnerGuard implements CanActivate {
     try {
       const request = context.switchToHttp().getRequest()
       const userId = request?.user?.id as string
-      console.log(request)
       // wrong data, must be tested
       const channelId = request?.params?.channelId as string
 

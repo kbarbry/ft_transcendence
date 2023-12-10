@@ -1,4 +1,11 @@
-import { Resolver, Query, Mutation, Args, Subscription } from '@nestjs/graphql'
+import {
+  Resolver,
+  Query,
+  Mutation,
+  Args,
+  Subscription,
+  Context
+} from '@nestjs/graphql'
 import { PrivateMessageService } from './private-message.service'
 import { PrivateMessage } from './entities/private-message.entity'
 import { CreatePrivateMessageInput } from './dto/create-private-message.input'
@@ -6,8 +13,15 @@ import { UseGuards, ValidationPipe } from '@nestjs/common'
 import { UpdatePrivateMessageInput } from './dto/update-private-message.input'
 import { NanoidValidationPipe } from '../common/pipes/nanoid.pipe'
 import { StringValidationPipe } from '../common/pipes/string.pipe'
-import { AuthorizationGuard } from '../auth/guards/authorization.guard'
+import {
+  AuthorizationGuard,
+  Unprotected
+} from '../auth/guards/authorization.guard'
 import { PubSub } from 'graphql-subscriptions'
+import {
+  ExceptionPrivateMessageDoesNotExist,
+  ExceptionPrivateMessageForbiddenAccess
+} from '../channel/exceptions/private-message.exception'
 
 @Resolver(() => PrivateMessage)
 @UseGuards(AuthorizationGuard)
@@ -16,14 +30,62 @@ export class PrivateMessageResolver {
     private readonly privateMessageService: PrivateMessageService,
     private readonly pubSub: PubSub
   ) {}
+
   //**************************************************//
   //  SUBSCRIPTION
   //**************************************************//
   @Subscription(() => PrivateMessage, {
     resolve: (payload) => (payload?.res !== undefined ? payload.res : null)
   })
-  privateMessageCreation() {
-    return this.pubSub.asyncIterator('messageReceived')
+  @Unprotected()
+  privateMessageCreation(
+    @Args('senderId', { type: () => String }, NanoidValidationPipe)
+    senderId: string,
+    @Args('receiverId', { type: () => String }, NanoidValidationPipe)
+    receiverId: string
+  ) {
+    const [notificationSenderId, notificationReceiverId] =
+      senderId > receiverId ? [receiverId, senderId] : [senderId, receiverId]
+    console.log('privateMessageCreation')
+    return this.pubSub.asyncIterator(
+      'messageReceived-' + notificationSenderId + notificationReceiverId
+    )
+  }
+
+  @Subscription(() => PrivateMessage, {
+    resolve: (payload) => (payload?.res !== undefined ? payload.res : null)
+  })
+  @Unprotected()
+  privateMessageEdition(
+    @Args('senderId', { type: () => String }, NanoidValidationPipe)
+    senderId: string,
+    @Args('receiverId', { type: () => String }, NanoidValidationPipe)
+    receiverId: string
+  ) {
+    const [notificationSenderId, notificationReceiverId] =
+      senderId > receiverId ? [receiverId, senderId] : [senderId, receiverId]
+    console.log('privateMessageEdition')
+    return this.pubSub.asyncIterator(
+      'messageEdited-' + notificationSenderId + notificationReceiverId
+    )
+  }
+
+  @Subscription(() => PrivateMessage, {
+    resolve: (payload) => (payload?.res !== undefined ? payload.res : null)
+  })
+  @Unprotected()
+  privateMessageDeletion(
+    @Args('senderId', { type: () => String }, NanoidValidationPipe)
+    senderId: string,
+    @Args('receiverId', { type: () => String }, NanoidValidationPipe)
+    receiverId: string
+  ) {
+    const [notificationSenderId, notificationReceiverId] =
+      senderId > receiverId ? [receiverId, senderId] : [senderId, receiverId]
+    console.log('privateMessageDeletion')
+    return this.pubSub.asyncIterator(
+      'messageDeleted-' + notificationSenderId + notificationReceiverId
+    )
   }
 
   //**************************************************//
@@ -32,11 +94,24 @@ export class PrivateMessageResolver {
   @Mutation(() => PrivateMessage)
   async createPrivateMessage(
     @Args('data', { type: () => CreatePrivateMessageInput }, ValidationPipe)
-    data: CreatePrivateMessageInput
+    data: CreatePrivateMessageInput,
+    @Context() ctx: any
   ): Promise<PrivateMessage> {
-    const res = await this.privateMessageService.create(data)
+    if (ctx?.req?.user?.id !== data.senderId)
+      throw new ExceptionPrivateMessageForbiddenAccess()
 
-    await this.pubSub.publish('messageReceived', { res })
+    const { senderId, receiverId } = data
+    const [notificationSenderId, notificationReceiverId] =
+      senderId > receiverId ? [receiverId, senderId] : [senderId, receiverId]
+
+    const res = await this.privateMessageService.create(data)
+    console.log('createPrivateMessage')
+
+    await this.pubSub.publish(
+      'messageReceived-' + notificationSenderId + notificationReceiverId,
+      { res }
+    )
+
     return res
   }
 
@@ -45,16 +120,52 @@ export class PrivateMessageResolver {
     @Args('id', { type: () => String }, NanoidValidationPipe)
     id: string,
     @Args('data', { type: () => UpdatePrivateMessageInput }, ValidationPipe)
-    data: UpdatePrivateMessageInput
+    data: UpdatePrivateMessageInput,
+    @Context() ctx: any
   ): Promise<PrivateMessage> {
-    return this.privateMessageService.update(id, data)
+    const msg = await this.findOnePrivateMessage(id)
+    if (!msg) throw new ExceptionPrivateMessageDoesNotExist()
+
+    if (ctx?.req?.user?.id !== msg.senderId)
+      throw new ExceptionPrivateMessageForbiddenAccess()
+
+    const { senderId, receiverId } = msg
+    const [notificationSenderId, notificationReceiverId] =
+      senderId > receiverId ? [receiverId, senderId] : [senderId, receiverId]
+
+    const res = await this.privateMessageService.update(id, data)
+    console.log('updatePrivateMessage')
+
+    await this.pubSub.publish(
+      'messageEdited-' + notificationSenderId + notificationReceiverId,
+      { res }
+    )
+    return res
   }
 
   @Mutation(() => PrivateMessage)
   async deletePrivateMessage(
-    @Args('id', { type: () => String }, NanoidValidationPipe) id: string
+    @Args('id', { type: () => String }, NanoidValidationPipe) id: string,
+    @Context() ctx: any
   ): Promise<PrivateMessage> {
-    return this.privateMessageService.delete(id)
+    const msg = await this.findOnePrivateMessage(id)
+    if (!msg) throw new ExceptionPrivateMessageDoesNotExist()
+
+    if (ctx?.req?.user?.id !== msg.senderId)
+      throw new ExceptionPrivateMessageForbiddenAccess()
+
+    const { senderId, receiverId } = msg
+    const [notificationSenderId, notificationReceiverId] =
+      senderId > receiverId ? [receiverId, senderId] : [senderId, receiverId]
+
+    const res = await this.privateMessageService.delete(id)
+    console.log('deletePrivateMessage')
+
+    await this.pubSub.publish(
+      'messageDeleted-' + notificationSenderId + notificationReceiverId,
+      { res }
+    )
+    return res
   }
 
   //**************************************************//
@@ -74,6 +185,7 @@ export class PrivateMessageResolver {
     @Args('receiverId', { type: () => String }, NanoidValidationPipe)
     receiverId: string
   ): Promise<PrivateMessage[]> {
+    console.log('findAllPrivateMessageWith')
     return this.privateMessageService.findAllMessageWith(senderId, receiverId)
   }
 

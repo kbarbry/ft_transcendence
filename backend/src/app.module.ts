@@ -1,5 +1,4 @@
-import { Module } from '@nestjs/common'
-import { AppService } from './app.service'
+import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common'
 
 import { PrismaModule } from './prisma/prisma.module'
 import { ChannelModule } from './channel/channel.module'
@@ -52,19 +51,18 @@ import { PongGameModule } from './pong-game/pong-game.module'
       plugins: [ApolloServerPluginLandingPageLocalDefault()],
       subscriptions: {
         'graphql-ws': {
-          path: `/graphql`,
-          onConnect: () => {
-            console.log(`OnConnect`)
-          }
+          path: `/graphql`
         }
       }
     }),
     PassportModule.register({ session: true })
   ],
   controllers: [],
-  providers: [
-    AppService,
-    { provide: APP_FILTER, useClass: GlobalExceptionFilter }
-  ]
+  providers: [{ provide: APP_FILTER, useClass: GlobalExceptionFilter }]
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    // consumer.apply(School42AuthGuard).forRoutes('api/auth/42/redirect')
+    // consumer.apply(Check2faCompletedMiddleware).forRoutes('auth/42/redirect') // Then, apply Check2faCompletedMiddleware
+  }
+}

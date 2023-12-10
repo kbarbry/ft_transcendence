@@ -218,6 +218,14 @@ export class ChannelMemberService {
     return false
   }
 
+  async findAllChannelMemberofUser(userId: string): Promise<ChannelMember[]> {
+    return this.prisma.channelMember.findMany({
+      where: {
+        userId
+      }
+    })
+  }
+
   async findAllInChannel(channelId: string): Promise<ChannelMember[]> {
     return this.prisma.channelMember.findMany({
       where: {

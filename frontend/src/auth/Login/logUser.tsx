@@ -1,8 +1,4 @@
-export async function LogUser(
-  username: string,
-  mail: string,
-  password: string
-) {
+export async function LogUser(mail: string, password: string) {
   try {
     const response = await fetch('http://127.0.0.1:3000/api/auth/login', {
       method: 'POST',
@@ -12,7 +8,6 @@ export async function LogUser(
       credentials: 'include',
 
       body: JSON.stringify({
-        username,
         mail,
         password
       })
@@ -20,9 +15,8 @@ export async function LogUser(
     if (response.ok) {
       const userData = await response.json()
       return userData
-    }
+    } else return null
   } catch (error) {
-    console.error("Erreur lors de la création de l'utilisateur2", error)
     throw error
   }
 }
