@@ -8,37 +8,25 @@ export const pongDataSubscription = gql`
         radius
         vPos
       }
-      creationTimestamp
-      gameId
-      isRunning
+      elapsedTime
       p1racket {
         hPos
         height
         vPos
-        velocity
         width
       }
       p2racket {
         hPos
         height
         vPos
-        velocity
         width
       }
       player1 {
-        controls {
-          Down_Key
-          S_Key
-          Up_Key
-          Z_Key
-        }
-        id
         nickname
         presence
         score
       }
       player2 {
-        id
         nickname
         presence
         score
@@ -47,7 +35,7 @@ export const pongDataSubscription = gql`
         height
         width
       }
-      time
+      type
       winner
     }
   }
