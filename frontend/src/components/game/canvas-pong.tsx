@@ -34,42 +34,40 @@ export const CanvasPong: React.FC<Props> = (props: Props) => {
 
   function keyDownHandler(e: KeyboardEvent) {
     up = false
-    if (e.key == 'z') {
-      controls.Z_Key = true
-    }
-    if (e.key == 's') {
-      controls.S_Key = true
-    }
-    if (e.key == 'ArrowUp') {
-      e.preventDefault()
-      controls.Up_Key = true
-    }
-    if (e.key == 'ArrowDown') {
-      e.preventDefault()
-      controls.Down_Key = true
-    }
     if (down === false) {
-      console.log('keyDownHandler')
+      if (e.key == 'z') {
+        controls.Z_Key = true
+      }
+      if (e.key == 's') {
+        controls.S_Key = true
+      }
+      if (e.key == 'ArrowUp') {
+        e.preventDefault()
+        controls.Up_Key = true
+      }
+      if (e.key == 'ArrowDown') {
+        e.preventDefault()
+        controls.Down_Key = true
+      }
       down = true
     }
   }
 
   function keyUpHandler(e: KeyboardEvent) {
     down = false
-    if (e.key == 'z') {
-      controls.Z_Key = false
-    }
-    if (e.key == 's') {
-      controls.S_Key = false
-    }
-    if (e.key == 'ArrowUp') {
-      controls.Up_Key = false
-    }
-    if (e.key == 'ArrowDown') {
-      controls.Down_Key = false
-    }
-    if (up == false) {
-      console.log('keyUpHandler')
+    if (up === false) {
+      if (e.key == 'z') {
+        controls.Z_Key = false
+      }
+      if (e.key == 's') {
+        controls.S_Key = false
+      }
+      if (e.key == 'ArrowUp') {
+        controls.Up_Key = false
+      }
+      if (e.key == 'ArrowDown') {
+        controls.Down_Key = false
+      }
       up = true
     }
   }
