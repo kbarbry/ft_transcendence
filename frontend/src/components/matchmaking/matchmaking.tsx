@@ -9,33 +9,19 @@ type Props = {
 }
 
 export const Matchmaking: React.FC<Props> = (props) => {
-  const [gameType, setGameType] = useState('')
-
-  function gameClassic() {
-    console.log('gameClassic')
-    setGameType('Classic')
-  }
-
-  function gameExtra() {
-    setGameType('Extra')
-  }
+  const [gameType, setGameType] = useState<String | null>(null)
 
   console.log('Matchmaking: gameType = ' + gameType)
-  if (gameType !== '') {
+  if (gameType === null) {
     return (
       <>
-        <WaitingGame username={props.username} setGameId={props.setGameId} />
+        <GameSelection
+          username={props.username}
+          handleChange={props.handleChange}
+          setGameType={setGameType}
+        />
       </>
     )
   }
-  return (
-    <>
-      <GameSelection
-        username={props.username}
-        handleChange={props.handleChange}
-        gameClassic={gameClassic}
-        gameExtra={gameExtra}
-      />
-    </>
-  )
+  return <WaitingGame username={props.username} setGameId={props.setGameId} />
 }

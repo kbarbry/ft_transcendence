@@ -3,12 +3,22 @@ import React from 'react'
 type Props = {
   username: string
   handleChange: (event: React.ChangeEvent<HTMLInputElement>) => void
-  gameClassic: () => void
-  gameExtra: () => void
+  setGameType: React.Dispatch<React.SetStateAction<String | null>>
 }
 
 export const GameSelection: React.FC<Props> = (props) => {
   console.log('GameSelection')
+
+  function gameClassic() {
+    console.log('gameClassic')
+    props.setGameType('Classic')
+  }
+
+  function gameExtra() {
+    console.log('gameClassic')
+    props.setGameType('Extra')
+  }
+
   return (
     <>
       <form>
@@ -17,8 +27,8 @@ export const GameSelection: React.FC<Props> = (props) => {
           <input value={props.username} onChange={props.handleChange} />
         </label>
       </form>
-      <button onClick={props.gameClassic}>Classic Game</button>
-      <button onClick={props.gameExtra}>Extra Game</button>
+      <button onClick={gameClassic}>Classic Game</button>
+      <button onClick={gameExtra}>Extra Game</button>
     </>
   )
 }
