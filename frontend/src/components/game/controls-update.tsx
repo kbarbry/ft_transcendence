@@ -1,6 +1,10 @@
 import { useMutation } from '@apollo/client'
 import { updatePlayerInputs } from './graphql'
-import { ControlsInput } from '../../gql/graphql'
+import {
+  ControlsInput,
+  UpdatePlayerInputsMutation,
+  UpdatePlayerInputsMutationVariables
+} from '../../gql/graphql'
 
 type Props = {
   gameId: string
@@ -9,7 +13,10 @@ type Props = {
 }
 
 export const ControlsUpdate: React.FC<Props> = (props: Props) => {
-  const [updateInputs] = useMutation(updatePlayerInputs)
+  const [updateInputs] = useMutation<
+    UpdatePlayerInputsMutation,
+    UpdatePlayerInputsMutationVariables
+  >(updatePlayerInputs)
 
   function update() {
     const controls = props.getControls()

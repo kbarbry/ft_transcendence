@@ -2,7 +2,11 @@ import { CanvasPong } from './canvas-pong'
 import { ApolloError, useMutation } from '@apollo/client'
 import { readyForGame } from './graphql'
 import { useState } from 'react'
-import { PongGame } from '../../gql/graphql'
+import {
+  PongGame,
+  ReadyForGameMutation,
+  ReadyForGameMutationVariables
+} from '../../gql/graphql'
 import { SubPong } from './subPong'
 
 type Props = {
@@ -17,7 +21,10 @@ export const Pong: React.FC<Props> = (props) => {
   const [subscriptionError, setGameError] = useState<ApolloError | undefined>(
     undefined
   )
-  const [sendReady, { data, loading, error }] = useMutation(readyForGame)
+  const [sendReady, { data, loading, error }] = useMutation<
+    ReadyForGameMutation,
+    ReadyForGameMutationVariables
+  >(readyForGame)
 
   console.log(
     'Pong: data = ' +
