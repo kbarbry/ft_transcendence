@@ -1,4 +1,5 @@
 import { ObjectType, Field, Int } from '@nestjs/graphql'
+import { EGameType } from '@prisma/client'
 
 @ObjectType()
 class playfield {
@@ -27,7 +28,6 @@ class racket {
   @Field(() => Number)
   vPos = 270
 
-  @Field(() => Int)
   velocity = 6
 }
 
@@ -45,18 +45,10 @@ class ball {
   dir: { x: number; y: number } = { x: 100, y: 100 }
 }
 
-@ObjectType()
 export class Controls {
-  @Field(() => Boolean)
   Z_Key = false
-
-  @Field(() => Boolean)
   S_Key = false
-
-  @Field(() => Boolean)
   Up_Key = false
-
-  @Field(() => Boolean)
   Down_Key = false
 }
 
@@ -68,7 +60,6 @@ export class PongPlayer {
     this.presence = presence
   }
 
-  @Field(() => String)
   id: string
 
   @Field(() => String)
@@ -80,38 +71,39 @@ export class PongPlayer {
   @Field(() => Boolean)
   presence: boolean
 
-  @Field(() => Controls)
   controls = new Controls()
 }
 
 @ObjectType()
 export class PongGame {
   constructor(
+    type: EGameType,
     gameId: string,
     p1nick: string,
     p1id: string,
     p2nick: string,
     p2id: string
   ) {
+    this.type = type
     this.gameId = gameId
     this.player1 = new PongPlayer(p1nick, p1id, false)
     this.player2 = new PongPlayer(p2nick, p2id, false)
   }
 
-  @Field(() => String)
   gameId: string
 
-  @Field(() => Date)
-  creationTimestamp = new Date()
+  @Field(() => EGameType)
+  type: EGameType
 
   @Field(() => String, { nullable: true })
   winner?: string | null = null
 
-  @Field(() => Boolean)
   isRunning = false
 
+  precedentTime = performance.now()
+
   @Field(() => Number)
-  time = 0
+  elapsedTime = 0
 
   @Field(() => PongPlayer, { nullable: true })
   player1: PongPlayer
@@ -133,11 +125,12 @@ export class PongGame {
 
   update() {
     //console.log('PongGame: update(): gameId = ' + this.gameId)
+    this.precedentTime = this.elapsedTime
     const delta = 0.016
     //ball update
     //  ball playfield left and right collision
     if (this.ball.hPos > this.playfield.width - this.ball.radius) {
-      this.ball.dir.x = -this.ball.dir.x //Add random angle up and down
+      this.ball.dir.x = -this.ball.dir.x //TODO Add random angle up and down
       this.ball.hPos = this.playfield.width / 2
       this.ball.vPos = this.playfield.height / 2 - this.ball.radius
       this.player1.score += 1
@@ -148,7 +141,7 @@ export class PongGame {
       this.ball.vPos = this.playfield.height / 2 - this.ball.radius
       this.player2.score += 1
     }
-    //TODO set winner and handle vicotry at 12 points
+    // winner handle
     if (this.player1.score === 12) {
       this.winner = this.player1.nickname
       this.isRunning = false
@@ -224,5 +217,6 @@ export class PongGame {
     if (this.p2racket.vPos > this.playfield.height - this.p2racket.height) {
       this.p2racket.vPos = this.playfield.height - this.p2racket.height
     }
+    this.elapsedTime += performance.now() - this.precedentTime
   }
 }
