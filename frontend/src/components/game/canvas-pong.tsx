@@ -9,9 +9,6 @@ import {
 import { ControlsInput, PongGame } from '../../gql/graphql'
 import { ControlsUpdate } from './controls-update'
 
-let start: DOMHighResTimeStamp
-let previousTimeStamp: DOMHighResTimeStamp
-
 type Props = {
   gameId: string
   playerId: string
@@ -22,7 +19,6 @@ export const CanvasPong: React.FC<Props> = (props: Props) => {
   console.log('CanvasPong:')
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
   const canvasCtxRef = useRef<CanvasRenderingContext2D | null>(null)
-  let elapsed: DOMHighResTimeStamp
   let pongGameData: PongGame | null = null
   let up = false
   let down = false
@@ -96,7 +92,7 @@ export const CanvasPong: React.FC<Props> = (props: Props) => {
       pongGameData.playfield.height
     )
     ctx.fillStyle = 'ghostwhite'
-    drawTime(ctx, elapsed)
+    drawTime(ctx, pongGameData.elapsedTime)
     if (pongGameData.player1 && pongGameData.player2) {
       drawScores(ctx, pongGameData.player1.score, pongGameData.player2.score)
     }
@@ -128,9 +124,8 @@ export const CanvasPong: React.FC<Props> = (props: Props) => {
   }
 
   useEffect(() => {
-    function frameStep(timeStamp: DOMHighResTimeStamp) {
+    function frameStep() {
       pongGameData = props.getPongData()
-      elapsed = timeStamp - start
 
       if (canvasRef.current) {
         canvasCtxRef.current = canvasRef.current.getContext('2d')
@@ -145,16 +140,12 @@ export const CanvasPong: React.FC<Props> = (props: Props) => {
           drawElements(ctx!)
         }
       }
-
-      previousTimeStamp = timeStamp
       window.requestAnimationFrame(frameStep)
     }
 
     document.addEventListener('keydown', keyDownHandler, false)
     document.addEventListener('keyup', keyUpHandler, false)
-    previousTimeStamp = performance.now()
-    start = previousTimeStamp
-    frameStep(performance.now())
+    frameStep()
     return () => {
       document.removeEventListener('keydown', keyDownHandler)
       document.removeEventListener('keyup', keyUpHandler)
