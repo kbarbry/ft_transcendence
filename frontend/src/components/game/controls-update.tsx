@@ -9,15 +9,10 @@ type Props = {
 }
 
 export const ControlsUpdate: React.FC<Props> = (props: Props) => {
-  console.log('ControlsUpdate:')
   const [updateInputs] = useMutation(updatePlayerInputs)
 
   function update() {
     const controls = props.getControls()
-
-    console.log(
-      'ControlsUpdate: controls = ' + JSON.stringify(controls, undefined, 2)
-    )
     updateInputs({
       variables: {
         controls: controls,
