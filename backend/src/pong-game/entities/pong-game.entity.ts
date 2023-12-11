@@ -100,7 +100,7 @@ export class PongGame {
 
   isRunning = false
 
-  precedentTime = performance.now()
+  precedentTime = 0
 
   @Field(() => Number)
   elapsedTime = 0
@@ -123,9 +123,21 @@ export class PongGame {
   @Field(() => racket)
   p2racket: racket = new racket(750)
 
+  getLastTime: () => number = this.getStartTime
+
+  getPrecedentTime() {
+    return this.precedentTime
+  }
+
+  getStartTime() {
+    console.log('Game Upate: getStartTime')
+    this.precedentTime = performance.now()
+    this.getLastTime = this.getPrecedentTime
+    return this.precedentTime
+  }
+
   update() {
     //console.log('PongGame: update(): gameId = ' + this.gameId)
-    this.precedentTime = this.elapsedTime
     const delta = 0.016
     //ball update
     //  ball playfield left and right collision
@@ -217,6 +229,7 @@ export class PongGame {
     if (this.p2racket.vPos > this.playfield.height - this.p2racket.height) {
       this.p2racket.vPos = this.playfield.height - this.p2racket.height
     }
-    this.elapsedTime += performance.now() - this.precedentTime
+    this.elapsedTime += performance.now() - this.getLastTime()
+    this.precedentTime = performance.now()
   }
 }
