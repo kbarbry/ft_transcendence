@@ -6,6 +6,7 @@ import {
   FindBestUsersQueryVariables
 } from '../../gql/graphql'
 import DefaultProfilePicture from '/DefaultProfilePicture.svg'
+import { validateAvatarUrl } from '../../store/utils'
 
 export const LeaderboardShowcase: React.FC = () => {
   const { data, loading, error } = useQuery<
@@ -28,7 +29,11 @@ export const LeaderboardShowcase: React.FC = () => {
       <li className='showcase-element' key={index}>
         <img
           className='user-picture'
-          src={user.avatarUrl ? user.avatarUrl : DefaultProfilePicture}
+          src={
+            user.avatarUrl && validateAvatarUrl(user.avatarUrl) !== undefined
+              ? user.avatarUrl
+              : DefaultProfilePicture
+          }
           alt="User's avatar picture"
         />
         <p>{user.username}</p>
