@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common'
 import { PubSub } from 'graphql-subscriptions'
-import { MatchmakingOponentInfo } from './entities/matchmaking-oponent.entity'
-import { Controls, PongGame, PongPlayer } from './entities/pong-game.entity'
-import { GameStatService } from 'src/game-stat/game-stat.service'
-import { CreateGameStatInput } from 'src/game-stat/dto/create-game-stat.input'
 import { EGameType } from '@prisma/client'
+import { Controls, PongGame, PongPlayer } from './entities/pong-game.entity'
+import { CreateGameStatInput } from 'src/game-stat/dto/create-game-stat.input'
+import { GameStatService } from 'src/game-stat/game-stat.service'
+import { UserService } from 'src/user/user.service'
 
 export class PlayerWaiting {
   id = ''
@@ -19,7 +19,8 @@ const playerQueue: Array<PlayerWaiting> = new Array<PlayerWaiting>()
 export class PongGameService {
   constructor(
     private readonly pubsub: PubSub,
-    private readonly gamestatService: GameStatService
+    private readonly gamestatService: GameStatService,
+    private readonly userService: UserService
   ) {
     setInterval(this.gamesUpdate.bind(this), 20)
   }
@@ -94,15 +95,9 @@ export class PongGameService {
 
   setPresenceInGame(gameId: string, playerId: string, presence: boolean) {
     const game: PongGame | undefined = gamesMap.get(gameId)
-
-    console.log('setPresenceInGame: game = ' + JSON.stringify(game))
-
     if (game === undefined) {
       return false
     }
-
-    //TODO if game is full
-
     if (game.player1.id === playerId) {
       game.player1.presence = presence
     } else if (game.player2.id === playerId) {
@@ -114,15 +109,6 @@ export class PongGameService {
       game.isRunning = false
     }
     return true
-  }
-
-  sendGameInfo(subTopic: string) {
-    subTopic = 'matchMaking'
-    const gameInfo: MatchmakingOponentInfo = {
-      opponentName: 'Bob',
-      state: true
-    }
-    this.pubsub.publish(subTopic, { data: gameInfo })
   }
 
   gameInit(
@@ -182,6 +168,7 @@ export class PongGameService {
           timePlayed: game.elapsedTime
         }
         this.gamestatService.create(data)
+        this.userService.incrementLevel(winnerPLayer.id, 0.3)
         gamesMap.delete(gameId)
       }
     }
