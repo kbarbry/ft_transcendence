@@ -85,4 +85,13 @@ export class UserService {
       }
     })
   }
+
+  async findBestUsers(): Promise<User[]> {
+    return this.prisma.user.findMany({
+      orderBy: {
+        level: 'desc'
+      },
+      take: 25
+    })
+  }
 }
