@@ -27,7 +27,14 @@ export const Game: React.FC = () => {
   }
 
   if (gameId !== null) {
-    return <Pong quitHandler={quitGame} gameId={gameId} username={username} />
+    return (
+      <Pong
+        quitHandler={quitGame}
+        gameId={gameId}
+        username={username}
+        playerId={playerId}
+      />
+    )
   }
   return (
     <>

@@ -1,7 +1,10 @@
 import { Injectable } from '@nestjs/common'
 import { PubSub } from 'graphql-subscriptions'
 import { MatchmakingOponentInfo } from './entities/matchmaking-oponent.entity'
-import { Controls, PongGame } from './entities/pong-game.entity'
+import { Controls, PongGame, PongPlayer } from './entities/pong-game.entity'
+import { GameStatService } from 'src/game-stat/game-stat.service'
+import { CreateGameStatInput } from 'src/game-stat/dto/create-game-stat.input'
+import { EGameType } from '@prisma/client'
 
 export class PlayerWaiting {
   id = ''
@@ -14,7 +17,10 @@ const playerQueue: Array<PlayerWaiting> = new Array<PlayerWaiting>()
 
 @Injectable()
 export class PongGameService {
-  constructor(private readonly pubsub: PubSub) {
+  constructor(
+    private readonly pubsub: PubSub,
+    private readonly gamestatService: GameStatService
+  ) {
     setInterval(this.gamesUpdate.bind(this), 20)
   }
 
@@ -68,7 +74,13 @@ export class PongGameService {
         return null
       }
       console.log('Service: matchPlayerInQueue: gameid = ' + gameId)
-      this.gameInit(gameId, player1.nickname, player2.nickname)
+      this.gameInit(
+        gameId,
+        player1.nickname,
+        player1.id,
+        player2.nickname,
+        player2.id
+      )
       await this.pubsub.publish(player1.triggerName, {
         data: gameId
       })
@@ -116,9 +128,14 @@ export class PongGameService {
   gameInit(
     gameId: string,
     p1nick: string,
-    p2nick: string
+    p1Id: string,
+    p2nick: string,
+    p2Id: string
   ): PongGame | undefined {
-    gamesMap.set(gameId, new PongGame(gameId, p1nick, p1nick, p2nick, p2nick))
+    gamesMap.set(
+      gameId,
+      new PongGame(EGameType.Classic, gameId, p1nick, p1Id, p2nick, p2Id)
+    )
     return gamesMap.get(gameId)
   }
 
@@ -146,6 +163,27 @@ export class PongGameService {
       }
       game.update()
       await this.pubsub.publish(game.gameId, { data: game })
+      if (game.winner) {
+        let winnerPLayer: PongPlayer
+        let loserPLayer: PongPlayer
+        if (game.winner === game.player1.nickname) {
+          winnerPLayer = game.player1
+          loserPLayer = game.player2
+        } else {
+          winnerPLayer = game.player2
+          loserPLayer = game.player1
+        }
+        const data: CreateGameStatInput = {
+          type: game.type,
+          winnerId: winnerPLayer.id,
+          scoreWinner: winnerPLayer.score,
+          loserId: loserPLayer.id,
+          scoreLoser: loserPLayer.score,
+          timePlayed: game.elapsedTime
+        }
+        this.gamestatService.create(data)
+        gamesMap.delete(gameId)
+      }
     }
   }
 }

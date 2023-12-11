@@ -12,6 +12,7 @@ import { SubPong } from './subPong'
 type Props = {
   gameId: string
   username: string
+  playerId: string
   quitHandler: () => void
 }
 
@@ -58,7 +59,7 @@ export const Pong: React.FC<Props> = (props) => {
         onClick={() => {
           //TODO move in a sub component with possibilitie to unset the ready status
           sendReady({
-            variables: { gameId: props.gameId, playerId: props.username }
+            variables: { gameId: props.gameId, playerId: props.playerId }
           })
         }}
       >
@@ -66,7 +67,7 @@ export const Pong: React.FC<Props> = (props) => {
       </button>
       <CanvasPong
         gameId={props.gameId}
-        playerId={props.username}
+        playerId={props.playerId}
         getPongData={getPongData}
       />
       <button onClick={props.quitHandler}>Quit</button>
