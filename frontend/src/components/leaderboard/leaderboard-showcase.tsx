@@ -23,17 +23,19 @@ export const LeaderboardShowcase: React.FC = () => {
     return <p>Nobody has played any games yet.</p>
   }
 
-  const userElements: React.JSX.Element[] = data.findBestUsers.map((user) => (
-    <div className='showcase-element'>
-      <img
-        className='user-picture'
-        src={user.avatarUrl ? user.avatarUrl : DefaultProfilePicture}
-        alt="User's avatar picture"
-      />
-      <p>{user.username}</p>
-      <p>Level {user.level}</p>
-    </div>
-  ))
+  const userElements: React.JSX.Element[] = data.findBestUsers.map(
+    (user, index) => (
+      <li className='showcase-element' key={index}>
+        <img
+          className='user-picture'
+          src={user.avatarUrl ? user.avatarUrl : DefaultProfilePicture}
+          alt="User's avatar picture"
+        />
+        <p>{user.username}</p>
+        <p>Level {user.level.toFixed(1)}</p>
+      </li>
+    )
+  )
 
-  return <div className='showcase'>{userElements}</div>
+  return <ul className='showcase'>{userElements}</ul>
 }

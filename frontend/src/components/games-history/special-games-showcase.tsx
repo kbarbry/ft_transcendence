@@ -30,7 +30,7 @@ export const SpecialGamesShowcase: React.FC<Props> = (props: Props) => {
 
   const gameElements: React.JSX.Element[] = data.findGameStatSpecial.map(
     (game) => (
-      <div className='showcase-element'>
+      <li className='showcase-element' key={game.id}>
         <p>Date: {game.createdAt}</p>
         <p>Type: {game.type}</p>
         <p>Result: {game.winnerId === props.playerId ? 'Win' : 'Lose'}</p>
@@ -40,9 +40,9 @@ export const SpecialGamesShowcase: React.FC<Props> = (props: Props) => {
             ? game.scoreWinner
             : game.scoreLoser}
         </p>
-      </div>
+      </li>
     )
   )
 
-  return <div className='showcase'>{gameElements}</div>
+  return <ul className='showcase'>{gameElements}</ul>
 }
