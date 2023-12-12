@@ -98,6 +98,9 @@ export class PongGame {
   @Field(() => String, { nullable: true })
   winner?: string | null = null
 
+  @Field(() => String, { nullable: true })
+  message?: string = undefined
+
   isRunning = false
 
   precedentTime = 0

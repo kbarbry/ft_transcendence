@@ -111,6 +111,51 @@ export class PongGameService {
     return true
   }
 
+  async quitGame(gameId: string, playerId: string) {
+    const game: PongGame | undefined = gamesMap.get(gameId)
+    let leftPlayerNickname: string
+    if (game === undefined) {
+      return false
+    }
+    if (game.player1.id === playerId) {
+      game.winner = game.player2.nickname
+      leftPlayerNickname = game.player1.nickname
+    } else if (game.player2.id === playerId) {
+      game.winner = game.player1.nickname
+      leftPlayerNickname = game.player2.nickname
+    } else {
+      return false
+    }
+    game.isRunning = false
+    if (game.player1.score === 0 && game.player2.score === 0) {
+      game.message = 'Player ' + leftPlayerNickname + 'has left the game.'
+      await this.pubsub.publish(game.gameId, { data: game })
+      gamesMap.delete(gameId)
+    }
+    await this.pubsub.publish(game.gameId, { data: game })
+    let winnerPLayer: PongPlayer
+    let loserPLayer: PongPlayer
+    if (game.winner === game.player1.nickname) {
+      winnerPLayer = game.player1
+      loserPLayer = game.player2
+    } else {
+      winnerPLayer = game.player2
+      loserPLayer = game.player1
+    }
+    const data: CreateGameStatInput = {
+      type: game.type,
+      winnerId: winnerPLayer.id,
+      scoreWinner: winnerPLayer.score,
+      loserId: loserPLayer.id,
+      scoreLoser: loserPLayer.score,
+      timePlayed: game.elapsedTime / 1000
+    }
+    await this.gamestatService.create(data)
+    await this.userService.incrementLevel(winnerPLayer.id, 0.3)
+    gamesMap.delete(gameId)
+    return true
+  }
+
   gameInit(
     gameId: string,
     p1nick: string,
@@ -165,10 +210,10 @@ export class PongGameService {
           scoreWinner: winnerPLayer.score,
           loserId: loserPLayer.id,
           scoreLoser: loserPLayer.score,
-          timePlayed: game.elapsedTime
+          timePlayed: game.elapsedTime / 1000
         }
-        this.gamestatService.create(data)
-        this.userService.incrementLevel(winnerPLayer.id, 0.3)
+        await this.gamestatService.create(data)
+        await this.userService.incrementLevel(winnerPLayer.id, 0.3)
         gamesMap.delete(gameId)
       }
     }

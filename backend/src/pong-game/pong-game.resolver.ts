@@ -61,7 +61,6 @@ export class PongGameResolver {
   async readyForGame(
     @Args('gameId', { type: () => String }) gameId: string,
     @Args('playerId', { type: () => String }) playerId: string
-    //TODO add presence arg
   ): Promise<boolean> {
     console.log(
       'Mutation: readyForGame: gameid = ' + gameId + ', playerId = ' + playerId
@@ -72,6 +71,18 @@ export class PongGameResolver {
       true
     )
     return presenceValidattion
+  }
+
+  @Mutation(() => Boolean)
+  async quitGame(
+    @Args('gameId', { type: () => String }) gameId: string,
+    @Args('playerId', { type: () => String }) playerId: string
+  ): Promise<boolean> {
+    console.log(
+      'Mutation: quitGame: gameid = ' + gameId + ', playerId = ' + playerId
+    )
+    const quitValidation = this.pongService.quitGame(gameId, playerId)
+    return quitValidation
   }
 
   @Mutation(() => Boolean)

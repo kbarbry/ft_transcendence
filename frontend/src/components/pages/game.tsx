@@ -2,10 +2,7 @@ import React from 'react'
 import { Pong } from '../game/Pong'
 import { Matchmaking } from '../matchmaking/matchmaking'
 import { useAppDispatch, useAppSelector } from '../../store/hooks'
-import {
-  setGameIdValue,
-  unsetGameIdValue
-} from '../../store/slices/gameId.slice'
+import { setGameIdValue } from '../../store/slices/gameId.slice'
 
 // NOTE pour update les infos en fin de partie :
 // changer le lev en bdd
@@ -33,19 +30,9 @@ export const Game: React.FC = () => {
   function setGameId(id: string | null) {
     dispatch(setGameIdValue(id))
   }
-  function quitGame() {
-    dispatch(unsetGameIdValue())
-  }
 
   if (gameId !== null) {
-    return (
-      <Pong
-        quitHandler={quitGame}
-        gameId={gameId}
-        username={username}
-        playerId={playerId}
-      />
-    )
+    return <Pong gameId={gameId} username={username} playerId={playerId} />
   }
   return (
     <>

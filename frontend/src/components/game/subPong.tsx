@@ -25,6 +25,7 @@ export const SubPong: React.FC<Props> = (props: Props) => {
       variables: { gameId: props.gameId },
       onData: listenPongData,
       onError: (error) => {
+        console.log('subPongError : ' + JSON.stringify(error, undefined, 2))
         props.setGameError(error)
       }
     }

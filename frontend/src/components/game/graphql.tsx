@@ -37,6 +37,7 @@ export const pongDataSubscription = gql`
       }
       type
       winner
+      message
     }
   }
 `
@@ -56,5 +57,11 @@ export const updatePlayerInputs = gql`
       gameId: $gameId
       playerId: $playerId
     )
+  }
+`
+
+export const leaveGame = gql`
+  mutation QuitGame($gameId: String!, $playerId: String!) {
+    quitGame(gameId: $gameId, playerId: $playerId)
   }
 `
