@@ -6,14 +6,16 @@ import { CreateGameStatInput } from 'src/game-stat/dto/create-game-stat.input'
 import { GameStatService } from 'src/game-stat/game-stat.service'
 import { UserService } from 'src/user/user.service'
 
-export class PlayerWaiting {
-  id = ''
-  nickname = ''
-  triggerName = ''
+export type PlayerWaiting = {
+  id: string
+  nickname: string
+  triggerName: string
+  gameType: EGameType
 }
 
 const gamesMap: Map<string, PongGame> = new Map<string, PongGame>()
-const playerQueue: Array<PlayerWaiting> = new Array<PlayerWaiting>()
+const classicQueue: Array<PlayerWaiting> = new Array<PlayerWaiting>()
+const specialQueue: Array<PlayerWaiting> = new Array<PlayerWaiting>()
 
 @Injectable()
 export class PongGameService {
@@ -25,57 +27,76 @@ export class PongGameService {
     setInterval(this.gamesUpdate.bind(this), 20)
   }
 
-  isPlayerInQueue(targetId: string) {
-    for (const player of playerQueue) {
-      if (player.id == targetId) {
-        return true
-      }
+  isPlayerInQueue(playerWaiting: PlayerWaiting) {
+    switch (playerWaiting.gameType) {
+      case EGameType.Classic:
+        for (const player of classicQueue) {
+          if (player.id == playerWaiting.id) {
+            return true
+          }
+        }
+        break
+      case EGameType.Special:
+        for (const player of specialQueue) {
+          if (player.id == playerWaiting.id) {
+            return true
+          }
+        }
+        break
+      default:
     }
     return false
   }
 
   async addPlayerToGameQueue(playerWaiting: PlayerWaiting): Promise<boolean> {
-    if (this.isPlayerInQueue(playerWaiting.id)) {
+    if (this.isPlayerInQueue(playerWaiting)) {
       console.log(
         'Service: addPlayerToGameQueue: player already in queue : ' +
           playerWaiting.nickname
       )
       return true
     }
-    const size: number = playerQueue.push(playerWaiting)
-
-    console.log(
-      'Service: addPlayerToGameQueue: player queue : ' +
-        JSON.stringify(playerQueue)
-    )
+    let size = 0
+    switch (playerWaiting.gameType) {
+      case EGameType.Classic:
+        size = classicQueue.push(playerWaiting)
+        break
+      case EGameType.Special:
+        size = specialQueue.push(playerWaiting)
+        break
+      default:
+        size = -1
+    }
     if (size > 0) {
       return true
     }
     return false
   }
 
-  async matchPlayerInQueue(): Promise<string | null> {
-    //TODO check game number before init a new one
+  async matchClassicqQueue() {
     console.log(
-      'Service: matchPlayerInQueue: playerQueue = ' +
-        JSON.stringify(playerQueue)
+      'Service: matchClassicQueue: playerQueue = ' +
+        JSON.stringify(classicQueue, undefined, 2)
     )
-    if (playerQueue.length >= 2) {
-      const player1 = playerQueue.pop()
-      const player2 = playerQueue.pop()
+    if (classicQueue.length >= 2) {
+      const player1 = classicQueue.pop()
+      const player2 = classicQueue.pop()
       console.log(
-        'Service: matchPlayerInQueue: player1 = ' + JSON.stringify(player1)
+        'Service: matchClassicQueue: player1 = ' +
+          JSON.stringify(player1, undefined, 2)
       )
       console.log(
-        'Service: matchPlayerInQueue: player2 = ' + JSON.stringify(player2)
+        'Service: matchClassicQueue: player2 = ' +
+          JSON.stringify(player2, undefined, 2)
       )
-      const gameId = 'match' + player1?.id + player2?.id
+      const gameId = 'matchClassic' + player1?.id + player2?.id
 
       if (player1 === undefined || player2 === undefined) {
         return null
       }
-      console.log('Service: matchPlayerInQueue: gameid = ' + gameId)
+      console.log('Service: matchClassicQueue: gameid = ' + gameId)
       this.gameInit(
+        EGameType.Classic,
         gameId,
         player1.nickname,
         player1.id,
@@ -91,6 +112,62 @@ export class PongGameService {
       return gameId
     }
     return null
+  }
+
+  async matchSpecialQueue(): Promise<string | null> {
+    console.log(
+      'Service: matchSpecialQueue: playerQueue = ' +
+        JSON.stringify(specialQueue, undefined, 2)
+    )
+    if (specialQueue.length >= 2) {
+      const player1 = specialQueue.pop()
+      const player2 = specialQueue.pop()
+      console.log(
+        'Service: matchSpecialQueue: player1 = ' + JSON.stringify(player1)
+      )
+      console.log(
+        'Service: matchSpecialQueue: player2 = ' + JSON.stringify(player2)
+      )
+      const gameId = 'matchSpecial' + player1?.id + player2?.id
+
+      if (player1 === undefined || player2 === undefined) {
+        return null
+      }
+
+      console.log('Service: matchSpecialQueue: gameid = ' + gameId)
+      this.gameInit(
+        EGameType.Special,
+        gameId,
+        player1.nickname,
+        player1.id,
+        player2.nickname,
+        player2.id
+      )
+      await this.pubsub.publish(player1.triggerName, {
+        data: gameId
+      })
+      await this.pubsub.publish(player2.triggerName, {
+        data: gameId
+      })
+      return gameId
+    }
+    return null
+  }
+
+  async matchPlayerInQueue(type: EGameType): Promise<string | null> {
+    let res: string | null = null
+
+    switch (type) {
+      case EGameType.Classic:
+        res = await this.matchClassicqQueue()
+        console.log('match classic queue')
+        break
+      case EGameType.Special:
+        res = await this.matchSpecialQueue()
+        console.log('match special queue')
+        break
+    }
+    return res
   }
 
   setPresenceInGame(gameId: string, playerId: string, presence: boolean) {
@@ -157,16 +234,14 @@ export class PongGameService {
   }
 
   gameInit(
+    type: EGameType,
     gameId: string,
     p1nick: string,
     p1Id: string,
     p2nick: string,
     p2Id: string
   ): PongGame | undefined {
-    gamesMap.set(
-      gameId,
-      new PongGame(EGameType.Classic, gameId, p1nick, p1Id, p2nick, p2Id)
-    )
+    gamesMap.set(gameId, new PongGame(type, gameId, p1nick, p1Id, p2nick, p2Id))
     return gamesMap.get(gameId)
   }
 

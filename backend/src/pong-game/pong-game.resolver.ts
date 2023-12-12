@@ -3,6 +3,7 @@ import { PubSub } from 'graphql-subscriptions'
 import { PongGame } from './entities/pong-game.entity'
 import { PongGameService } from './pong-game.service'
 import { ControlsInput } from './dto/player-controls.input'
+import { EGameType } from '@prisma/client'
 
 @Resolver(() => PongGame)
 export class PongGameResolver {
@@ -43,16 +44,18 @@ export class PongGameResolver {
   @Mutation(() => Boolean)
   async addPlayerToMatchmakingQueue(
     @Args('playerId', { type: () => String }) playerId: string,
-    @Args('nickname', { type: () => String }) nickname: string
+    @Args('nickname', { type: () => String }) nickname: string,
+    @Args('gameType', { type: () => EGameType }) gameType: EGameType
   ): Promise<boolean> {
     console.log('Mutation: addPlayerToMatchmakingQueue:')
     const isQueued: boolean = await this.pongService.addPlayerToGameQueue({
       id: playerId,
       nickname,
-      triggerName: 'queue' + playerId
+      gameType,
+      triggerName: 'queue' + playerId //TODO change this with game type
     })
     if (isQueued) {
-      await this.pongService.matchPlayerInQueue()
+      await this.pongService.matchPlayerInQueue(gameType)
     }
     return isQueued
   }

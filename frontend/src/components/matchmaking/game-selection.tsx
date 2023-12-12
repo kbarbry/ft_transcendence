@@ -1,8 +1,9 @@
 import React from 'react'
+import { EGameType } from '../../gql/graphql'
 
 type Props = {
   username: string
-  setGameType: React.Dispatch<React.SetStateAction<String | null>>
+  setGameType: React.Dispatch<React.SetStateAction<EGameType | null>>
 }
 
 export const GameSelection: React.FC<Props> = (props) => {
@@ -10,12 +11,12 @@ export const GameSelection: React.FC<Props> = (props) => {
 
   function gameClassic() {
     console.log('gameClassic')
-    props.setGameType('Classic')
+    props.setGameType(EGameType.Classic)
   }
 
   function gameExtra() {
-    console.log('gameClassic')
-    props.setGameType('Extra')
+    console.log('gameSpecial')
+    props.setGameType(EGameType.Special)
   }
 
   return (

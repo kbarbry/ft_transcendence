@@ -2,12 +2,14 @@ import { useMutation } from '@apollo/client'
 import { addPlayerToMatchmakingQueue } from './graphql'
 import {
   AddPlayerToMatchmakingQueueMutation,
-  AddPlayerToMatchmakingQueueMutationVariables
+  AddPlayerToMatchmakingQueueMutationVariables,
+  EGameType
 } from '../../gql/graphql'
 
 type Props = {
   username: string
   playerId: string
+  gameType: EGameType
   setGameId: (id: string | null) => void
 }
 
@@ -30,7 +32,11 @@ export const QueueStatus: React.FC<Props> = (props: Props) => {
     <button
       onClick={() => {
         addPlayerToMatchmaking({
-          variables: { nickname: props.username, playerId: props.playerId }
+          variables: {
+            nickname: props.username,
+            playerId: props.playerId,
+            gameType: props.gameType
+          }
         })
       }}
     >
