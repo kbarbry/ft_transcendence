@@ -1,13 +1,9 @@
 import { CanvasPong } from './canvas-pong'
-import { ApolloError, useMutation } from '@apollo/client'
-import { readyForGame } from './graphql'
+import { ApolloError } from '@apollo/client'
 import { useState } from 'react'
-import {
-  PongGame,
-  ReadyForGameMutation,
-  ReadyForGameMutationVariables
-} from '../../gql/graphql'
+import { PongGame } from '../../gql/graphql'
 import { SubPong } from './subPong'
+import { ReadyButton } from './ready-button'
 
 type Props = {
   gameId: string
@@ -21,19 +17,6 @@ export const Pong: React.FC<Props> = (props) => {
   let pongGameData: PongGame | null = null
   const [subscriptionError, setGameError] = useState<ApolloError | undefined>(
     undefined
-  )
-  const [sendReady, { data, loading, error }] = useMutation<
-    ReadyForGameMutation,
-    ReadyForGameMutationVariables
-  >(readyForGame)
-
-  console.log(
-    'Pong: data = ' +
-      JSON.stringify(data) +
-      '\nPong: loading = ' +
-      loading +
-      '\nPong: error = ' +
-      JSON.stringify(error)
   )
 
   function setPongGameData(pongData: PongGame) {
@@ -55,16 +38,7 @@ export const Pong: React.FC<Props> = (props) => {
         setGameError={setGameError}
       />
       <h1>Pong !</h1>
-      <button
-        onClick={() => {
-          //TODO move in a sub component with possibilitie to unset the ready status
-          sendReady({
-            variables: { gameId: props.gameId, playerId: props.playerId }
-          })
-        }}
-      >
-        Ready
-      </button>
+      <ReadyButton gameId={props.gameId} playerId={props.playerId} />
       <CanvasPong
         gameId={props.gameId}
         playerId={props.playerId}
