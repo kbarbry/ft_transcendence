@@ -4,7 +4,7 @@ interface GameIdState {
   gameId: string | null
 }
 
-const initialState = { gameId: null } as GameIdState
+const initialState: GameIdState = { gameId: null }
 
 const gameIdSlice = createSlice({
   name: 'gameIdInformation',
