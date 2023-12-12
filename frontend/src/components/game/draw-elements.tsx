@@ -30,4 +30,8 @@ function drawWinner(ctx: CanvasRenderingContext2D, winner: String) {
   ctx.fillText(text, 400, 300)
 }
 
-export { drawTime, drawScores, drawRackets, drawBall, drawWinner }
+function drawMessage(ctx: CanvasRenderingContext2D, message: string) {
+  ctx.fillText(message, 400, 400)
+}
+
+export { drawTime, drawScores, drawRackets, drawBall, drawWinner, drawMessage }

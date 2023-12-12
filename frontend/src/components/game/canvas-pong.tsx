@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react'
 import {
   drawBall,
+  drawMessage,
   drawRackets,
   drawScores,
   drawTime,
@@ -121,6 +122,10 @@ export const CanvasPong: React.FC<Props> = (props: Props) => {
     ctx.fillStyle = 'ghostwhite'
     ctx!.font = '50px sans-serif'
     drawWinner(ctx, winner)
+    if (pongGameData.message) {
+      ctx!.font = '30px sans-serif'
+      drawMessage(ctx, pongGameData.message)
+    }
   }
 
   useEffect(() => {
