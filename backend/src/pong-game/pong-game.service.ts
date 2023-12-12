@@ -127,12 +127,12 @@ export class PongGameService {
       return false
     }
     game.isRunning = false
-    if (game.player1.score === 0 && game.player2.score === 0) {
-      game.message = 'Player ' + leftPlayerNickname + ' has left the game.'
-      await this.pubsub.publish(game.gameId, { data: game })
-      gamesMap.delete(gameId)
-    }
+    game.message = 'Player ' + leftPlayerNickname + ' has left the game.'
     await this.pubsub.publish(game.gameId, { data: game })
+    if (game.player1.score === 0 && game.player2.score === 0) {
+      gamesMap.delete(gameId)
+      return true
+    }
     let winnerPLayer: PongPlayer
     let loserPLayer: PongPlayer
     if (game.winner === game.player1.nickname) {
