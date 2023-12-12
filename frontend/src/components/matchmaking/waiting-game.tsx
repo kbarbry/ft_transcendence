@@ -11,7 +11,7 @@ import {
 type Props = {
   username: string
   playerId: string
-  setGameId: React.Dispatch<React.SetStateAction<string | null>>
+  setGameId: (id: string | null) => void
 }
 
 export const WaitingGame: React.FC<Props> = (props: Props) => {
