@@ -6,8 +6,7 @@ import {
   IsOptional,
   IsUrl,
   Length,
-  Min,
-  isString
+  Min
 } from 'class-validator'
 import { CustomIsName } from '../../common/pipes/username.pipe'
 
@@ -30,7 +29,7 @@ export class UpdateUserInput {
   })
   username?: string
 
-  @Field(() => Boolean)
+  @Field(() => Boolean, { nullable: true })
   @IsOptional()
   doubleA?: boolean
 

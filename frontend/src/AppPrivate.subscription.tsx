@@ -63,7 +63,7 @@ import {
   setChannelMembersInformations
 } from './store/slices/channel-informations.slice'
 import { ProfilPage } from './userInfo/ProfilPage'
-import { UpdateProfil } from './userInfo/UpdateProfilForm'
+import UpdateProfil from './userInfo/UpdateProfilForm'
 
 interface AppPrivateSubscriptionProps {
   userId: string
@@ -458,11 +458,6 @@ const AppPrivateSubscription: React.FC<AppPrivateSubscriptionProps> = ({
       <br />
       <Link href='/profilPage'>
         <a>User Page</a>
-      </Link>
-      <br />
-      <br />
-      <Link href='/updateProfil'>
-        <a>Update Profil</a>
       </Link>
       <br />
       <br />

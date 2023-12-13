@@ -3,7 +3,7 @@ import { useAppSelector } from '../store/hooks'
 import { Link } from 'wouter'
 
 export const ProfilPage: React.FC = () => {
-  let user = useAppSelector((state) => state.userInformations.user)
+  const user = useAppSelector((state) => state.userInformations.user)
   return (
     <>
       <div>
@@ -25,7 +25,7 @@ export const ProfilPage: React.FC = () => {
       <div>Language: {user?.languages}</div>
       <br></br>
       <div>
-        <Link href='/updateInfo'>
+        <Link href='/updateProfil'>
           <button> Update 🔏 </button>
         </Link>
       </div>
