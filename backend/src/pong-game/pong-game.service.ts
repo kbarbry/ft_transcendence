@@ -1,10 +1,11 @@
 import { Injectable } from '@nestjs/common'
 import { PubSub } from 'graphql-subscriptions'
-import { EGameType } from '@prisma/client'
+import { EGameType, User } from '@prisma/client'
 import { Controls, PongGame, PongPlayer } from './entities/pong-game.entity'
 import { CreateGameStatInput } from 'src/game-stat/dto/create-game-stat.input'
 import { GameStatService } from 'src/game-stat/game-stat.service'
 import { UserService } from 'src/user/user.service'
+import { GameInvitation } from './entities/game-invitation.entity'
 
 export type PlayerWaiting = {
   id: string
@@ -44,8 +45,43 @@ export class PongGameService {
         }
         break
       default:
+        break
     }
     return false
+  }
+
+  async sendPongInvitation(
+    gameType: EGameType,
+    senderNickname: string,
+    senderId: string,
+    receiverNickname: string
+  ): Promise<string | null> {
+    const invitedUser: User | null = await this.userService.findOneByUsername(
+      receiverNickname
+    )
+    if (invitedUser === null) {
+      return null
+    }
+    const inviteGame = this.gameInit(
+      gameType,
+      'invite' + senderId + invitedUser.id,
+      senderNickname,
+      senderId,
+      invitedUser.username,
+      invitedUser.id
+    )
+    if (inviteGame === undefined) {
+      return null
+    }
+    const invitation: GameInvitation = {
+      gameId: inviteGame.gameId,
+      gameType: inviteGame.type,
+      senderNickname: senderNickname
+    }
+    this.pubsub.publish('gameInvitation' + invitedUser.username, {
+      data: invitation
+    })
+    return inviteGame.gameId
   }
 
   async addPlayerToGameQueue(playerWaiting: PlayerWaiting): Promise<boolean> {

@@ -4,6 +4,7 @@ import { PongGame } from './entities/pong-game.entity'
 import { PongGameService } from './pong-game.service'
 import { ControlsInput } from './dto/player-controls.input'
 import { EGameType } from '@prisma/client'
+import { GameInvitation } from './entities/game-invitation.entity'
 
 @Resolver(() => PongGame)
 export class PongGameResolver {
@@ -37,9 +38,36 @@ export class PongGameResolver {
     return this.pubSub.asyncIterator(gameId)
   }
 
+  @Subscription(() => GameInvitation, {
+    resolve: (payload) => (payload?.data !== undefined ? payload.data : null)
+  })
+  pongInvitationSubcription(
+    @Args('nickname', { type: () => String })
+    nickname: string
+  ) {
+    console.log('PongGameResolver:  PongInvitationSubcription:')
+    return this.pubSub.asyncIterator('gameInvitation' + nickname)
+  }
+
   //**************************************************//
   //  MUTATION
   //**************************************************//
+
+  @Mutation(() => String, { nullable: true })
+  async sendPongInvitation(
+    @Args('senderNickname', { type: () => String }) senderNickname: string,
+    @Args('senderId', { type: () => String }) senderId: string,
+    @Args('receiverNickname', { type: () => String }) receiverNickname: string,
+    @Args('gameType', { type: () => EGameType }) gameType: EGameType
+  ): Promise<string | null> {
+    const invited: string | null = await this.pongService.sendPongInvitation(
+      gameType,
+      senderNickname,
+      senderId,
+      receiverNickname
+    )
+    return invited
+  }
 
   @Mutation(() => Boolean)
   async addPlayerToMatchmakingQueue(
