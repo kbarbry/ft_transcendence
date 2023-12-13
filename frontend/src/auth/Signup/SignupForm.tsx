@@ -10,6 +10,7 @@ import {
 } from '@ant-design/icons'
 import { queryIsUserMailUsed, queryIsUserUsernameUsed } from '../graphql'
 import { useLazyQuery } from '@apollo/client'
+import PopUpError from '../../ErrorPages/PopUpError'
 // import { PROFILE_PICTURE_URL } from '../../store/slices/user-informations.slice'
 
 const SignUp: React.FC = () => {
@@ -21,6 +22,9 @@ const SignUp: React.FC = () => {
   const [isButtonDisabled, setIsButtonDisabled] = useState(false)
   const [isUsernameUsed, setIsUsernameUsed] = useState(false)
   const [isMailUsed, setIsMailUsed] = useState(false)
+  const [isError, setIsError] = useState(false) // State for tracking errors
+  const [errorMessage, setErrorMessage] = useState('') // State for error message
+
   // const [avatarUrl, setAvatarUrl] = useState('')
   // const [isValidAvatarUrl, setIsValidAvatarUrl] = useState(false)
   // const [avatarLoading, setAvatarLoading] = useState(false)
@@ -119,12 +123,15 @@ const SignUp: React.FC = () => {
         }
       })
       .catch((error) => {
-        console.error("Erreur lors de la création de l'utilisateur:", error)
+        const error_message = error.message
+        setIsError(true) // Set isError to true
+        setErrorMessage(error_message) // Set error message
       })
   }
 
   return (
     <Space direction='vertical'>
+      {isError && <PopUpError message={errorMessage} />}
       <Form
         name='signup'
         onFinishFailed={onFinishedFailed}
