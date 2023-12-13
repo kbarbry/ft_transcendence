@@ -16,8 +16,11 @@ export async function verifySecret(userId : any, token : any) {
       if (response.ok) {
         const data = await response.json()
         return data
-      } else {
-        return null
+      }
+      else if (!response.ok){
+        const errorResponse = await response.json();
+        let errorMessage = errorResponse.message || 'Unknown error';
+        throw new Error(errorMessage)
       }
     } catch (error) {
       throw error
