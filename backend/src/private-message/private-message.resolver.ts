@@ -18,10 +18,11 @@ import {
   Unprotected
 } from '../auth/guards/authorization.guard'
 import { PubSub } from 'graphql-subscriptions'
+import { ExceptionPrivateMessageDoesNotExist } from '../channel/exceptions/private-message.exception'
 import {
-  ExceptionPrivateMessageDoesNotExist,
-  ExceptionPrivateMessageForbiddenAccess
-} from '../channel/exceptions/private-message.exception'
+  ForbiddenAccessData,
+  userContextGuard
+} from 'src/auth/guards/request.guards'
 
 @Resolver(() => PrivateMessage)
 @UseGuards(AuthorizationGuard)
@@ -97,8 +98,8 @@ export class PrivateMessageResolver {
     data: CreatePrivateMessageInput,
     @Context() ctx: any
   ): Promise<PrivateMessage> {
-    if (ctx?.req?.user?.id !== data.senderId)
-      throw new ExceptionPrivateMessageForbiddenAccess()
+    if (!userContextGuard(ctx?.req?.user?.id, data.senderId))
+      throw new ForbiddenAccessData()
 
     const { senderId, receiverId } = data
     const [notificationSenderId, notificationReceiverId] =
@@ -126,8 +127,8 @@ export class PrivateMessageResolver {
     const msg = await this.findOnePrivateMessage(id)
     if (!msg) throw new ExceptionPrivateMessageDoesNotExist()
 
-    if (ctx?.req?.user?.id !== msg.senderId)
-      throw new ExceptionPrivateMessageForbiddenAccess()
+    if (!userContextGuard(ctx?.req?.user?.id, msg.senderId))
+      throw new ForbiddenAccessData()
 
     const { senderId, receiverId } = msg
     const [notificationSenderId, notificationReceiverId] =
@@ -151,8 +152,8 @@ export class PrivateMessageResolver {
     const msg = await this.findOnePrivateMessage(id)
     if (!msg) throw new ExceptionPrivateMessageDoesNotExist()
 
-    if (ctx?.req?.user?.id !== msg.senderId)
-      throw new ExceptionPrivateMessageForbiddenAccess()
+    if (!userContextGuard(ctx?.req?.user?.id, msg.senderId))
+      throw new ForbiddenAccessData()
 
     const { senderId, receiverId } = msg
     const [notificationSenderId, notificationReceiverId] =

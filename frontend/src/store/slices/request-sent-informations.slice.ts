@@ -3,7 +3,9 @@ import { client } from '../../main'
 import { findAllRelationRequestsSent, findUsersByUserIds } from '../graphql'
 import {
   FindAllRelationRequestsSentQuery,
+  FindAllRelationRequestsSentQueryVariables,
   FindUsersByUserIdsQuery,
+  FindUsersByUserIdsQueryVariables,
   User
 } from '../../gql/graphql'
 import { validateAvatarUrl } from '../utils'
@@ -20,19 +22,23 @@ export const setRequestSentInformations = createAsyncThunk(
   'requestSentInformations/fetchRequestSentInformations',
   async (userId: string) => {
     try {
-      const { data: dataRequestsIds } =
-        await client.query<FindAllRelationRequestsSentQuery>({
-          query: findAllRelationRequestsSent,
-          variables: { userSenderId: userId },
-          fetchPolicy: 'network-only'
-        })
+      const { data: dataRequestsIds } = await client.query<
+        FindAllRelationRequestsSentQuery,
+        FindAllRelationRequestsSentQueryVariables
+      >({
+        query: findAllRelationRequestsSent,
+        variables: { userSenderId: userId },
+        fetchPolicy: 'network-only'
+      })
 
       const userIds = dataRequestsIds.findAllRelationRequestsSent
-      const { data: dataRequests } =
-        await client.query<FindUsersByUserIdsQuery>({
-          query: findUsersByUserIds,
-          variables: { userIds }
-        })
+      const { data: dataRequests } = await client.query<
+        FindUsersByUserIdsQuery,
+        FindUsersByUserIdsQueryVariables
+      >({
+        query: findUsersByUserIds,
+        variables: { userIds }
+      })
 
       const requestSent = dataRequests.findUsersByUserIds
 
@@ -54,7 +60,7 @@ export const setRequestSentInformations = createAsyncThunk(
 )
 
 export const requestSentInformationsSlice = createSlice({
-  name: 'requestInformations',
+  name: 'requestSentInformations',
   initialState,
   reducers: {},
   extraReducers: (builder) => {

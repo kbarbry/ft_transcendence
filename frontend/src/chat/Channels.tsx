@@ -1,14 +1,12 @@
 import React, { useState } from 'react'
-import { useAppDispatch, useAppSelector } from '../store/hooks'
-import {
-  ChannelAndChannelMember,
-  setChannelInformations
-} from '../store/slices/channel-informations.slice'
+import { useAppSelector } from '../store/hooks'
+import { ChannelAndChannelMember } from '../store/slices/channel-informations.slice'
 import Channel from './components/Channel'
 import { useMutation } from '@apollo/client'
 import {
   mutationCreateChannel,
   mutationCreateChannelMember,
+  mutationDeleteChannelInvited,
   queryFindOneChannelByName
 } from './graphql'
 import {
@@ -16,22 +14,27 @@ import {
   CreateChannelMemberMutationVariables,
   CreateChannelMutation,
   CreateChannelMutationVariables,
+  DeleteChannelInvitedMutation,
+  DeleteChannelInvitedMutationVariables,
   FindOneChannelByNameQuery,
   FindOneChannelByNameQueryVariables
 } from '../gql/graphql'
 import { client } from '../main'
 
 const Channels: React.FC = () => {
-  const dispatch = useAppDispatch()
   const user = useAppSelector((state) => state.userInformations.user)
+  const channelInvited = useAppSelector(
+    (state) => state.channelInvitedInformations.channelInvitation
+  )
   const channelsInfos = useAppSelector(
     (state) => state.channelInformations.channelsInfos
   )
-  if (!user || !channelsInfos) throw new Error()
+  if (!user || !channelsInfos || !channelInvited) throw new Error()
 
   const [selectedChannel, setSelectedChannel] =
     useState<ChannelAndChannelMember | null>(null)
   const [channelNameInput, setChannelNameInput] = useState<string>('')
+  const numberChannels = channelsInfos.length
 
   if (
     selectedChannel &&
@@ -46,10 +49,16 @@ const Channels: React.FC = () => {
     CreateChannelMutation,
     CreateChannelMutationVariables
   >(mutationCreateChannel)
+
   const [createChannelMember] = useMutation<
     CreateChannelMemberMutation,
     CreateChannelMemberMutationVariables
   >(mutationCreateChannelMember)
+
+  const [deleteChannelInvitation] = useMutation<
+    DeleteChannelInvitedMutation,
+    DeleteChannelInvitedMutationVariables
+  >(mutationDeleteChannelInvited)
 
   const handleChannelNameInput = (
     event: React.ChangeEvent<HTMLInputElement>
@@ -59,14 +68,18 @@ const Channels: React.FC = () => {
 
   const handleCreateChannelClick = async () => {
     if (channelNameInput.trim() === '') {
+      setChannelNameInput('')
       return
+    }
+    if (numberChannels >= 25) {
+      setChannelNameInput('')
+      throw new Error('Too many channels')
     }
     try {
       await createChannel({
         variables: { data: { name: channelNameInput, ownerId: user.id } }
       })
 
-      await dispatch(setChannelInformations(user.id))
       setChannelNameInput('')
     } catch (e) {
       setChannelNameInput('')
@@ -77,8 +90,14 @@ const Channels: React.FC = () => {
 
   const handleJoinChannelClick = async () => {
     if (channelNameInput.trim() === '') {
+      setChannelNameInput('')
       return
     }
+    if (numberChannels >= 25) {
+      setChannelNameInput('')
+      throw new Error('Too many channels')
+    }
+
     try {
       const { data: dataFindChannel } = await client.query<
         FindOneChannelByNameQuery,
@@ -100,11 +119,56 @@ const Channels: React.FC = () => {
           }
         }
       })
-
-      await dispatch(setChannelInformations(user.id))
       setChannelNameInput('')
     } catch (e) {
       setChannelNameInput('')
+      throw e
+    }
+  }
+
+  const handleAcceptInvitation = async (channelName: string) => {
+    if (numberChannels >= 25) {
+      setChannelNameInput('')
+      throw new Error('Too many channels')
+    }
+    try {
+      const { data: dataFindChannel } = await client.query<
+        FindOneChannelByNameQuery,
+        FindOneChannelByNameQueryVariables
+      >({
+        query: queryFindOneChannelByName,
+        variables: { name: channelName }
+      })
+
+      const channel = dataFindChannel.findOneChannelByName
+
+      await createChannelMember({
+        variables: {
+          data: {
+            channelId: channel.id,
+            userId: user.id,
+            avatarUrl: user.avatarUrl,
+            nickname: user.username
+          }
+        }
+      })
+    } catch (e) {
+      throw e
+    }
+  }
+
+  const handleRefuseInvitationClick = async (
+    channelId: string,
+    userId: string
+  ) => {
+    try {
+      await deleteChannelInvitation({
+        variables: { channelId, userId }
+      })
+
+      console.log('Invitation refused successfully')
+    } catch (e) {
+      console.error('Error refusing invitation: ', e)
       throw e
     }
   }
@@ -113,6 +177,26 @@ const Channels: React.FC = () => {
     <>
       <div style={{ display: 'flex', flexDirection: 'row' }}>
         <div style={{ width: '200px', marginRight: '20px' }}>
+          <h2>Channel Invitations</h2>
+          <ul>
+            {channelInvited.map((channelInvitation) => (
+              <li key={channelInvitation.id}>
+                {channelInvitation.name}
+                <button
+                  onClick={() => handleAcceptInvitation(channelInvitation.name)}
+                >
+                  Accept
+                </button>
+                <button
+                  onClick={() =>
+                    handleRefuseInvitationClick(channelInvitation.id, user.id)
+                  }
+                >
+                  Refuse
+                </button>
+              </li>
+            ))}
+          </ul>
           <h2>Channels</h2>
           <ul>
             {channelsInfos.map((channelInfos) => (

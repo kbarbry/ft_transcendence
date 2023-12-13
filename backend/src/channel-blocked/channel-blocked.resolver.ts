@@ -1,4 +1,11 @@
-import { Args, Mutation, Query, Resolver, Subscription } from '@nestjs/graphql'
+import {
+  Args,
+  Context,
+  Mutation,
+  Query,
+  Resolver,
+  Subscription
+} from '@nestjs/graphql'
 import { CreateChannelBlockedInput } from './dto/create-channel-blocked.input'
 import { ChannelBlocked } from './entities/channel-blocked.entity'
 import { UseGuards, ValidationPipe } from '@nestjs/common'
@@ -9,13 +16,19 @@ import {
   Unprotected
 } from '../auth/guards/authorization.guard'
 import { PubSub } from 'graphql-subscriptions'
+import { PrismaService } from 'src/prisma/prisma.service'
+import {
+  ForbiddenAccessChannelAdmin,
+  channelAdminGuard
+} from 'src/auth/guards/request.guards'
 
 @Resolver(() => ChannelBlocked)
 @UseGuards(AuthorizationGuard)
 export class ChannelBlockedResolver {
   constructor(
     private readonly channelBlockedService: ChannelBlockedService,
-    private readonly pubSub: PubSub
+    private readonly pubSub: PubSub,
+    private prisma: PrismaService
   ) {}
 
   //**************************************************//
@@ -30,7 +43,7 @@ export class ChannelBlockedResolver {
     id: string
   ) {
     console.log('channelBlockedCreation sub')
-    return this.pubSub.asyncIterator('channelBlockedCreation-' + id)
+    return this.pubSub.asyncIterator('blockedCreation-' + id)
   }
 
   @Subscription(() => ChannelBlocked, {
@@ -42,7 +55,7 @@ export class ChannelBlockedResolver {
     id: string
   ) {
     console.log('channelBlockedDeletion sub')
-    return this.pubSub.asyncIterator('channelBlockedDeleted-' + id)
+    return this.pubSub.asyncIterator('blockedDeleted-' + id)
   }
 
   //**************************************************//
@@ -51,9 +64,31 @@ export class ChannelBlockedResolver {
   @Mutation(() => ChannelBlocked)
   async createChannelBlocked(
     @Args('data', { type: () => CreateChannelBlockedInput }, ValidationPipe)
-    data: CreateChannelBlockedInput
+    data: CreateChannelBlockedInput,
+    @Context() ctx: any
   ): Promise<ChannelBlocked> {
-    return this.channelBlockedService.create(data)
+    if (
+      !(await channelAdminGuard(
+        ctx?.req?.user?.id,
+        data.channelId,
+        this.prisma
+      ))
+    )
+      throw new ForbiddenAccessChannelAdmin()
+    const res = await this.channelBlockedService.create(data)
+
+    const channelMembers = await this.prisma.channelMember.findMany({
+      where: { channelId: data.channelId }
+    })
+    await Promise.all(
+      channelMembers.map(async (value) => {
+        await this.pubSub.publish('blockedCreation-' + value.userId, { res })
+      })
+    )
+
+    await this.pubSub.publish('blockedCreation-' + data.userId, { res })
+
+    return res
   }
 
   @Mutation(() => ChannelBlocked)
@@ -61,9 +96,23 @@ export class ChannelBlockedResolver {
     @Args('userId', { type: () => String }, NanoidValidationPipe)
     userId: string,
     @Args('channelId', { type: () => String }, NanoidValidationPipe)
-    channelId: string
+    channelId: string,
+    @Context() ctx: any
   ): Promise<ChannelBlocked> {
-    return this.channelBlockedService.delete(userId, channelId)
+    if (!(await channelAdminGuard(ctx?.req?.user?.id, channelId, this.prisma)))
+      throw new ForbiddenAccessChannelAdmin()
+    const res = await this.channelBlockedService.delete(userId, channelId)
+
+    const channelMembers = await this.prisma.channelMember.findMany({
+      where: { channelId: channelId }
+    })
+    await Promise.all(
+      channelMembers.map(async (value) => {
+        await this.pubSub.publish('blockedDeleted-' + value.userId, { res })
+      })
+    )
+
+    return res
   }
 
   //**************************************************//

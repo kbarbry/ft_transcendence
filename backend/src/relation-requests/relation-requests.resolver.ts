@@ -19,7 +19,10 @@ import {
   Unprotected
 } from '../auth/guards/authorization.guard'
 import { PubSub } from 'graphql-subscriptions'
-import { ExceptionRelationRequestForbiddenAccess } from '../user/exceptions/request.exceptions'
+import {
+  ForbiddenAccessData,
+  userContextGuard
+} from 'src/auth/guards/request.guards'
 
 @Resolver(() => RelationRequests)
 @UseGuards(AuthorizationGuard)
@@ -62,8 +65,8 @@ export class RelationRequestsResolver {
     data: RelationRequestsInput,
     @Context() ctx: any
   ): Promise<RelationRequests> {
-    if (ctx?.req?.user?.id !== data.userSenderId)
-      throw new ExceptionRelationRequestForbiddenAccess()
+    if (!userContextGuard(ctx?.req?.user?.id, data.userSenderId))
+      throw new ForbiddenAccessData()
 
     const resRequest = await this.relationRequestsService.create(data)
 
@@ -102,11 +105,8 @@ export class RelationRequestsResolver {
     userReceiverId: string,
     @Context() ctx: any
   ): Promise<RelationRequests> {
-    if (
-      ctx?.req?.user?.id !== userSenderId &&
-      ctx?.req?.user?.id !== userReceiverId
-    )
-      throw new ExceptionRelationRequestForbiddenAccess()
+    if (!userContextGuard(ctx?.req?.user?.id, userSenderId, userReceiverId))
+      throw new ForbiddenAccessData()
 
     const res = await this.relationRequestsService.delete(
       userSenderId,

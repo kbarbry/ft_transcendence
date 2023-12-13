@@ -3,7 +3,9 @@ import { client } from '../../main'
 import { findAllRelationFriend, findUsersByUserIds } from '../graphql'
 import {
   FindAllRelationFriendQuery,
+  FindAllRelationFriendQueryVariables,
   FindUsersByUserIdsQuery,
+  FindUsersByUserIdsQueryVariables,
   User
 } from '../../gql/graphql'
 import { validateAvatarUrl } from '../utils'
@@ -20,21 +22,24 @@ export const setFriendInformations = createAsyncThunk(
   'friendInformations/fetchFriendInformations',
   async (userId: string) => {
     try {
-      const { data: dataFriendsIds } =
-        await client.query<FindAllRelationFriendQuery>({
-          query: findAllRelationFriend,
-          variables: { findAllRelationFriendId: userId },
-          fetchPolicy: 'network-only'
-        })
+      const { data: dataFriendsIds } = await client.query<
+        FindAllRelationFriendQuery,
+        FindAllRelationFriendQueryVariables
+      >({
+        query: findAllRelationFriend,
+        variables: { findAllRelationFriendId: userId },
+        fetchPolicy: 'network-only'
+      })
 
       const userIds = dataFriendsIds.findAllRelationFriend
 
-      const { data: dataFriends } = await client.query<FindUsersByUserIdsQuery>(
-        {
-          query: findUsersByUserIds,
-          variables: { userIds }
-        }
-      )
+      const { data: dataFriends } = await client.query<
+        FindUsersByUserIdsQuery,
+        FindUsersByUserIdsQueryVariables
+      >({
+        query: findUsersByUserIds,
+        variables: { userIds }
+      })
       const friends = dataFriends.findUsersByUserIds
 
       const requestVerified = await Promise.all(

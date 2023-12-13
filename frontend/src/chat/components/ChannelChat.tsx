@@ -90,6 +90,7 @@ const ChannelChat: React.FC<ChannelChatProps> = ({
           ...chatState.chat[index],
           content: receivedMessage.content
         }
+        chatState.setChat(updatedChat)
       }
     }
   })
@@ -134,7 +135,13 @@ const ChannelChat: React.FC<ChannelChatProps> = ({
   >(mutationDeleteChannelMessage)
 
   const handleSendMessage = async () => {
-    if (messageInput.trim() === '') return
+    if (
+      channelInfo.channelMemberUser.muted === true ||
+      messageInput.trim() === ''
+    ) {
+      setMessageInput('')
+      return
+    }
     try {
       await sendMessage({
         variables: {
@@ -153,6 +160,14 @@ const ChannelChat: React.FC<ChannelChatProps> = ({
   }
 
   const handleEditMessage = async (messageId: string, newContent: string) => {
+    if (
+      channelInfo.channelMemberUser.muted === true ||
+      newContent.trim() === ''
+    ) {
+      setEditionsInfos(null)
+      return
+    }
+
     const index = chatState.chat.findIndex(
       (message) => message.id === messageId
     )

@@ -1,7 +1,11 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { client } from '../../main'
 import { findUserByContext } from '../graphql'
-import { FindOneUserByContextQuery, User } from '../../gql/graphql'
+import {
+  FindOneChannelByNameQueryVariables,
+  FindOneUserByContextQuery,
+  User
+} from '../../gql/graphql'
 import { validateAvatarUrl } from '../utils'
 
 interface UserState {
@@ -16,7 +20,10 @@ export const setUserInformations = createAsyncThunk(
   'userInformations/fetchUserInformations',
   async () => {
     try {
-      const { data: dataUser } = await client.query<FindOneUserByContextQuery>({
+      const { data: dataUser } = await client.query<
+        FindOneUserByContextQuery,
+        FindOneChannelByNameQueryVariables
+      >({
         query: findUserByContext,
         fetchPolicy: 'network-only'
       })

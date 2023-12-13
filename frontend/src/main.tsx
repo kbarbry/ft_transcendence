@@ -42,7 +42,13 @@ const splitLink = split(
 
 export const client = new ApolloClient({
   link: splitLink,
-  cache: new InMemoryCache()
+  cache: new InMemoryCache({
+    typePolicies: {
+      ChannelInvited: {
+        keyFields: ['channelId', 'userId']
+      }
+    }
+  })
 })
 
 ReactDOM.createRoot(document.getElementById('root')!).render(

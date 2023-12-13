@@ -3,6 +3,7 @@ import { ChannelMessage } from '@prisma/client'
 import { PrismaService } from '../prisma/prisma.service'
 import { CreateChannelMessageInput } from './dto/create-channel-message.input'
 import { UpdateChannelMessageInput } from './dto/update-channel-message.input'
+import { ExceptionChannelMemberIsMuted } from 'src/channel/exceptions/channel-message.exception'
 
 @Injectable()
 export class ChannelMessageService {
@@ -12,6 +13,12 @@ export class ChannelMessageService {
   //  MUTATION
   //**************************************************//
   async create(data: CreateChannelMessageInput): Promise<ChannelMessage> {
+    const channelMember = await this.prisma.channelMember.findUnique({
+      where: {
+        userId_channelId: { channelId: data.channelId, userId: data.senderId }
+      }
+    })
+    if (channelMember?.muted) throw new ExceptionChannelMemberIsMuted()
     return this.prisma.channelMessage.create({
       data
     })

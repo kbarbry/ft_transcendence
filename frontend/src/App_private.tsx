@@ -1,19 +1,20 @@
 import React, { useState, useEffect } from 'react'
-import './App.css'
 
 import { useAuth } from './auth/AuthContext'
 import useLocation from 'wouter/use-location'
-import { useAppDispatch, useAppSelector } from './store/hooks'
+import { useAppDispatch } from './store/hooks'
 import { setUserInformations } from './store/slices/user-informations.slice'
 import AppPrivateStore from './AppPrivate.store'
+import { User } from './gql/graphql'
+import AppPrivateLoading from './AppPrivate.loading'
 
 interface LoadingStoreState {
-  user: boolean
+  user: string | null
   isError: boolean
 }
 
 const LoadingStoreStateInitial: LoadingStoreState = {
-  user: true,
+  user: null,
   isError: false
 }
 
@@ -30,14 +31,14 @@ const App_private: React.FC = () => {
     LoadingStoreStateInitial
   )
 
-  const user = useAppSelector((state) => state.userInformations.user)
-
   useEffect(() => {
     const fetchData = async () => {
       try {
-        dispatch(setUserInformations())
+        const res = await dispatch(setUserInformations())
+        const user = res.payload as User
+
         if (user && user.id) {
-          setLoadingStore((prevLoading) => ({ ...prevLoading, user: false }))
+          setLoadingStore((prevLoading) => ({ ...prevLoading, user: user.id }))
         }
       } catch (e) {
         console.log('Error in AppPrivate.subscription.tsx: ', e)
@@ -49,20 +50,21 @@ const App_private: React.FC = () => {
     fetchData()
   }, [])
 
-  const allLoadingStoreComplete = Object.values(loadingStore).every(
-    (load) => !load
-  )
-
-  if (!allLoadingStoreComplete)
-    return <p>Loading... {JSON.stringify(loadingStore)}</p>
   if (loadingStore.isError) return <p>Error</p>
 
-  if (!user) throw new Error()
+  if (!loadingStore.user)
+    return (
+      <AppPrivateLoading
+        userInfos={false}
+        storeInfos={false}
+        subscriptions={false}
+        key='LoadingStep1'
+      />
+    )
 
   return (
     <>
-      {' '}
-      <AppPrivateStore userId={user.id} key={user.id} />
+      <AppPrivateStore userId={loadingStore.user} key={loadingStore.user} />
     </>
   )
 }

@@ -1,5 +1,4 @@
 import React from 'react'
-import './App.css'
 import { Link, Route, Switch } from 'wouter'
 import { NotFound } from './ErrorPages/404'
 import { ForbiddenAccess } from './ErrorPages/403'

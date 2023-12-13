@@ -8,6 +8,7 @@ export const findOneUser = gql`
   query FindOneUser($findOneUserId: String!) {
     findOneUser(id: $findOneUserId) {
       avatarUrl
+      validation2fa
       createdAt
       id
       languages
@@ -23,6 +24,7 @@ export const findUserByContext = gql`
   query FindOneUserByContext {
     findOneUserByContext {
       avatarUrl
+      validation2fa
       id
       languages
       level
@@ -38,6 +40,7 @@ export const findUsersByUserIds = gql`
   query FindUsersByUserIds($userIds: [String!]!) {
     findUsersByUserIds(userIds: $userIds) {
       avatarUrl
+      validation2fa
       id
       languages
       level
@@ -82,6 +85,15 @@ export const findAllChannelMemberOfUser = gql`
       muted
       nickname
       type
+      userId
+    }
+  }
+`
+
+export const findAllChannelInvitedOfUser = gql`
+  query FindAllChannelInvitedOfUser($userId: String!) {
+    findAllChannelInvitedOfUser(userId: $userId) {
+      channelId
       userId
     }
   }

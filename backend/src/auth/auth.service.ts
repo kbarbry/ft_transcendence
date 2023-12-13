@@ -24,8 +24,8 @@ import * as bcrypt from 'bcrypt'
 import crypto from 'crypto'
 import { encode } from 'hi-base32'
 import * as OTPAuth from 'otpauth'
-import { Request, Response, NextFunction } from 'express'
-import { Context } from '@nestjs/graphql'
+import { Response } from 'express'
+
 import { error } from 'console'
 
 type GoogleUserParams = {
@@ -286,7 +286,7 @@ export class AuthService {
         label: 'Transcendance',
         algorithm: 'SHA1',
         digits: 6,
-        secret: user.otp!
+        secret: user.otp || ''
       })
       const delta = totp.validate({ token })
 
@@ -343,7 +343,7 @@ export class AuthService {
         label: 'Transcendance',
         algorithm: 'SHA1',
         digits: 6,
-        secret: user.otp!
+        secret: user.otp || ''
       })
 
       const delta = totp.validate({ token })

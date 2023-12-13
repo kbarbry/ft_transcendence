@@ -8,17 +8,23 @@ import {
 import { useQuery } from '@apollo/client'
 import { queryFindAllPrivateMessageWith } from '../graphql'
 import PrivateChat from './PrivateChat'
+import PrivateProfile from './PrivateProfile'
 
 interface PrivateChannelProps {
   userInfos: User
-  friend: User
+  friends: User[]
+  friendId: string
 }
 
 const PrivateChannel: React.FC<PrivateChannelProps> = ({
   userInfos,
-  friend
+  friends,
+  friendId
 }) => {
   const [chat, setChat] = useState<PrivateMessage[]>([])
+  const friend = friends.find((friend) => friend.id === friendId)
+
+  if (!friend) throw new Error()
 
   try {
     const { loading, error } = useQuery<
@@ -26,8 +32,8 @@ const PrivateChannel: React.FC<PrivateChannelProps> = ({
       FindAllPrivateMessageWithQueryVariables
     >(queryFindAllPrivateMessageWith, {
       variables: {
-        receiverId: friend.id,
-        senderId: userInfos?.id
+        receiverId: friendId,
+        senderId: userInfos.id
       },
       fetchPolicy: 'network-only',
       onCompleted: (result) => {
@@ -36,9 +42,25 @@ const PrivateChannel: React.FC<PrivateChannelProps> = ({
     })
 
     return (
-      <>
-        <div>
-          <h2>{friend.username}</h2>
+      <div style={{ display: 'flex', height: '100%' }}>
+        <div
+          style={{
+            width: '70%',
+            padding: '0px',
+            borderRight: '1px solid #333'
+          }}
+        >
+          <h2
+            style={{
+              borderBottom: '1px solid #333',
+              paddingBottom: '10px',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center'
+            }}
+          >
+            {friend.username}
+          </h2>
           {loading && <p>Loading conversation...</p>}
           {error && (
             <p>
@@ -48,12 +70,35 @@ const PrivateChannel: React.FC<PrivateChannelProps> = ({
           )}
           <PrivateChat
             userInfos={userInfos}
-            receiver={friend}
+            friends={friends}
+            friendId={friendId}
             chatState={{ chat, setChat }}
             key={userInfos.id + friend.id}
           />
         </div>
-      </>
+        <div
+          style={{
+            width: '30%',
+            padding: '0px 0px 0px 20px'
+          }}
+        >
+          <h2
+            style={{
+              borderBottom: '1px solid #333',
+              paddingBottom: '10px',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center'
+            }}
+          >
+            Members
+          </h2>
+          <div style={{ overflowY: 'auto', maxHeight: '100%' }}>
+            <PrivateProfile member={userInfos} key={userInfos.id} />
+            <PrivateProfile member={friend} key={friendId} />
+          </div>
+        </div>
+      </div>
     )
   } catch (e) {
     console.error('Error in PrivateChannel component:', e)

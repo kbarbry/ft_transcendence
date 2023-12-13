@@ -10,6 +10,8 @@ import {
   FindAllChannelMemberOfUserQueryVariables,
   FindAllInChannelBlockedQuery,
   FindAllInChannelBlockedQueryVariables,
+  FindAllRelationBlockedQuery,
+  FindAllRelationBlockedQueryVariables,
   FindChannelByChannelIdsQuery,
   FindChannelByChannelIdsQueryVariables,
   FindOneChannelQuery,
@@ -24,6 +26,7 @@ import {
   findAllChannelInvitedInChannel,
   findAllChannelMemberInChannel,
   findAllChannelMemberOfUser,
+  findAllRelationBlocked,
   findChannelByChannelIds,
   findOneChannel,
   findUsersByUserIds
@@ -81,6 +84,15 @@ export const setChannelInformations = createAsyncThunk(
             const channel = channels.find((c) => c.id === member.channelId)
 
             if (channel) {
+              const { data: dataBlockedsIds } = await client.query<
+                FindAllRelationBlockedQuery,
+                FindAllRelationBlockedQueryVariables
+              >({
+                query: findAllRelationBlocked,
+                variables: { findAllRelationBlockedByUserId: userId },
+                fetchPolicy: 'network-only'
+              })
+
               const { data: channelMembersInChannelData } = await client.query<
                 FindAllChannelMemberInChannelQuery,
                 FindAllChannelMemberInChannelQueryVariables
@@ -131,21 +143,53 @@ export const setChannelInformations = createAsyncThunk(
                 variables: { userIds: channelBlockedUserIds }
               })
 
+              const userBlocked = dataBlockedsIds.findAllRelationBlockedByUser
+
               const channelMembersInChannel =
                 channelMembersInChannelData.findAllChannelMemberInChannel
+
+              const userMember = channelMembersInChannel.find(
+                (member) => member.userId === userId
+              )
+
+              if (!userMember) throw new Error()
+
+              const filteredChannelMembersInChannel =
+                channelMembersInChannel.filter(
+                  (member) =>
+                    !userBlocked.some(
+                      (blockedUser) => blockedUser === member.userId
+                    )
+                )
 
               const channelInvitedsInChannel =
                 channelInvitedsUserInChannel.findUsersByUserIds
 
+              const filteredChannelInvitedsInChannel =
+                channelInvitedsInChannel.filter(
+                  (member) =>
+                    !userBlocked.some(
+                      (blockedUser) => blockedUser === member.id
+                    )
+                )
+
               const channelBlockedsInChannel =
                 channelBlockedsUserInChannel.findUsersByUserIds
 
+              const filteredChannelBlockedsInChannel =
+                channelBlockedsInChannel.filter(
+                  (member) =>
+                    !userBlocked.some(
+                      (blockedUser) => blockedUser === member.id
+                    )
+                )
+
               return {
                 channel: channel,
-                channelMemberUser: member,
-                channelMembers: channelMembersInChannel,
-                channelInviteds: channelInvitedsInChannel,
-                channelBlockeds: channelBlockedsInChannel
+                channelMemberUser: userMember,
+                channelMembers: filteredChannelMembersInChannel,
+                channelInviteds: filteredChannelInvitedsInChannel,
+                channelBlockeds: filteredChannelBlockedsInChannel
               }
             }
             return null
@@ -213,6 +257,36 @@ export const setChannelInformations = createAsyncThunk(
   }
 )
 
+export const removeChannelInfo = createAsyncThunk(
+  'channelInformations/removeChannelInformations',
+  (channelId: string, { getState }) => {
+    try {
+      const state = getState() as {
+        channelInformations: ChannelInformations
+      }
+      const channelsInfos = state?.channelInformations?.channelsInfos
+      if (!channelsInfos) return []
+
+      const updatedChannelsInfos = channelsInfos.map((existingChannelInfo) => {
+        if (existingChannelInfo.channel.id === channelId) {
+          return null
+        }
+        return existingChannelInfo
+      })
+
+      const filteredChannelsInfos = updatedChannelsInfos.filter(
+        (channelInfo): channelInfo is ChannelAndChannelMember =>
+          channelInfo !== null
+      )
+
+      return filteredChannelsInfos
+    } catch (e) {
+      console.log('Error channel slice, channelMembers: ', e)
+      throw e
+    }
+  }
+)
+
 export const setChannelMembersInformations = createAsyncThunk(
   'channelMembersInformations/fetchChannelMembersInformations',
   async (channelId: string, { getState }) => {
@@ -225,6 +299,18 @@ export const setChannelMembersInformations = createAsyncThunk(
       const channel = channelsInfos.find((c) => c.channel.id === channelId)
 
       if (channel) {
+        const userId = channel.channelMemberUser.userId
+        const { data: dataBlockedsIds } = await client.query<
+          FindAllRelationBlockedQuery,
+          FindAllRelationBlockedQueryVariables
+        >({
+          query: findAllRelationBlocked,
+          variables: {
+            findAllRelationBlockedByUserId: userId
+          },
+          fetchPolicy: 'network-only'
+        })
+
         const { data: channelMembersInChannelData } = await client.query<
           FindAllChannelMemberInChannelQuery,
           FindAllChannelMemberInChannelQueryVariables
@@ -234,15 +320,41 @@ export const setChannelMembersInformations = createAsyncThunk(
           fetchPolicy: 'network-only'
         })
 
+        const userBlocked = dataBlockedsIds.findAllRelationBlockedByUser
+
         const updatedChannelMembers =
           channelMembersInChannelData.findAllChannelMemberInChannel
+
+        const userMember = updatedChannelMembers.find(
+          (member) => member.userId === userId
+        )
+
+        if (!userMember) throw new Error()
+
+        const filteredChannelMembersInChannel = updatedChannelMembers.filter(
+          (member) =>
+            !userBlocked.some((blockedUser) => blockedUser === member.userId)
+        )
+
+        const channelMemberUserValidation = {
+          ...userMember,
+          avatarUrl: await validateAvatarUrl(userMember.avatarUrl)
+        }
+
+        const channelMembersValidated = await Promise.all(
+          filteredChannelMembersInChannel.map(async (member) => ({
+            ...member,
+            avatarUrl: await validateAvatarUrl(member.avatarUrl)
+          }))
+        )
 
         const updatedChannelsInfos = channelsInfos.map(
           (existingChannelInfo) => {
             if (existingChannelInfo.channel.id === channelId) {
               return {
                 ...existingChannelInfo,
-                channelMembers: updatedChannelMembers
+                channelMemberUser: channelMemberUserValidation,
+                channelMembers: channelMembersValidated
               }
             }
             return existingChannelInfo
@@ -316,6 +428,17 @@ export const setChannelInvitedsInformations = createAsyncThunk(
       const channel = channelsInfos.find((c) => c.channel.id === channelId)
 
       if (channel) {
+        const { data: dataBlockedsIds } = await client.query<
+          FindAllRelationBlockedQuery,
+          FindAllRelationBlockedQueryVariables
+        >({
+          query: findAllRelationBlocked,
+          variables: {
+            findAllRelationBlockedByUserId: channel.channelMemberUser.userId
+          },
+          fetchPolicy: 'network-only'
+        })
+
         const { data: channelInvitedsInChannelData } = await client.query<
           FindAllChannelInvitedInChannelQuery,
           FindAllChannelInvitedInChannelQueryVariables
@@ -338,12 +461,30 @@ export const setChannelInvitedsInformations = createAsyncThunk(
           variables: { userIds: updatedChannelInviteds }
         })
 
+        const userBlocked = dataBlockedsIds.findAllRelationBlockedByUser
+
+        const updatedChannelInvitedsUsers =
+          channelInvitedsUserInChannel.findUsersByUserIds
+
+        const filteredChannelInvitedsInChannel =
+          updatedChannelInvitedsUsers.filter(
+            (member) =>
+              !userBlocked.some((blockedUser) => blockedUser === member.id)
+          )
+
+        const channelInvitedsValidated = await Promise.all(
+          filteredChannelInvitedsInChannel.map(async (member) => ({
+            ...member,
+            avatarUrl: await validateAvatarUrl(member.avatarUrl)
+          }))
+        )
+
         const updatedChannelsInfos = channelsInfos.map(
           (existingChannelInfo) => {
             if (existingChannelInfo.channel.id === channelId) {
               return {
                 ...existingChannelInfo,
-                channelInviteds: channelInvitedsUserInChannel.findUsersByUserIds
+                channelInviteds: channelInvitedsValidated
               }
             }
             return existingChannelInfo
@@ -372,6 +513,17 @@ export const setChannelBlockedsInformations = createAsyncThunk(
       const channel = channelsInfos.find((c) => c.channel.id === channelId)
 
       if (channel) {
+        const { data: dataBlockedsIds } = await client.query<
+          FindAllRelationBlockedQuery,
+          FindAllRelationBlockedQueryVariables
+        >({
+          query: findAllRelationBlocked,
+          variables: {
+            findAllRelationBlockedByUserId: channel.channelMemberUser.userId
+          },
+          fetchPolicy: 'network-only'
+        })
+
         const { data: channelBlockedsInChannelData } = await client.query<
           FindAllInChannelBlockedQuery,
           FindAllInChannelBlockedQueryVariables
@@ -393,12 +545,31 @@ export const setChannelBlockedsInformations = createAsyncThunk(
           query: findUsersByUserIds,
           variables: { userIds: channelBlockedUserIds }
         })
+
+        const userBlocked = dataBlockedsIds.findAllRelationBlockedByUser
+
+        const updatedChannelBlockedsUsers =
+          channelBlockedsUserInChannel.findUsersByUserIds
+
+        const filteredChannelBlockedsInChannel =
+          updatedChannelBlockedsUsers.filter(
+            (member) =>
+              !userBlocked.some((blockedUser) => blockedUser === member.id)
+          )
+
+        const channelBlockedsValidated = await Promise.all(
+          filteredChannelBlockedsInChannel.map(async (member) => ({
+            ...member,
+            avatarUrl: await validateAvatarUrl(member.avatarUrl)
+          }))
+        )
+
         const updatedChannelsInfos = channelsInfos.map(
           (existingChannelInfo) => {
             if (existingChannelInfo.channel.id === channelId) {
               return {
                 ...existingChannelInfo,
-                channelBlockeds: channelBlockedsUserInChannel.findUsersByUserIds
+                channelBlockeds: channelBlockedsValidated
               }
             }
             return existingChannelInfo
@@ -437,6 +608,9 @@ export const channelInformationsSlice = createSlice({
         return { ...state, channelsInfos: action.payload }
       })
       .addCase(setChannelBlockedsInformations.fulfilled, (state, action) => {
+        return { ...state, channelsInfos: action.payload }
+      })
+      .addCase(removeChannelInfo.fulfilled, (state, action) => {
         return { ...state, channelsInfos: action.payload }
       })
   }

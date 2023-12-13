@@ -41,9 +41,21 @@ export const Settings: React.FC = () => {
     e.preventDefault()
   }
 
+  const handleLogout = async () => {
+    try {
+      window.location.href = 'http://127.0.0.1:3000/api/auth/logout'
+      localStorage.removeItem('userInfo')
+      sessionStorage.removeItem('userInfo')
+    } catch (e) {
+      console.error('Error in AppPrivate.subscription.tsx handleLogout : ', e)
+      throw e
+    }
+  }
+
   return (
     <div>
       <h1>THIS IS SETTINGS PAGE</h1>
+      <button onClick={handleLogout}>Logout</button>
       <button onClick={handleGetSecretClick}>Get your own QR Code!</button>
 
       {otpAuthURL && (

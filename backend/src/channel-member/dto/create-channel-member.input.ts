@@ -1,6 +1,7 @@
 import { Field, InputType } from '@nestjs/graphql'
 import { IsOptional, IsUrl, Length, Matches } from 'class-validator'
 import { CustomIsName } from '../../common/pipes/username.pipe'
+import { CustomIsChannelPassword } from 'src/common/pipes/password-channel.pipe'
 
 @InputType()
 export class CreateChannelMemberInput {
@@ -20,6 +21,14 @@ export class CreateChannelMemberInput {
       '$property must be between 1 and 30 characters long and must only contain letters, number and single spaces.'
   })
   nickname?: string
+
+  @Field(() => String, { nullable: true })
+  @IsOptional()
+  @CustomIsChannelPassword({
+    message:
+      '$property must be between 1 and 30 characters long, and can only contain these special characters: "!@#$%^&+=" '
+  })
+  channelPassword?: string
 
   @Field(() => String)
   @Matches(/^[0-9a-zA-Z_-]+$/, { message: 'Invalid nanoid characters.' })
