@@ -4,41 +4,35 @@ import { setUserInformations } from '../store/slices/user-informations.slice'
 import { ELanguage, EStatus } from '../gql/graphql'
 import { queryIsUserUsernameUsed, mutationUpdateUser } from './graphql'
 import { useQuery, useMutation } from '@apollo/client'
+import { ExceptionUsernameAlreadyUsed } from '../../../backend/src/user/exceptions/update.user.exception'
 
 const useIsUsernameUsed = (username: string) => {
   const { loading, data } = useQuery(queryIsUserUsernameUsed, {
     variables: { username },
-    skip: username === '' // Ne pas exécuter la requête si le champ est vide
+    skip: username === '' // No works if this field is empty
   })
-
   return { loading, data }
 }
-
-const UpdateProfil = () => {
+export const UpdateProfil: React.FC = () => {
   const dispatch = useAppDispatch()
   const user = useAppSelector((state) => state.userInformations.user)
 
   const [formData, setFormData] = useState({
     username: '',
     languages: ELanguage,
-    status: EStatus
+    status: EStatus,
+    doubleA: Boolean
   })
 
   const { loading: isUsedLoading, data: isUsedData } = useIsUsernameUsed(
     formData.username
   )
 
-  useEffect(() => {
-    if (formData.username !== '' && !isUsedLoading && isUsedData) {
-      // Faire quelque chose avec les données reçues, par exemple, mettre à jour l'état local
-      // ou afficher un message d'erreur si le nom d'utilisateur est déjà utilisé.
-      console.log('IN USE EFFECT')
-      console.log('formData ==>', formData)
-      console.log('formData ==>', formData.username)
-      console.log('formData ==>', formData.languages)
-      console.log('formData ==>', formData.status)
-    }
-  }, [isUsedLoading, isUsedData, formData.username])
+  // useEffect(() => {
+  //   if (formData.username !== '' && !isUsedLoading && isUsedData) {
+  //     dispatch(setUserInformations())
+  //   }
+  // }, [isUsedLoading, isUsedData, formData.username])
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
@@ -46,55 +40,47 @@ const UpdateProfil = () => {
       ...prevData,
       [name]: value
     }))
-    console.log('formData.username:', formData.username, 'STOP')
-    console.log('formData.status:', formData.status, 'STOP')
-    console.log('formData.languages:', formData.languages, 'STOP')
   }
 
   const [updateUserMutation] = useMutation(mutationUpdateUser, {
     variables: {
       id: user?.id,
       data: {
-        avatarUrl: user?.avatarUrl,
+        // avatarUrl: user?.avatarUrl,
         username: formData.username,
         status: formData.status,
-        languages: formData.languages,
-        level: user?.level
+        languages: formData.languages
+        // level: user?.level
       }
     }
   })
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-
     try {
       if (!isUsedData?.isUserUsernameUsed) {
         const { data: updateData } = await updateUserMutation()
-        console.log(
-          '!isUsedData?.isUserUsernameUsed==>',
-          isUsedData?.isUserUsernameUsed,
-          'STOP'
-        )
         if (updateData && updateData.update) {
           dispatch(setUserInformations())
           setFormData({
             username: '',
             languages: ELanguage,
-            status: EStatus
+            status: EStatus,
+            doubleA: Boolean
           })
+        } else {
+          throw new ExceptionUsernameAlreadyUsed(
+            'The new username chosen is already in use. Choose another.'
+          )
         }
-        console.log('updateData ==>', updateData, 'STOP')
-        console.log('updateData.update ==>', updateData.update, 'STOP')
-      } else {
-        console.log('ELSE')
         return
       }
     } catch (error) {
       if (error instanceof Error && error.message) {
-        console.error("Une erreur s'est produite:", error.message)
+        console.error('An error has occurred:', error.message)
       } else {
         console.error(
-          "Une erreur s'est produite, mais aucune information sur l'erreur n'est disponible."
+          'An error has occurred, but no error information is available.'
         )
       }
     }
@@ -106,6 +92,7 @@ const UpdateProfil = () => {
         <h2> Change username</h2>
         Username:
         <input
+          placeholder='New username'
           type='text'
           name='username'
           value={formData.username}
@@ -118,7 +105,7 @@ const UpdateProfil = () => {
         <input
           type='radio'
           name='status'
-          value='Online'
+          value={EStatus.Online}
           onChange={handleInputChange}
         />
       </label>
@@ -127,7 +114,7 @@ const UpdateProfil = () => {
         <input
           type='radio'
           name='status'
-          value='Invisible'
+          value={EStatus.Invisble}
           onChange={handleInputChange}
         />
       </label>
@@ -136,7 +123,7 @@ const UpdateProfil = () => {
         <input
           type='radio'
           name='status'
-          value='Idle'
+          value={EStatus.Idle}
           onChange={handleInputChange}
         />
       </label>
@@ -145,7 +132,7 @@ const UpdateProfil = () => {
         <input
           type='radio'
           name='status'
-          value='DoNotDisturb'
+          value={EStatus.DoNotDisturb}
           onChange={handleInputChange}
         />
       </label>
@@ -155,7 +142,7 @@ const UpdateProfil = () => {
         <input
           type='radio'
           name='languages'
-          value='English'
+          value={ELanguage.English}
           onChange={handleInputChange}
         />
       </label>
@@ -164,7 +151,7 @@ const UpdateProfil = () => {
         <input
           type='radio'
           name='languages'
-          value='French'
+          value={ELanguage.French}
           onChange={handleInputChange}
         />
       </label>
@@ -173,7 +160,7 @@ const UpdateProfil = () => {
         <input
           type='radio'
           name='languages'
-          value='Spanish'
+          value={ELanguage.Spanish}
           onChange={handleInputChange}
         />
       </label>
@@ -183,5 +170,3 @@ const UpdateProfil = () => {
     </form>
   )
 }
-
-export default UpdateProfil

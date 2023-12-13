@@ -62,6 +62,8 @@ import {
   setChannelInvitedsInformations,
   setChannelMembersInformations
 } from './store/slices/channel-informations.slice'
+import { ProfilPage } from './userInfo/ProfilPage'
+import { UpdateProfil } from './userInfo/UpdateProfilForm'
 
 interface AppPrivateSubscriptionProps {
   userId: string
@@ -453,9 +455,22 @@ const AppPrivateSubscription: React.FC<AppPrivateSubscriptionProps> = ({
       </Link>
       <br />
       <br />
+      <br />
+      <Link href='/profilPage'>
+        <a>User Page</a>
+      </Link>
+      <br />
+      <br />
+      <Link href='/updateProfil'>
+        <a>Update Profil</a>
+      </Link>
+      <br />
+      <br />
       <Link href='/'>
         <a>WelcomePage</a>
       </Link>
+      <br />
+      <br />
       <br />
       <button onClick={handleLogout}>Logout</button>
 
@@ -470,6 +485,8 @@ const AppPrivateSubscription: React.FC<AppPrivateSubscriptionProps> = ({
         <Route path='/welcome' component={Welcome} />
         <Route path='/' component={Home} />
         <Route path='/game' component={Game} />
+        <Route path='/profilPage' component={ProfilPage} />
+        <Route path='/updateProfil' component={UpdateProfil} />
 
         <Route component={NotFound} />
       </Switch>

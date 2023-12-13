@@ -2,21 +2,14 @@ import React from 'react'
 import { useAppSelector } from '../store/hooks'
 import { Link } from 'wouter'
 
-export const UserInfo: React.FC = () => {
-  const user = useAppSelector((state) => state.userInformations.user)
+export const ProfilPage: React.FC = () => {
+  let user = useAppSelector((state) => state.userInformations.user)
   return (
     <>
       <div>
         <h1>User Informations</h1>
       </div>
-      {/* <a href={user?.avatarUrl} target='_blank'> */}
       <a href={user?.avatarUrl ?? undefined} target='_blank'>
-        {/* <img
-          src={user?.avatarUrl}
-          className='avatar'
-          alt='Avatar'
-          style={{ width: '100px', height: '100px' }}
-        /> */}
         <img
           src={user?.avatarUrl || undefined}
           className='avatar'
