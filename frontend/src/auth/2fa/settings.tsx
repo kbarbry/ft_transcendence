@@ -76,7 +76,9 @@ export const Settings: React.FC = () => {
       {otpAuthURL && (
         <div>
           <p>QR Code:</p>
-          <QRCode value={otpAuthURL} size={250} />
+          <div style={{ border: '2px solid white', display: 'inline-block' }}>
+            <QRCode value={otpAuthURL} size={250} />
+          </div>
         </div>
       )}
       <br></br>
