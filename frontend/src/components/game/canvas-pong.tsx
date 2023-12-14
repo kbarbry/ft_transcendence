@@ -65,6 +65,18 @@ export const CanvasPong: React.FC<Props> = (props: Props) => {
     }
   }
 
+  function drawPlayersUsername(
+    ctx: CanvasRenderingContext2D,
+    p1nick: string,
+    p2nick: string
+  ) {
+    console.log('p1 = ' + p1nick + ', p2 = ' + p2nick)
+    ctx.fillStyle = 'grey'
+    ctx.font = '30px sans-serif'
+    ctx.fillText(p1nick, 100, 100)
+    ctx.fillText(p2nick, 700, 100)
+  }
+
   function drawElements(ctx: CanvasRenderingContext2D) {
     if (pongGameData === null) {
       return
@@ -82,11 +94,16 @@ export const CanvasPong: React.FC<Props> = (props: Props) => {
       pongGameData.playfield.width,
       pongGameData.playfield.height
     )
-    ctx.fillStyle = 'ghostwhite'
+    drawPlayersUsername(
+      ctx,
+      pongGameData.player1!.nickname,
+      pongGameData.player2!.nickname
+    )
     drawTime(ctx, pongGameData.elapsedTime)
     if (pongGameData.player1 && pongGameData.player2) {
       drawScores(ctx, pongGameData.player1.score, pongGameData.player2.score)
     }
+    ctx.fillStyle = 'ghostwhite'
     drawBall(ctx, pongGameData.ball)
     drawRackets(ctx, pongGameData.p1racket)
     drawRackets(ctx, pongGameData.p2racket)
@@ -109,11 +126,9 @@ export const CanvasPong: React.FC<Props> = (props: Props) => {
       pongGameData.playfield.width,
       pongGameData.playfield.height
     )
-    ctx.fillStyle = 'ghostwhite'
-    ctx.font = '50px sans-serif'
+
     drawWinner(ctx, winner)
     if (pongGameData.message) {
-      ctx.font = '30px sans-serif'
       drawMessage(ctx, pongGameData.message)
     }
   }
