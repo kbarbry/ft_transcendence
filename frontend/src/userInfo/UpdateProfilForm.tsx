@@ -43,7 +43,8 @@ const UpdateProfil: React.FC = () => {
     }
 
     checkUsernameAvailability({
-      variables: { username: newUsername }
+      variables: { username: newUsername },
+      fetchPolicy: 'network-only'
     })
   }
 
