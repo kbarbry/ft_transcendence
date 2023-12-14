@@ -6,7 +6,6 @@
 /src/schema.gql
 
 # package output
-package-lock.json
 .env
 
 # Logs
