@@ -36,7 +36,7 @@ export const WaitingGame: React.FC<Props> = (props: Props) => {
   if (loading) {
     return (
       <>
-        <h1>Waiting Game</h1>
+        <h1>Queue for {props.gameType} game</h1>
         <QueueStatus
           username={props.username}
           playerId={props.playerId}

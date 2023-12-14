@@ -1,5 +1,5 @@
 import React from 'react'
-import { Pong } from '../game/Pong'
+import { Pong } from './Pong'
 import { Matchmaking } from '../matchmaking/matchmaking'
 import { useAppDispatch, useAppSelector } from '../../store/hooks'
 import { setGameIdValue } from '../../store/slices/gameId.slice'
@@ -24,7 +24,6 @@ export const Game: React.FC = () => {
   let gameId: string | null = useAppSelector(
     (state) => state.gameIdInformation.gameId
   )
-
   console.log('Game: gameId = ' + gameId)
 
   function setGameId(id: string | null) {

@@ -18,7 +18,6 @@ export const LeaveButton: React.FC<Props> = (props: Props) => {
   >(leaveGame)
 
   async function leaveHandler() {
-    console.log('LeaveButton: leaveHandler: gameid = ' + props.gameId)
     await leaveGameMutation({
       variables: { gameId: props.gameId, playerId: props.playerId }
     })

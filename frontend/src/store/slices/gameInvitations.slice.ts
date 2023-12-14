@@ -1,11 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit'
-import {
-  EGameType,
-  IsGameValidQuery,
-  IsGameValidQueryVariables
-} from '../../gql/graphql'
-import { client } from '../../main'
-import { isGameValid } from '../graphql'
+import { EGameType } from '../../gql/graphql'
 
 type GameInvitationState = {
   gameType: EGameType
@@ -16,33 +10,10 @@ type GameInvitationState = {
 const initialArrayState: Array<GameInvitationState> =
   new Array<GameInvitationState>()
 
-async function checkGameExistence(gameId: string, userId: string) {
-  const { data } = await client.query<
-    //TODO refresh probleme here
-    IsGameValidQuery,
-    IsGameValidQueryVariables
-  >({
-    query: isGameValid,
-    variables: { gameId, userId }
-  })
-  if (data.isGameValid) {
-    return true
-  }
-  return false
-}
-
 const gameInvitationSlice = createSlice({
   name: 'gameInvitationInformation',
   initialState: initialArrayState,
   reducers: {
-    updateGameInvitations(state, actions) {
-      state = state.filter((invitation) => {
-        if (invitation.gameId === null) {
-          return false
-        }
-        return checkGameExistence(invitation.gameId, actions.payload)
-      })
-    },
     addGameInvitationValue(state, actions) {
       const gameInvitation: GameInvitationState = {
         gameId: actions.payload.gameId,
@@ -64,7 +35,6 @@ const gameInvitationSlice = createSlice({
 })
 
 export const {
-  updateGameInvitations,
   addGameInvitationValue,
   removeOneInvitationValue,
   clearInvitations

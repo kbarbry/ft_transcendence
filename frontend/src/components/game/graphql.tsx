@@ -65,3 +65,9 @@ export const leaveGame = gql`
     quitGame(gameId: $gameId, playerId: $playerId)
   }
 `
+
+export const isGameValid = gql`
+  query IsGameValid($gameId: String!, $userId: String!) {
+    isGameValid(gameId: $gameId, userId: $userId)
+  }
+`
