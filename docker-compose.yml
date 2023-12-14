@@ -1,33 +1,48 @@
-version: "3.5"
+version: "3.9"
 
 services:
-  postgresql:
-    container_name: "postgresql"
-    hostname: "postgresql"
-    image: "postgres:15.1"
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: postgres
-    volumes:
-      - postgres_volume:/var/lib/postgresql/data
+  frontend:
+    image: front
+    container_name: frontend
+    build:
+      context: frontend
+      dockerfile: Dockerfile
     ports:
-      - "5432:5432"
+      - "5173:5173"
     restart: always
 
-  pgadmin:
-    container_name: "pgadmin"
-    depends_on:
-      - postgresql
-    image: dpage/pgadmin4
-    environment:
-      PGADMIN_DEFAULT_EMAIL: pgadmin4@pgadmin.org
-      PGADMIN_DEFAULT_PASSWORD: admin
-      PGADMIN_CONFIG_SERVER_MODE: "False"
+  backend:
+    image: back
+    container_name: backend
+    build:
+      context: backend
+      dockerfile: Dockerfile
     ports:
-      - "5050:80"
+      - "3000:3000"
+    env_file: backend/.env
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: always
+
+  db:
+    container_name: db
+    image: postgres:latest
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=123
+      - POSTGRES_DB=dbprod
+    volumes:
+      - database:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d dbprod -U postgres"]
+      interval: 10s
+      timeout: 60s
+      retries: 5
+      start_period: 30s
     restart: always
 
 volumes:
-  postgres_volume:
-    name: postgres_db
+  database:
