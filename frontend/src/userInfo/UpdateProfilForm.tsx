@@ -13,8 +13,8 @@ import { setUserInformations } from '../store/slices/user-informations.slice'
 const { Option } = Select
 
 const UpdateProfil: React.FC = () => {
-  const dispatch = useAppDispatch()
   const user = useAppSelector((state) => state.userInformations.user)
+  const dispatch = useAppDispatch()
 
   if (!user) throw new Error()
 
@@ -48,13 +48,10 @@ const UpdateProfil: React.FC = () => {
   }
 
   const handleStatusChange = (newStatus: EStatus) => {
-    console.log('IN STATUS CHANGE ==>', newStatus)
     setStatus(newStatus)
   }
 
   const handleLanguageChange = (newLanguage: ELanguage) => {
-    console.log('IN LANGUAGE CHANGE ==>', newLanguage)
-
     setLanguages(newLanguage)
   }
 
@@ -77,7 +74,6 @@ const UpdateProfil: React.FC = () => {
         }
       }
     })
-
     if (updateData) {
       dispatch(setUserInformations())
     }
@@ -90,6 +86,7 @@ const UpdateProfil: React.FC = () => {
         onFinishFailed={onFinishedFailed}
         onFinish={handleUpdateProfil}
       >
+        <h1>Change Informations</h1>
         <Form.Item
           label='Username'
           required={false}
@@ -119,10 +116,9 @@ const UpdateProfil: React.FC = () => {
 
         <Form.Item label='Language' required={false} name='language'>
           <Select onChange={handleLanguageChange}>
-            {/* <Select onChange={(value: ELanguage) => handleLanguageChange(value)}> */}
-            <Option value='English'>English</Option>
-            <Option value='French'>French</Option>
-            <Option value='Spanish'>Spanish</Option>
+            <Option value={ELanguage.English}>English</Option>
+            <Option value={ELanguage.French}>Français</Option>
+            <Option value={ELanguage.Spanish}>Español</Option>
           </Select>
         </Form.Item>
         <Button type='primary' htmlType='submit'>

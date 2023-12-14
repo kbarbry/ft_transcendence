@@ -1,14 +1,13 @@
 import React from 'react'
 import { useAppSelector } from '../store/hooks'
-import { Link } from 'wouter'
+import UpdateProfil from './UpdateProfilForm'
+import { Space } from 'antd'
 
 export const ProfilPage: React.FC = () => {
   const user = useAppSelector((state) => state.userInformations.user)
   return (
-    <>
-      <div>
-        <h1>User Informations</h1>
-      </div>
+    <Space direction='vertical'>
+      <h1>User Informations</h1>
       <a href={user?.avatarUrl ?? undefined} target='_blank'>
         <img
           src={user?.avatarUrl || undefined}
@@ -25,14 +24,13 @@ export const ProfilPage: React.FC = () => {
       <div>Language: {user?.languages}</div>
       <br></br>
       <div>
-        <Link href='/updateProfil'>
-          <button> Update 🔏 </button>
-        </Link>
-      </div>
-      <div>
         <h2>Player Informations</h2>
       </div>
       <div>Level: {user?.level}</div>
-    </>
+      <br></br>
+      <br></br>
+      <br></br>
+      <UpdateProfil />
+    </Space>
   )
 }
