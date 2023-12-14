@@ -18,7 +18,7 @@ const UpdateProfil: React.FC = () => {
 
   if (!user) throw new Error()
 
-  const [username, setUsername] = useState('')
+  const [username, setUsername] = useState<string | undefined>(undefined)
   const [languages, setLanguages] = useState<ELanguage>(user.languages)
   const [status, setStatus] = useState<EStatus>(user.status)
   const [isUsernameUsed, setIsUsernameUsed] = useState(false)
@@ -37,6 +37,7 @@ const UpdateProfil: React.FC = () => {
     setUsername(newUsername)
 
     if (newUsername.trim() === '') {
+      setUsername(undefined)
       setIsUsernameUsed(false)
       return
     }
@@ -108,16 +109,17 @@ const UpdateProfil: React.FC = () => {
         </Form.Item>
 
         <Form.Item label='Status' required={false} name='status'>
-          <Select onChange={(value: EStatus) => handleStatusChange(value)}>
+          <Select onChange={handleStatusChange}>
             <Option value={EStatus.Online}>Online</Option>
             <Option value={EStatus.Invisble}>Invisible</Option>
             <Option value={EStatus.DoNotDisturb}>DoNotDisturb</Option>
-            <Option value={EStatus.Idle}>Idle</Option>
+            <Option value={EStatus.Idle}>Unavailable</Option>
           </Select>
         </Form.Item>
 
         <Form.Item label='Language' required={false} name='language'>
           <Select onChange={handleLanguageChange}>
+            {/* <Select onChange={(value: ELanguage) => handleLanguageChange(value)}> */}
             <Option value='English'>English</Option>
             <Option value='French'>French</Option>
             <Option value='Spanish'>Spanish</Option>
