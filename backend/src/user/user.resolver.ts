@@ -97,4 +97,9 @@ export class UserResolver {
   ): Promise<User[]> {
     return this.userService.findUsersByUserIds(userIds)
   }
+
+  @Query(() => [User])
+  findBestUsers(): Promise<User[]> {
+    return this.userService.findBestUsers()
+  }
 }
