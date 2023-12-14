@@ -14,9 +14,12 @@ type Props = {
 }
 
 export const SubPong: React.FC<Props> = (props: Props) => {
-  function listenPongData(options: OnDataOptions<any>) {
-    let data = options.data.data.pongData as PongGame
-    props.updateGameElement(data)
+  function listenPongData(options: OnDataOptions<PongDataSubscription>) {
+    if (options.data.data === undefined) {
+      return
+    }
+    let pongGameInfo: PongGame = options.data.data.pongData
+    props.updateGameElement(pongGameInfo)
   }
 
   useSubscription<PongDataSubscription, PongDataSubscriptionVariables>(
