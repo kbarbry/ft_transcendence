@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useMutation } from '@apollo/client'
 import { useAppDispatch } from '../../store/hooks'
 import {
@@ -20,6 +20,7 @@ import {
 } from '../../gql/graphql'
 import { setRequestSentInformations } from '../../store/slices/request-sent-informations.slice'
 import DefaultProfilePicture from '/DefaultProfilePicture.svg'
+import PopUpError from '../../ErrorPages/PopUpError'
 
 interface RequestReceivedProps {
   userId: string
@@ -31,6 +32,8 @@ const RequestReceived: React.FC<RequestReceivedProps> = ({
   requestReceived
 }) => {
   const dispatch = useAppDispatch()
+  const [isError, setIsError] = useState(false)
+  const [errorMessage, setErrorMessage] = useState('')
 
   const [acceptRequest] = useMutation<
     CreateRelationRequestsMutation,
@@ -57,9 +60,10 @@ const RequestReceived: React.FC<RequestReceivedProps> = ({
 
       await dispatch(setRequestReceivedInformations(userId))
       await dispatch(setFriendInformations(userId))
-    } catch (e) {
-      console.log('Error in RequestReceived.tsx AcceptRequest: ', e)
-      throw e
+    } catch (Error) {
+      const error_message = (Error as Error).message
+      setIsError(true)
+      setErrorMessage(error_message)
     }
   }
 
@@ -71,9 +75,10 @@ const RequestReceived: React.FC<RequestReceivedProps> = ({
 
       await dispatch(setRequestSentInformations(userId))
       await dispatch(setRequestReceivedInformations(userId))
-    } catch (e) {
-      console.log('Error in RequestReceived.tsx RefuseRequest: ', e)
-      throw e
+    } catch (Error) {
+      const error_message = (Error as Error).message
+      setIsError(true)
+      setErrorMessage(error_message)
     }
   }
 
@@ -90,14 +95,17 @@ const RequestReceived: React.FC<RequestReceivedProps> = ({
 
       await dispatch(setRequestReceivedInformations(userId))
       await dispatch(setBlockedInformations(userId))
-    } catch (e) {
-      console.log('Error in RequestReceived.tsx BlockUser: ', e)
-      throw e
+    } catch (Error) {
+      const error_message = (Error as Error).message
+      setIsError(true)
+      setErrorMessage(error_message)
     }
   }
 
   return (
     <div style={{ display: 'flex', alignItems: 'center' }}>
+      {isError && <PopUpError message={errorMessage} />}
+
       <img
         src={
           requestReceived?.avatarUrl

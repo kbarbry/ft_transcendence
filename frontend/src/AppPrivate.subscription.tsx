@@ -16,7 +16,6 @@ import {
   subscriptionOnRequestCreated,
   subscriptionOnRequestDeleted
 } from './graphql'
-
 import { setRequestReceivedInformations } from './store/slices/request-received-informations.slice'
 import { setRequestSentInformations } from './store/slices/request-sent-informations.slice'
 import { setFriendInformations } from './store/slices/friend-informations.slice'
@@ -527,7 +526,6 @@ const AppPrivateSubscription: React.FC<AppPrivateSubscriptionProps> = ({
         key='LoadingStep1'
       />
     )
-
   return <></>
 }
 

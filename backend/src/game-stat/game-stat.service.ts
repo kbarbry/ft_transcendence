@@ -75,7 +75,8 @@ export class GameStatService {
       },
       orderBy: {
         createdAt: 'desc'
-      }
+      },
+      take: 50
     })
   }
 
@@ -89,7 +90,8 @@ export class GameStatService {
       },
       orderBy: {
         createdAt: 'desc'
-      }
+      },
+      take: 50
     })
   }
 }

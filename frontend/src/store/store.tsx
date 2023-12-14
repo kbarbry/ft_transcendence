@@ -6,6 +6,8 @@ import requestReceivedInformationsReducer from './slices/request-received-inform
 import blockedInformationsReducer from './slices/blocked-informations.slice'
 import channelInformationsReducer from './slices/channel-informations.slice'
 import channelInvitedInformationsReducer from './slices/channel-invitation-informations'
+import gameIdInformationReducer from './slices/gameId.slice'
+import gameInvitationInformationReducer from './slices/gameInvitations.slice'
 import { persistReducer, persistStore } from 'redux-persist'
 import storage from 'redux-persist/lib/storage'
 
@@ -21,7 +23,9 @@ const rootReducer = combineReducers({
   friendInformations: friendInformationsReducer,
   blockedInformations: blockedInformationsReducer,
   requestSentInformations: requestSentInformationsReducer,
-  requestReceivedInformations: requestReceivedInformationsReducer
+  requestReceivedInformations: requestReceivedInformationsReducer,
+  gameIdInformation: gameIdInformationReducer,
+  gameInvitationsInformation: gameInvitationInformationReducer
 })
 
 const persistedReducer = persistReducer(persistConfig, rootReducer)

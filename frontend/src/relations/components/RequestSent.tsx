@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useMutation } from '@apollo/client'
 import { useAppDispatch } from '../../store/hooks'
 import { createRelationBlocked, deleteRelationRequest } from '../graphql'
@@ -12,6 +12,7 @@ import {
   User
 } from '../../gql/graphql'
 import DefaultProfilePicture from '/DefaultProfilePicture.svg'
+import PopUpError from '../../ErrorPages/PopUpError'
 
 interface RequestSentProps {
   userId: string
@@ -20,6 +21,8 @@ interface RequestSentProps {
 
 const RequestSent: React.FC<RequestSentProps> = ({ userId, requestSent }) => {
   const dispatch = useAppDispatch()
+  const [isError, setIsError] = useState(false)
+  const [errorMessage, setErrorMessage] = useState('')
 
   const [removeRequestSent] = useMutation<
     DeleteRelationRequestsMutation,
@@ -37,9 +40,10 @@ const RequestSent: React.FC<RequestSentProps> = ({ userId, requestSent }) => {
       })
 
       await dispatch(setRequestSentInformations(userId))
-    } catch (e) {
-      console.log('Error in RequestSent.tsx RemoveRequest: ', e)
-      throw e
+    } catch (Error) {
+      const error_message = (Error as Error).message
+      setIsError(true)
+      setErrorMessage(error_message)
     }
   }
 
@@ -53,14 +57,17 @@ const RequestSent: React.FC<RequestSentProps> = ({ userId, requestSent }) => {
 
       await dispatch(setRequestSentInformations(userId))
       await dispatch(setBlockedInformations(userId))
-    } catch (e) {
-      console.log('Error in RequestSent.tsx BlockPerson: ', e)
-      throw e
+    } catch (Error) {
+      const error_message = (Error as Error).message
+      setIsError(true)
+      setErrorMessage(error_message)
     }
   }
 
   return (
     <div style={{ display: 'flex', alignItems: 'center' }}>
+      {isError && <PopUpError message={errorMessage} />}
+
       <img
         src={
           requestSent?.avatarUrl ? requestSent.avatarUrl : DefaultProfilePicture
