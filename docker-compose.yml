@@ -4,22 +4,33 @@ services:
   frontend:
     image: front
     container_name: frontend
+    volumes:
+      - ./frontend:/usr/src/app/frontend
+      - /usr/src/app/frontend/node_modules
     build:
       context: frontend
       dockerfile: Dockerfile
     ports:
       - "5173:5173"
+    networks:
+      - webapp
     restart: always
 
   backend:
     image: back
     container_name: backend
+    volumes:
+      - ./backend:/usr/src/app/backend
+      - /usr/src/app/backend/node_modules
     build:
       context: backend
       dockerfile: Dockerfile
+    env_file: ./backend/.env
     ports:
       - "3000:3000"
-    env_file: backend/.env
+    networks:
+      - webapp
+      - database
     depends_on:
       db:
         condition: service_healthy
@@ -36,6 +47,8 @@ services:
       - POSTGRES_DB=dbprod
     volumes:
       - database:/var/lib/postgresql/data
+    networks:
+      - database
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -d dbprod -U postgres"]
       interval: 10s
@@ -46,3 +59,9 @@ services:
 
 volumes:
   database:
+
+networks:
+  webapp:
+    driver: bridge
+  database:
+    driver: bridge

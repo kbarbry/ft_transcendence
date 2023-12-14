@@ -1,21 +1,26 @@
-FROM node:20 As development
+FROM node:latest
 
-WORKDIR /app
+WORKDIR /usr/src/app/backend/
 
-COPY package.json .
+COPY ./package.json         ./
+COPY ./package-lock.json    ./
+COPY ./prisma               ./prisma/
 
-COPY yarn.lock .
+RUN npm i
+RUN npm i global npm@10.2.5
+RUN npx prisma generate --schema=./prisma/schema.prisma
 
-COPY . .
+COPY ./                     ./
 
-RUN yarn install --frozen-lockfile --non-interactive
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/package*.json ./
+COPY --from=builder /app/dist ./dist
 
-RUN yarn run build
-
-RUN yarn global add npm@10.2.5
+# RUN npm run build
 
 EXPOSE 3000
 
-COPY --chmod=744 ./docker-entrypoint.sh /docker-entrypoint.sh
+CMD [ "npm", "run", "dev" ]
+# COPY --chmod=744 ./docker-entrypoint.sh /docker-entrypoint.sh
 
-ENTRYPOINT "/docker-entrypoint.sh"
+# ENTRYPOINT "/docker-entrypoint.sh"

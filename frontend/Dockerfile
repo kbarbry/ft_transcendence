@@ -1,10 +1,15 @@
-FROM node:20
+FROM node:latest
 
-WORKDIR /build
+RUN apt-get update && apt-get install apt-file -y && apt-file update
 
-COPY . .
+WORKDIR /usr/src/app/frontend/
+
+COPY ./package.json         ./
+COPY ./package-lock.json    ./
 
 RUN npm i
+# RUN npm run build
+COPY . .
 
 EXPOSE 5173
 
