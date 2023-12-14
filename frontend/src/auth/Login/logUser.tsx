@@ -1,3 +1,5 @@
+import { LogError } from '../../common/filters/general.filters'
+
 export async function LogUser(mail: string, password: string) {
   try {
     const response = await fetch('http://127.0.0.1:3000/api/auth/login', {
@@ -12,11 +14,15 @@ export async function LogUser(mail: string, password: string) {
         password
       })
     })
-    if (response.ok) {
-      const userData = await response.json()
-      return userData
-    } else return null
-  } catch (error) {
-    throw error
+
+    if (!response.ok) {
+      const errorResponse = await response.json()
+      const errorMessage = errorResponse.message || 'Unknown error'
+      throw new Error(errorMessage)
+    }
+    const userData = await response.json()
+    return userData
+  } catch (Error) {
+    throw Error
   }
 }

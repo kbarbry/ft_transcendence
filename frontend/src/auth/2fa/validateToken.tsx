@@ -1,8 +1,8 @@
-export async function verifySecret(userId : any, token : any) {
+export async function validateSecret(userId : any, token : any) {
     try {
   
       const response = await fetch(
-        'http://127.0.0.1:3000/api/auth/2fa/verify',
+        'http://127.0.0.1:3000/api/auth/2fa/validate',
         {
           method: 'POST',
           headers: {

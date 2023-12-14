@@ -5,8 +5,7 @@ import {
   Post,
   UseGuards,
   Res,
-  Req,
-  UseInterceptors
+  Req
 } from '@nestjs/common'
 import { GoogleAuthGuard } from './guards/google.guard'
 import { School42AuthGuard } from './guards/42.guard'
@@ -14,6 +13,8 @@ import { GithubGuard } from './guards/github.guard'
 import { LocalAuthGuard } from './guards/local.guard'
 import { AuthService } from './auth.service'
 import { CreateUserAuthLocalInput } from './dto/create-user-auth.input'
+import e from 'express'
+import { ExceptionCustom } from 'src/common/exceptions/unauthorized-strategy.exception'
 
 @Controller('auth')
 export class AuthController {
@@ -24,7 +25,7 @@ export class AuthController {
     try {
       await this.authService.createUserLocal(userInput)
     } catch (e) {
-      throw e
+      throw new ExceptionCustom('Signup error')
     }
     return { msg: 'Local SignUp OK' }
   }
@@ -46,7 +47,7 @@ export class AuthController {
     } catch (e) {
       throw e
     }
-    return { msg: 'secret set OK' }
+    return { msg: 'verified Otp' }
   }
 
   @Post('2fa/validate')
@@ -56,15 +57,34 @@ export class AuthController {
     } catch (e) {
       throw e
     }
-    return true
+    return { msg: 'validate Otp' }
+  }
+
+  @Post('2fa/disable')
+  async disableOtp(@Req() req: any, @Res() res: any) {
+    try {
+      const is2fa = await this.authService.isUser2fa(req.user.id)
+      if (is2fa === true) {
+        await this.authService.unset2fa(req.body.id, req.body.token, res)
+      } else {
+        throw new ExceptionCustom('2fa is not enable')
+      }
+    } catch (e) {
+      throw e
+    }
+    return { msg: '2fa disabled' }
   }
 
   @UseGuards(LocalAuthGuard)
   @Post('login')
   async login(@Req() req: any, @Res() res: any) {
-    const is2fa = await this.authService.isUser2fa(req.user.id)
-    if (is2fa === true) {
-      this.authService.unset2faValidation(req.user.id)
+    try {
+      const is2fa = await this.authService.isUser2fa(req.user.id)
+      if (is2fa === true) {
+        this.authService.unset2faValidation(req.user.id)
+      }
+    } catch (e) {
+      throw new ExceptionCustom('Login error')
     }
     return res.status(200).json({ msg: 'Local Auth Login' })
   }

@@ -27,6 +27,7 @@ import * as OTPAuth from 'otpauth'
 import { Response } from 'express'
 
 import { error } from 'console'
+import { ExceptionCustom } from 'src/common/exceptions/unauthorized-strategy.exception'
 
 type GoogleUserParams = {
   email: string
@@ -208,7 +209,6 @@ export class AuthService {
     try {
       const user_id = id
 
-      //Validation for otp
       const otp = await this.OtpValidation({
         id: user_id
       })
@@ -217,10 +217,7 @@ export class AuthService {
       const user = await this.userService.findOne(user_id)
 
       if (!user) {
-        return res.status(404).json({
-          status: 'fail',
-          message: 'No user with that email exists'
-        })
+        throw new ExceptionCustom('invalid user')
       }
 
       const base32_secret = await this.generateRandomBase32()
@@ -241,8 +238,8 @@ export class AuthService {
           id: user_id
         },
         data: {
-          otpUrl: otpauth_url,
-          otp: base32_secret
+          notValidateOtpUrl: otpauth_url,
+          notValidateOtp: base32_secret
         }
       })
 
@@ -251,10 +248,7 @@ export class AuthService {
         otpauth_url
       })
     } catch (error) {
-      res.status(500).json({
-        status: 'error',
-        message: error.message
-      })
+      throw new ExceptionCustom('cant generate QrCode 2fa')
     }
   }
 
@@ -263,7 +257,6 @@ export class AuthService {
       const user_id = id
       const token = secret
 
-      //Validation for otp
       const otp = await this.OtpValidation({
         otp: token,
         id: user_id
@@ -271,12 +264,8 @@ export class AuthService {
       this.OtpValidation(otp)
 
       const user = await this.userService.findOne(user_id)
-      const message = "Token is invalid or user doesn't exist"
       if (!user) {
-        return res.status(401).json({
-          status: 'fail',
-          message
-        })
+        throw new ExceptionCustom('invalid id')
       }
 
       const userMail = user.mail
@@ -287,14 +276,12 @@ export class AuthService {
         algorithm: 'SHA1',
         digits: 6,
         secret: user.otp || ''
+
       })
       const delta = totp.validate({ token })
 
       if (delta === null) {
-        return res.status(401).json({
-          status: 'fail',
-          message
-        })
+        throw new ExceptionCustom('invalid token')
       }
 
       await this.prisma.user.update({
@@ -317,10 +304,7 @@ export class AuthService {
         }
       })
     } catch (error) {
-      res.status(500).json({
-        status: 'error',
-        message: error.message
-      })
+      throw new ExceptionCustom('Cant verify 2fa')
     }
   }
 
@@ -328,14 +312,18 @@ export class AuthService {
     try {
       const user_id = id
       const token = secret
+
+      const otp = await this.OtpValidation({
+        otp: token,
+        id: user_id
+      })
+      this.OtpValidation(otp)
+
       const user = await this.userService.findOne(user_id)
-      const message = "Token is invalid or user doesn't exist"
       if (!user) {
-        return res.status(401).json({
-          status: 'fail',
-          message
-        })
+        throw new ExceptionCustom('invalid UserId')
       }
+
       const userMail = user.mail
 
       const totp = new OTPAuth.TOTP({
@@ -345,26 +333,97 @@ export class AuthService {
         digits: 6,
         secret: user.otp || ''
       })
-
       const delta = totp.validate({ token })
 
       if (delta === null) {
-        return res.status(401).json({
-          status: 'fail',
-          message
-        })
+        throw new ExceptionCustom('invalid token')
       }
 
+      await this.prisma.user.update({
+        where: {
+          id: user_id
+        },
+        data: {
+          doubleA: true,
+          validation2fa: true,
+          ValidateOtp: user.notValidateOtp,
+          notValidateOtpUrl: user.notValidateOtpUrl
+        }
+      })
+
       res.status(200).json({
-        otp_valid: true
+        otp_verified: true,
+        user: {
+          id: user.id,
+          name: user.username,
+          email: user.mail,
+          otp_enabled: user.doubleA
+        }
       })
     } catch (error) {
-      res.status(500).json({
-        status: 'error',
-        message: error.message
-      })
+      throw new ExceptionCustom('Cant validate 2fa')
     }
   }
+
+  async unset2fa(id: string, secret: string, res: Response) {
+    try {
+      const user_id = id
+      const token = secret
+
+      const otp = await this.OtpValidation({
+        otp: token,
+        id: user_id
+      })
+      this.OtpValidation(otp)
+
+      const user = await this.userService.findOne(user_id)
+      if (!user) {
+        throw new ExceptionCustom('invalid UserId')
+      }
+
+      const userMail = user.mail
+
+      const totp = new OTPAuth.TOTP({
+        issuer: userMail,
+        label: 'Transcendance',
+        algorithm: 'SHA1',
+        digits: 6,
+        secret: user.ValidateOtp!
+      })
+      const delta = totp.validate({ token })
+
+      if (delta === null) {
+        throw new ExceptionCustom('invalid Token')
+      }
+
+      await this.prisma.user.update({
+        where: {
+          id: user_id
+        },
+        data: {
+          doubleA: false,
+          validation2fa: true,
+          notValidateOtp: null,
+          notValidateOtpUrl: null,
+          ValidateOtp: null,
+          ValidateOtpUrl: null
+        }
+      })
+
+      res.status(200).json({
+        otp_verified: true,
+        user: {
+          id: user.id,
+          name: user.username,
+          email: user.mail,
+          otp_enabled: user.doubleA
+        }
+      })
+    } catch (error) {
+      throw new ExceptionCustom('Error disable 2fa')
+    }
+  }
+
   async unset2faValidation(id: string) {
     const user_id = id
     await this.prisma.user.update({

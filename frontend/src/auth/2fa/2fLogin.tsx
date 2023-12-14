@@ -4,27 +4,33 @@ import { getId } from '../graphql'
 import { GetIdQuery, GetIdQueryVariables } from '../../gql/graphql'
 import { client } from '../../main'
 import { useLocation } from 'wouter'
+import PopUpError from '../../ErrorPages/PopUpError'
 
 export const validation2fa: React.FC = () => {
   const [otpCode, setOtpCode] = useState('')
   const [, setLocation] = useLocation()
+  const [isError, setIsError] = useState(false)
+  const [errorMessage, setErrorMessage] = useState('')
 
   const handleVerifySecretClick = async () => {
-    try {
-      const { data: dataGetId } = await client.query<
-        GetIdQuery,
-        GetIdQueryVariables
-      >({ query: getId })
+    const { data: dataGetId } = await client.query<
+      GetIdQuery,
+      GetIdQueryVariables
+    >({ query: getId })
 
-      const userId = dataGetId.findOneUserByContext.id
-      const validation = await verifySecret(userId, otpCode)
-      if (validation) {
-        setLocation('http://127.0.0.1:5173', { replace: true })
-        window.location.reload()
-      }
-    } catch (error) {
-      console.error('Erreur lors de la vérification du secret:', error)
-    }
+    const userId = dataGetId.findOneUserByContext.id
+    verifySecret(userId, otpCode)
+      .then((validation) => {
+        if (validation) {
+          setLocation('http://127.0.0.1:5173', { replace: true })
+          window.location.reload()
+        }
+      })
+      .catch((error) => {
+        const error_message = error.message
+        setIsError(true)
+        setErrorMessage(error_message)
+      })
   }
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -34,6 +40,8 @@ export const validation2fa: React.FC = () => {
 
   return (
     <div>
+      {isError && <PopUpError message={errorMessage} />}
+
       <h1>Settings Page</h1>
 
       <form onSubmit={handleSubmit}>
