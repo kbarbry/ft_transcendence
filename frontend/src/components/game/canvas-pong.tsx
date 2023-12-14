@@ -20,7 +20,7 @@ export const CanvasPong: React.FC<Props> = (props: Props) => {
   console.log('CanvasPong:')
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
   const canvasCtxRef = useRef<CanvasRenderingContext2D | null>(null)
-  let pongGameData: PongGame | null = null
+  let pongGameData: PongGame | null = props.getPongData()
 
   const controls: ControlsInput = {
     Down_Key: false,
@@ -110,12 +110,21 @@ export const CanvasPong: React.FC<Props> = (props: Props) => {
       pongGameData.playfield.height
     )
     ctx.fillStyle = 'ghostwhite'
-    ctx!.font = '50px sans-serif'
+    ctx.font = '50px sans-serif'
     drawWinner(ctx, winner)
     if (pongGameData.message) {
-      ctx!.font = '30px sans-serif'
+      ctx.font = '30px sans-serif'
       drawMessage(ctx, pongGameData.message)
     }
+  }
+
+  function drawWaitScreen(ctx: CanvasRenderingContext2D) {
+    ctx.clearRect(0, 0, 800, 600)
+    ctx.fillStyle = 'black'
+    ctx.fillRect(0, 0, 800, 600)
+    ctx.fillStyle = 'ghostwhite'
+    ctx.font = '50px sans-serif'
+    ctx.fillText('Waiting for the second player', 400, 300)
   }
 
   useEffect(() => {
@@ -129,6 +138,9 @@ export const CanvasPong: React.FC<Props> = (props: Props) => {
         ctx!.font = '100px sans-serif'
         ctx!.textAlign = 'center'
 
+        if (pongGameData === null) {
+          drawWaitScreen(ctx!)
+        }
         if (pongGameData?.winner) {
           drawWinScreen(ctx!, pongGameData.winner)
         } else {
