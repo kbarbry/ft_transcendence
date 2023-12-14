@@ -14,18 +14,15 @@ import {
 import DefaultProfilePicture from '/DefaultProfilePicture.svg'
 import PopUpError from '../../ErrorPages/PopUpError'
 
-
 interface RequestSentProps {
   userId: string
   requestSent: User
 }
 
-
 const RequestSent: React.FC<RequestSentProps> = ({ userId, requestSent }) => {
   const dispatch = useAppDispatch()
   const [isError, setIsError] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
-
 
   const [removeRequestSent] = useMutation<
     DeleteRelationRequestsMutation,
@@ -43,27 +40,25 @@ const RequestSent: React.FC<RequestSentProps> = ({ userId, requestSent }) => {
       })
 
       await dispatch(setRequestSentInformations(userId))
-    } catch (e) {
-      throw e
+    } catch (Error) {
+      const error_message = (Error as Error).message
+      setIsError(true)
+      setErrorMessage(error_message)
     }
   }
 
   const handleBlockPersonClick = async () => {
     try {
-      const isblocked = await blockPerson({
+      await blockPerson({
         variables: {
-          data: { userBlockingId: 'userId', userBlockedId: requestSent.id }
+          data: { userBlockingId: userId, userBlockedId: requestSent.id }
         }
       })
-      if (isblocked.errors)
-      {
-        throw new Error('failed is blocked')
-      }
 
       await dispatch(setRequestSentInformations(userId))
       await dispatch(setBlockedInformations(userId))
     } catch (Error) {
-      const error_message = (Error as Error).message;
+      const error_message = (Error as Error).message
       setIsError(true)
       setErrorMessage(error_message)
     }
