@@ -26,4 +26,3 @@ dist-ssr
 
 # Generated
 package-lock.json
-src/gql
