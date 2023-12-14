@@ -70,7 +70,6 @@ export const CanvasPong: React.FC<Props> = (props: Props) => {
     p1nick: string,
     p2nick: string
   ) {
-    console.log('p1 = ' + p1nick + ', p2 = ' + p2nick)
     ctx.fillStyle = 'grey'
     ctx.font = '30px sans-serif'
     ctx.fillText(p1nick, 100, 100)
