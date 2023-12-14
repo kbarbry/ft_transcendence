@@ -1,3 +1,5 @@
+import { LogError } from '../../common/filters/general.filters'
+
 export async function createUser(
   username: string,
   mail: string,
@@ -21,7 +23,12 @@ export async function createUser(
     if (response.ok) {
       const userData = await response.json()
       return userData
-    } else return null
+    } 
+    else if (!response.ok){
+      const errorResponse = await response.json();
+      let errorMessage = errorResponse.message || 'Unknown error';
+      throw new Error(errorMessage)
+    }
   } catch (error) {
     throw error
   }

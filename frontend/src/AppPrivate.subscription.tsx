@@ -22,8 +22,9 @@ import { Welcome } from './Test/Test_welcome'
 import { Link, Route, Switch } from 'wouter'
 import { Settings } from './auth/2fa/settings'
 import { NotFound } from './ErrorPages/404'
-import { Game } from './Test/Test_game'
 import { Home } from './home/Home'
+import { Game } from './components/game/game'
+import { Leaderboard } from './components/leaderboard/leaderboard'
 
 import { setRequestReceivedInformations } from './store/slices/request-received-informations.slice'
 import { setRequestSentInformations } from './store/slices/request-sent-informations.slice'
@@ -454,6 +455,10 @@ const AppPrivateSubscription: React.FC<AppPrivateSubscriptionProps> = ({
         <a>Game</a>
       </Link>
       <br />
+      <Link href='/leaderboard'>
+        <a>Leaderboard</a>
+      </Link>
+      <br />
       <br />
       <br />
       <Link href='/profilPage'>
@@ -482,7 +487,7 @@ const AppPrivateSubscription: React.FC<AppPrivateSubscriptionProps> = ({
         <Route path='/game' component={Game} />
         <Route path='/profilPage' component={ProfilPage} />
         <Route path='/updateProfil' component={UpdateProfil} />
-
+        <Route path='/leaderboard' component={Leaderboard} />     
         <Route component={NotFound} />
       </Switch>
     </>

@@ -22,6 +22,7 @@ import { AuthModule } from './auth/auth.module'
 import { PassportModule } from '@nestjs/passport'
 import { PubSubModule } from './common/ws/pubsub.module'
 import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin/landingPage/default'
+import { PongGameModule } from './pong-game/pong-game.module'
 
 @Module({
   imports: [
@@ -40,6 +41,7 @@ import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin
     UserModule,
     UserPresenceModule,
     PubSubModule,
+    PongGameModule,
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),

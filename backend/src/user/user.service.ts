@@ -11,6 +11,15 @@ export class UserService {
   //  MUTATION
   //**************************************************//
 
+  async incrementLevel(id: string, xpNumber: number): Promise<User> {
+    return this.prisma.user.update({
+      where: {
+        id
+      },
+      data: { level: { increment: xpNumber } }
+    })
+  }
+
   async update(id: string, data: UpdateUserInput): Promise<User> {
     return this.prisma.user.update({
       where: {
@@ -83,6 +92,15 @@ export class UserService {
           in: userIds
         }
       }
+    })
+  }
+
+  async findBestUsers(): Promise<User[]> {
+    return this.prisma.user.findMany({
+      orderBy: {
+        level: 'desc'
+      },
+      take: 25
     })
   }
 }

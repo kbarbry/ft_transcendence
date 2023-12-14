@@ -12,10 +12,14 @@ import FortyTwoLogo from '/42.svg'
 import GithubLogo from '/github.svg'
 import GoogleLogo from '/google.svg'
 
+import PopUpError from '../../ErrorPages/PopUpError'
+
 export const SignIn: React.FC = () => {
   const [email, setEmail] = useState('')
   const [pass, setPass] = useState('')
   const [, setLocation] = useLocation()
+  const [isError, setIsError] = useState(false)
+  const [errorMessage, setErrorMessage] = useState('')
 
   const handleLogUserClick = () => {
     LogUser(email, pass)
@@ -26,20 +30,24 @@ export const SignIn: React.FC = () => {
         }
       })
       .catch((error) => {
-        console.error("Erreur lors de la création de l'utilisateur:", error)
+        const error_message = error.message
+        setIsError(true)
+        setErrorMessage(error_message) 
       })
   }
 
   return (
+    
     <Space direction='vertical'>
+    {isError && <PopUpError message={errorMessage} />}
+
       <Form name='login'>
         <Form.Item
           name='mail'
           rules={[
             { required: true, message: 'Mail is required' },
             { type: 'email', message: 'Must be a valid email' }
-          ]}
-        >
+          ]}>
           <Input
             prefix={<UserOutlined className='site-form-item-icon' />}
             placeholder='youremail@gmail.com'
