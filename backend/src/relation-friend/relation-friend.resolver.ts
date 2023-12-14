@@ -15,7 +15,10 @@ import {
   Unprotected
 } from '../auth/guards/authorization.guard'
 import { PubSub } from 'graphql-subscriptions'
-import { ExceptionRelationFriendForbiddenAccess } from '../user/exceptions/friend.exceptions'
+import {
+  ForbiddenAccessData,
+  userContextGuard
+} from 'src/auth/guards/request.guards'
 
 @Resolver(() => RelationFriend)
 @UseGuards(AuthorizationGuard)
@@ -50,8 +53,8 @@ export class RelationFriendResolver {
     userBId: string,
     @Context() ctx: any
   ): Promise<RelationFriend> {
-    if (ctx?.req?.user?.id !== userAId && ctx?.req?.user?.id !== userBId)
-      throw new ExceptionRelationFriendForbiddenAccess()
+    if (!userContextGuard(ctx?.req?.user?.id, userAId, userBId))
+      throw new ForbiddenAccessData()
 
     const res = await this.relationFriendService.delete(userAId, userBId)
     console.log('deleteRelationFriend')

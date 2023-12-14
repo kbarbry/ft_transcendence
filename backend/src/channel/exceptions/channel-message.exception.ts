@@ -9,10 +9,10 @@ export class ExceptionChannelMessageDoesNotExist extends HttpException {
   }
 }
 
-export class ExceptionChannelMessageForbiddenAccess extends HttpException {
+export class ExceptionChannelMemberIsMuted extends HttpException {
   constructor() {
     super(
-      "You are trying to reach data that you're not authorized to access or edit",
+      'You are trying to send a message but you are muted',
       HttpStatus.CONFLICT
     )
   }

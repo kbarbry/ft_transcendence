@@ -135,6 +135,14 @@ export const mutationCreateChannel = gql`
   }
 `
 
+export const mutationDeleteChannel = gql`
+  mutation DeleteChannel($deleteChannelId: String!) {
+    deleteChannel(id: $deleteChannelId) {
+      id
+    }
+  }
+`
+
 export const mutationCreateChannelMessage = gql`
   mutation CreateChannelMessage($data: CreateChannelMessageInput!) {
     createChannelMessage(data: $data) {
@@ -186,6 +194,71 @@ export const mutationCreateChannelMember = gql`
       muted
       nickname
       type
+      userId
+    }
+  }
+`
+
+export const mutationDeleteChannelMember = gql`
+  mutation DeleteChannelMember($userId: String!, $channelId: String!) {
+    deleteChannelMember(userId: $userId, channelId: $channelId) {
+      userId
+      channelId
+    }
+  }
+`
+
+export const mutationMuteChannelMember = gql`
+  mutation MuteChannelMember($channelId: String!, $userId: String!) {
+    muteChannelMember(channelId: $channelId, userId: $userId) {
+      channelId
+      muted
+      userId
+    }
+  }
+`
+
+export const mutationUnmuteChannelMember = gql`
+  mutation UnmuteChannelMember($channelId: String!, $userId: String!) {
+    unmuteChannelMember(channelId: $channelId, userId: $userId) {
+      channelId
+      muted
+      userId
+    }
+  }
+`
+
+export const mutationCreateChannelBlocked = gql`
+  mutation CreateChannelBlocked($data: CreateChannelBlockedInput!) {
+    createChannelBlocked(data: $data) {
+      channelId
+      userId
+    }
+  }
+`
+
+export const mutationDeleteChannelBlocked = gql`
+  mutation DeleteChannelBlocked($channelId: String!, $userId: String!) {
+    deleteChannelBlocked(channelId: $channelId, userId: $userId) {
+      channelId
+      userId
+    }
+  }
+`
+
+export const mutationCreateChannelInvited = gql`
+  mutation CreateChannelInvited($data: CreateChannelInvitedInput!) {
+    createChannelInvited(data: $data) {
+      channelId
+      userId
+    }
+  }
+`
+
+export const mutationDeleteChannelInvited = gql`
+  mutation DeleteChannelInvited($channelId: String!, $userId: String!) {
+    deleteChannelInvited(channelId: $channelId, userId: $userId) {
+      channelId
       userId
     }
   }

@@ -11,12 +11,3 @@ export class ExceptionRequestingYourself extends HttpException {
     super('You are trying to request yourself', HttpStatus.CONFLICT)
   }
 }
-
-export class ExceptionRelationRequestForbiddenAccess extends HttpException {
-  constructor() {
-    super(
-      "You are trying to reach data that you're not authorized to access or edit",
-      HttpStatus.CONFLICT
-    )
-  }
-}

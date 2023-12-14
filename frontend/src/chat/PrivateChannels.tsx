@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { useAppSelector } from '../store/hooks'
 import PrivateChannel from './components/PrivateChannel'
 import { User } from '../gql/graphql'
+import { Button, List } from 'antd'
 
 const PrivateChannels: React.FC = () => {
   const friends = useAppSelector((state) => state.friendInformations.friends)
@@ -18,33 +19,65 @@ const PrivateChannels: React.FC = () => {
   }
 
   return (
-    <>
-      <div style={{ display: 'flex', flexDirection: 'row' }}>
-        <div style={{ width: '200px', marginRight: '20px' }}>
-          <h2>Direct Messages</h2>
-          <ul>
-            {friends.map((friend) => (
-              <li key={friend.id}>
-                <button onClick={() => setSelectedFriend(friend)}>
-                  {friend.username}
-                </button>
-              </li>
-            ))}
-          </ul>
-        </div>
-        <div>
-          {selectedFriend ? (
-            <PrivateChannel
-              key={selectedFriend.id}
-              userInfos={userInfos}
-              friend={selectedFriend}
-            />
-          ) : (
-            <p>select a friend to start chatting</p>
+    <div style={{ display: 'flex', flexDirection: 'row', height: '100%' }}>
+      <div
+        style={{
+          minWidth: '200px',
+          paddingRight: '20px',
+          overflowY: 'auto',
+          borderRight: '1px solid #333',
+          height: '100%'
+        }}
+      >
+        <h2
+          style={{
+            borderBottom: '1px solid #333',
+            paddingBottom: '10px',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center'
+          }}
+        >
+          Private Message
+        </h2>
+        <List
+          dataSource={friends}
+          renderItem={(friend) => (
+            <List.Item>
+              <Button
+                type='text'
+                block
+                style={{
+                  height: '50px',
+                  border: '1px solid #333',
+                  borderRadius: '3px',
+                  backgroundColor:
+                    selectedFriend && selectedFriend.id === friend.id
+                      ? '#333'
+                      : 'transparent',
+                  transition: 'background-color 0.3s'
+                }}
+                onClick={() => setSelectedFriend(friend)}
+              >
+                {friend.username}
+              </Button>
+            </List.Item>
           )}
-        </div>
+        />
       </div>
-    </>
+      <div style={{ flex: 1 }}>
+        {selectedFriend ? (
+          <PrivateChannel
+            userInfos={userInfos}
+            friends={friends}
+            friendId={selectedFriend.id}
+            key={selectedFriend.id}
+          />
+        ) : (
+          <p>select a friend to start chatting</p>
+        )}
+      </div>
+    </div>
   )
 }
 

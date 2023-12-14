@@ -3,10 +3,7 @@ import { ChannelInvitedService } from './channel-invited.service'
 import { PrismaService } from '../prisma/prisma.service'
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library'
 import { cleanDataBase } from '../../test/setup-environment'
-import {
-  ExceptionChannelIsNotInProtectedMode,
-  ExceptionUserAlreadyInChannel
-} from '../channel/exceptions/invited.exception'
+import { ExceptionUserAlreadyInChannel } from '../channel/exceptions/invited.exception'
 import { ExceptionUserBlockedInChannel } from '../channel/exceptions/blocked.exception'
 
 describe('ChannelInvitedService', () => {
@@ -163,15 +160,6 @@ describe('ChannelInvitedService', () => {
           channelId: 'pihayPlUh0qtDrePkJ87t'
         })
       ).rejects.toThrow(PrismaClientKnownRequestError)
-    })
-
-    it('trying to invite in a non protected channel', async () => {
-      await expect(
-        channelInvitedService.create({
-          userId: '765ayPlUh0qtDrePkJ87t',
-          channelId: 'RDaquZM1MRu7A1btyFiNb'
-        })
-      ).rejects.toThrow(ExceptionChannelIsNotInProtectedMode)
     })
 
     it('trying to invite a user already in the channel', async () => {

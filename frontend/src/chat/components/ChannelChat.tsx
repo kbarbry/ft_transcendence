@@ -1,7 +1,5 @@
 import React, { useState } from 'react'
 import {
-  Channel,
-  ChannelMember,
   ChannelMessage,
   ChannelMessageCreationSubscription,
   ChannelMessageCreationSubscriptionVariables,
@@ -26,11 +24,11 @@ import {
   subscriptionOnChannelMessageEdition
 } from '../graphql'
 import ChannelMessageComponent from './ChannelMessage'
+import { ChannelAndChannelMember } from '../../store/slices/channel-informations.slice'
 
 interface ChannelChatProps {
-  channel: Channel
-  channelMemberUser: ChannelMember
-  channelMembers: ChannelMember[]
+  channelsInfos: ChannelAndChannelMember[]
+  channelId: string
   chatState: {
     chat: ChannelMessage[]
     setChat: React.Dispatch<React.SetStateAction<ChannelMessage[]>>
@@ -38,17 +36,20 @@ interface ChannelChatProps {
 }
 
 const ChannelChat: React.FC<ChannelChatProps> = ({
-  channel,
-  channelMemberUser,
-  channelMembers,
+  channelsInfos,
+  channelId,
   chatState
 }) => {
   const [messageInput, setMessageInput] = useState('')
-
   const [editionInfos, setEditionsInfos] = useState<{
     id: string
     content: string
   } | null>(null)
+  const channelInfo = channelsInfos.find(
+    (channelInfo) => channelInfo.channel.id === channelId
+  )
+
+  if (!channelInfo) throw new Error()
 
   const setChatWithLimit = (message: ChannelMessage) => {
     const updatedChat = [...chatState.chat, message].slice(-50)
@@ -59,7 +60,7 @@ const ChannelChat: React.FC<ChannelChatProps> = ({
     ChannelMessageCreationSubscription,
     ChannelMessageCreationSubscriptionVariables
   >(subscriptionOnChannelMessageCreation, {
-    variables: { channelId: channel.id },
+    variables: { channelId },
     onData: (received) => {
       const receivedMessage = received.data.data?.channelMessageCreation
 
@@ -73,7 +74,7 @@ const ChannelChat: React.FC<ChannelChatProps> = ({
     ChannelMessageEditionSubscription,
     ChannelMessageEditionSubscriptionVariables
   >(subscriptionOnChannelMessageEdition, {
-    variables: { channelId: channel.id },
+    variables: { channelId },
     onData: (received) => {
       const receivedMessage = received.data.data?.channelMessageEdition
 
@@ -89,6 +90,7 @@ const ChannelChat: React.FC<ChannelChatProps> = ({
           ...chatState.chat[index],
           content: receivedMessage.content
         }
+        chatState.setChat(updatedChat)
       }
     }
   })
@@ -97,7 +99,7 @@ const ChannelChat: React.FC<ChannelChatProps> = ({
     ChannelMessageDeletionSubscription,
     ChannelMessageDeletionSubscriptionVariables
   >(subscriptionOnChannelMessageDeletion, {
-    variables: { channelId: channel.id },
+    variables: { channelId },
     onData: (received) => {
       const receivedMessage = received.data.data?.channelMessageDeletion
 
@@ -133,12 +135,19 @@ const ChannelChat: React.FC<ChannelChatProps> = ({
   >(mutationDeleteChannelMessage)
 
   const handleSendMessage = async () => {
+    if (
+      channelInfo.channelMemberUser.muted === true ||
+      messageInput.trim() === ''
+    ) {
+      setMessageInput('')
+      return
+    }
     try {
       await sendMessage({
         variables: {
           data: {
-            channelId: channel.id,
-            senderId: channelMemberUser.userId,
+            channelId: channelId,
+            senderId: channelInfo.channelMemberUser.userId,
             content: messageInput
           }
         }
@@ -151,6 +160,14 @@ const ChannelChat: React.FC<ChannelChatProps> = ({
   }
 
   const handleEditMessage = async (messageId: string, newContent: string) => {
+    if (
+      channelInfo.channelMemberUser.muted === true ||
+      newContent.trim() === ''
+    ) {
+      setEditionsInfos(null)
+      return
+    }
+
     const index = chatState.chat.findIndex(
       (message) => message.id === messageId
     )
@@ -177,18 +194,28 @@ const ChannelChat: React.FC<ChannelChatProps> = ({
     }
   }
 
+  const sender = (id: string) => {
+    if (id === channelInfo.channelMemberUser.userId) {
+      return channelInfo.channelMemberUser
+    } else {
+      const sender = channelInfo.channelMembers.find(
+        (member) => member.userId === id
+      )
+
+      return sender
+    }
+  }
+
   const listItems = chatState.chat.map((message, index) => {
-    const sender = channelMembers.find(
-      (member) => member.userId === message.senderId
-    )
-    if (!sender) return
+    const messageSender = sender(message.senderId)
+    if (!messageSender) return
 
     return (
       <li key={index}>
         <ChannelMessageComponent
           message={message}
-          sender={sender}
-          userId={channelMemberUser.userId}
+          sender={messageSender}
+          userId={channelInfo.channelMemberUser.userId}
           onEdit={handleEditMessage}
           onDelete={handleDeleteMessage}
           editionMode={{ editionInfos, setEditionsInfos }}

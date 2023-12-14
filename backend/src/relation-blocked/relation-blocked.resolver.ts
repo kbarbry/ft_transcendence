@@ -16,7 +16,10 @@ import {
   Unprotected
 } from '../auth/guards/authorization.guard'
 import { PubSub } from 'graphql-subscriptions'
-import { ExceptionRelationBlockedForbiddenAccess } from '../user/exceptions/blocked.exceptions'
+import {
+  ForbiddenAccessData,
+  userContextGuard
+} from 'src/auth/guards/request.guards'
 
 @Resolver(() => RelationBlocked)
 @UseGuards(AuthorizationGuard)
@@ -48,8 +51,8 @@ export class RelationBlockedResolver {
     data: RelationBlockedInput,
     @Context() ctx: any
   ): Promise<RelationBlocked> {
-    if (ctx?.req?.user?.id !== data.userBlockingId)
-      throw new ExceptionRelationBlockedForbiddenAccess()
+    if (!userContextGuard(ctx?.req?.user?.id, data.userBlockingId))
+      throw new ForbiddenAccessData()
 
     const res = await this.relationBlockedService.create(data)
 
@@ -67,8 +70,8 @@ export class RelationBlockedResolver {
     userBId: string,
     @Context() ctx: any
   ): Promise<RelationBlocked> {
-    if (ctx?.req?.user?.id !== userAId)
-      throw new ExceptionRelationBlockedForbiddenAccess()
+    if (!userContextGuard(ctx?.req?.user?.id, userAId))
+      throw new ForbiddenAccessData()
 
     const res = await this.relationBlockedService.delete(userAId, userBId)
     return res

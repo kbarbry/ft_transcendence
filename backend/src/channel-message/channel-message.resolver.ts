@@ -18,10 +18,11 @@ import {
   Unprotected
 } from '../auth/guards/authorization.guard'
 import { PubSub } from 'graphql-subscriptions'
+import { ExceptionChannelMessageDoesNotExist } from 'src/channel/exceptions/channel-message.exception'
 import {
-  ExceptionChannelMessageDoesNotExist,
-  ExceptionChannelMessageForbiddenAccess
-} from 'src/channel/exceptions/channel-message.exception'
+  ForbiddenAccessData,
+  userContextGuard
+} from 'src/auth/guards/request.guards'
 
 @Resolver(() => ChannelMessage)
 @UseGuards(AuthorizationGuard)
@@ -79,8 +80,8 @@ export class ChannelMessageResolver {
     data: CreateChannelMessageInput,
     @Context() ctx: any
   ): Promise<ChannelMessage> {
-    if (ctx?.req?.user?.id !== data.senderId)
-      throw new ExceptionChannelMessageForbiddenAccess()
+    if (!userContextGuard(ctx?.req?.user?.id, data.senderId))
+      throw new ForbiddenAccessData()
 
     const res = await this.channelMessageService.create(data)
 
@@ -99,8 +100,8 @@ export class ChannelMessageResolver {
     const msg = await this.findOneChannelMessage(id)
     if (!msg) throw new ExceptionChannelMessageDoesNotExist()
 
-    if (ctx?.req?.user?.id !== msg.senderId)
-      throw new ExceptionChannelMessageForbiddenAccess()
+    if (!userContextGuard(ctx?.req?.user?.id, msg.senderId))
+      throw new ForbiddenAccessData()
 
     const res = await this.channelMessageService.update(id, data)
 
@@ -116,8 +117,8 @@ export class ChannelMessageResolver {
     const msg = await this.findOneChannelMessage(id)
     if (!msg) throw new ExceptionChannelMessageDoesNotExist()
 
-    if (ctx?.req?.user?.id !== msg.senderId)
-      throw new ExceptionChannelMessageForbiddenAccess()
+    if (!userContextGuard(ctx?.req?.user?.id, msg.senderId))
+      throw new ForbiddenAccessData()
 
     const res = await this.channelMessageService.delete(id)
 

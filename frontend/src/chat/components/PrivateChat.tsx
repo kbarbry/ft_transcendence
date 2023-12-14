@@ -25,10 +25,12 @@ import {
   User
 } from '../../gql/graphql'
 import PrivateMessageComponent from './PrivateMessage'
+import { Button, Input } from 'antd'
 
 interface PrivateChatProps {
   userInfos: User
-  receiver: User
+  friends: User[]
+  friendId: string
   chatState: {
     chat: PrivateMessage[]
     setChat: React.Dispatch<React.SetStateAction<PrivateMessage[]>>
@@ -37,18 +39,19 @@ interface PrivateChatProps {
 
 const PrivateChat: React.FC<PrivateChatProps> = ({
   userInfos,
-  receiver,
+  friends,
+  friendId,
   chatState
 }) => {
   const [messageInput, setMessageInput] = useState('')
-
   const [editionInfos, setEditionsInfos] = useState<{
     id: string
     content: string
   } | null>(null)
-
   const senderId = userInfos.id
-  const receiverId = receiver.id
+  const friend = friends.find((friend) => friend.id === friendId)
+
+  if (!friend) throw new Error()
 
   const setChatWithLimit = (message: PrivateMessage) => {
     const updatedChat = [...chatState.chat, message].slice(-50)
@@ -59,7 +62,7 @@ const PrivateChat: React.FC<PrivateChatProps> = ({
     PrivateMessageCreationSubscription,
     PrivateMessageCreationSubscriptionVariables
   >(subscriptionOnMessageCreation, {
-    variables: { senderId, receiverId },
+    variables: { senderId, receiverId: friend.id },
     onData: (received) => {
       const receivedMessage = received.data.data?.privateMessageCreation
 
@@ -73,7 +76,7 @@ const PrivateChat: React.FC<PrivateChatProps> = ({
     PrivateMessageEditionSubscription,
     PrivateMessageEditionSubscriptionVariables
   >(subscriptionOnMessageEdition, {
-    variables: { senderId, receiverId },
+    variables: { senderId, receiverId: friend.id },
     onData: (received) => {
       const receivedMessage = received.data.data?.privateMessageEdition
 
@@ -98,7 +101,7 @@ const PrivateChat: React.FC<PrivateChatProps> = ({
     PrivateMessageDeletionSubscription,
     PrivateMessageDeletionSubscriptionVariables
   >(subscriptionOnMessageDeletion, {
-    variables: { senderId, receiverId },
+    variables: { senderId, receiverId: friend.id },
     onData: (received) => {
       const receivedMessage = received.data.data?.privateMessageDeletion
 
@@ -137,7 +140,7 @@ const PrivateChat: React.FC<PrivateChatProps> = ({
         variables: {
           data: {
             senderId,
-            receiverId,
+            receiverId: friend.id,
             content: messageInput
           }
         }
@@ -183,7 +186,7 @@ const PrivateChat: React.FC<PrivateChatProps> = ({
   }
 
   const sender = (id: string) => {
-    return id === userInfos.id ? userInfos : receiver
+    return id === userInfos.id ? userInfos : friend
   }
 
   const listItems = chatState.chat.map((message, index) => {
@@ -203,24 +206,42 @@ const PrivateChat: React.FC<PrivateChatProps> = ({
   })
 
   return (
-    <>
+    <div
+      style={{
+        maxHeight: '90%',
+        paddingBottom: '10px',
+        overflowY: 'auto'
+      }}
+    >
       <ul>{listItems}</ul>
-      <div>
-        <input
+      <div
+        style={{
+          position: 'fixed',
+          bottom: 0,
+          padding: '5px',
+          backgroundColor: '#333',
+          borderTop: '1px solid #333',
+          width: '100%',
+          display: 'flex',
+          alignItems: 'center'
+        }}
+      >
+        <Input
           type='text'
           value={messageInput}
           onChange={(e) => setMessageInput(e.target.value)}
           placeholder='Type your message...'
-          onKeyDown={(e) => {
-            if (e.key === 'Enter') handleSendMessage()
-          }}
+          onPressEnter={handleSendMessage}
+          style={{ flex: 1, marginRight: '8px' }} // Take remaining space, add spacing to the right
         />
-        <button onClick={handleSendMessage}>Send</button>
+        <Button type='primary' onClick={handleSendMessage}>
+          Send
+        </Button>
       </div>
       {(errorMessageCreation ||
         errorMessageEdition ||
         errorMessageDeletion) && <div>Error: subscription failed</div>}
-    </>
+    </div>
   )
 }
 

@@ -23,3 +23,12 @@ export class ExceptionChannelMemberNotCreatedInChannelCreation extends HttpExcep
     )
   }
 }
+
+export class ExceptionWrongChannelPassword extends HttpException {
+  constructor() {
+    super(
+      'The password you entered is not the correct one',
+      HttpStatus.CONFLICT
+    )
+  }
+}

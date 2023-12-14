@@ -24,8 +24,8 @@ import * as bcrypt from 'bcrypt'
 import crypto from 'crypto'
 import { encode } from 'hi-base32'
 import * as OTPAuth from 'otpauth'
-import { Request, Response, NextFunction } from 'express'
-import { Context } from '@nestjs/graphql'
+import { Response } from 'express'
+
 import { error } from 'console'
 import { ExceptionCustom } from 'src/common/exceptions/unauthorized-strategy.exception'
 
@@ -275,7 +275,8 @@ export class AuthService {
         label: 'Transcendance',
         algorithm: 'SHA1',
         digits: 6,
-        secret: user.ValidateOtp!
+        secret: user.otp || ''
+
       })
       const delta = totp.validate({ token })
 
@@ -330,7 +331,7 @@ export class AuthService {
         label: 'Transcendance',
         algorithm: 'SHA1',
         digits: 6,
-        secret: user.notValidateOtp!
+        secret: user.otp || ''
       })
       const delta = totp.validate({ token })
 

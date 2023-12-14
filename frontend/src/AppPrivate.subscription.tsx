@@ -5,8 +5,10 @@ import {
   subscriptionOnBlockedReceived,
   subscriptionOnChannelBlockedCreation,
   subscriptionOnChannelBlockedDeletion,
+  subscriptionOnChannelDeletion,
   subscriptionOnChannelEdition,
   subscriptionOnChannelInvitedCreation,
+  subscriptionOnChannelInvitedDeletion,
   subscriptionOnChannelMemberCreation,
   subscriptionOnChannelMemberDeletion,
   subscriptionOnChannelMemberEdition,
@@ -14,18 +16,6 @@ import {
   subscriptionOnRequestCreated,
   subscriptionOnRequestDeleted
 } from './graphql'
-
-import PrivateChannel from './chat/PrivateChannels'
-import Relations from './relations/Relations'
-import Channels from './chat/Channels'
-import { Welcome } from './Test/Test_welcome'
-import { Link, Route, Switch } from 'wouter'
-import { Settings } from './auth/2fa/settings'
-import { NotFound } from './ErrorPages/404'
-import { Home } from './home/Home'
-import { Game } from './components/game/game'
-import { Leaderboard } from './components/leaderboard/leaderboard'
-
 import { setRequestReceivedInformations } from './store/slices/request-received-informations.slice'
 import { setRequestSentInformations } from './store/slices/request-sent-informations.slice'
 import { setFriendInformations } from './store/slices/friend-informations.slice'
@@ -58,19 +48,27 @@ import {
   RelationRequestDeletedSubscriptionVariables
 } from './gql/graphql'
 import {
+  removeChannelInfo,
   setChannelBlockedsInformations,
   setChannelChannelInformations,
+  setChannelInformations,
   setChannelInvitedsInformations,
   setChannelMembersInformations
 } from './store/slices/channel-informations.slice'
-import { ProfilPage } from './userInfo/ProfilPage'
-import UpdateProfil from './userInfo/UpdateProfilForm'
+import {
+  removeChannelInvitation,
+  setChannelInvitations
+} from './store/slices/channel-invitation-informations'
+import AppPrivateLoading from './AppPrivate.loading'
 
 interface AppPrivateSubscriptionProps {
   userId: string
+  setSubscriptionsDone: React.Dispatch<
+    React.SetStateAction<{ done: boolean; error: boolean }>
+  >
 }
 
-export interface LoadingSubscriptionState {
+interface LoadingSubscriptionState {
   channelEdited: boolean
   channelDeleted: boolean
   channelMemberCreated: boolean
@@ -105,7 +103,8 @@ const LoadingSubscriptionStateInitial: LoadingSubscriptionState = {
 }
 
 const AppPrivateSubscription: React.FC<AppPrivateSubscriptionProps> = ({
-  userId
+  userId,
+  setSubscriptionsDone
 }) => {
   const [loadingSubscription, setLoadingSubscription] =
     useState<LoadingSubscriptionState>(LoadingSubscriptionStateInitial)
@@ -221,20 +220,40 @@ const AppPrivateSubscription: React.FC<AppPrivateSubscriptionProps> = ({
         const res = received.data.data?.channelEdition
         await dispatch(setChannelChannelInformations(res.id))
       }
+    },
+    onError: (e) => {
+      console.log(
+        'Error in AppPrivate.subscription.tsx subscriptionOnChannelEdition : ',
+        e
+      )
+      setLoadingSubscription((prevLoading) => ({
+        ...prevLoading,
+        isError: true
+      }))
     }
   })
 
   const { error: errorChannelDeletions } = useSubscription<
     ChannelDeletionSubscription,
     ChannelDeletionSubscriptionVariables
-  >(subscriptionOnChannelEdition, {
+  >(subscriptionOnChannelDeletion, {
     variables: { channelDeletionId: userId },
     onData: async (received) => {
       console.log('ChannelDeleted')
       if (received.data.data?.channelDeletion) {
         const res = received.data.data?.channelDeletion
-        await dispatch(setChannelChannelInformations(res.id))
+        await dispatch(removeChannelInfo(res.id))
       }
+    },
+    onError: (e) => {
+      console.log(
+        'Error in AppPrivate.subscription.tsx subscriptionOnChannelDeletion : ',
+        e
+      )
+      setLoadingSubscription((prevLoading) => ({
+        ...prevLoading,
+        isError: true
+      }))
     }
   })
 
@@ -244,11 +263,24 @@ const AppPrivateSubscription: React.FC<AppPrivateSubscriptionProps> = ({
   >(subscriptionOnChannelMemberCreation, {
     variables: { channelMemberCreationId: userId },
     onData: async (received) => {
-      console.log('ChannelMemberCreation')
+      console.log('ChannelMemberCreation HERE')
       if (received.data.data?.channelMemberCreation) {
         const res = received.data.data?.channelMemberCreation
         await dispatch(setChannelMembersInformations(res.channelId))
+        await dispatch(setChannelInvitations(res.channelId))
+        await dispatch(setChannelInvitedsInformations(res.channelId))
+        await dispatch(setChannelInformations(userId))
       }
+    },
+    onError: (e) => {
+      console.log(
+        'Error in AppPrivate.subscription.tsx subscriptionOnChannelMemberCreation : ',
+        e
+      )
+      setLoadingSubscription((prevLoading) => ({
+        ...prevLoading,
+        isError: true
+      }))
     }
   })
 
@@ -263,6 +295,16 @@ const AppPrivateSubscription: React.FC<AppPrivateSubscriptionProps> = ({
         const res = received.data.data?.channelMemberEdition
         await dispatch(setChannelMembersInformations(res.channelId))
       }
+    },
+    onError: (e) => {
+      console.log(
+        'Error in AppPrivate.subscription.tsx subscriptionOnChannelMemberEdition : ',
+        e
+      )
+      setLoadingSubscription((prevLoading) => ({
+        ...prevLoading,
+        isError: true
+      }))
     }
   })
 
@@ -275,8 +317,20 @@ const AppPrivateSubscription: React.FC<AppPrivateSubscriptionProps> = ({
       console.log('ChannelMemberDeletion')
       if (received.data.data?.channelMemberDeletion) {
         const res = received.data.data?.channelMemberDeletion
+        if (res.userId === userId)
+          await dispatch(removeChannelInfo(res.channelId))
         await dispatch(setChannelMembersInformations(res.channelId))
       }
+    },
+    onError: (e) => {
+      console.log(
+        'Error in AppPrivate.subscription.tsx subscriptionOnChannelMemberDeletion : ',
+        e
+      )
+      setLoadingSubscription((prevLoading) => ({
+        ...prevLoading,
+        isError: true
+      }))
     }
   })
 
@@ -290,21 +344,45 @@ const AppPrivateSubscription: React.FC<AppPrivateSubscriptionProps> = ({
       if (received.data.data?.channelInvitedCreation) {
         const res = received.data.data?.channelInvitedCreation
         await dispatch(setChannelInvitedsInformations(res.channelId))
+        await dispatch(setChannelInvitations(userId))
       }
+    },
+    onError: (e) => {
+      console.log(
+        'Error in AppPrivate.subscription.tsx subscriptionOnChannelInvitedCreation : ',
+        e
+      )
+      setLoadingSubscription((prevLoading) => ({
+        ...prevLoading,
+        isError: true
+      }))
     }
   })
 
   const { error: errorChannelInvitedDeletion } = useSubscription<
     ChannelInvitedDeletionSubscription,
     ChannelInvitedDeletionSubscriptionVariables
-  >(subscriptionOnChannelEdition, {
+  >(subscriptionOnChannelInvitedDeletion, {
     variables: { channelInvitedDeletionId: userId },
     onData: async (received) => {
       console.log('ChannelInvitedDeletion')
       if (received.data.data?.channelInvitedDeletion) {
         const res = received.data.data?.channelInvitedDeletion
         await dispatch(setChannelInvitedsInformations(res.channelId))
+        if (res.userId === userId)
+          await dispatch(removeChannelInvitation(res.channelId))
+        else await dispatch(setChannelInvitations(userId))
       }
+    },
+    onError: (e) => {
+      console.log(
+        'Error in AppPrivate.subscription.tsx subscriptionOnChannelInvitedDeletion : ',
+        e
+      )
+      setLoadingSubscription((prevLoading) => ({
+        ...prevLoading,
+        isError: true
+      }))
     }
   })
 
@@ -316,9 +394,25 @@ const AppPrivateSubscription: React.FC<AppPrivateSubscriptionProps> = ({
     onData: async (received) => {
       console.log('ChannelBlockedCreation')
       if (received.data.data?.channelBlockedCreation) {
-        const res = received.data.data?.channelBlockedCreation
-        await dispatch(setChannelBlockedsInformations(res.channelId))
+        const res = received.data.data.channelBlockedCreation
+        if (res.userId === userId) {
+          await dispatch(removeChannelInfo(res.channelId))
+        } else {
+          await dispatch(setChannelBlockedsInformations(res.channelId))
+          await dispatch(setChannelInvitedsInformations(res.channelId))
+          await dispatch(setChannelMembersInformations(res.channelId))
+        }
       }
+    },
+    onError: (e) => {
+      console.log(
+        'Error in AppPrivate.subscription.tsx subscriptionOnChannelBlockedCreation : ',
+        e
+      )
+      setLoadingSubscription((prevLoading) => ({
+        ...prevLoading,
+        isError: true
+      }))
     }
   })
 
@@ -333,8 +427,22 @@ const AppPrivateSubscription: React.FC<AppPrivateSubscriptionProps> = ({
         const res = received.data.data?.channelBlockedDeletion
         await dispatch(setChannelBlockedsInformations(res.channelId))
       }
+    },
+    onError: (e) => {
+      console.log(
+        'Error in AppPrivate.subscription.tsx subscriptionOnChannelBlockedDeletion : ',
+        e
+      )
+      setLoadingSubscription((prevLoading) => ({
+        ...prevLoading,
+        isError: true
+      }))
     }
   })
+
+  const allLoadingSubscriptionComplete = Object.values(
+    loadingSubscription
+  ).every((load) => !load)
 
   useEffect(() => {
     if (!subBlockedReceived)
@@ -402,96 +510,23 @@ const AppPrivateSubscription: React.FC<AppPrivateSubscriptionProps> = ({
         ...prevLoading,
         channelBlockedDeleted: false
       }))
-  }, [])
 
-  const allLoadingSubscriptionComplete = Object.values(
-    loadingSubscription
-  ).every((load) => !load)
-
-  const handleLogout = async () => {
-    try {
-      window.location.href = 'http://127.0.0.1:3000/api/auth/logout'
-      localStorage.removeItem('userInfo')
-      sessionStorage.removeItem('userInfo')
-    } catch (e) {
-      console.error('Error in AppPrivate.subscription.tsx handleLogout : ', e)
-      throw e
-    }
-  }
+    if (allLoadingSubscriptionComplete)
+      setSubscriptionsDone({ done: true, error: false })
+    if (loadingSubscription.isError)
+      setSubscriptionsDone({ done: false, error: true })
+  }, [allLoadingSubscriptionComplete])
 
   if (!allLoadingSubscriptionComplete)
     return (
-      <>
-        <p>Loading... {JSON.stringify(loadingSubscription)}</p>
-      </>
+      <AppPrivateLoading
+        userInfos={true}
+        storeInfos={true}
+        subscriptions={true}
+        key='LoadingStep1'
+      />
     )
-  if (loadingSubscription.isError) return <p>Error</p>
-
-  return (
-    <>
-      <h2>Private APP</h2>
-
-      <Link href='/settings'>
-        <a>Settings</a>
-      </Link>
-      <br />
-      <Link href='/'>
-        <a>Home</a>
-      </Link>
-      <br />
-      <Link href='/privateChannel'>
-        <a>Private Messages</a>
-      </Link>
-      <br />
-      <Link href='/channel'>
-        <a>Channels</a>
-      </Link>
-      <br />
-      <Link href='/relations'>
-        <a>Friends</a>
-      </Link>
-      <br />
-      <Link href='/game'>
-        <a>Game</a>
-      </Link>
-      <br />
-      <Link href='/leaderboard'>
-        <a>Leaderboard</a>
-      </Link>
-      <br />
-      <br />
-      <br />
-      <Link href='/profilPage'>
-        <a>User Page</a>
-      </Link>
-      <br />
-      <br />
-      <Link href='/'>
-        <a>WelcomePage</a>
-      </Link>
-      <br />
-      <br />
-      <br />
-      <button onClick={handleLogout}>Logout</button>
-
-      <br></br>
-      <br></br>
-      <br></br>
-      <Switch>
-        <Route path='/settings' component={Settings} />
-        <Route path='/privateChannel' component={PrivateChannel} />
-        <Route path='/channel' component={Channels} />
-        <Route path='/relations' component={Relations} />
-        <Route path='/welcome' component={Welcome} />
-        <Route path='/' component={Home} />
-        <Route path='/game' component={Game} />
-        <Route path='/profilPage' component={ProfilPage} />
-        <Route path='/updateProfil' component={UpdateProfil} />
-        <Route path='/leaderboard' component={Leaderboard} />     
-        <Route component={NotFound} />
-      </Switch>
-    </>
-  )
+  return <></>
 }
 
 export default AppPrivateSubscription
