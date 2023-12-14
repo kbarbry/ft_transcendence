@@ -50,6 +50,17 @@ export class PongGameService {
     return false
   }
 
+  isGameValid(userId: string, gameId: string) {
+    const game = gamesMap.get(gameId)
+    if (game === undefined) {
+      return false
+    }
+    if (game.player1.id !== userId && game.player2.id !== userId) {
+      return false
+    }
+    return true
+  }
+
   async sendPongInvitation(
     gameType: EGameType,
     senderNickname: string,

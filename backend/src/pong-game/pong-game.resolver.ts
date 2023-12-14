@@ -1,10 +1,11 @@
-import { Args, Mutation, Resolver, Subscription } from '@nestjs/graphql'
+import { Args, Mutation, Query, Resolver, Subscription } from '@nestjs/graphql'
 import { PubSub } from 'graphql-subscriptions'
 import { PongGame } from './entities/pong-game.entity'
 import { PongGameService } from './pong-game.service'
 import { ControlsInput } from './dto/player-controls.input'
 import { EGameType } from '@prisma/client'
 import { GameInvitation } from './entities/game-invitation.entity'
+import { NanoidValidationPipe } from 'src/common/pipes/nanoid.pipe'
 
 @Resolver(() => PongGame)
 export class PongGameResolver {
@@ -45,7 +46,6 @@ export class PongGameResolver {
     @Args('nickname', { type: () => String })
     nickname: string
   ) {
-    console.log('PongGameResolver:  PongInvitationSubcription:')
     return this.pubSub.asyncIterator('gameInvitation' + nickname)
   }
 
@@ -60,13 +60,13 @@ export class PongGameResolver {
     @Args('receiverNickname', { type: () => String }) receiverNickname: string,
     @Args('gameType', { type: () => EGameType }) gameType: EGameType
   ): Promise<string | null> {
-    const invited: string | null = await this.pongService.sendPongInvitation(
+    const gameId: string | null = await this.pongService.sendPongInvitation(
       gameType,
       senderNickname,
       senderId,
       receiverNickname
     )
-    return invited
+    return gameId
   }
 
   @Mutation(() => Boolean)
@@ -128,5 +128,20 @@ export class PongGameResolver {
       controls
     )
     return isInputUpdated
+  }
+
+  //**************************************************//
+  //  QUERY
+  //**************************************************//
+
+  @Query(() => Boolean)
+  async isGameValid(
+    @Args('userId', { type: () => String }, NanoidValidationPipe)
+    userId: string,
+    @Args('gameId', { type: () => String })
+    gameId: string
+  ): Promise<boolean> {
+    console.log('PongGameResolver: isGameValid:')
+    return this.pongService.isGameValid(userId, gameId)
   }
 }

@@ -16,7 +16,11 @@ export const Matchmaking: React.FC<Props> = (props) => {
   if (gameType === null) {
     return (
       <>
-        <GameSelection username={props.username} setGameType={setGameType} />
+        <GameSelection
+          username={props.username}
+          playerId={props.playerId}
+          setGameType={setGameType}
+        />
       </>
     )
   }
