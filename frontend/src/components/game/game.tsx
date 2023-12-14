@@ -15,21 +15,20 @@ export const Game: React.FC = () => {
   const playerId: string | undefined = useAppSelector(
     (state) => state.userInformations.user?.id
   )
-
-  if (username === undefined || playerId === undefined) {
-    return <p>Error : Username is not set.</p>
-  }
-
   const dispatch = useAppDispatch()
   let gameId: string | null = useAppSelector(
     (state) => state.gameIdInformation.gameId
   )
+
   console.log('Game: gameId = ' + gameId)
 
   function setGameId(id: string | null) {
     dispatch(setGameIdValue(id))
   }
 
+  if (username === undefined || playerId === undefined) {
+    return <p>Error : Username is not set.</p>
+  }
   if (gameId !== null) {
     return <Pong gameId={gameId} username={username} playerId={playerId} />
   }
