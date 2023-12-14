@@ -22,3 +22,8 @@ export class ExceptionInvalidCredentials extends HttpException {
     super(message, HttpStatus.UNAUTHORIZED)
   }
 }
+export class ExceptionCustom extends HttpException {
+  constructor(message: string) {
+    super(message, HttpStatus.CONFLICT)
+  }
+}

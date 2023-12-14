@@ -2,8 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing'
 import { RelationFriendResolver } from './relation-friend.resolver'
 import { RelationFriendService } from './relation-friend.service'
 import { PrismaService } from '../prisma/prisma.service'
-import { RelationFriendInput } from './dto/create-relation-friend.input'
-import { ArgumentMetadata, ValidationPipe } from '@nestjs/common'
+import { PubSubModule } from '../common/ws/pubsub.module'
 
 describe('RelationFriendResolver', () => {
   let relationFriendResolver: RelationFriendResolver
@@ -13,7 +12,6 @@ describe('RelationFriendResolver', () => {
     findAll: jest.fn(),
     isFriend: jest.fn()
   }
-  let validationPipe: ValidationPipe
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -24,7 +22,8 @@ describe('RelationFriendResolver', () => {
           useValue: relationFriendService
         },
         PrismaService
-      ]
+      ],
+      imports: [PubSubModule]
     }).compile()
     relationFriendResolver = module.get<RelationFriendResolver>(
       RelationFriendResolver
@@ -32,7 +31,6 @@ describe('RelationFriendResolver', () => {
   })
 
   beforeEach(async () => {
-    validationPipe = new ValidationPipe()
     jest.clearAllMocks()
     relationFriendService.create.mockReset()
   })
@@ -42,24 +40,22 @@ describe('RelationFriendResolver', () => {
   })
 
   describe('Test Mutation', () => {
-    it('createRelationFriend', async () => {
-      const data: RelationFriendInput = {
-        userAId: '1',
-        userBId: '2'
-      }
-      const resExpected = { id: '1', ...data }
-      relationFriendService.create.mockReturnValue(resExpected)
-
-      const result = await relationFriendResolver.createRelationFriend(data)
-
-      expect(result).toStrictEqual(resExpected)
-      expect(relationFriendService.create).toHaveBeenCalledWith(data)
-    })
     it('deleteRelationFriend', async () => {
       const resExpected = { userBlockingId: '1' }
+      const mockContext = {
+        req: {
+          user: {
+            id: '1'
+          }
+        }
+      }
       relationFriendService.delete.mockReturnValue(resExpected)
 
-      const result = await relationFriendResolver.deleteRelationFriend('1', '2')
+      const result = await relationFriendResolver.deleteRelationFriend(
+        '1',
+        '2',
+        mockContext
+      )
 
       expect(result).toStrictEqual(resExpected)
       expect(relationFriendService.delete).toHaveBeenCalledWith('1', '2')
@@ -96,252 +92,4 @@ describe('RelationFriendResolver', () => {
     expect(result).toStrictEqual(resExpected)
     expect(relationFriendService.findAll).toHaveBeenCalledWith('01')
   })
-  describe('Test ValidationPipe', () => {
-    it('createRelationFriend', async () => {
-      const data = {
-        userAId: '111111111111111111111',
-        userBId: '232222222222222222222'
-      }
-      const metadata: ArgumentMetadata = {
-        type: 'body',
-        metatype: RelationFriendInput,
-        data: ''
-      }
-      const response = await validationPipe.transform(data, metadata)
-      expect(response).toStrictEqual(data)
-    })
-  })
-  describe('Test Error', () => {
-    describe('userAId - nanoid tests (mandatory)', () => {
-      it('invalid nanoid - empty id', async () => {
-        const data = {
-          userBId: 'ValidIdToTestUserAID1'
-        }
-
-        const metadata: ArgumentMetadata = {
-          type: 'body',
-          metatype: RelationFriendInput,
-          data: ''
-        }
-        const res = {
-          message: [
-            'userAId must be exactly 21 characters long.',
-            'Invalid nanoid characters.'
-          ],
-          error: 'Bad Request',
-          statusCode: 400
-        }
-        const thrownError = await validationPipe
-          .transform(data, metadata)
-          .catch((error) => error)
-        expect(thrownError.getResponse()).toStrictEqual(res)
-      })
-      it('invalid nanoid - null nanoId', async () => {
-        const data = {
-          userBId: 'ValidIdToTestUserAID1',
-          userAId: null
-        }
-
-        const metadata: ArgumentMetadata = {
-          type: 'body',
-          metatype: RelationFriendInput,
-          data: ''
-        }
-        const res = {
-          message: [
-            'userAId must be exactly 21 characters long.',
-            'Invalid nanoid characters.'
-          ],
-          error: 'Bad Request',
-          statusCode: 400
-        }
-        const thrownError = await validationPipe
-          .transform(data, metadata)
-          .catch((error) => error)
-        expect(thrownError.getResponse()).toStrictEqual(res)
-      })
-      it('too short nanoid', async () => {
-        const data = {
-          userBId: 'ValidIdToTestUserAID1',
-          userAId: 'drfOayPww2tDrePkqqqJ'
-        }
-
-        const metadata: ArgumentMetadata = {
-          type: 'body',
-          metatype: RelationFriendInput,
-          data: ''
-        }
-        const res = {
-          message: ['userAId must be exactly 21 characters long.'],
-          error: 'Bad Request',
-          statusCode: 400
-        }
-        const thrownError = await validationPipe
-          .transform(data, metadata)
-          .catch((error) => error)
-        expect(thrownError.getResponse()).toStrictEqual(res)
-      })
-      it('too long nanoid', async () => {
-        const data = {
-          userBId: 'ValidIdToTestUserAID1',
-          userAId: 'drfOayPww2qqtDrePkqqqwJ'
-        }
-
-        const metadata: ArgumentMetadata = {
-          type: 'body',
-          metatype: RelationFriendInput,
-          data: ''
-        }
-        const res = {
-          message: ['userAId must be exactly 21 characters long.'],
-          error: 'Bad Request',
-          statusCode: 400
-        }
-        const thrownError = await validationPipe
-          .transform(data, metadata)
-          .catch((error) => error)
-        expect(thrownError.getResponse()).toStrictEqual(res)
-      })
-      it('invalid char in nanoid', async () => {
-        const data = {
-          userBId: 'ValidIdToTestUserAID1',
-          userAId: 'drfOayPww 2tDrePkqqqJ'
-        }
-
-        const metadata: ArgumentMetadata = {
-          type: 'body',
-          metatype: RelationFriendInput,
-          data: ''
-        }
-        const res = {
-          message: ['Invalid nanoid characters.'],
-          error: 'Bad Request',
-          statusCode: 400
-        }
-        const thrownError = await validationPipe
-          .transform(data, metadata)
-          .catch((error) => error)
-        expect(thrownError.getResponse()).toStrictEqual(res)
-      })
-    })
-    describe('userBId - nanoid tests (mandatory)', () => {
-      it('invalid nanoid - empty id', async () => {
-        const data = {
-          userAId: 'ValidIdToTestUserBID1'
-        }
-
-        const metadata: ArgumentMetadata = {
-          type: 'body',
-          metatype: RelationFriendInput,
-          data: ''
-        }
-        const res = {
-          message: [
-            'userBId must be exactly 21 characters long.',
-            'Invalid nanoid characters.'
-          ],
-          error: 'Bad Request',
-          statusCode: 400
-        }
-        const thrownError = await validationPipe
-          .transform(data, metadata)
-          .catch((error) => error)
-        expect(thrownError.getResponse()).toStrictEqual(res)
-      })
-      it('invalid nanoid - null nanoId', async () => {
-        const data = {
-          userAId: 'ValidIdToTestUserBID1',
-          userBId: null
-        }
-
-        const metadata: ArgumentMetadata = {
-          type: 'body',
-          metatype: RelationFriendInput,
-          data: ''
-        }
-        const res = {
-          message: [
-            'userBId must be exactly 21 characters long.',
-            'Invalid nanoid characters.'
-          ],
-          error: 'Bad Request',
-          statusCode: 400
-        }
-        const thrownError = await validationPipe
-          .transform(data, metadata)
-          .catch((error) => error)
-        expect(thrownError.getResponse()).toStrictEqual(res)
-      })
-      it('too short nanoid', async () => {
-        const data = {
-          userAId: 'ValidIdToTestUserBID1',
-          userBId: 'drfOayPww2tDrePkqqqJ'
-        }
-
-        const metadata: ArgumentMetadata = {
-          type: 'body',
-          metatype: RelationFriendInput,
-          data: ''
-        }
-        const res = {
-          message: ['userBId must be exactly 21 characters long.'],
-          error: 'Bad Request',
-          statusCode: 400
-        }
-        const thrownError = await validationPipe
-          .transform(data, metadata)
-          .catch((error) => error)
-        expect(thrownError.getResponse()).toStrictEqual(res)
-      })
-      it('too long nanoid', async () => {
-        const data = {
-          userAId: 'ValidIdToTestUserBID1',
-          userBId: 'drfOayPww2qqtDrePkqqqwJ'
-        }
-
-        const metadata: ArgumentMetadata = {
-          type: 'body',
-          metatype: RelationFriendInput,
-          data: ''
-        }
-        const res = {
-          message: ['userBId must be exactly 21 characters long.'],
-          error: 'Bad Request',
-          statusCode: 400
-        }
-        const thrownError = await validationPipe
-          .transform(data, metadata)
-          .catch((error) => error)
-        expect(thrownError.getResponse()).toStrictEqual(res)
-      })
-      it('invalid char in nanoid', async () => {
-        const data = {
-          userAId: 'ValidIdToTestUserBID1',
-          userBId: 'drfOayPww 2tDrePkqqqJ'
-        }
-
-        const metadata: ArgumentMetadata = {
-          type: 'body',
-          metatype: RelationFriendInput,
-          data: ''
-        }
-        const res = {
-          message: ['Invalid nanoid characters.'],
-          error: 'Bad Request',
-          statusCode: 400
-        }
-        const thrownError = await validationPipe
-          .transform(data, metadata)
-          .catch((error) => error)
-        expect(thrownError.getResponse()).toStrictEqual(res)
-      })
-    })
-  })
 })
-/*
-    tested all methods
-    tested wrong id for findall => Return an empty array
-    tested create Relation with wrong id => PrismaError
-    tested iFriend with wrong Id => Return false(no error is that ok ?)
-    Delete with wrong id return PrismaError
-*/

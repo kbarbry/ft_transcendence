@@ -1,4 +1,4 @@
-import { Resolver, Query, Mutation, Args } from '@nestjs/graphql'
+import { Resolver, Query, Mutation, Args, Subscription } from '@nestjs/graphql'
 import { ChannelService } from './channel.service'
 import { Channel } from './entities/channel.entity'
 import { CreateChannelInput } from './dto/create-channel.input'
@@ -9,12 +9,48 @@ import {
 } from './dto/update-channel.input'
 import { NanoidValidationPipe } from '../common/pipes/nanoid.pipe'
 import { StringValidationPipe } from '../common/pipes/string.pipe'
-import { AuthorizationGuard } from '../auth/guards/authorization.guard'
+import {
+  AuthorizationGuard,
+  Unprotected
+} from '../auth/guards/authorization.guard'
+import { NanoidsValidationPipe } from 'src/common/pipes/nanoids.pipe'
+import { UsernameValidationPipe } from 'src/common/pipes/username.pipe'
+import { PubSub } from 'graphql-subscriptions'
 
 @Resolver(() => Channel)
 @UseGuards(AuthorizationGuard)
 export class ChannelResolver {
-  constructor(private readonly channelService: ChannelService) {}
+  constructor(
+    private readonly channelService: ChannelService,
+    private readonly pubSub: PubSub
+  ) {}
+
+  //**************************************************//
+  //  SUBSCRIPTION
+  //**************************************************//
+  @Subscription(() => Channel, {
+    resolve: (payload) => (payload?.res !== undefined ? payload.res : null)
+  })
+  @Unprotected()
+  channelEdition(
+    @Args('id', { type: () => String }, NanoidValidationPipe)
+    id: string
+  ) {
+    console.log('channelEdition sub')
+    return this.pubSub.asyncIterator('channelEdited-' + id)
+  }
+
+  @Subscription(() => Channel, {
+    resolve: (payload) => (payload?.res !== undefined ? payload.res : null)
+  })
+  @Unprotected()
+  channelDeletion(
+    @Args('id', { type: () => String }, NanoidValidationPipe)
+    id: string
+  ) {
+    console.log('channelDeletion sub')
+    return this.pubSub.asyncIterator('channelDeleted-' + id)
+  }
 
   //**************************************************//
   //  MUTATION
@@ -60,6 +96,21 @@ export class ChannelResolver {
     @Args('id', { type: () => String }, NanoidValidationPipe) id: string
   ): Promise<Channel | null> {
     return this.channelService.findOne(id)
+  }
+
+  @Query(() => Channel)
+  findOneChannelByName(
+    @Args('name', { type: () => String }, UsernameValidationPipe) name: string
+  ): Promise<Channel | null> {
+    return this.channelService.findOneByUsername(name)
+  }
+
+  @Query(() => [Channel])
+  findChannelByChannelIds(
+    @Args('channelIds', { type: () => [String] }, NanoidsValidationPipe)
+    channelIds: string[]
+  ): Promise<Channel[]> {
+    return this.channelService.findChannelByChannelIds(channelIds)
   }
 
   @Query(() => [Channel])

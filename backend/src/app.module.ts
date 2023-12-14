@@ -1,5 +1,4 @@
-import { Module } from '@nestjs/common'
-import { AppService } from './app.service'
+import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common'
 
 import { PrismaModule } from './prisma/prisma.module'
 import { ChannelModule } from './channel/channel.module'
@@ -17,11 +16,12 @@ import { UserPresenceModule } from './user-presence/user-presence.module'
 import { GraphQLModule } from '@nestjs/graphql'
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo'
 import { join } from 'path'
-import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin/landingPage/default'
 import { APP_FILTER } from '@nestjs/core'
 import { GlobalExceptionFilter } from './common/filters/general.filter'
 import { AuthModule } from './auth/auth.module'
 import { PassportModule } from '@nestjs/passport'
+import { PubSubModule } from './common/ws/pubsub.module'
+import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin/landingPage/default'
 
 @Module({
   imports: [
@@ -39,20 +39,28 @@ import { PassportModule } from '@nestjs/passport'
     RelationRequestsModule,
     UserModule,
     UserPresenceModule,
+    PubSubModule,
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
       sortSchema: true,
       playground: false,
       includeStacktraceInErrorResponses: false,
-      plugins: [ApolloServerPluginLandingPageLocalDefault()]
+      plugins: [ApolloServerPluginLandingPageLocalDefault()],
+      subscriptions: {
+        'graphql-ws': {
+          path: `/graphql`
+        }
+      }
     }),
     PassportModule.register({ session: true })
   ],
   controllers: [],
-  providers: [
-    AppService,
-    { provide: APP_FILTER, useClass: GlobalExceptionFilter }
-  ]
+  providers: [{ provide: APP_FILTER, useClass: GlobalExceptionFilter }]
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    // consumer.apply(School42AuthGuard).forRoutes('api/auth/42/redirect')
+    // consumer.apply(Check2faCompletedMiddleware).forRoutes('auth/42/redirect') // Then, apply Check2faCompletedMiddleware
+  }
+}

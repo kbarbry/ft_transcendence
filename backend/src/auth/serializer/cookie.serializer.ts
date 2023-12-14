@@ -5,12 +5,24 @@ import { ExceptionInvalidCredentials } from 'src/common/exceptions/unauthorized-
 import { ELogType, LoggingService } from 'src/common/logging/file.logging'
 import { UserService } from 'src/user/user.service'
 
-class MinimalUserData {
+export class MinimalUserData {
   id: string
+  validation2fa: boolean
   mail: string
   username: string
   createdAt: Date
   secretMessage: string
+}
+
+export function setMinimalUserData(user: User): MinimalUserData {
+  return {
+    id: user.id,
+    mail: user.mail,
+    validation2fa: user.validation2fa,
+    username: user.username,
+    createdAt: user.createdAt,
+    secretMessage: 'Too bad... We thought about it...'
+  }
 }
 
 @Injectable()
@@ -20,18 +32,8 @@ export class SessionSerializer extends PassportSerializer {
 
   private readonly loggingService = new LoggingService(ELogType.login)
 
-  private setMinimalUserData(user: User): MinimalUserData {
-    return {
-      id: user.id,
-      mail: user.mail,
-      username: user.username,
-      createdAt: user.createdAt,
-      secretMessage: 'Too bad... We thought about it...'
-    }
-  }
-
   serializeUser(user: User, done: CallableFunction) {
-    const minimalUserData: MinimalUserData = this.setMinimalUserData(user)
+    const minimalUserData: MinimalUserData = setMinimalUserData(user)
     try {
       this.loggingService.log(JSON.stringify(minimalUserData))
       done(null, minimalUserData)
@@ -46,7 +48,7 @@ export class SessionSerializer extends PassportSerializer {
       const user = await this.userService.findOne(payload.id)
       if (!user)
         throw new ExceptionInvalidCredentials('OAuth20 failed: user not found')
-      const minimalUserData: MinimalUserData = this.setMinimalUserData(user)
+      const minimalUserData: MinimalUserData = setMinimalUserData(user)
       return done(null, minimalUserData)
     } catch (e) {
       this.loggingService.log('- deserializer crashed -')

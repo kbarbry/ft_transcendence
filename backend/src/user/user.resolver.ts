@@ -1,13 +1,20 @@
-import { Resolver, Query, Mutation, Args } from '@nestjs/graphql'
+import { Resolver, Query, Mutation, Args, Context } from '@nestjs/graphql'
 import { UserService } from './user.service'
 import { User } from './entities/user.entity'
-import { UseGuards, ValidationPipe } from '@nestjs/common'
+import {
+  UnauthorizedException,
+  UseGuards,
+  ValidationPipe
+} from '@nestjs/common'
 import { UpdateUserInput } from './dto/update-user.input'
 import { NanoidValidationPipe } from '../common/pipes/nanoid.pipe'
 import { NanoidsValidationPipe } from '../common/pipes/nanoids.pipe'
 import { EmailValidationPipe } from '../common/pipes/email.pipe'
 import { UsernameValidationPipe } from '../common/pipes/username.pipe'
-import { AuthorizationGuard } from '../auth/guards/authorization.guard'
+import {
+  AuthorizationGuard,
+  Unprotected2fa
+} from '../auth/guards/authorization.guard'
 
 @Resolver(() => User)
 @UseGuards(AuthorizationGuard)
@@ -44,6 +51,13 @@ export class UserResolver {
   }
 
   @Query(() => User)
+  @Unprotected2fa()
+  findOneUserByContext(@Context() ctx: any): Promise<User | null> {
+    if (!ctx?.req?.user?.id) throw new UnauthorizedException('User not found')
+    return this.userService.findOne(ctx.req.user.id)
+  }
+
+  @Query(() => User)
   findOneUserbyMail(
     @Args('mail', { type: () => String }, EmailValidationPipe) mail: string
   ): Promise<User | null> {
@@ -59,11 +73,21 @@ export class UserResolver {
   }
 
   @Query(() => Boolean)
+  @Unprotected2fa()
   isUserUsernameUsed(
     @Args('username', { type: () => String }, UsernameValidationPipe)
     username: string
   ): Promise<boolean> {
     return this.userService.isUsernameUsed(username)
+  }
+
+  @Query(() => Boolean)
+  @Unprotected2fa()
+  isUserMailUsed(
+    @Args('mail', { type: () => String }, EmailValidationPipe)
+    mail: string
+  ): Promise<boolean> {
+    return this.userService.isMailUsed(mail)
   }
 
   @Query(() => [User])

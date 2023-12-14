@@ -5,3 +5,21 @@ export class ExceptionPrivateMessageYourself extends HttpException {
     super('You are trying to send a message to yourself', HttpStatus.CONFLICT)
   }
 }
+
+export class ExceptionPrivateMessageDoesNotExist extends HttpException {
+  constructor() {
+    super(
+      "You are trying to reach a message that doesn't exist",
+      HttpStatus.CONFLICT
+    )
+  }
+}
+
+export class ExceptionPrivateMessageForbiddenAccess extends HttpException {
+  constructor() {
+    super(
+      "You are trying to reach data that you're not authorized to access or edit",
+      HttpStatus.CONFLICT
+    )
+  }
+}

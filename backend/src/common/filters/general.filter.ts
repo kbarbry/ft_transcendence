@@ -172,6 +172,17 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       this.loggingService.log('- custom class validator error -')
 
       customError = new CustomRestApiError(type, code, message, meta)
+    } else if (exception.status === HttpStatus.CONFLICT) {
+      const type = EErrorOrigin.CustomException
+      const code = HttpStatus.CONFLICT
+      const meta = exception.getResponse()
+      const message = exception
+        ? exception.message
+        : `Your data contains some conflict with our application`
+      statusCode = HttpStatus.CONFLICT
+      this.loggingService.log('- custom conflict error -')
+
+      customError = new CustomRestApiError(type, code, message, meta)
     } else if (exception instanceof ExceptionUnauthorizedStrategy) {
       const type = EErrorOrigin.InvalidStrategy
       const code = HttpStatus.UNAUTHORIZED
