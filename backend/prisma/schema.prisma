@@ -24,8 +24,6 @@ model User {
   ValidateOtpUrl    String?
   validation2fa     Boolean            @default(true)
 
-
-
   status            EStatus            @default(Online)
   languages         ELanguage          @default(English)
   level             Float              @default(0)

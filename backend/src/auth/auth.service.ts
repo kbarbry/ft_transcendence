@@ -275,8 +275,7 @@ export class AuthService {
         label: 'Transcendance',
         algorithm: 'SHA1',
         digits: 6,
-        secret: user.otp || ''
-
+        secret: user.ValidateOtp!
       })
       const delta = totp.validate({ token })
 
@@ -331,7 +330,7 @@ export class AuthService {
         label: 'Transcendance',
         algorithm: 'SHA1',
         digits: 6,
-        secret: user.otp || ''
+        secret: user.notValidateOtp!
       })
       const delta = totp.validate({ token })
 
@@ -347,7 +346,7 @@ export class AuthService {
           doubleA: true,
           validation2fa: true,
           ValidateOtp: user.notValidateOtp,
-          notValidateOtpUrl: user.notValidateOtpUrl
+          ValidateOtpUrl: user.notValidateOtpUrl
         }
       })
 

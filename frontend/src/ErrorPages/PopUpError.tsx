@@ -1,45 +1,29 @@
-import React, { useState, useEffect } from 'react';
-import { Alert } from 'antd';
-import CloseIcon from '@mui/icons-material/Close';
-import IconButton from '@mui/material/IconButton';
+import React, { useState, useEffect } from 'react'
+import { Alert } from 'antd'
 
 interface PopUpErrorProps {
-  message: string;
+  message: string
 }
 
 const PopUpError: React.FC<PopUpErrorProps> = ({ message }) => {
-  const [isAlertVisible, setIsAlertVisible] = useState(true);
+  const [isAlertVisible, setIsAlertVisible] = useState(true)
 
   useEffect(() => {
     // Réinitialiser l'état lorsque le message change
-    setIsAlertVisible(true);
-  }, [message]);
+    setIsAlertVisible(true)
+  }, [message])
 
   const handleClose = () => {
-    setIsAlertVisible(false);
-  };
+    setIsAlertVisible(false)
+  }
 
   return (
     <>
       {isAlertVisible && (
-        <Alert
-          message='Error'
-          description={message}
-          type='error'
-          action={
-            <IconButton
-              aria-label='close'
-              color='inherit'
-              size='small'
-              onClick={handleClose}
-            >
-              <CloseIcon fontSize='inherit' />
-            </IconButton>
-          }
-        />
+        <Alert message='Error' description={message} type='error' />
       )}
     </>
-  );
-};
+  )
+}
 
-export default PopUpError;
+export default PopUpError
