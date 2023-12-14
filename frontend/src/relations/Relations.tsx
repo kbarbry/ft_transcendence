@@ -9,8 +9,11 @@ import { useAppDispatch, useAppSelector } from '../store/hooks'
 import { setRequestSentInformations } from '../store/slices/request-sent-informations.slice'
 import { setRequestReceivedInformations } from '../store/slices/request-received-informations.slice'
 import { setFriendInformations } from '../store/slices/friend-informations.slice'
+import PopUpError from '../ErrorPages/PopUpError'
 
 const Relations: React.FC = () => {
+  const [isError, setIsError] = useState(false)
+  const [errorMessage, setErrorMessage] = useState('')
   const dispatch = useAppDispatch()
   const user = useAppSelector((state) => state.userInformations.user)
   const friends = useAppSelector((state) => state.friendInformations.friends)
@@ -29,7 +32,9 @@ const Relations: React.FC = () => {
   const [usernameInput, setUsernameInput] = useState<string>('')
 
   const [createRequest] = useMutation(createRelationRequest)
-  const [findUserByUsername] = useLazyQuery(findOneUserByUsername)
+  const [findUserByUsername] = useLazyQuery(
+    findOneUserByUsername
+  )
 
   const handleItemClick = (item: string) => {
     setSelectedItem(item)
@@ -42,14 +47,20 @@ const Relations: React.FC = () => {
   }
 
   const handleAddFriendClick = async () => {
-    if (usernameInput.trim() === '') {
-      return
-    }
     try {
+      if (usernameInput.trim() === '') {
+        throw new Error('empty')
+      }
       const userByUsername = await findUserByUsername({
         variables: { username: usernameInput }
       })
+      if (userByUsername.error) {
+        throw new Error('Failed to add friend') as Error
+      }
       const foundUserData = userByUsername.data?.findOneUserByUsername || null
+      if (foundUserData.error) {
+        throw new Error('Failed to add friend') as Error
+      }
       if (foundUserData) {
         await createRequest({
           variables: {
@@ -62,14 +73,17 @@ const Relations: React.FC = () => {
         await dispatch(setRequestReceivedInformations(user.id))
         setUsernameInput('')
       }
-    } catch (error) {
-      setUsernameInput('')
-      console.error('Error adding friend: ', error)
+    } catch (Error) {
+      const error_message = (Error as Error).message;
+      setIsError(true)
+      setErrorMessage(error_message)
     }
   }
 
   return (
     <>
+      {isError && <PopUpError message={errorMessage} />}
+
       <div style={{ display: 'flex', flexDirection: 'row' }}>
         <div style={{ width: '200px', marginRight: '20px' }}>
           <h2>Relations</h2>
