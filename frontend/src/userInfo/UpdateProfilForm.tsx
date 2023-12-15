@@ -94,18 +94,28 @@ const UpdateProfil: React.FC = () => {
           name='username'
           rules={[
             {
-              validator: async () => {
-                if (isUsernameUsed) {
+              validator: async (_, newUsername) => {
+                if (!newUsername) {
+                  return Promise.resolve()
+                }
+                try {
+                  const { data } = await checkUsernameAvailability({
+                    variables: { username: newUsername },
+                    fetchPolicy: 'network-only'
+                  })
+                  if (data.isUserUsernameUsed) {
+                    throw new Error('Username already used')
+                  }
+                  return Promise.resolve()
+                } catch (error) {
                   return Promise.reject('Username already used')
                 }
-                return Promise.resolve()
               }
             }
           ]}
         >
           <Input placeholder='New username' onChange={handleUsernameChange} />
         </Form.Item>
-
         <Form.Item label='Status' required={false} name='status'>
           <Select onChange={handleStatusChange}>
             <Option value={EStatus.Online}>Online</Option>
@@ -114,7 +124,6 @@ const UpdateProfil: React.FC = () => {
             <Option value={EStatus.Idle}>Unavailable</Option>
           </Select>
         </Form.Item>
-
         <Form.Item label='Language' required={false} name='language'>
           <Select onChange={handleLanguageChange}>
             <Option value={ELanguage.English}>English</Option>
@@ -129,5 +138,4 @@ const UpdateProfil: React.FC = () => {
     </Space>
   )
 }
-
 export default UpdateProfil

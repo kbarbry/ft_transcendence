@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Alert } from 'antd'
+import CloseIcon from '@mui/icons-material/Close'
+import IconButton from '@mui/material/IconButton'
 
 interface PopUpErrorProps {
   message: string
@@ -12,7 +14,7 @@ const PopUpError: React.FC<PopUpErrorProps> = ({ message }) => {
     // Réinitialiser l'état lorsque le message change
     setIsAlertVisible(true)
   }, [message])
-
+a
   const handleClose = () => {
     setIsAlertVisible(false)
   }
