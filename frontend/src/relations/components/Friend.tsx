@@ -39,7 +39,7 @@ const Friend: React.FC<FriendProps> = ({ userId, friend }) => {
 
       await dispatch(setFriendInformations(userId))
     } catch (Error) {
-      const error_message = (Error as Error).message
+      const error_message = 'Cannot remove this friend'
       setIsError(true)
       setErrorMessage(error_message)
     }
@@ -56,7 +56,7 @@ const Friend: React.FC<FriendProps> = ({ userId, friend }) => {
       await dispatch(setFriendInformations(userId))
       await dispatch(setBlockedInformations(userId))
     } catch (Error) {
-      const error_message = (Error as Error).message
+      const error_message = 'Cannot block this friend'
       setIsError(true)
       setErrorMessage(error_message)
     }
