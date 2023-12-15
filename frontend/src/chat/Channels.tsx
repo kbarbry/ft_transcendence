@@ -131,15 +131,12 @@ const Channels: React.FC = () => {
   }
 
   const handleAcceptInvitation = async (channelName: string) => {
-    try {
       if (numberChannels >= 25) {
         setChannelNameInput('')
         throw new Error('Too many channels')
       }
-    } catch (Error) {
-      const error_message = (Error as Error).message
-      setIsError(true)
-      setErrorMessage(error_message)
+    
+      console.log('ACCEPTED')
 
       try {
         const { data: dataFindChannel } = await client.query<
@@ -168,7 +165,7 @@ const Channels: React.FC = () => {
         setErrorMessage(error_message)
       }
     }
-  }
+  
   const handleRefuseInvitationClick = async (
     channelId: string,
     userId: string
@@ -183,6 +180,7 @@ const Channels: React.FC = () => {
       setErrorMessage(error_message)
     }
   }
+
 
   return (
     <>
