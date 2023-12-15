@@ -14,7 +14,7 @@ const PopUpError: React.FC<PopUpErrorProps> = ({ message }) => {
     // Réinitialiser l'état lorsque le message change
     setIsAlertVisible(true)
   }, [message])
-a
+
   const handleClose = () => {
     setIsAlertVisible(false)
   }
