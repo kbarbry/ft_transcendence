@@ -41,7 +41,7 @@ const RequestSent: React.FC<RequestSentProps> = ({ userId, requestSent }) => {
 
       await dispatch(setRequestSentInformations(userId))
     } catch (Error) {
-      const error_message = (Error as Error).message
+      const error_message = 'Cannot remove this request'
       setIsError(true)
       setErrorMessage(error_message)
     }
@@ -58,7 +58,7 @@ const RequestSent: React.FC<RequestSentProps> = ({ userId, requestSent }) => {
       await dispatch(setRequestSentInformations(userId))
       await dispatch(setBlockedInformations(userId))
     } catch (Error) {
-      const error_message = (Error as Error).message
+      const error_message = 'Cannot block this user'
       setIsError(true)
       setErrorMessage(error_message)
     }

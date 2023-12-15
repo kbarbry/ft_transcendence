@@ -85,7 +85,7 @@ const Channels: React.FC = () => {
 
       setChannelNameInput('')
     } catch (Error) {
-      const error_message = (Error as Error).message
+      const error_message = 'Error when creating channel'
       setIsError(true)
       setErrorMessage(error_message)
     }
@@ -124,7 +124,7 @@ const Channels: React.FC = () => {
       })
       setChannelNameInput('')
     } catch (Error) {
-      const error_message = (Error as Error).message
+      const error_message = 'Joining channel error'
       setIsError(true)
       setErrorMessage(error_message)
     }
@@ -135,8 +135,6 @@ const Channels: React.FC = () => {
         setChannelNameInput('')
         throw new Error('Too many channels')
       }
-    
-      console.log('ACCEPTED')
 
       try {
         const { data: dataFindChannel } = await client.query<
@@ -160,7 +158,7 @@ const Channels: React.FC = () => {
           }
         })
       } catch (Error) {
-        const error_message = (Error as Error).message
+        const error_message = 'Failed to accept invitation'
         setIsError(true)
         setErrorMessage(error_message)
       }
@@ -175,7 +173,7 @@ const Channels: React.FC = () => {
         variables: { channelId, userId }
       })
     } catch (Error) {
-      const error_message = (Error as Error).message
+      const error_message = 'Failed to refuse invitation'
       setIsError(true)
       setErrorMessage(error_message)
     }

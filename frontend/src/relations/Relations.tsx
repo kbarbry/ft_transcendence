@@ -32,9 +32,7 @@ const Relations: React.FC = () => {
   const [usernameInput, setUsernameInput] = useState<string>('')
 
   const [createRequest] = useMutation(createRelationRequest)
-  const [findUserByUsername] = useLazyQuery(
-    findOneUserByUsername
-  )
+  const [findUserByUsername] = useLazyQuery(findOneUserByUsername)
 
   const handleItemClick = (item: string) => {
     setSelectedItem(item)
@@ -49,13 +47,16 @@ const Relations: React.FC = () => {
   const handleAddFriendClick = async () => {
     try {
       if (usernameInput.trim() === '') {
-        throw new Error('empty')
+        throw new Error('Empty username') as Error
       }
-      const userByUsername = await findUserByUsername({
-        variables: { username: usernameInput }
+      if (usernameInput.trim().length > 29) {
+        throw new Error('Too long username') as Error
+      }
+      const {error, data: userByUsername} = await findUserByUsername({
+        variables: { username: 'usernameInput' }
       })
-      if (userByUsername.error) {
-        throw new Error('Failed to add friend') as Error
+      if (error) {
+        throw new Error('Cannot find this user (Or maybe its your own username ???)') as Error
       }
       const foundUserData = userByUsername.data?.findOneUserByUsername || null
       if (foundUserData.error) {
@@ -74,7 +75,7 @@ const Relations: React.FC = () => {
         setUsernameInput('')
       }
     } catch (Error) {
-      const error_message = (Error as Error).message;
+      const error_message = (Error as Error).message
       setIsError(true)
       setErrorMessage(error_message)
     }

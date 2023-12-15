@@ -67,7 +67,7 @@ const RequestReceived: React.FC<RequestReceivedProps> = ({
     }
   }
 
-  const handleRefuseRequestClick = async () => {
+  const handleRefuseRequestClick = async () => { // Todoo DONT FORGET TO FIX
     try {
       await refuseRequest({
         variables: { userReceiverId: userId, userSenderId: requestReceived.id }
@@ -88,7 +88,7 @@ const RequestReceived: React.FC<RequestReceivedProps> = ({
         variables: {
           data: {
             userBlockingId: userId,
-            userBlockedId: requestReceived.id
+            userBlockedId: 'requestReceived.id'
           }
         }
       })
@@ -96,7 +96,7 @@ const RequestReceived: React.FC<RequestReceivedProps> = ({
       await dispatch(setRequestReceivedInformations(userId))
       await dispatch(setBlockedInformations(userId))
     } catch (Error) {
-      const error_message = (Error as Error).message
+      const error_message = 'Cannot block this user'
       setIsError(true)
       setErrorMessage(error_message)
     }
