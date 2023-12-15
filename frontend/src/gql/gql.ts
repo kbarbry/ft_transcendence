@@ -55,6 +55,7 @@ const documents = {
     "\n  query FindBestUsers {\n    findBestUsers {\n      avatarUrl\n      username\n      level\n    }\n  }\n": types.FindBestUsersDocument,
     "\n  subscription matchmakingNotification($playerId: String!) {\n    matchmakingNotification(playerId: $playerId)\n  }\n": types.MatchmakingNotificationDocument,
     "\n  mutation AddPlayerToMatchmakingQueue(\n    $gameType: EGameType!\n    $nickname: String!\n    $playerId: String!\n  ) {\n    addPlayerToMatchmakingQueue(\n      gameType: $gameType\n      nickname: $nickname\n      playerId: $playerId\n    )\n  }\n": types.AddPlayerToMatchmakingQueueDocument,
+    "\n  mutation RemovePlayerFromMatchmakingQueue($playerId: String!) {\n    removePlayerFromMatchmakingQueue(playerId: $playerId)\n  }\n": types.RemovePlayerFromMatchmakingQueueDocument,
     "\n  query IsUserInGameQueue($userId: String!) {\n    isUserInGameQueue(userId: $userId)\n  }\n": types.IsUserInGameQueueDocument,
     "\n  subscription RelationBlockedCreation($userId: String!) {\n    relationBlockedCreation(userId: $userId) {\n      userBlockedId\n      userBlockingId\n    }\n  }\n": types.RelationBlockedCreationDocument,
     "\n  subscription RelationFriendDeleted($userId: String!) {\n    relationFriendDeleted(userId: $userId) {\n      userAId\n      userBId\n    }\n  }\n": types.RelationFriendDeletedDocument,
@@ -275,6 +276,10 @@ export function graphql(source: "\n  subscription matchmakingNotification($playe
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  mutation AddPlayerToMatchmakingQueue(\n    $gameType: EGameType!\n    $nickname: String!\n    $playerId: String!\n  ) {\n    addPlayerToMatchmakingQueue(\n      gameType: $gameType\n      nickname: $nickname\n      playerId: $playerId\n    )\n  }\n"): (typeof documents)["\n  mutation AddPlayerToMatchmakingQueue(\n    $gameType: EGameType!\n    $nickname: String!\n    $playerId: String!\n  ) {\n    addPlayerToMatchmakingQueue(\n      gameType: $gameType\n      nickname: $nickname\n      playerId: $playerId\n    )\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation RemovePlayerFromMatchmakingQueue($playerId: String!) {\n    removePlayerFromMatchmakingQueue(playerId: $playerId)\n  }\n"): (typeof documents)["\n  mutation RemovePlayerFromMatchmakingQueue($playerId: String!) {\n    removePlayerFromMatchmakingQueue(playerId: $playerId)\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

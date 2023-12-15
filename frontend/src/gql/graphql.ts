@@ -200,6 +200,7 @@ export type Mutation = {
   muteChannelMember: ChannelMember;
   quitGame: Scalars['Boolean']['output'];
   readyForGame: Scalars['Boolean']['output'];
+  removePlayerFromMatchmakingQueue: Scalars['Boolean']['output'];
   sendPongInvitation?: Maybe<Scalars['String']['output']>;
   unmakeChannelMemberAdmin: ChannelMember;
   unmuteChannelMember: ChannelMember;
@@ -351,6 +352,11 @@ export type MutationQuitGameArgs = {
 
 export type MutationReadyForGameArgs = {
   gameId: Scalars['String']['input'];
+  playerId: Scalars['String']['input'];
+};
+
+
+export type MutationRemovePlayerFromMatchmakingQueueArgs = {
   playerId: Scalars['String']['input'];
 };
 
@@ -1323,6 +1329,13 @@ export type AddPlayerToMatchmakingQueueMutationVariables = Exact<{
 
 export type AddPlayerToMatchmakingQueueMutation = { __typename?: 'Mutation', addPlayerToMatchmakingQueue: boolean };
 
+export type RemovePlayerFromMatchmakingQueueMutationVariables = Exact<{
+  playerId: Scalars['String']['input'];
+}>;
+
+
+export type RemovePlayerFromMatchmakingQueueMutation = { __typename?: 'Mutation', removePlayerFromMatchmakingQueue: boolean };
+
 export type IsUserInGameQueueQueryVariables = Exact<{
   userId: Scalars['String']['input'];
 }>;
@@ -1620,6 +1633,7 @@ export const FindGameStatSpecialDocument = {"kind":"Document","definitions":[{"k
 export const FindBestUsersDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"FindBestUsers"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"findBestUsers"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"level"}}]}}]}}]} as unknown as DocumentNode<FindBestUsersQuery, FindBestUsersQueryVariables>;
 export const MatchmakingNotificationDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"subscription","name":{"kind":"Name","value":"matchmakingNotification"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"playerId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"matchmakingNotification"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"playerId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"playerId"}}}]}]}}]} as unknown as DocumentNode<MatchmakingNotificationSubscription, MatchmakingNotificationSubscriptionVariables>;
 export const AddPlayerToMatchmakingQueueDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"AddPlayerToMatchmakingQueue"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"gameType"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"EGameType"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"nickname"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"playerId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"addPlayerToMatchmakingQueue"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"gameType"},"value":{"kind":"Variable","name":{"kind":"Name","value":"gameType"}}},{"kind":"Argument","name":{"kind":"Name","value":"nickname"},"value":{"kind":"Variable","name":{"kind":"Name","value":"nickname"}}},{"kind":"Argument","name":{"kind":"Name","value":"playerId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"playerId"}}}]}]}}]} as unknown as DocumentNode<AddPlayerToMatchmakingQueueMutation, AddPlayerToMatchmakingQueueMutationVariables>;
+export const RemovePlayerFromMatchmakingQueueDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"RemovePlayerFromMatchmakingQueue"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"playerId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"removePlayerFromMatchmakingQueue"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"playerId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"playerId"}}}]}]}}]} as unknown as DocumentNode<RemovePlayerFromMatchmakingQueueMutation, RemovePlayerFromMatchmakingQueueMutationVariables>;
 export const IsUserInGameQueueDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"IsUserInGameQueue"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"userId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"isUserInGameQueue"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"userId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"userId"}}}]}]}}]} as unknown as DocumentNode<IsUserInGameQueueQuery, IsUserInGameQueueQueryVariables>;
 export const RelationBlockedCreationDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"subscription","name":{"kind":"Name","value":"RelationBlockedCreation"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"userId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"relationBlockedCreation"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"userId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"userId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"userBlockedId"}},{"kind":"Field","name":{"kind":"Name","value":"userBlockingId"}}]}}]}}]} as unknown as DocumentNode<RelationBlockedCreationSubscription, RelationBlockedCreationSubscriptionVariables>;
 export const RelationFriendDeletedDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"subscription","name":{"kind":"Name","value":"RelationFriendDeleted"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"userId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"relationFriendDeleted"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"userId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"userId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"userAId"}},{"kind":"Field","name":{"kind":"Name","value":"userBId"}}]}}]}}]} as unknown as DocumentNode<RelationFriendDeletedSubscription, RelationFriendDeletedSubscriptionVariables>;

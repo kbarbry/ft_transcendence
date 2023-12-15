@@ -129,6 +129,23 @@ export class PongGameService {
     return false
   }
 
+  removePlayerFromMatchmakingQueue(playerId: string) {
+    let index = classicQueue.findIndex((player) => player.id === playerId)
+    if (index !== -1) {
+      classicQueue.splice(index, 1)
+      console.log('return true')
+      return true
+    }
+    index = specialQueue.findIndex((player) => player.id === playerId)
+    if (index !== -1) {
+      specialQueue.splice(index, 1)
+      console.log('return true')
+      return true
+    }
+    console.log('return false')
+    return false
+  }
+
   async matchClassicqQueue() {
     console.log(
       'Service: matchClassicQueue: playerQueue = ' +

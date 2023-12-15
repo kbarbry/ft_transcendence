@@ -89,6 +89,16 @@ export class PongGameResolver {
   }
 
   @Mutation(() => Boolean)
+  removePlayerFromMatchmakingQueue(
+    @Args('playerId', { type: () => String }) playerId: string
+  ): boolean {
+    console.log('Mutation: removePlayerFromMatchmakingQueue:')
+    const isRemoved: boolean =
+      this.pongService.removePlayerFromMatchmakingQueue(playerId)
+    return isRemoved
+  }
+
+  @Mutation(() => Boolean)
   async readyForGame(
     @Args('gameId', { type: () => String }) gameId: string,
     @Args('playerId', { type: () => String }) playerId: string
@@ -150,7 +160,7 @@ export class PongGameResolver {
     @Args('userId', { type: () => String }, NanoidValidationPipe)
     userId: string
   ): boolean {
-    console.log('PongGameResolver: isUserReadyInGame:')
+    console.log('PongGameResolver: isUserInGameQueue:')
     return this.pongService.isPlayerInQueue(userId)
   }
 
