@@ -26,7 +26,6 @@ export const GameSelection: React.FC<Props> = (props) => {
       <h2>Hello {props.username}, select your game type :</h2>
       <button onClick={gameClassic}>Classic Game</button>
       <button onClick={gameExtra}>Extra Game</button>
-      <h2>Game invitations</h2>
       <GameInvitationPanel playerId={props.playerId} />
     </div>
   )
