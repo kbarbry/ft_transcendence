@@ -70,22 +70,39 @@ const Channels: React.FC = () => {
   }
 
   const handleCreateChannelClick = async () => {
-    if (channelNameInput.trim() === '') {
-      setChannelNameInput('')
-      return
-    }
-    if (numberChannels >= 25) {
-      setChannelNameInput('')
-      throw new Error('Too many channels')
-    }
     try {
+      if (channelNameInput.trim() === '') {
+        setChannelNameInput('')
+        throw new Error('Empty channel name')
+      }
+      if (numberChannels >= 25) {
+        setChannelNameInput('')
+        throw new Error('Too many channels')
+      }
+      // TODOO FIND A WAY TO GET "ALREADY USE CHANNEL"
+      // const { data: dataFindChannel } = await client.query<
+      //   FindOneChannelByNameQuery,
+      //   FindOneChannelByNameQueryVariables
+      // >({
+      //   query: queryFindOneChannelByName,
+      //   variables: { name: channelNameInput }
+      // })
+      // if (dataFindChannel) {
+      //   throw new Error('Channel already exist')
+      // }
       await createChannel({
         variables: { data: { name: channelNameInput, ownerId: user.id } }
       })
 
       setChannelNameInput('')
     } catch (Error) {
-      const error_message = 'Error when creating channel'
+      let error_message = (Error as Error).message
+      if (
+        (Error as Error).message ===
+        'Cannot return null for non-nullable field Query.findOneChannelByName.'
+      ) {
+        error_message = 'Cannot create this channel'
+      }
       setIsError(true)
       setErrorMessage(error_message)
     }
@@ -131,39 +148,39 @@ const Channels: React.FC = () => {
   }
 
   const handleAcceptInvitation = async (channelName: string) => {
-      if (numberChannels >= 25) {
-        setChannelNameInput('')
-        throw new Error('Too many channels')
-      }
-
-      try {
-        const { data: dataFindChannel } = await client.query<
-          FindOneChannelByNameQuery,
-          FindOneChannelByNameQueryVariables
-        >({
-          query: queryFindOneChannelByName,
-          variables: { name: channelName }
-        })
-
-        const channel = dataFindChannel.findOneChannelByName
-
-        await createChannelMember({
-          variables: {
-            data: {
-              channelId: channel.id,
-              userId: user.id,
-              avatarUrl: user.avatarUrl,
-              nickname: user.username
-            }
-          }
-        })
-      } catch (Error) {
-        const error_message = 'Failed to accept invitation'
-        setIsError(true)
-        setErrorMessage(error_message)
-      }
+    if (numberChannels >= 25) {
+      setChannelNameInput('')
+      throw new Error('Too many channels')
     }
-  
+
+    try {
+      const { data: dataFindChannel } = await client.query<
+        FindOneChannelByNameQuery,
+        FindOneChannelByNameQueryVariables
+      >({
+        query: queryFindOneChannelByName,
+        variables: { name: channelName }
+      })
+
+      const channel = dataFindChannel.findOneChannelByName
+
+      await createChannelMember({
+        variables: {
+          data: {
+            channelId: channel.id,
+            userId: user.id,
+            avatarUrl: user.avatarUrl,
+            nickname: user.username
+          }
+        }
+      })
+    } catch (Error) {
+      const error_message = 'Failed to accept invitation'
+      setIsError(true)
+      setErrorMessage(error_message)
+    }
+  }
+
   const handleRefuseInvitationClick = async (
     channelId: string,
     userId: string
@@ -178,7 +195,6 @@ const Channels: React.FC = () => {
       setErrorMessage(error_message)
     }
   }
-
 
   return (
     <>
