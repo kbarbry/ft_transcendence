@@ -1,6 +1,4 @@
-FROM node:latest
-
-RUN apt-get update && apt-get install apt-file -y && apt-file update
+FROM node:20
 
 WORKDIR /usr/src/app/frontend/
 
