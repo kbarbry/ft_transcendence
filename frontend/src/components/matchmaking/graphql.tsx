@@ -18,3 +18,9 @@ export const addPlayerToMatchmakingQueue = gql`
     )
   }
 `
+
+export const isPlayerQueued = gql`
+  query IsUserInGameQueue($userId: String!) {
+    isUserInGameQueue(userId: $userId)
+  }
+`

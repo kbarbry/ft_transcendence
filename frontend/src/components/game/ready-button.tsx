@@ -44,7 +44,7 @@ export const ReadyButton: React.FC<Props> = (props: Props) => {
       return <button>Error</button>
     }
     if (mutationData.readyForGame === true) {
-      return <button>Waiting Player</button>
+      return <button>You're in !</button>
     }
   }
   if (gameReadyData && gameReadyData.isUserReadyInGame) {
@@ -61,7 +61,7 @@ export const ReadyButton: React.FC<Props> = (props: Props) => {
         })
       }}
     >
-      Ready
+      Ready !
     </button>
   )
 }

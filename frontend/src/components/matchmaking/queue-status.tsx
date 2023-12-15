@@ -1,9 +1,11 @@
-import { useMutation } from '@apollo/client'
-import { addPlayerToMatchmakingQueue } from './graphql'
+import { useMutation, useQuery } from '@apollo/client'
+import { addPlayerToMatchmakingQueue, isPlayerQueued } from './graphql'
 import {
   AddPlayerToMatchmakingQueueMutation,
   AddPlayerToMatchmakingQueueMutationVariables,
-  EGameType
+  EGameType,
+  IsUserInGameQueueQuery,
+  IsUserInGameQueueQueryVariables
 } from '../../gql/graphql'
 
 type Props = {
@@ -14,19 +16,30 @@ type Props = {
 }
 
 export const QueueStatus: React.FC<Props> = (props: Props) => {
+  const {
+    data: queryData,
+    loading: queryLoading,
+    error: queryError
+  } = useQuery<IsUserInGameQueueQuery, IsUserInGameQueueQueryVariables>(
+    isPlayerQueued,
+    { variables: { userId: props.playerId }, fetchPolicy: 'cache-and-network' }
+  )
   const [addPlayerToMatchmaking, { data, loading, error }] = useMutation<
     AddPlayerToMatchmakingQueueMutation,
     AddPlayerToMatchmakingQueueMutationVariables
   >(addPlayerToMatchmakingQueue)
 
-  if (loading) {
-    return <p>Joining game queue.</p>
+  if (loading || queryLoading) {
+    return <button>Loading</button>
   }
-  if (data?.addPlayerToMatchmakingQueue === true) {
-    return <p>Game queue joined.</p>
+  if (
+    queryData?.isUserInGameQueue === true ||
+    data?.addPlayerToMatchmakingQueue === true
+  ) {
+    return <button>Queue Joined</button>
   }
-  if (data?.addPlayerToMatchmakingQueue === false || error !== undefined) {
-    return <p>An error occured, unable to join the game queue.</p>
+  if (data?.addPlayerToMatchmakingQueue === false || error || queryError) {
+    return <button>Error</button>
   }
   return (
     <button
