@@ -169,7 +169,7 @@ const AppPrivateSplit: React.FC<AppPrivateSubscriptionProps> = ({ userId }) => {
                 <Route path='/relations' component={Relations} />
                 <Route path='/game' component={Game} />
                 <Route path='/settings' component={Settings} />
-                <Route path='profile' component={ProfilPage} />
+                <Route path='/profile' component={ProfilPage} />
                 <Route component={NotFound} />
               </Switch>
             </div>
