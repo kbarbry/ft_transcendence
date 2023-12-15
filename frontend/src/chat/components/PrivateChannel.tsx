@@ -108,7 +108,7 @@ const PrivateChannel: React.FC<PrivateChannelProps> = ({
     const error_message = (Error as Error).message
     setIsError(true)
     setErrorMessage(error_message)
-    return <PopUpError message={errorMessage} />
+    return <PopUpError message={'Private channel error'} />
   }
 }
 
