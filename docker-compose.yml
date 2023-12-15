@@ -1,4 +1,4 @@
-version: "3.9"
+version: "3.5"
 
 services:
   frontend:
@@ -41,6 +41,13 @@ services:
     image: postgres:latest
     ports:
       - "5432:5432"
+    restart: always
+
+  pgadmin:
+    container_name: "pgadmin"
+    depends_on:
+      - postgresql
+    image: dpage/pgadmin4
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=123

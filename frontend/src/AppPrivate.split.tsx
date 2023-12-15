@@ -17,6 +17,8 @@ import {
   GlobalOutlined,
   TeamOutlined
 } from '@ant-design/icons'
+import { Game } from './components/game/game'
+import { ProfilPage } from './userInfo/ProfilPage'
 
 interface AppPrivateSubscriptionProps {
   userId: string
@@ -89,6 +91,15 @@ const AppPrivateSplit: React.FC<AppPrivateSubscriptionProps> = ({ userId }) => {
       ),
       icon: <SettingOutlined />,
       key: 'settings'
+    },
+    {
+      label: (
+        <Link href='/profile'>
+          <a>profile</a>
+        </Link>
+      ),
+      icon: <SettingOutlined />,
+      key: 'profile'
     }
   ]
 
@@ -156,8 +167,9 @@ const AppPrivateSplit: React.FC<AppPrivateSubscriptionProps> = ({ userId }) => {
                 <Route path='/privateChannel' component={PrivateChannel} />
                 <Route path='/channel' component={Channels} />
                 <Route path='/relations' component={Relations} />
-                <Route path='/game' component={Settings} />
+                <Route path='/game' component={Game} />
                 <Route path='/settings' component={Settings} />
+                <Route path='profile' component={ProfilPage} />
                 <Route component={NotFound} />
               </Switch>
             </div>
