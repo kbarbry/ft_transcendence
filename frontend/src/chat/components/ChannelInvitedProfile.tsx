@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useMutation } from '@apollo/client'
 import DefaultProfilePicture from '/DefaultProfilePicture.svg'
 import {
@@ -8,6 +8,7 @@ import {
 } from '../../gql/graphql'
 import { mutationDeleteChannelInvited } from '../graphql'
 import { ChannelAndChannelMember } from '../../store/slices/channel-informations.slice'
+import PopUpError from '../../ErrorPages/PopUpError'
 
 interface ChannelInvitedProfileProps {
   channelsInfos: ChannelAndChannelMember[]
@@ -23,8 +24,9 @@ const ChannelInvitedProfile: React.FC<ChannelInvitedProfileProps> = ({
   const channelInfo = channelsInfos.find(
     (channelInfo) => channelInfo.channel.id === channelId
   )
-
-  if (!channelInfo) throw new Error('PROBLEM HERE')
+  const [isError, setIsError] = useState(false)
+  const [errorMessage, setErrorMessage] = useState('')
+  if (!channelInfo) throw new Error('Invalid cancel invitation')
 
   const invitedUser = channelInfo.channelInviteds.find(
     (invited) => invited.id === memberId
@@ -32,7 +34,7 @@ const ChannelInvitedProfile: React.FC<ChannelInvitedProfileProps> = ({
 
   const memberUser = channelInfo.channelMemberUser
 
-  if (!invitedUser || !memberUser) throw new Error('PROBLEM HERE2')
+  if (!invitedUser || !memberUser) throw new Error('Invalid cancel invitation')
 
   const [uninviteUser] = useMutation<
     DeleteChannelInvitedMutation,
@@ -47,9 +49,10 @@ const ChannelInvitedProfile: React.FC<ChannelInvitedProfileProps> = ({
           userId: invitedUser.id
         }
       })
-      console.log('User uninvited successfully')
-    } catch (error) {
-      console.error('Error uninviting user:', error)
+    } catch (Error) {
+      const error_message = (Error as Error).message
+      setIsError(true)
+      setErrorMessage(error_message)
     }
   }
 
@@ -57,6 +60,8 @@ const ChannelInvitedProfile: React.FC<ChannelInvitedProfileProps> = ({
 
   return (
     <div style={{ display: 'flex', alignItems: 'center', margin: '10px 0' }}>
+      {isError && <PopUpError message={errorMessage} />}
+
       <img
         src={invitedUser.avatarUrl || DefaultProfilePicture}
         alt={`Profile for ${invitedUser.username}`}

@@ -9,6 +9,8 @@ import { useQuery } from '@apollo/client'
 import { queryFindAllPrivateMessageWith } from '../graphql'
 import PrivateChat from './PrivateChat'
 import PrivateProfile from './PrivateProfile'
+import PopUpError from '../../ErrorPages/PopUpError'
+
 
 interface PrivateChannelProps {
   userInfos: User
@@ -23,6 +25,8 @@ const PrivateChannel: React.FC<PrivateChannelProps> = ({
 }) => {
   const [chat, setChat] = useState<PrivateMessage[]>([])
   const friend = friends.find((friend) => friend.id === friendId)
+  const [isError, setIsError] = useState(false)
+  const [errorMessage, setErrorMessage] = useState('')
 
   if (!friend) throw new Error()
 
@@ -100,9 +104,11 @@ const PrivateChannel: React.FC<PrivateChannelProps> = ({
         </div>
       </div>
     )
-  } catch (e) {
-    console.error('Error in PrivateChannel component:', e)
-    return <p>An unexpected error occurred.</p>
+  } catch (Error) {
+    const error_message = (Error as Error).message
+    setIsError(true)
+    setErrorMessage(error_message)
+    return <PopUpError message={errorMessage} />
   }
 }
 

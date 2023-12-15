@@ -20,8 +20,11 @@ import {
   FindOneChannelByNameQueryVariables
 } from '../gql/graphql'
 import { client } from '../main'
+import PopUpError from '../ErrorPages/PopUpError'
 
 const Channels: React.FC = () => {
+  const [isError, setIsError] = useState(false)
+  const [errorMessage, setErrorMessage] = useState('')
   const user = useAppSelector((state) => state.userInformations.user)
   const channelInvited = useAppSelector(
     (state) => state.channelInvitedInformations.channelInvitation
@@ -81,10 +84,10 @@ const Channels: React.FC = () => {
       })
 
       setChannelNameInput('')
-    } catch (e) {
-      setChannelNameInput('')
-      console.error('Error creating channel: ', e)
-      throw e
+    } catch (Error) {
+      const error_message = (Error as Error).message
+      setIsError(true)
+      setErrorMessage(error_message)
     }
   }
 
@@ -120,43 +123,52 @@ const Channels: React.FC = () => {
         }
       })
       setChannelNameInput('')
-    } catch (e) {
-      setChannelNameInput('')
-      throw e
+    } catch (Error) {
+      const error_message = (Error as Error).message
+      setIsError(true)
+      setErrorMessage(error_message)
     }
   }
 
   const handleAcceptInvitation = async (channelName: string) => {
-    if (numberChannels >= 25) {
-      setChannelNameInput('')
-      throw new Error('Too many channels')
-    }
     try {
-      const { data: dataFindChannel } = await client.query<
-        FindOneChannelByNameQuery,
-        FindOneChannelByNameQueryVariables
-      >({
-        query: queryFindOneChannelByName,
-        variables: { name: channelName }
-      })
+      if (numberChannels >= 25) {
+        setChannelNameInput('')
+        throw new Error('Too many channels')
+      }
+    } catch (Error) {
+      const error_message = (Error as Error).message
+      setIsError(true)
+      setErrorMessage(error_message)
 
-      const channel = dataFindChannel.findOneChannelByName
+      try {
+        const { data: dataFindChannel } = await client.query<
+          FindOneChannelByNameQuery,
+          FindOneChannelByNameQueryVariables
+        >({
+          query: queryFindOneChannelByName,
+          variables: { name: channelName }
+        })
 
-      await createChannelMember({
-        variables: {
-          data: {
-            channelId: channel.id,
-            userId: user.id,
-            avatarUrl: user.avatarUrl,
-            nickname: user.username
+        const channel = dataFindChannel.findOneChannelByName
+
+        await createChannelMember({
+          variables: {
+            data: {
+              channelId: channel.id,
+              userId: user.id,
+              avatarUrl: user.avatarUrl,
+              nickname: user.username
+            }
           }
-        }
-      })
-    } catch (e) {
-      throw e
+        })
+      } catch (Error) {
+        const error_message = (Error as Error).message
+        setIsError(true)
+        setErrorMessage(error_message)
+      }
     }
   }
-
   const handleRefuseInvitationClick = async (
     channelId: string,
     userId: string
@@ -165,16 +177,17 @@ const Channels: React.FC = () => {
       await deleteChannelInvitation({
         variables: { channelId, userId }
       })
-
-      console.log('Invitation refused successfully')
-    } catch (e) {
-      console.error('Error refusing invitation: ', e)
-      throw e
+    } catch (Error) {
+      const error_message = (Error as Error).message
+      setIsError(true)
+      setErrorMessage(error_message)
     }
   }
 
   return (
     <>
+      {isError && <PopUpError message={errorMessage} />}
+
       <div style={{ display: 'flex', flexDirection: 'row' }}>
         <div style={{ width: '200px', marginRight: '20px' }}>
           <h2>Channel Invitations</h2>
@@ -232,5 +245,4 @@ const Channels: React.FC = () => {
     </>
   )
 }
-
 export default Channels

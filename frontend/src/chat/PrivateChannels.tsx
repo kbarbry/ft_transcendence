@@ -9,6 +9,7 @@ const PrivateChannels: React.FC = () => {
   const userInfos = useAppSelector((state) => state.userInformations.user)
   const [selectedFriend, setSelectedFriend] = useState<User | null>(null)
 
+  
   if (!userInfos || !friends) throw new Error()
 
   if (

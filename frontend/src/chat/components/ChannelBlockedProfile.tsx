@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useMutation } from '@apollo/client'
 import DefaultProfilePicture from '/DefaultProfilePicture.svg'
 import {
@@ -8,6 +8,7 @@ import {
 } from '../../gql/graphql'
 import { mutationDeleteChannelBlocked } from '../graphql'
 import { ChannelAndChannelMember } from '../../store/slices/channel-informations.slice'
+import PopUpError from '../../ErrorPages/PopUpError'
 
 interface ChannelBlockedProfileProps {
   channelsInfos: ChannelAndChannelMember[]
@@ -23,8 +24,10 @@ const ChannelBlockedProfile: React.FC<ChannelBlockedProfileProps> = ({
   const channelInfo = channelsInfos.find(
     (channelInfo) => channelInfo.channel.id === channelId
   )
+  const [isError, setIsError] = useState(false)
+  const [errorMessage, setErrorMessage] = useState('')
 
-  if (!channelInfo) throw new Error('PROBLEM HERE')
+  if (!channelInfo) throw new Error('Block Error')
 
   const blockedUser = channelInfo.channelBlockeds.find(
     (blocked) => blocked.id === memberId
@@ -33,7 +36,7 @@ const ChannelBlockedProfile: React.FC<ChannelBlockedProfileProps> = ({
   const memberUser = channelInfo.channelMemberUser
   console.log(blockedUser)
   console.log(memberUser)
-  if (!blockedUser || !memberUser) throw new Error('PROBLEM HERE2')
+  if (!blockedUser || !memberUser) throw new Error('Block Error')
 
   const [unblockUser] = useMutation<
     DeleteChannelBlockedMutation,
@@ -48,9 +51,10 @@ const ChannelBlockedProfile: React.FC<ChannelBlockedProfileProps> = ({
           userId: blockedUser.id
         }
       })
-      console.log('User unblocked successfully')
-    } catch (error) {
-      console.error('Error unblocking user:', error)
+    } catch (Error) {
+      const error_message = (Error as Error).message
+      setIsError(true)
+      setErrorMessage(error_message)
     }
   }
 
@@ -58,6 +62,7 @@ const ChannelBlockedProfile: React.FC<ChannelBlockedProfileProps> = ({
 
   return (
     <div style={{ display: 'flex', alignItems: 'center', margin: '10px 0' }}>
+            {isError && <PopUpError message={errorMessage} />}
       <img
         src={blockedUser.avatarUrl || DefaultProfilePicture}
         alt={`Profile for ${blockedUser.username}`}

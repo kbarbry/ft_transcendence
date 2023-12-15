@@ -19,6 +19,7 @@ import {
   mutationUnmuteChannelMember
 } from '../graphql'
 import { ChannelAndChannelMember } from '../../store/slices/channel-informations.slice'
+import PopUpError from '../../ErrorPages/PopUpError'
 
 interface ChannelMemberProfileProps {
   channelsInfos: ChannelAndChannelMember[]
@@ -32,6 +33,8 @@ const ChannelMemberProfile: React.FC<ChannelMemberProfileProps> = ({
   memberId
 }) => {
   const [showProfileOverlay, setShowProfileOverlay] = useState(false)
+  const [isError, setIsError] = useState(false)
+  const [errorMessage, setErrorMessage] = useState('')
   const channelInfo = channelsInfos.find(
     (channelInfo) => channelInfo.channel.id === channelId
   )
@@ -82,10 +85,11 @@ const ChannelMemberProfile: React.FC<ChannelMemberProfileProps> = ({
           channelId: member.channelId
         }
       })
-      console.log('Member kicked successfully')
       handleCloseOverlay()
-    } catch (error) {
-      console.error('Error kicking member:', error)
+    } catch (Error) {
+      const error_message = (Error as Error).message
+      setIsError(true)
+      setErrorMessage(error_message)
     }
   }
 
@@ -98,7 +102,6 @@ const ChannelMemberProfile: React.FC<ChannelMemberProfileProps> = ({
             channelId: member.channelId
           }
         })
-        console.log('Member unmuted successfully')
       } else {
         await muteMember({
           variables: {
@@ -106,10 +109,11 @@ const ChannelMemberProfile: React.FC<ChannelMemberProfileProps> = ({
             channelId: member.channelId
           }
         })
-        console.log('Member muted successfully')
       }
-    } catch (error) {
-      console.error('Error muting/unmuting member:', error)
+    } catch (Error) {
+      const error_message = (Error as Error).message
+      setIsError(true)
+      setErrorMessage(error_message)
     }
   }
 
@@ -123,10 +127,11 @@ const ChannelMemberProfile: React.FC<ChannelMemberProfileProps> = ({
           }
         }
       })
-      console.log('Member banned successfully')
       handleCloseOverlay()
-    } catch (error) {
-      console.error('Error banning member:', error)
+    } catch (Error) {
+      const error_message = (Error as Error).message
+      setIsError(true)
+      setErrorMessage(error_message)
     }
   }
 
@@ -146,6 +151,7 @@ const ChannelMemberProfile: React.FC<ChannelMemberProfileProps> = ({
 
   return (
     <div style={{ display: 'flex', alignItems: 'center', margin: '10px 0' }}>
+      {isError && <PopUpError message={errorMessage} />}
       <img
         src={member?.avatarUrl ? member.avatarUrl : DefaultProfilePicture}
         alt={`Profile for ${member.nickname}`}

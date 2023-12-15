@@ -26,6 +26,7 @@ import {
 } from '../../gql/graphql'
 import PrivateMessageComponent from './PrivateMessage'
 import { Button, Input } from 'antd'
+import PopUpError from '../../ErrorPages/PopUpError'
 
 interface PrivateChatProps {
   userInfos: User
@@ -44,6 +45,8 @@ const PrivateChat: React.FC<PrivateChatProps> = ({
   chatState
 }) => {
   const [messageInput, setMessageInput] = useState('')
+  const [isError, setIsError] = useState(false)
+  const [errorMessage, setErrorMessage] = useState('')
   const [editionInfos, setEditionsInfos] = useState<{
     id: string
     content: string
@@ -145,8 +148,10 @@ const PrivateChat: React.FC<PrivateChatProps> = ({
           }
         }
       })
-    } catch (e) {
-      throw e
+    } catch (Error) {
+      const error_message = (Error as Error).message
+      setIsError(true)
+      setErrorMessage(error_message)
     }
 
     setMessageInput('')
@@ -166,10 +171,12 @@ const PrivateChat: React.FC<PrivateChatProps> = ({
         }
       })
       setEditionsInfos(null)
-    } catch (e) {
+    } catch (Error) {
       chatState.chat[index].content = oldMessage
       setEditionsInfos(null)
-      throw e
+      const error_message = (Error as Error).message
+      setIsError(true)
+      setErrorMessage(error_message)
     }
   }
 
@@ -180,8 +187,10 @@ const PrivateChat: React.FC<PrivateChatProps> = ({
           deletePrivateMessageId: messageId
         }
       })
-    } catch (e) {
-      throw e
+    } catch (Error) {
+      const error_message = (Error as Error).message
+      setIsError(true)
+      setErrorMessage(error_message)
     }
   }
 
@@ -213,6 +222,8 @@ const PrivateChat: React.FC<PrivateChatProps> = ({
         overflowY: 'auto'
       }}
     >
+      {isError && <PopUpError message={errorMessage} />}
+
       <ul>{listItems}</ul>
       <div
         style={{

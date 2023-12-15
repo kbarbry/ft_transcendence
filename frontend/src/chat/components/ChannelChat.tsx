@@ -25,6 +25,8 @@ import {
 } from '../graphql'
 import ChannelMessageComponent from './ChannelMessage'
 import { ChannelAndChannelMember } from '../../store/slices/channel-informations.slice'
+import PopUpError from '../../ErrorPages/PopUpError'
+
 
 interface ChannelChatProps {
   channelsInfos: ChannelAndChannelMember[]
@@ -41,6 +43,8 @@ const ChannelChat: React.FC<ChannelChatProps> = ({
   chatState
 }) => {
   const [messageInput, setMessageInput] = useState('')
+  const [isError, setIsError] = useState(false)
+  const [errorMessage, setErrorMessage] = useState('')
   const [editionInfos, setEditionsInfos] = useState<{
     id: string
     content: string
@@ -154,8 +158,10 @@ const ChannelChat: React.FC<ChannelChatProps> = ({
       })
 
       setMessageInput('')
-    } catch (e) {
-      throw e
+    } catch (Error) {
+      const error_message = (Error as Error).message
+      setIsError(true)
+      setErrorMessage(error_message)
     }
   }
 
@@ -180,7 +186,10 @@ const ChannelChat: React.FC<ChannelChatProps> = ({
         }
       })
       setEditionsInfos(null)
-    } catch (e) {
+    } catch (Error) {
+      const error_message = (Error as Error).message
+      setIsError(true)
+      setErrorMessage(error_message)
       chatState.chat[index].content = oldMessage
       setEditionsInfos(null)
     }
@@ -189,8 +198,10 @@ const ChannelChat: React.FC<ChannelChatProps> = ({
   const handleDeleteMessage = async (messageId: string) => {
     try {
       await deleteMessage({ variables: { deleteChannelMessageId: messageId } })
-    } catch (e) {
-      throw e
+    } catch (Error) {
+      const error_message = (Error as Error).message
+      setIsError(true)
+      setErrorMessage(error_message)
     }
   }
 
@@ -227,6 +238,8 @@ const ChannelChat: React.FC<ChannelChatProps> = ({
 
   return (
     <>
+          {isError && <PopUpError message={errorMessage} />}
+
       <ul>{listItems}</ul>
       <div>
         <input

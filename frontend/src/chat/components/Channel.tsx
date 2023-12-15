@@ -23,6 +23,8 @@ import ChannelInvitedProfile from './ChannelInvitedProfile'
 import ChannelBlockedProfile from './ChannelBlockedProfile'
 import { client } from '../../main'
 import { findOneUserByUsername } from '../../relations/graphql'
+import PopUpError from '../../ErrorPages/PopUpError'
+
 
 interface ChannelProps {
   channelsInfos: ChannelAndChannelMember[]
@@ -34,6 +36,8 @@ const ChannelComponent: React.FC<ChannelProps> = ({
   channelId
 }) => {
   const [chat, setChat] = useState<ChannelMessage[]>([])
+  const [isError, setIsError] = useState(false)
+  const [errorMessage, setErrorMessage] = useState('')
   const [channelInviteInput, setChannelInviteInput] = useState('')
   const channelInfo = channelsInfos.find(
     (channelInfo) => channelInfo.channel.id === channelId
@@ -83,8 +87,10 @@ const ChannelComponent: React.FC<ChannelProps> = ({
         })
         console.log('User invited successfully')
         setChannelInviteInput('')
-      } catch (error) {
-        console.error('Error inviting user:', error)
+      } catch (Error) {
+        const error_message = (Error as Error).message
+        setIsError(true)
+        setErrorMessage(error_message)
       }
     }
 
@@ -93,9 +99,10 @@ const ChannelComponent: React.FC<ChannelProps> = ({
         await deleteChannel({
           variables: { deleteChannelId: channelId }
         })
-        console.log('Channel deleted successfully')
-      } catch (error) {
-        console.error('Error deleting channel:', error)
+      } catch (Error) {
+        const error_message = (Error as Error).message
+        setIsError(true)
+        setErrorMessage(error_message)
       }
     }
 
@@ -109,6 +116,7 @@ const ChannelComponent: React.FC<ChannelProps> = ({
           }}
         >
           <h2>{channelInfo.channel.name}</h2>
+          {isError && <PopUpError message={errorMessage} />}
           {loading && <p>Loading conversation...</p>}
           {error && (
             <p>
