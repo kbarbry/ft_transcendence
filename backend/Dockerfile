@@ -13,12 +13,12 @@ RUN npm i global npm@10.2.5
 
 COPY . .
 
-RUN npm run build
+# RUN npm run build
 
 EXPOSE 3000
 
 COPY --chmod=744 ./docker-entrypoint.sh /docker-entrypoint.sh
 
-ENTRYPOINT "/docker-entrypoint.sh"
+# ENTRYPOINT "/docker-entrypoint.sh"
 
-# CMD [ "npm", "run", "dev" ]
+CMD [ "npm", "run", "dev" ]
