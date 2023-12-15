@@ -144,4 +144,15 @@ export class PongGameResolver {
     console.log('PongGameResolver: isGameValid:')
     return this.pongService.isGameValid(userId, gameId)
   }
+
+  @Query(() => Boolean)
+  isUserReadyInGame(
+    @Args('userId', { type: () => String }, NanoidValidationPipe)
+    userId: string,
+    @Args('gameId', { type: () => String })
+    gameId: string
+  ): boolean {
+    console.log('PongGameResolver: isUserReadyInGame:')
+    return this.pongService.isUserReadyInGame(userId, gameId)
+  }
 }

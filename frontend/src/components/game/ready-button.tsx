@@ -1,10 +1,12 @@
-import { useMutation } from '@apollo/client'
 import React from 'react'
+import { useMutation, useQuery } from '@apollo/client'
+import { isUserReadyInGame, readyForGame } from './graphql'
 import {
+  IsUserReadyInGameQuery,
+  IsUserReadyInGameQueryVariables,
   ReadyForGameMutation,
   ReadyForGameMutationVariables
 } from '../../gql/graphql'
-import { readyForGame } from './graphql'
 
 type Props = {
   gameId: string
@@ -12,21 +14,44 @@ type Props = {
 }
 
 export const ReadyButton: React.FC<Props> = (props: Props) => {
-  const [sendReady, { data, error }] = useMutation<
+  const {
+    data: gameReadyData,
+    loading: gameReadyLoading,
+    error: gameReadyError
+  } = useQuery<IsUserReadyInGameQuery, IsUserReadyInGameQueryVariables>(
+    isUserReadyInGame,
+    {
+      variables: { gameId: props.gameId, userId: props.playerId },
+      fetchPolicy: 'cache-and-network'
+    }
+  )
+
+  const [sendReady, { data: mutationData, error: mutationError }] = useMutation<
     ReadyForGameMutation,
     ReadyForGameMutationVariables
   >(readyForGame)
 
-  if (error) {
-    return <p>An error occured, unable to be ready</p>
+  if (gameReadyError || mutationError) {
+    if (gameReadyError) {
+      console.log(
+        'gameReadyError : ' + JSON.stringify(gameReadyError, undefined, 3)
+      )
+    }
+    return <button>Error</button>
   }
-  if (data) {
-    if (data.readyForGame === false) {
-      return <p>Unable to be ready</p>
+  if (mutationData) {
+    if (mutationData.readyForGame === false) {
+      return <button>Error</button>
     }
-    if (data.readyForGame === true) {
-      return <p>You're ready !</p>
+    if (mutationData.readyForGame === true) {
+      return <button>Waiting Player</button>
     }
+  }
+  if (gameReadyData && gameReadyData.isUserReadyInGame) {
+    return <button>Waiting Player</button>
+  }
+  if (gameReadyLoading) {
+    return <button>Loading</button>
   }
   return (
     <button
