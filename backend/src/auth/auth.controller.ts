@@ -78,15 +78,13 @@ export class AuthController {
   @UseGuards(LocalAuthGuard)
   @Post('login')
   async login(@Req() req: any, @Res() res: any) {
-    try {
-      const is2fa = await this.authService.isUser2fa(req.user.id)
-      if (is2fa === true) {
-        this.authService.unset2faValidation(req.user.id)
-      }
-    } catch (e) {
-      throw new ExceptionCustom('Login error')
+    let is2faverified = true
+    const is2fa = await this.authService.isUser2fa(req.user.id)
+    if (is2fa == true) {
+      this.authService.unset2faValidation(req.user.id)
+      is2faverified = false
     }
-    return res.status(200).json({ msg: 'Local Auth Login' })
+    return res.status(200).json({ is2faverified })
   }
 
   @Get('logout')
