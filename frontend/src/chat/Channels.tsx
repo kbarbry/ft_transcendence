@@ -128,11 +128,8 @@ const Channels: React.FC = () => {
       doestchannelexist = false
     }
 
-    /*Check si le channel est deja join */
     const channelsList = channelsInfos.map((item) => item.channel.name)
-    console.log(channelsList)
     try {
-      console.log('doeschannel exist => ', doestchannelexist)
       if (doestchannelexist == false) {
         throw new Error(`${channelNameInput} : Channel does not exist`)
       }
@@ -146,9 +143,7 @@ const Channels: React.FC = () => {
       const isChannelNameAlreadyJoined = channelsList.some(
         (channelName) => channelName === channelNameInput
       )
-      console.log(isChannelNameAlreadyJoined)
       if (isChannelNameAlreadyJoined == true) {
-        console.log('go in error')
         throw new Error(
           `${channelNameInput} : You are already a member of this channel`
         )
