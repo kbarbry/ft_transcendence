@@ -12,7 +12,7 @@ export const LeaderboardShowcase: React.FC = () => {
   const { data, loading, error } = useQuery<
     FindBestUsersQuery,
     FindBestUsersQueryVariables
-  >(findBestUsers)
+  >(findBestUsers, { fetchPolicy: 'cache-and-network' })
 
   if (loading === true) {
     return <p>Loading...</p>

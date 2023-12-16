@@ -9,7 +9,6 @@ type Props = {
 
 export const GameInvitationPanel: React.FC<Props> = (props: Props) => {
   const dispatch = useAppDispatch()
-  //TODO dispatch(updateGameInvitations(props.playerId))
 
   const invitations = useAppSelector(
     (state) => state.gameInvitationsInformation

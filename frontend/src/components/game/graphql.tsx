@@ -71,3 +71,8 @@ export const isGameValid = gql`
     isGameValid(gameId: $gameId, userId: $userId)
   }
 `
+export const isUserReadyInGame = gql`
+  query IsUserReadyInGame($gameId: String!, $userId: String!) {
+    isUserReadyInGame(gameId: $gameId, userId: $userId)
+  }
+`

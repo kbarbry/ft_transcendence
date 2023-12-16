@@ -200,6 +200,7 @@ export type Mutation = {
   muteChannelMember: ChannelMember;
   quitGame: Scalars['Boolean']['output'];
   readyForGame: Scalars['Boolean']['output'];
+  removePlayerFromMatchmakingQueue: Scalars['Boolean']['output'];
   sendPongInvitation?: Maybe<Scalars['String']['output']>;
   unmakeChannelMemberAdmin: ChannelMember;
   unmuteChannelMember: ChannelMember;
@@ -355,6 +356,11 @@ export type MutationReadyForGameArgs = {
 };
 
 
+export type MutationRemovePlayerFromMatchmakingQueueArgs = {
+  playerId: Scalars['String']['input'];
+};
+
+
 export type MutationSendPongInvitationArgs = {
   gameType: EGameType;
   receiverNickname: Scalars['String']['input'];
@@ -497,8 +503,10 @@ export type Query = {
   isRelationBlocked: Scalars['Boolean']['output'];
   isRelationFriendExist: Scalars['Boolean']['output'];
   isRelationRequestsRequested: Scalars['Boolean']['output'];
+  isUserInGameQueue: Scalars['Boolean']['output'];
   isUserMailUsed: Scalars['Boolean']['output'];
   isUserPresenceConnected: Scalars['Boolean']['output'];
+  isUserReadyInGame: Scalars['Boolean']['output'];
   isUserUsernameUsed: Scalars['Boolean']['output'];
 };
 
@@ -736,6 +744,11 @@ export type QueryIsRelationRequestsRequestedArgs = {
 };
 
 
+export type QueryIsUserInGameQueueArgs = {
+  userId: Scalars['String']['input'];
+};
+
+
 export type QueryIsUserMailUsedArgs = {
   mail: Scalars['String']['input'];
 };
@@ -743,6 +756,12 @@ export type QueryIsUserMailUsedArgs = {
 
 export type QueryIsUserPresenceConnectedArgs = {
   id: Scalars['String']['input'];
+};
+
+
+export type QueryIsUserReadyInGameArgs = {
+  gameId: Scalars['String']['input'];
+  userId: Scalars['String']['input'];
 };
 
 
@@ -1267,6 +1286,14 @@ export type IsGameValidQueryVariables = Exact<{
 
 export type IsGameValidQuery = { __typename?: 'Query', isGameValid: boolean };
 
+export type IsUserReadyInGameQueryVariables = Exact<{
+  gameId: Scalars['String']['input'];
+  userId: Scalars['String']['input'];
+}>;
+
+
+export type IsUserReadyInGameQuery = { __typename?: 'Query', isUserReadyInGame: boolean };
+
 export type FindGameStatClassicQueryVariables = Exact<{
   findGameStatClassicId: Scalars['String']['input'];
 }>;
@@ -1301,6 +1328,20 @@ export type AddPlayerToMatchmakingQueueMutationVariables = Exact<{
 
 
 export type AddPlayerToMatchmakingQueueMutation = { __typename?: 'Mutation', addPlayerToMatchmakingQueue: boolean };
+
+export type RemovePlayerFromMatchmakingQueueMutationVariables = Exact<{
+  playerId: Scalars['String']['input'];
+}>;
+
+
+export type RemovePlayerFromMatchmakingQueueMutation = { __typename?: 'Mutation', removePlayerFromMatchmakingQueue: boolean };
+
+export type IsUserInGameQueueQueryVariables = Exact<{
+  userId: Scalars['String']['input'];
+}>;
+
+
+export type IsUserInGameQueueQuery = { __typename?: 'Query', isUserInGameQueue: boolean };
 
 export type RelationBlockedCreationSubscriptionVariables = Exact<{
   userId: Scalars['String']['input'];
@@ -1586,11 +1627,14 @@ export const ReadyForGameDocument = {"kind":"Document","definitions":[{"kind":"O
 export const UpdatePlayerInputsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdatePlayerInputs"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"controls"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ControlsInput"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"gameId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"playerId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updatePlayerInputs"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"controls"},"value":{"kind":"Variable","name":{"kind":"Name","value":"controls"}}},{"kind":"Argument","name":{"kind":"Name","value":"gameId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"gameId"}}},{"kind":"Argument","name":{"kind":"Name","value":"playerId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"playerId"}}}]}]}}]} as unknown as DocumentNode<UpdatePlayerInputsMutation, UpdatePlayerInputsMutationVariables>;
 export const QuitGameDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"QuitGame"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"gameId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"playerId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"quitGame"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"gameId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"gameId"}}},{"kind":"Argument","name":{"kind":"Name","value":"playerId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"playerId"}}}]}]}}]} as unknown as DocumentNode<QuitGameMutation, QuitGameMutationVariables>;
 export const IsGameValidDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"IsGameValid"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"gameId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"userId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"isGameValid"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"gameId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"gameId"}}},{"kind":"Argument","name":{"kind":"Name","value":"userId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"userId"}}}]}]}}]} as unknown as DocumentNode<IsGameValidQuery, IsGameValidQueryVariables>;
+export const IsUserReadyInGameDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"IsUserReadyInGame"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"gameId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"userId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"isUserReadyInGame"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"gameId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"gameId"}}},{"kind":"Argument","name":{"kind":"Name","value":"userId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"userId"}}}]}]}}]} as unknown as DocumentNode<IsUserReadyInGameQuery, IsUserReadyInGameQueryVariables>;
 export const FindGameStatClassicDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"FindGameStatClassic"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"findGameStatClassicId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"findGameStatClassic"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"findGameStatClassicId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"loserId"}},{"kind":"Field","name":{"kind":"Name","value":"scoreLoser"}},{"kind":"Field","name":{"kind":"Name","value":"scoreWinner"}},{"kind":"Field","name":{"kind":"Name","value":"timePlayed"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"winnerId"}}]}}]}}]} as unknown as DocumentNode<FindGameStatClassicQuery, FindGameStatClassicQueryVariables>;
 export const FindGameStatSpecialDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"FindGameStatSpecial"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"findGameStatSpecialId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"findGameStatSpecial"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"findGameStatSpecialId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"loserId"}},{"kind":"Field","name":{"kind":"Name","value":"scoreLoser"}},{"kind":"Field","name":{"kind":"Name","value":"scoreWinner"}},{"kind":"Field","name":{"kind":"Name","value":"timePlayed"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"winnerId"}}]}}]}}]} as unknown as DocumentNode<FindGameStatSpecialQuery, FindGameStatSpecialQueryVariables>;
 export const FindBestUsersDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"FindBestUsers"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"findBestUsers"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"level"}}]}}]}}]} as unknown as DocumentNode<FindBestUsersQuery, FindBestUsersQueryVariables>;
 export const MatchmakingNotificationDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"subscription","name":{"kind":"Name","value":"matchmakingNotification"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"playerId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"matchmakingNotification"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"playerId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"playerId"}}}]}]}}]} as unknown as DocumentNode<MatchmakingNotificationSubscription, MatchmakingNotificationSubscriptionVariables>;
 export const AddPlayerToMatchmakingQueueDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"AddPlayerToMatchmakingQueue"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"gameType"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"EGameType"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"nickname"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"playerId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"addPlayerToMatchmakingQueue"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"gameType"},"value":{"kind":"Variable","name":{"kind":"Name","value":"gameType"}}},{"kind":"Argument","name":{"kind":"Name","value":"nickname"},"value":{"kind":"Variable","name":{"kind":"Name","value":"nickname"}}},{"kind":"Argument","name":{"kind":"Name","value":"playerId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"playerId"}}}]}]}}]} as unknown as DocumentNode<AddPlayerToMatchmakingQueueMutation, AddPlayerToMatchmakingQueueMutationVariables>;
+export const RemovePlayerFromMatchmakingQueueDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"RemovePlayerFromMatchmakingQueue"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"playerId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"removePlayerFromMatchmakingQueue"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"playerId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"playerId"}}}]}]}}]} as unknown as DocumentNode<RemovePlayerFromMatchmakingQueueMutation, RemovePlayerFromMatchmakingQueueMutationVariables>;
+export const IsUserInGameQueueDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"IsUserInGameQueue"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"userId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"isUserInGameQueue"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"userId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"userId"}}}]}]}}]} as unknown as DocumentNode<IsUserInGameQueueQuery, IsUserInGameQueueQueryVariables>;
 export const RelationBlockedCreationDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"subscription","name":{"kind":"Name","value":"RelationBlockedCreation"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"userId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"relationBlockedCreation"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"userId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"userId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"userBlockedId"}},{"kind":"Field","name":{"kind":"Name","value":"userBlockingId"}}]}}]}}]} as unknown as DocumentNode<RelationBlockedCreationSubscription, RelationBlockedCreationSubscriptionVariables>;
 export const RelationFriendDeletedDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"subscription","name":{"kind":"Name","value":"RelationFriendDeleted"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"userId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"relationFriendDeleted"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"userId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"userId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"userAId"}},{"kind":"Field","name":{"kind":"Name","value":"userBId"}}]}}]}}]} as unknown as DocumentNode<RelationFriendDeletedSubscription, RelationFriendDeletedSubscriptionVariables>;
 export const RelationRequestCreationDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"subscription","name":{"kind":"Name","value":"RelationRequestCreation"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"userId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"relationRequestCreation"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"userId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"userId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"userReceiverId"}},{"kind":"Field","name":{"kind":"Name","value":"userSenderId"}}]}}]}}]} as unknown as DocumentNode<RelationRequestCreationSubscription, RelationRequestCreationSubscriptionVariables>;

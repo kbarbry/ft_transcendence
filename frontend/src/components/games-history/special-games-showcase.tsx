@@ -15,7 +15,8 @@ export const SpecialGamesShowcase: React.FC<Props> = (props: Props) => {
     FindGameStatSpecialQuery,
     FindGameStatSpecialQueryVariables
   >(findGameStatSpecial, {
-    variables: { findGameStatSpecialId: props.playerId }
+    variables: { findGameStatSpecialId: props.playerId },
+    fetchPolicy: 'cache-and-network'
   })
 
   if (loading === true) {
