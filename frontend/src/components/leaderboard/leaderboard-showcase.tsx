@@ -7,6 +7,7 @@ import {
 } from '../../gql/graphql'
 import DefaultProfilePicture from '/DefaultProfilePicture.svg'
 import { validateAvatarUrl } from '../../store/utils'
+import { Avatar, Flex } from 'antd'
 
 export const LeaderboardShowcase: React.FC = () => {
   const { data, loading, error } = useQuery<
@@ -27,17 +28,27 @@ export const LeaderboardShowcase: React.FC = () => {
   const userElements: React.JSX.Element[] = data.findBestUsers.map(
     (user, index) => (
       <li className='showcase-element' key={index}>
-        <img
-          className='user-picture'
-          src={
-            user.avatarUrl && validateAvatarUrl(user.avatarUrl) !== undefined
-              ? user.avatarUrl
-              : DefaultProfilePicture
-          }
-          alt="User's avatar picture"
-        />
-        <p>{user.username}</p>
-        <p>Level {user.level.toFixed(1)}</p>
+        <Flex gap='middle'>
+          <Avatar
+            shape='square'
+            size='large'
+            icon={
+              <img
+                className='user-picture'
+                src={
+                  user.avatarUrl &&
+                  validateAvatarUrl(user.avatarUrl) !== undefined
+                    ? user.avatarUrl
+                    : DefaultProfilePicture
+                }
+                alt="User's avatar picture"
+              />
+            }
+          />
+
+          <p>{user.username}</p>
+          <p>Level {user.level.toFixed(1)}</p>
+        </Flex>
       </li>
     )
   )
