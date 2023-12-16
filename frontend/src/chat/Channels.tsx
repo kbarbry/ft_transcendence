@@ -70,39 +70,36 @@ const Channels: React.FC = () => {
   }
 
   const handleCreateChannelClick = async () => {
+    // TODOO FIND A WAY TO GET "ALREADY USE CHANNEL"
+    let isChannelAlsreadySet = true
+    try {
+      const { data: createChannel } = await client.query<
+        FindOneChannelByNameQuery,
+        FindOneChannelByNameQueryVariables
+      >({
+        query: queryFindOneChannelByName,
+        variables: { name: channelNameInput }
+      })
+    } catch (error) {
+      isChannelAlsreadySet = false
+    }
     try {
       if (channelNameInput.trim() === '') {
         setChannelNameInput('')
         throw new Error('Empty channel name')
       }
+      if (isChannelAlsreadySet == true)
+        throw new Error(`"${channelNameInput}" : Channel name already use`)
       if (numberChannels >= 25) {
         setChannelNameInput('')
         throw new Error('Too many channels')
       }
-      // TODOO FIND A WAY TO GET "ALREADY USE CHANNEL"
-      // const { data: dataFindChannel } = await client.query<
-      //   FindOneChannelByNameQuery,
-      //   FindOneChannelByNameQueryVariables
-      // >({
-      //   query: queryFindOneChannelByName,
-      //   variables: { name: channelNameInput }
-      // })
-      // if (dataFindChannel) {
-      //   throw new Error('Channel already exist')
-      // }
       await createChannel({
         variables: { data: { name: channelNameInput, ownerId: user.id } }
       })
-
       setChannelNameInput('')
     } catch (Error) {
       let error_message = (Error as Error).message
-      if (
-        (Error as Error).message ===
-        'Cannot return null for non-nullable field Query.findOneChannelByName.'
-      ) {
-        error_message = 'Cannot create this channel'
-      }
       setIsError(true)
       setErrorMessage(error_message)
     }
