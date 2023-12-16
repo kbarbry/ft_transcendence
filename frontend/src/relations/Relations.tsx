@@ -24,7 +24,9 @@ const Relations: React.FC = () => {
   const requestsReceived = useAppSelector(
     (state) => state.requestReceivedInformations.requestReceived
   )
-
+  const friendInformations = useAppSelector(
+    (state) => state.friendInformations.friends
+  )
   if (!user || !friends || !blockeds || !requestsSent || !requestsReceived)
     throw new Error()
 
@@ -43,7 +45,6 @@ const Relations: React.FC = () => {
   ) => {
     setUsernameInput(event.target.value)
   }
-
   const handleAddFriendClick = async () => {
     try {
       if (usernameInput.trim() === '') {
@@ -52,20 +53,43 @@ const Relations: React.FC = () => {
       if (usernameInput.trim().length > 29) {
         throw new Error('Too long username') as Error
       }
-      const {error, data: userByUsername} = await findUserByUsername({
-        variables: { username: 'usernameInput' }
+      const userByUsername = await findUserByUsername({
+        variables: { username: usernameInput }
       })
-      if (error) {
-        throw new Error('Cannot find this user (Or maybe its your own username ???)') as Error
+      if (userByUsername.error) {
+        throw new Error(
+          `${usernameInput} : Cannot find this user (Or maybe it's your own username ???)`
+        ) as Error
       }
-      const foundUserData = userByUsername.data?.findOneUserByUsername || null
-      if (foundUserData.error) {
-        throw new Error('Failed to add friend') as Error
+
+      const foundUserData = userByUsername?.data.findOneUserByUsername
+      const userReceiverId = foundUserData?.id
+
+      const isUserInputInRequests = requestsSent.some(
+        (user) => user.username === usernameInput
+      )
+      if (isUserInputInRequests) {
+        throw new Error(
+          `${usernameInput} : You already sent a friend request to this user, wait a little bit !`
+        )
+      }
+
+      const isFriend = friendInformations?.some(
+        (user) => user.username === usernameInput
+      )
+      if (isFriend) {
+        throw new Error(
+          `"${usernameInput} : "You are already friend with this user, try to get some newones !`
+        )
+      }
+
+      if (foundUserData == null) {
+        throw new Error(`${usernameInput} : Failed to add friend`) as Error
       }
       if (foundUserData) {
         await createRequest({
           variables: {
-            data: { userSenderId: user.id, userReceiverId: foundUserData.id }
+            data: { userSenderId: user.id, userReceiverId: userReceiverId }
           }
         })
 
@@ -75,7 +99,13 @@ const Relations: React.FC = () => {
         setUsernameInput('')
       }
     } catch (Error) {
-      const error_message = (Error as Error).message
+      let error_message = (Error as Error).message
+      if (
+        error_message ===
+        'Your data contains some conflict with our application'
+      ) {
+        error_message = 'Cannot add this friend'
+      }
       setIsError(true)
       setErrorMessage(error_message)
     }

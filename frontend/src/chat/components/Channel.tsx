@@ -97,7 +97,7 @@ const ChannelComponent: React.FC<ChannelProps> = ({
     const handleDeleteChannel = async () => {
       try {
         await deleteChannel({
-          variables: { deleteChannelId: 'channelId' }
+          variables: { deleteChannelId: channelId }
         })
       } catch (Error) {
         const error_message = 'Cannot delete channel'
