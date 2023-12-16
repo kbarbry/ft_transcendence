@@ -82,8 +82,16 @@ const PrivateChannel: React.FC<PrivateChannelProps> = ({
               <Space direction='vertical' style={{ width: '100%' }}>
                 <h2>Members</h2>
                 <div>
-                  <PrivateProfile member={userInfos} key={userInfos.id} />
-                  <PrivateProfile member={friend} key={friendId} />
+                  <PrivateProfile
+                    userId={userInfos.id}
+                    member={userInfos}
+                    key={userInfos.id}
+                  />
+                  <PrivateProfile
+                    userId={userInfos.id}
+                    member={friend}
+                    key={friendId}
+                  />
                 </div>
               </Space>
             </Col>

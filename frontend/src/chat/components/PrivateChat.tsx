@@ -25,8 +25,9 @@ import {
   User
 } from '../../gql/graphql'
 import PrivateMessageComponent from './PrivateMessage'
-import { Button, Input, Space } from 'antd'
+import { Avatar, Button, Input, List, Skeleton, Space } from 'antd'
 import PopUpError from '../../ErrorPages/PopUpError'
+import DefaultProfilePicture from '/DefaultProfilePicture.svg'
 
 interface PrivateChatProps {
   userInfos: User
@@ -206,19 +207,35 @@ const PrivateChat: React.FC<PrivateChatProps> = ({
     return id === userInfos.id ? userInfos : friend
   }
 
-  const listItems = chatState.chat.map((message, index) => {
+  const listItems = chatState.chat.map((message) => {
+    const senderMessage = sender(message.senderId)
+
     return (
-      <li key={index}>
+      <List.Item
+        key={message.id}
+        style={{
+          transition: 'background-color 0.3s ease-in-out',
+          backgroundColor: message.senderId === senderId ? '#333' : '#222',
+          padding: '10px'
+        }}
+      >
+        <List.Item.Meta
+          avatar={
+            <Avatar src={senderMessage.avatarUrl || DefaultProfilePicture} />
+          }
+          title={senderMessage.username}
+          description={message.content}
+        />
         <PrivateMessageComponent
           message={message}
-          sender={sender(message.senderId)}
+          sender={senderMessage}
           userId={senderId}
           onEdit={handleEditMessage}
           onDelete={handleDeleteMessage}
           editionMode={{ editionInfos, setEditionsInfos }}
           key={message.id}
         />
-      </li>
+      </List.Item>
     )
   })
 
@@ -243,8 +260,11 @@ const PrivateChat: React.FC<PrivateChatProps> = ({
       >
         {isError && <PopUpError message={errorMessage} />}
 
-        <ul>{listItems}</ul>
-
+        {!chatState ? (
+          <Skeleton active style={{ padding: '6px 6px 0px 6px' }} />
+        ) : (
+          <List style={{ padding: '6px 6px 0px 6px' }}>{listItems}</List>
+        )}
         {(errorMessageCreation ||
           errorMessageEdition ||
           errorMessageDeletion) && <div>Error: subscription failed</div>}
