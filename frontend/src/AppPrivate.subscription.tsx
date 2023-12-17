@@ -50,10 +50,10 @@ import {
   RelationRequestDeletedSubscriptionVariables
 } from './gql/graphql'
 import {
+  addChannelInfo,
   removeChannelInfo,
   setChannelBlockedsInformations,
   setChannelChannelInformations,
-  setChannelInformations,
   setChannelInvitedsInformations,
   setChannelMembersInformations
 } from './store/slices/channel-informations.slice'
@@ -275,7 +275,8 @@ const AppPrivateSubscription: React.FC<AppPrivateSubscriptionProps> = ({
         await dispatch(setChannelMembersInformations(res.channelId))
         await dispatch(setChannelInvitations(res.channelId))
         await dispatch(setChannelInvitedsInformations(res.channelId))
-        await dispatch(setChannelInformations(userId))
+        if (res.userId === userId)
+          await dispatch(addChannelInfo({ channelId: res.channelId, userId }))
       }
     },
     onError: (e) => {
