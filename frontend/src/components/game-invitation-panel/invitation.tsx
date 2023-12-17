@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import {
   GameInvitationState,
   removeOneInvitationValue
@@ -26,16 +26,18 @@ export const Invitation: React.FC<Props> = (props: Props) => {
     fetchPolicy: 'cache-and-network'
   })
 
+  useEffect(() => {
+    if (data && data.isGameValid === false) {
+      dispatch(removeOneInvitationValue(props.invitation.gameId))
+    }
+  })
+
   if (loading) {
     return <p>Loading... </p>
   }
   if (error) {
     console.log('Invitation: error = ' + JSON.stringify(error, undefined, 3))
     return <p>Error</p>
-  }
-  if (data && data.isGameValid === false) {
-    //TODO dispatch(removeOneInvitationValue(props.invitation.gameId)) remove component, dispatch probleme
-    return null
   }
   return (
     <Flex vertical={false}>
