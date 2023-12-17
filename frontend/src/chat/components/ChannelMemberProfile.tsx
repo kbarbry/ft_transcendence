@@ -52,8 +52,6 @@ const ChannelMemberProfile: React.FC<ChannelMemberProfileProps> = ({
     (channelMember) => channelMember.userId === memberId
   )
 
-  console.log
-
   const memberUser = channelInfo.channelMemberUser
 
   if (!member || !memberUser) throw new Error()
