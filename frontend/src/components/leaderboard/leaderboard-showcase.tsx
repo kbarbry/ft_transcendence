@@ -19,6 +19,7 @@ export const LeaderboardShowcase: React.FC = () => {
     return <p>Loading...</p>
   }
   if (error) {
+    console.log('leaderboard error : ' + JSON.stringify(error, undefined, 3))
     return <p>An error occured while loading player leaderboard.</p>
   }
   if (data === undefined) {
@@ -28,7 +29,7 @@ export const LeaderboardShowcase: React.FC = () => {
   const userElements: React.JSX.Element[] = data.findBestUsers.map(
     (user, index) => (
       <li className='showcase-element' key={index}>
-        <Flex gap='middle'>
+        <Flex gap='middle' align='center' justify='flex-start'>
           <Avatar
             shape='square'
             size='large'
