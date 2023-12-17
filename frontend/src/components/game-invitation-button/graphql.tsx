@@ -1,8 +1,8 @@
 import { gql } from '@apollo/client'
 
 export const gameInvitationSubscription = gql`
-  subscription PongInvitationSubcription($nickname: String!) {
-    pongInvitationSubcription(nickname: $nickname) {
+  subscription PongInvitationSubcription($userId: String!) {
+    pongInvitationSubcription(userId: $userId) {
       gameId
       gameType
       senderNickname

@@ -43,10 +43,10 @@ export class PongGameResolver {
     resolve: (payload) => (payload?.data !== undefined ? payload.data : null)
   })
   pongInvitationSubcription(
-    @Args('nickname', { type: () => String })
-    nickname: string
+    @Args('userId', { type: () => String }, NanoidValidationPipe)
+    userId: string
   ) {
-    return this.pubSub.asyncIterator('gameInvitation' + nickname)
+    return this.pubSub.asyncIterator('gameInvitation' + userId)
   }
 
   //**************************************************//

@@ -98,7 +98,7 @@ export class PongGameService {
       gameType: inviteGame.type,
       senderNickname: senderNickname
     }
-    this.pubsub.publish('gameInvitation' + invitedUser.username, {
+    this.pubsub.publish('gameInvitation' + invitedUser.id, {
       data: invitation
     })
     return inviteGame.gameId
