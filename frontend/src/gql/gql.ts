@@ -39,6 +39,8 @@ const documents = {
     "\n  mutation DeleteChannelBlocked($channelId: String!, $userId: String!) {\n    deleteChannelBlocked(channelId: $channelId, userId: $userId) {\n      channelId\n      userId\n    }\n  }\n": types.DeleteChannelBlockedDocument,
     "\n  mutation CreateChannelInvited($data: CreateChannelInvitedInput!) {\n    createChannelInvited(data: $data) {\n      channelId\n      userId\n    }\n  }\n": types.CreateChannelInvitedDocument,
     "\n  mutation DeleteChannelInvited($channelId: String!, $userId: String!) {\n    deleteChannelInvited(channelId: $channelId, userId: $userId) {\n      channelId\n      userId\n    }\n  }\n": types.DeleteChannelInvitedDocument,
+    "\n  mutation MakeChannelMemberAdmin($channelId: String!, $userId: String!) {\n    makeChannelMemberAdmin(channelId: $channelId, userId: $userId) {\n      userId\n      type\n    }\n  }\n": types.MakeChannelMemberAdminDocument,
+    "\n  mutation UnmakeChannelMemberAdmin($channelId: String!, $userId: String!) {\n    unmakeChannelMemberAdmin(channelId: $channelId, userId: $userId) {\n      userId\n      type\n    }\n  }\n": types.UnmakeChannelMemberAdminDocument,
     "\n  query FindAllPrivateMessageWith($receiverId: String!, $senderId: String!) {\n    findAllPrivateMessageWith(receiverId: $receiverId, senderId: $senderId) {\n      content\n      createdAt\n      id\n      senderId\n      receiverId\n      updatedAt\n    }\n  }\n": types.FindAllPrivateMessageWithDocument,
     "\n  query FindAllChannelMessageInChannel($channelId: String!) {\n    findAllChannelMessageInChannel(channelId: $channelId) {\n      channelId\n      content\n      createdAt\n      id\n      senderId\n      updatedAt\n    }\n  }\n": types.FindAllChannelMessageInChannelDocument,
     "\n  query FindOneChannelByName($name: String!) {\n    findOneChannelByName(name: $name) {\n      avatarUrl\n      createdAt\n      id\n      maxUsers\n      name\n      ownerId\n      password\n      topic\n      type\n    }\n  }\n": types.FindOneChannelByNameDocument,
@@ -211,6 +213,14 @@ export function graphql(source: "\n  mutation CreateChannelInvited($data: Create
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  mutation DeleteChannelInvited($channelId: String!, $userId: String!) {\n    deleteChannelInvited(channelId: $channelId, userId: $userId) {\n      channelId\n      userId\n    }\n  }\n"): (typeof documents)["\n  mutation DeleteChannelInvited($channelId: String!, $userId: String!) {\n    deleteChannelInvited(channelId: $channelId, userId: $userId) {\n      channelId\n      userId\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation MakeChannelMemberAdmin($channelId: String!, $userId: String!) {\n    makeChannelMemberAdmin(channelId: $channelId, userId: $userId) {\n      userId\n      type\n    }\n  }\n"): (typeof documents)["\n  mutation MakeChannelMemberAdmin($channelId: String!, $userId: String!) {\n    makeChannelMemberAdmin(channelId: $channelId, userId: $userId) {\n      userId\n      type\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation UnmakeChannelMemberAdmin($channelId: String!, $userId: String!) {\n    unmakeChannelMemberAdmin(channelId: $channelId, userId: $userId) {\n      userId\n      type\n    }\n  }\n"): (typeof documents)["\n  mutation UnmakeChannelMemberAdmin($channelId: String!, $userId: String!) {\n    unmakeChannelMemberAdmin(channelId: $channelId, userId: $userId) {\n      userId\n      type\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

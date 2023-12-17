@@ -51,7 +51,7 @@ const AppPrivateStore: React.FC<AppPrivateStoreProps> = ({ userId }) => {
         await dispatch(setRequestReceivedInformations(userId))
         await dispatch(setBlockedInformations(userId))
         await dispatch(setChannelInvitations(userId))
-        await new Promise((resolve) => setTimeout(resolve, 1000))
+        await new Promise((resolve) => setTimeout(resolve, 100))
 
         if (!initialValuesSet) {
           setInitialValuesSet(true)

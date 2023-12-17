@@ -24,7 +24,20 @@ import ChannelBlockedProfile from './ChannelBlockedProfile'
 import { client } from '../../main'
 import { findOneUserByUsername } from '../../relations/graphql'
 import PopUpError from '../../ErrorPages/PopUpError'
-
+import {
+  Button,
+  Col,
+  Collapse,
+  CollapseProps,
+  Divider,
+  Input,
+  List,
+  Row,
+  Space,
+  Tooltip
+} from 'antd'
+import { useMediaQuery } from 'react-responsive'
+import { DeleteOutlined } from '@ant-design/icons'
 
 interface ChannelProps {
   channelsInfos: ChannelAndChannelMember[]
@@ -36,6 +49,7 @@ const ChannelComponent: React.FC<ChannelProps> = ({
   channelId
 }) => {
   const [chat, setChat] = useState<ChannelMessage[]>([])
+  const [isHovered, setIsHovered] = useState(false)
   const [isError, setIsError] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
   const [channelInviteInput, setChannelInviteInput] = useState('')
@@ -106,80 +120,167 @@ const ChannelComponent: React.FC<ChannelProps> = ({
       }
     }
 
-    return (
-      <div style={{ display: 'flex', height: '100vh' }}>
-        <div
-          style={{
-            flex: '0 0 70%',
-            padding: '20px',
-            borderRight: '1px solid #ccc'
-          }}
-        >
-          <h2>{channelInfo.channel.name}</h2>
-          {isError && <PopUpError message={errorMessage} />}
-          {loading && <p>Loading conversation...</p>}
-          {error && (
-            <p>
-              Error loading conversation, please try later. You can still use
-              the chat
-            </p>
-          )}
-          <ChannelChat
-            channelsInfos={channelsInfos}
-            channelId={channelId}
-            chatState={{ chat, setChat }}
-            key={channelInfo.channel.id}
+    const isSmallScreen = useMediaQuery({ maxWidth: 768 })
+
+    const items: CollapseProps['items'] = [
+      {
+        key: '1',
+        label: 'Members',
+        children: (
+          <List
+            dataSource={channelInfo.channelMembers}
+            renderItem={(member) => (
+              <List.Item
+                style={{
+                  overflowX: 'hidden',
+                  padding: '2px',
+                  margin: '0px',
+                  width: '100%'
+                }}
+              >
+                <ChannelMemberProfile
+                  channelsInfos={channelsInfos}
+                  channelId={channelId}
+                  memberId={member.userId}
+                  key={member.userId}
+                />
+              </List.Item>
+            )}
           />
-        </div>
-        <div style={{ flex: '0 0 30%', padding: '20px' }}>
-          <div>
-            <h2>Channel Infos</h2>
-            <button onClick={handleDeleteChannel}>Delete Channel</button>
-          </div>
-          <h2>Channel Members</h2>
-          <div style={{ overflowY: 'auto', maxHeight: '100%' }}>
-            {channelInfo.channelMembers.map((member) => (
-              <ChannelMemberProfile
-                channelsInfos={channelsInfos}
-                channelId={channelId}
-                memberId={member.userId}
-                key={member.userId}
-              />
-            ))}
-          </div>
-          <h2>Channel Invited</h2>
-          <div style={{ display: 'flex', alignItems: 'center' }}>
-            <input
-              type='text'
-              placeholder='Enter username'
-              value={channelInviteInput}
-              onChange={(e) => setChannelInviteInput(e.target.value)}
+        ),
+        extra: <>{channelInfo.channelMembers.length}</>
+      },
+      {
+        key: '2',
+        label: 'Invited',
+        children: (
+          <List
+            dataSource={channelInfo.channelInviteds}
+            renderItem={(member) => (
+              <List.Item style={{ overflowX: 'hidden' }}>
+                <ChannelInvitedProfile
+                  channelsInfos={channelsInfos}
+                  channelId={channelId}
+                  memberId={member.id}
+                  key={member.id}
+                />
+              </List.Item>
+            )}
+          />
+        ),
+        extra: <>{channelInfo.channelInviteds.length}</>
+      },
+      {
+        key: '3',
+        label: 'Blocked',
+        children: (
+          <List
+            dataSource={channelInfo.channelBlockeds}
+            renderItem={(member) => (
+              <List.Item style={{ overflowX: 'hidden' }}>
+                <ChannelBlockedProfile
+                  channelsInfos={channelsInfos}
+                  channelId={channelId}
+                  memberId={member.id}
+                  key={member.id}
+                />
+              </List.Item>
+            )}
+          />
+        ),
+        extra: <>{channelInfo.channelBlockeds.length}</>
+      }
+    ]
+
+    return (
+      <Row
+        gutter={[16, 16]}
+        style={{ height: '100%', width: '100%', overflowY: 'auto' }}
+      >
+        <Col span={isSmallScreen ? 24 : 16} style={{ height: '100%' }}>
+          <Space direction='vertical' style={{ width: '100%' }}>
+            <Space
+              direction='horizontal'
+              onMouseEnter={() => setIsHovered(true)}
+              onMouseLeave={() => setIsHovered(false)}
+            >
+              <h2>{channelInfo.channel.name}</h2>
+              {channelInfo.channelMemberUser.userId ===
+                channelInfo.channel.ownerId && (
+                <Tooltip title='Delete Channel'>
+                  <DeleteOutlined
+                    style={{
+                      opacity: isHovered ? 1 : 0.5,
+                      transition: 'opacity 0.3s ease-in-out'
+                    }}
+                    onClick={() => handleDeleteChannel()}
+                  />
+                </Tooltip>
+              )}
+              {isError && <PopUpError message={errorMessage} />}
+              {loading && <p>Loading conversation...</p>}
+              {error && (
+                <p>
+                  Error loading conversation, please try later. You can still
+                  use the chat
+                </p>
+              )}
+            </Space>
+            <ChannelChat
+              channelsInfos={channelsInfos}
+              channelId={channelId}
+              chatState={{ chat, setChat }}
+              key={channelInfo.channel.id}
             />
-            <button onClick={handleInviteUser}>Invite User</button>
-          </div>
-          <div style={{ overflowY: 'auto', maxHeight: '100%' }}>
-            {channelInfo.channelInviteds.map((member) => (
-              <ChannelInvitedProfile
-                channelsInfos={channelsInfos}
-                channelId={channelId}
-                memberId={member.id}
-                key={member.id}
+          </Space>
+        </Col>
+        {!isSmallScreen && (
+          <>
+            <Col span={1} style={{ height: '100%', width: '100%' }}>
+              <Divider
+                type='vertical'
+                style={{ height: '100%', marginLeft: '50%' }}
               />
-            ))}
-          </div>
-          <h2>Channel Blocked</h2>
-          <div style={{ overflowY: 'auto', maxHeight: '100%' }}>
-            {channelInfo.channelBlockeds.map((member) => (
-              <ChannelBlockedProfile
-                channelsInfos={channelsInfos}
-                channelId={channelId}
-                memberId={member.id}
-                key={member.id}
-              />
-            ))}
-          </div>
-        </div>
-      </div>
+            </Col>
+            <Col span={7} style={{ width: '100%' }}>
+              <Space direction='vertical' style={{ width: '100%' }}>
+                <h2
+                  style={{
+                    marginBottom: '0px',
+                    textAlign: 'center'
+                  }}
+                >
+                  Channel Informations
+                </h2>
+                <Divider
+                  style={{ height: '10px', margin: '0px', marginTop: '10px' }}
+                />
+                <Space direction='vertical'>
+                  <Input
+                    type='text'
+                    placeholder='Enter username'
+                    value={channelInviteInput}
+                    onChange={(e) => setChannelInviteInput(e.target.value)}
+                  />
+                  <Button
+                    style={{ width: '100%' }}
+                    type='primary'
+                    onClick={handleInviteUser}
+                  >
+                    Invite User
+                  </Button>
+                </Space>
+                <Collapse
+                  ghost
+                  style={{ border: '1px solid #333' }}
+                  defaultActiveKey={['1']}
+                  items={items}
+                />
+              </Space>
+            </Col>
+          </>
+        )}
+      </Row>
     )
   } catch (e) {
     console.error('Error in Channel component:', e)

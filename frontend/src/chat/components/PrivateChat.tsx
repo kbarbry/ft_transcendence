@@ -207,12 +207,12 @@ const PrivateChat: React.FC<PrivateChatProps> = ({
     return id === userInfos.id ? userInfos : friend
   }
 
-  const listItems = chatState.chat.map((message) => {
+  const listItems = chatState.chat.map((message, index) => {
     const senderMessage = sender(message.senderId)
 
     return (
       <List.Item
-        key={message.id}
+        key={index}
         style={{
           transition: 'background-color 0.3s ease-in-out',
           backgroundColor: message.senderId === senderId ? '#333' : '#222',

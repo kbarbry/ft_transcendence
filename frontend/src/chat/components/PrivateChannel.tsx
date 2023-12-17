@@ -80,8 +80,18 @@ const PrivateChannel: React.FC<PrivateChannelProps> = ({
             </Col>
             <Col span={5} style={{ height: '100%' }}>
               <Space direction='vertical' style={{ width: '100%' }}>
-                <h2>Members</h2>
-                <div>
+                <h2
+                  style={{
+                    marginBottom: '0px',
+                    textAlign: 'center'
+                  }}
+                >
+                  Members
+                </h2>
+                <Divider
+                  style={{ height: '10px', margin: '0px', marginTop: '10px' }}
+                />
+                <div style={{ overflowX: 'hidden' }}>
                   <PrivateProfile
                     userId={userInfos.id}
                     member={userInfos}

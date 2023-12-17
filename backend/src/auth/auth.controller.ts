@@ -91,10 +91,9 @@ export class AuthController {
     } catch (e) {
       throw new ExceptionCustom('Login error')
     }
-    console.log('userPresenceCreated')
-
-    this.prisma.userPresence.create(req.user.id)
-
+    const resUser = await this.prisma.userPresence.create({
+      data: { userId: req.user.id }
+    })
     return res.status(200).json({ msg: 'Local Auth Login' })
   }
 
@@ -125,8 +124,9 @@ export class AuthController {
       this.authService.unset2faValidation(req.user.id)
       return res.redirect('http://127.0.0.1:5173/2fa/login')
     }
-    console.log('userPresenceCreated')
-
+    const resUser = await this.prisma.userPresence.create({
+      data: { userId: req.user.id }
+    })
     return res.redirect('http://127.0.0.1:5173')
   }
 
@@ -144,9 +144,9 @@ export class AuthController {
       this.authService.unset2faValidation(req.user.id)
       return res.redirect('http://127.0.0.1:5173/2fa/login')
     }
-    console.log('userPresenceCreated')
-
-    this.prisma.userPresence.create(req.user.id)
+    const resUser = await this.prisma.userPresence.create({
+      data: { userId: req.user.id }
+    })
     return res.redirect('http://127.0.0.1:5173')
   }
 
@@ -164,12 +164,9 @@ export class AuthController {
       this.authService.unset2faValidation(req.user.id)
       return res.redirect('http://127.0.0.1:5173/2fa/login')
     }
-    console.log('userPresenceCreated', req.user.id)
-
     const resUser = await this.prisma.userPresence.create({
       data: { userId: req.user.id }
     })
-    console.log(resUser)
     return res.redirect('http://127.0.0.1:5173')
   }
 }

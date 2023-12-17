@@ -34,7 +34,7 @@ const PrivateChannels: React.FC = () => {
               textAlign: 'center'
             }}
           >
-            Private Message
+            Private Messages
           </h2>
           <Divider />
           <List

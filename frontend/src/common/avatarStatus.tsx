@@ -78,7 +78,7 @@ const AvatarStatus: React.FC<avatarStatusProps> = ({
         : userStatus === EStatus.DoNotDisturb
         ? 'red'
         : userStatus === EStatus.Idle
-        ? 'yellow'
+        ? 'orange'
         : 'gray'
   }
 

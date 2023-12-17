@@ -89,10 +89,10 @@ const PrivateProfile: React.FC<PrivateProfileProps> = ({ userId, member }) => {
       </Button>
 
       <Modal
-        visible={isModalVisible}
+        open={isModalVisible}
         onCancel={handleCancel}
         footer={null}
-        width={300}
+        width={200}
         centered
       >
         <Space direction='vertical' align='center'>

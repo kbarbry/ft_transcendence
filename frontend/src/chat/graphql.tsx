@@ -264,6 +264,24 @@ export const mutationDeleteChannelInvited = gql`
   }
 `
 
+export const mutationMakeChannelMemberAdmin = gql`
+  mutation MakeChannelMemberAdmin($channelId: String!, $userId: String!) {
+    makeChannelMemberAdmin(channelId: $channelId, userId: $userId) {
+      userId
+      type
+    }
+  }
+`
+
+export const mutationUnmakeChannelMemberAdmin = gql`
+  mutation UnmakeChannelMemberAdmin($channelId: String!, $userId: String!) {
+    unmakeChannelMemberAdmin(channelId: $channelId, userId: $userId) {
+      userId
+      type
+    }
+  }
+`
+
 //**************************************************//
 //  QUERY
 //**************************************************//
