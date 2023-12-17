@@ -38,8 +38,11 @@ import {
   ChannelMemberDeletionSubscriptionVariables,
   ChannelMemberEditionSubscription,
   ChannelMemberEditionSubscriptionVariables,
+  GameInvitation,
   MatchmakingNotificationSubscription,
   MatchmakingNotificationSubscriptionVariables,
+  PongInvitationSubcriptionSubscription,
+  PongInvitationSubcriptionSubscriptionVariables,
   RelationBlockedCreationSubscription,
   RelationBlockedCreationSubscriptionVariables,
   RelationFriendDeletedSubscription,
@@ -64,6 +67,8 @@ import {
 import AppPrivateLoading from './AppPrivate.loading'
 import { matchmakingNotification } from './components/matchmaking/graphql'
 import { setGameIdValue } from './store/slices/gameId.slice'
+import { gameInvitationSubscription } from './components/game-invitation-button/graphql'
+import { addGameInvitationValue } from './store/slices/gameInvitations.slice'
 
 interface AppPrivateSubscriptionProps {
   userId: string
@@ -87,6 +92,7 @@ interface LoadingSubscriptionState {
   requestCreated: boolean
   requestDeleted: boolean
   listeningMatchmaking: boolean
+  gameInvitation: boolean
   isError: boolean
 }
 
@@ -105,6 +111,7 @@ const LoadingSubscriptionStateInitial: LoadingSubscriptionState = {
   requestCreated: true,
   requestDeleted: true,
   listeningMatchmaking: true,
+  gameInvitation: true,
   isError: false
 }
 
@@ -462,6 +469,25 @@ const AppPrivateSubscription: React.FC<AppPrivateSubscriptionProps> = ({
     onData: listenMatchmaking
   })
 
+  const { error: errorGameInvitation } = useSubscription<
+    PongInvitationSubcriptionSubscription,
+    PongInvitationSubcriptionSubscriptionVariables
+  >(gameInvitationSubscription, {
+    variables: { userId: userId },
+    onData: (options) => {
+      if (options.data.data === undefined) {
+        return
+      }
+      const invitation: GameInvitation = {
+        gameId: options.data.data.pongInvitationSubcription.gameId,
+        gameType: options.data.data.pongInvitationSubcription.gameType,
+        senderNickname:
+          options.data.data.pongInvitationSubcription.senderNickname
+      }
+      dispatch(addGameInvitationValue(invitation))
+    }
+  })
+
   const allLoadingSubscriptionComplete = Object.values(
     loadingSubscription
   ).every((load) => !load)
@@ -536,6 +562,11 @@ const AppPrivateSubscription: React.FC<AppPrivateSubscriptionProps> = ({
       setLoadingSubscription((prevLoading) => ({
         ...prevLoading,
         listeningMatchmaking: false
+      }))
+    if (!errorGameInvitation)
+      setLoadingSubscription((prevLoading) => ({
+        ...prevLoading,
+        gameInvitation: false
       }))
 
     if (allLoadingSubscriptionComplete)

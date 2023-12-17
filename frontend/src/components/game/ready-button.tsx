@@ -48,7 +48,7 @@ export const ReadyButton: React.FC<Props> = (props: Props) => {
     }
   }
   if (gameReadyData && gameReadyData.isUserReadyInGame) {
-    return <button>Waiting Player</button>
+    return <button>You're in !</button>
   }
   if (gameReadyLoading) {
     return <button>Loading</button>
