@@ -34,7 +34,7 @@ const Blocked: React.FC<BlockedProps> = ({ userId, blocked }) => {
 
       await dispatch(setBlockedInformations(userId))
     } catch (Error) {
-      const error_message = (Error as Error).message
+      const error_message = 'Cannot unblock this user'
       setIsError(true)
       setErrorMessage(error_message)
     }

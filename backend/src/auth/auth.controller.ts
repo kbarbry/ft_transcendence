@@ -83,14 +83,13 @@ export class AuthController {
   @UseGuards(LocalAuthGuard)
   @Post('login')
   async login(@Req() req: any, @Res() res: any) {
-    try {
-      const is2fa = await this.authService.isUser2fa(req.user.id)
-      if (is2fa === true) {
-        this.authService.unset2faValidation(req.user.id)
-      }
-    } catch (e) {
-      throw new ExceptionCustom('Login error')
+    let is2faverified = true
+    const is2fa = await this.authService.isUser2fa(req.user.id)
+    if (is2fa == true) {
+      this.authService.unset2faValidation(req.user.id)
+      is2faverified = false
     }
+
     const resUser = await this.prisma.userPresence.create({
       data: { userId: req.user.id }
     })

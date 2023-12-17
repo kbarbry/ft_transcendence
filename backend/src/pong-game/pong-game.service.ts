@@ -28,25 +28,20 @@ export class PongGameService {
     setInterval(this.gamesUpdate.bind(this), 20)
   }
 
-  isPlayerInQueue(playerWaiting: PlayerWaiting) {
-    switch (playerWaiting.gameType) {
-      case EGameType.Classic:
-        for (const player of classicQueue) {
-          if (player.id == playerWaiting.id) {
-            return true
-          }
-        }
-        break
-      case EGameType.Special:
-        for (const player of specialQueue) {
-          if (player.id == playerWaiting.id) {
-            return true
-          }
-        }
-        break
-      default:
-        break
+  isPlayerInQueue(playerId: string) {
+    for (const player of classicQueue) {
+      if (player.id === playerId) {
+        console.log('isPlayerInQueue return true, id = ' + playerId)
+        return true
+      }
     }
+    for (const player of specialQueue) {
+      if (player.id === playerId) {
+        console.log('isPlayerInQueue return true, id = ' + playerId)
+        return true
+      }
+    }
+    console.log('isPlayerInQueue return false, id = ' + playerId)
     return false
   }
 
@@ -59,6 +54,20 @@ export class PongGameService {
       return false
     }
     return true
+  }
+
+  isUserReadyInGame(userId: string, gameId: string): boolean {
+    const game = gamesMap.get(gameId)
+    if (game === undefined) {
+      return false
+    }
+    if (game.player1.id === userId) {
+      return game.player1.presence
+    }
+    if (game.player2.id === userId) {
+      return game.player2.presence
+    }
+    return false
   }
 
   async sendPongInvitation(
@@ -96,7 +105,7 @@ export class PongGameService {
   }
 
   async addPlayerToGameQueue(playerWaiting: PlayerWaiting): Promise<boolean> {
-    if (this.isPlayerInQueue(playerWaiting)) {
+    if (this.isPlayerInQueue(playerWaiting.id)) {
       console.log(
         'Service: addPlayerToGameQueue: player already in queue : ' +
           playerWaiting.nickname
@@ -117,6 +126,23 @@ export class PongGameService {
     if (size > 0) {
       return true
     }
+    return false
+  }
+
+  removePlayerFromMatchmakingQueue(playerId: string) {
+    let index = classicQueue.findIndex((player) => player.id === playerId)
+    if (index !== -1) {
+      classicQueue.splice(index, 1)
+      console.log('return true')
+      return true
+    }
+    index = specialQueue.findIndex((player) => player.id === playerId)
+    if (index !== -1) {
+      specialQueue.splice(index, 1)
+      console.log('return true')
+      return true
+    }
+    console.log('return false')
     return false
   }
 

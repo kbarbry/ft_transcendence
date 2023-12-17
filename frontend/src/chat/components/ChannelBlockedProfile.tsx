@@ -34,8 +34,6 @@ const ChannelBlockedProfile: React.FC<ChannelBlockedProfileProps> = ({
   )
 
   const memberUser = channelInfo.channelMemberUser
-  console.log(blockedUser)
-  console.log(memberUser)
   if (!blockedUser || !memberUser) throw new Error('Block Error')
 
   const [unblockUser] = useMutation<

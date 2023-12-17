@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { useSubscription } from '@apollo/client'
+import { OnDataOptions, useSubscription } from '@apollo/client'
 import { useAppDispatch } from './store/hooks'
 import {
   subscriptionOnBlockedReceived,
@@ -38,6 +38,8 @@ import {
   ChannelMemberDeletionSubscriptionVariables,
   ChannelMemberEditionSubscription,
   ChannelMemberEditionSubscriptionVariables,
+  MatchmakingNotificationSubscription,
+  MatchmakingNotificationSubscriptionVariables,
   RelationBlockedCreationSubscription,
   RelationBlockedCreationSubscriptionVariables,
   RelationFriendDeletedSubscription,
@@ -60,6 +62,8 @@ import {
   setChannelInvitations
 } from './store/slices/channel-invitation-informations'
 import AppPrivateLoading from './AppPrivate.loading'
+import { matchmakingNotification } from './components/matchmaking/graphql'
+import { setGameIdValue } from './store/slices/gameId.slice'
 
 interface AppPrivateSubscriptionProps {
   userId: string
@@ -82,6 +86,7 @@ interface LoadingSubscriptionState {
   friendDeleted: boolean
   requestCreated: boolean
   requestDeleted: boolean
+  listeningMatchmaking: boolean
   isError: boolean
 }
 
@@ -99,6 +104,7 @@ const LoadingSubscriptionStateInitial: LoadingSubscriptionState = {
   friendDeleted: true,
   requestCreated: true,
   requestDeleted: true,
+  listeningMatchmaking: true,
   isError: false
 }
 
@@ -441,6 +447,22 @@ const AppPrivateSubscription: React.FC<AppPrivateSubscriptionProps> = ({
     }
   })
 
+  //**************************************************//
+  //  MATCHMAKING
+  //**************************************************//
+  function listenMatchmaking(options: OnDataOptions<any>) {
+    let res = options.data.data.matchmakingNotification
+    dispatch(setGameIdValue(res))
+  }
+
+  const { error: errorListenMatchmaking } = useSubscription<
+    MatchmakingNotificationSubscription,
+    MatchmakingNotificationSubscriptionVariables
+  >(matchmakingNotification, {
+    variables: { playerId: userId },
+    onData: listenMatchmaking
+  })
+
   const allLoadingSubscriptionComplete = Object.values(
     loadingSubscription
   ).every((load) => !load)
@@ -510,6 +532,11 @@ const AppPrivateSubscription: React.FC<AppPrivateSubscriptionProps> = ({
       setLoadingSubscription((prevLoading) => ({
         ...prevLoading,
         channelBlockedDeleted: false
+      }))
+    if (!errorListenMatchmaking)
+      setLoadingSubscription((prevLoading) => ({
+        ...prevLoading,
+        listeningMatchmaking: false
       }))
 
     if (allLoadingSubscriptionComplete)

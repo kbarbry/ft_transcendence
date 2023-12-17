@@ -102,7 +102,7 @@ const ChannelComponent: React.FC<ChannelProps> = ({
         console.log('User invited successfully')
         setChannelInviteInput('')
       } catch (Error) {
-        const error_message = (Error as Error).message
+        const error_message = 'Cannot invit this user in this channel'
         setIsError(true)
         setErrorMessage(error_message)
       }
@@ -114,7 +114,7 @@ const ChannelComponent: React.FC<ChannelProps> = ({
           variables: { deleteChannelId: channelId }
         })
       } catch (Error) {
-        const error_message = (Error as Error).message
+        const error_message = 'Cannot delete channel'
         setIsError(true)
         setErrorMessage(error_message)
       }

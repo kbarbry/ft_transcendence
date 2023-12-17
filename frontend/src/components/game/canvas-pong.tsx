@@ -138,7 +138,7 @@ export const CanvasPong: React.FC<Props> = (props: Props) => {
     ctx.fillRect(0, 0, 800, 600)
     ctx.fillStyle = 'ghostwhite'
     ctx.font = '50px sans-serif'
-    ctx.fillText('Waiting for the second player', 400, 300)
+    ctx.fillText('Waiting for both player to be ready', 400, 300)
   }
 
   useEffect(() => {

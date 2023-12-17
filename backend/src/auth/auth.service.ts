@@ -442,7 +442,7 @@ export class AuthService {
         id: user_id
       },
       data: {
-        validation2fa: false
+        validation2fa: true
       }
     })
   }

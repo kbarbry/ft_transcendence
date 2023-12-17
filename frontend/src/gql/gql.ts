@@ -53,11 +53,14 @@ const documents = {
     "\n  mutation UpdatePlayerInputs(\n    $controls: ControlsInput!\n    $gameId: String!\n    $playerId: String!\n  ) {\n    updatePlayerInputs(\n      controls: $controls\n      gameId: $gameId\n      playerId: $playerId\n    )\n  }\n": types.UpdatePlayerInputsDocument,
     "\n  mutation QuitGame($gameId: String!, $playerId: String!) {\n    quitGame(gameId: $gameId, playerId: $playerId)\n  }\n": types.QuitGameDocument,
     "\n  query IsGameValid($gameId: String!, $userId: String!) {\n    isGameValid(gameId: $gameId, userId: $userId)\n  }\n": types.IsGameValidDocument,
+    "\n  query IsUserReadyInGame($gameId: String!, $userId: String!) {\n    isUserReadyInGame(gameId: $gameId, userId: $userId)\n  }\n": types.IsUserReadyInGameDocument,
     "\n  query FindGameStatClassic($findGameStatClassicId: String!) {\n    findGameStatClassic(id: $findGameStatClassicId) {\n      createdAt\n      id\n      loserId\n      scoreLoser\n      scoreWinner\n      timePlayed\n      type\n      winnerId\n    }\n  }\n": types.FindGameStatClassicDocument,
     "\n  query FindGameStatSpecial($findGameStatSpecialId: String!) {\n    findGameStatSpecial(id: $findGameStatSpecialId) {\n      createdAt\n      id\n      loserId\n      scoreLoser\n      scoreWinner\n      timePlayed\n      type\n      winnerId\n    }\n  }\n": types.FindGameStatSpecialDocument,
     "\n  query FindBestUsers {\n    findBestUsers {\n      avatarUrl\n      username\n      level\n    }\n  }\n": types.FindBestUsersDocument,
     "\n  subscription matchmakingNotification($playerId: String!) {\n    matchmakingNotification(playerId: $playerId)\n  }\n": types.MatchmakingNotificationDocument,
     "\n  mutation AddPlayerToMatchmakingQueue(\n    $gameType: EGameType!\n    $nickname: String!\n    $playerId: String!\n  ) {\n    addPlayerToMatchmakingQueue(\n      gameType: $gameType\n      nickname: $nickname\n      playerId: $playerId\n    )\n  }\n": types.AddPlayerToMatchmakingQueueDocument,
+    "\n  mutation RemovePlayerFromMatchmakingQueue($playerId: String!) {\n    removePlayerFromMatchmakingQueue(playerId: $playerId)\n  }\n": types.RemovePlayerFromMatchmakingQueueDocument,
+    "\n  query IsUserInGameQueue($userId: String!) {\n    isUserInGameQueue(userId: $userId)\n  }\n": types.IsUserInGameQueueDocument,
     "\n  subscription RelationBlockedCreation($userId: String!) {\n    relationBlockedCreation(userId: $userId) {\n      userBlockedId\n      userBlockingId\n    }\n  }\n": types.RelationBlockedCreationDocument,
     "\n  subscription RelationFriendDeleted($userId: String!) {\n    relationFriendDeleted(userId: $userId) {\n      userAId\n      userBId\n    }\n  }\n": types.RelationFriendDeletedDocument,
     "\n  subscription RelationRequestCreation($userId: String!) {\n    relationRequestCreation(userId: $userId) {\n      userReceiverId\n      userSenderId\n    }\n  }\n": types.RelationRequestCreationDocument,
@@ -272,6 +275,10 @@ export function graphql(source: "\n  query IsGameValid($gameId: String!, $userId
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
+export function graphql(source: "\n  query IsUserReadyInGame($gameId: String!, $userId: String!) {\n    isUserReadyInGame(gameId: $gameId, userId: $userId)\n  }\n"): (typeof documents)["\n  query IsUserReadyInGame($gameId: String!, $userId: String!) {\n    isUserReadyInGame(gameId: $gameId, userId: $userId)\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
 export function graphql(source: "\n  query FindGameStatClassic($findGameStatClassicId: String!) {\n    findGameStatClassic(id: $findGameStatClassicId) {\n      createdAt\n      id\n      loserId\n      scoreLoser\n      scoreWinner\n      timePlayed\n      type\n      winnerId\n    }\n  }\n"): (typeof documents)["\n  query FindGameStatClassic($findGameStatClassicId: String!) {\n    findGameStatClassic(id: $findGameStatClassicId) {\n      createdAt\n      id\n      loserId\n      scoreLoser\n      scoreWinner\n      timePlayed\n      type\n      winnerId\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
@@ -289,6 +296,14 @@ export function graphql(source: "\n  subscription matchmakingNotification($playe
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  mutation AddPlayerToMatchmakingQueue(\n    $gameType: EGameType!\n    $nickname: String!\n    $playerId: String!\n  ) {\n    addPlayerToMatchmakingQueue(\n      gameType: $gameType\n      nickname: $nickname\n      playerId: $playerId\n    )\n  }\n"): (typeof documents)["\n  mutation AddPlayerToMatchmakingQueue(\n    $gameType: EGameType!\n    $nickname: String!\n    $playerId: String!\n  ) {\n    addPlayerToMatchmakingQueue(\n      gameType: $gameType\n      nickname: $nickname\n      playerId: $playerId\n    )\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation RemovePlayerFromMatchmakingQueue($playerId: String!) {\n    removePlayerFromMatchmakingQueue(playerId: $playerId)\n  }\n"): (typeof documents)["\n  mutation RemovePlayerFromMatchmakingQueue($playerId: String!) {\n    removePlayerFromMatchmakingQueue(playerId: $playerId)\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query IsUserInGameQueue($userId: String!) {\n    isUserInGameQueue(userId: $userId)\n  }\n"): (typeof documents)["\n  query IsUserInGameQueue($userId: String!) {\n    isUserInGameQueue(userId: $userId)\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

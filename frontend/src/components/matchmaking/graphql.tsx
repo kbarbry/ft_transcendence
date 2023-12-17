@@ -18,3 +18,15 @@ export const addPlayerToMatchmakingQueue = gql`
     )
   }
 `
+
+export const removePlayerFromQueue = gql`
+  mutation RemovePlayerFromMatchmakingQueue($playerId: String!) {
+    removePlayerFromMatchmakingQueue(playerId: $playerId)
+  }
+`
+
+export const isPlayerQueued = gql`
+  query IsUserInGameQueue($userId: String!) {
+    isUserInGameQueue(userId: $userId)
+  }
+`

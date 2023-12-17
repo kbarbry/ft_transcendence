@@ -177,7 +177,7 @@ const ChannelChat: React.FC<ChannelChatProps> = ({
 
       setMessageInput('')
     } catch (Error) {
-      const error_message = (Error as Error).message
+      const error_message = 'Invalid message'
       setIsError(true)
       setErrorMessage(error_message)
     }
@@ -217,7 +217,7 @@ const ChannelChat: React.FC<ChannelChatProps> = ({
     try {
       await deleteMessage({ variables: { deleteChannelMessageId: messageId } })
     } catch (Error) {
-      const error_message = (Error as Error).message
+      const error_message = 'Cannot delete this message'
       setIsError(true)
       setErrorMessage(error_message)
     }

@@ -15,7 +15,8 @@ export const ClassicGamesShowcase: React.FC<Props> = (props: Props) => {
     FindGameStatClassicQuery,
     FindGameStatClassicQueryVariables
   >(findGameStatClassic, {
-    variables: { findGameStatClassicId: props.playerId }
+    variables: { findGameStatClassicId: props.playerId },
+    fetchPolicy: 'cache-and-network'
   })
 
   if (loading === true) {

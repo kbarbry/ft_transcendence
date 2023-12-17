@@ -197,7 +197,7 @@ const PrivateChat: React.FC<PrivateChatProps> = ({
         }
       })
     } catch (Error) {
-      const error_message = (Error as Error).message
+      const error_message = 'Cannot delete this message'
       setIsError(true)
       setErrorMessage(error_message)
     }

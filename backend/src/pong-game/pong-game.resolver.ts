@@ -80,12 +80,22 @@ export class PongGameResolver {
       id: playerId,
       nickname,
       gameType,
-      triggerName: 'queue' + playerId //TODO change this with game type
+      triggerName: 'queue' + playerId
     })
     if (isQueued) {
       await this.pongService.matchPlayerInQueue(gameType)
     }
     return isQueued
+  }
+
+  @Mutation(() => Boolean)
+  removePlayerFromMatchmakingQueue(
+    @Args('playerId', { type: () => String }) playerId: string
+  ): boolean {
+    console.log('Mutation: removePlayerFromMatchmakingQueue:')
+    const isRemoved: boolean =
+      this.pongService.removePlayerFromMatchmakingQueue(playerId)
+    return isRemoved
   }
 
   @Mutation(() => Boolean)
@@ -143,5 +153,25 @@ export class PongGameResolver {
   ): Promise<boolean> {
     console.log('PongGameResolver: isGameValid:')
     return this.pongService.isGameValid(userId, gameId)
+  }
+
+  @Query(() => Boolean)
+  isUserInGameQueue(
+    @Args('userId', { type: () => String }, NanoidValidationPipe)
+    userId: string
+  ): boolean {
+    console.log('PongGameResolver: isUserInGameQueue:')
+    return this.pongService.isPlayerInQueue(userId)
+  }
+
+  @Query(() => Boolean)
+  isUserReadyInGame(
+    @Args('userId', { type: () => String }, NanoidValidationPipe)
+    userId: string,
+    @Args('gameId', { type: () => String })
+    gameId: string
+  ): boolean {
+    console.log('PongGameResolver: isUserReadyInGame:')
+    return this.pongService.isUserReadyInGame(userId, gameId)
   }
 }

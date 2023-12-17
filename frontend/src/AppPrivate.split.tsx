@@ -18,7 +18,9 @@ import {
   TeamOutlined
 } from '@ant-design/icons'
 import { Game } from './components/game/game'
+import { Leaderboard } from './components/leaderboard/leaderboard'
 import { ProfilPage } from './userInfo/ProfilPage'
+import { BsLadder } from 'react-icons/bs'
 
 interface AppPrivateSubscriptionProps {
   userId: string
@@ -46,6 +48,15 @@ const AppPrivateSplit: React.FC<AppPrivateSubscriptionProps> = ({ userId }) => {
       ),
       icon: <HomeOutlined />,
       key: 'home'
+    },
+    {
+      label: (
+        <Link href='/leaderboard'>
+          <a>Leaderboard</a>
+        </Link>
+      ),
+      icon: <BsLadder />,
+      key: 'leaderboard'
     },
     {
       label: (
@@ -168,6 +179,7 @@ const AppPrivateSplit: React.FC<AppPrivateSubscriptionProps> = ({ userId }) => {
                 <Route path='/channel' component={Channels} />
                 <Route path='/relations' component={Relations} />
                 <Route path='/game' component={Game} />
+                <Route path='/leaderboard' component={Leaderboard} />
                 <Route path='/settings' component={Settings} />
                 <Route path='/profile' component={ProfilPage} />
                 <Route component={NotFound} />

@@ -106,7 +106,7 @@ const ChannelMemberProfile: React.FC<ChannelMemberProfileProps> = ({
       })
       handleCancel()
     } catch (Error) {
-      const error_message = (Error as Error).message
+      const error_message = 'Cannot kick this user'
       setIsError(true)
       setErrorMessage(error_message)
     }
@@ -132,7 +132,7 @@ const ChannelMemberProfile: React.FC<ChannelMemberProfileProps> = ({
         handleCancel()
       }
     } catch (Error) {
-      const error_message = (Error as Error).message
+      const error_message = 'Cannot mute/unmute this user'
       setIsError(true)
       setErrorMessage(error_message)
     }
@@ -150,7 +150,7 @@ const ChannelMemberProfile: React.FC<ChannelMemberProfileProps> = ({
       })
       handleCancel()
     } catch (Error) {
-      const error_message = (Error as Error).message
+      const error_message = 'Cannot ban this user'
       setIsError(true)
       setErrorMessage(error_message)
     }
