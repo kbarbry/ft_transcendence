@@ -43,6 +43,11 @@ import {
   Tooltip
 } from 'antd'
 import { useMediaQuery } from 'react-responsive'
+import { DeleteOutlined } from '@ant-design/icons'
+import ErrorNotification from '../../notifications/ErrorNotificartion'
+import SuccessNotification from '../../notifications/SuccessNotification'
+
+
 import {
   DeleteOutlined,
   EditOutlined,
@@ -50,6 +55,7 @@ import {
   EyeTwoTone,
   EyeInvisibleOutlined
 } from '@ant-design/icons'
+
 
 interface ChannelProps {
   channelsInfos: ChannelAndChannelMember[]
@@ -62,8 +68,6 @@ const ChannelComponent: React.FC<ChannelProps> = ({
 }) => {
   const [chat, setChat] = useState<ChannelMessage[]>([])
   const [isHovered, setIsHovered] = useState(false)
-  const [isError, setIsError] = useState(false)
-  const [errorMessage, setErrorMessage] = useState('')
   const [channelInviteInput, setChannelInviteInput] = useState('')
   const [isEditModalVisible, setIsEditModalVisible] = useState(false)
   const channelInfo = channelsInfos.find(
@@ -117,12 +121,11 @@ const ChannelComponent: React.FC<ChannelProps> = ({
             }
           }
         })
-        console.log('User invited successfully')
+        SuccessNotification('Success', `User has been ${channelInviteInput} invited with success !`)
         setChannelInviteInput('')
       } catch (Error) {
         const error_message = 'Cannot invit this user in this channel'
-        setIsError(true)
-        setErrorMessage(error_message)
+        ErrorNotification('Channel Error', error_message)
       }
     }
 
@@ -131,10 +134,11 @@ const ChannelComponent: React.FC<ChannelProps> = ({
         await deleteChannel({
           variables: { deleteChannelId: channelId }
         })
+        SuccessNotification('Success', 'Channel has been deleted with success !')
       } catch (Error) {
         const error_message = 'Cannot delete channel'
-        setIsError(true)
-        setErrorMessage(error_message)
+        ErrorNotification('Channel Error', error_message)
+
       }
     }
 
@@ -327,7 +331,6 @@ const ChannelComponent: React.FC<ChannelProps> = ({
                   </Tooltip>
                 </>
               )}
-              {isError && <PopUpError message={errorMessage} />}
               {loading && <p>Loading conversation...</p>}
               {error && (
                 <p>

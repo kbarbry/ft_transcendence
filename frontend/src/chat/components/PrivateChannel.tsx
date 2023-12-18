@@ -9,9 +9,10 @@ import { useQuery } from '@apollo/client'
 import { queryFindAllPrivateMessageWith } from '../graphql'
 import PrivateChat from './PrivateChat'
 import PrivateProfile from './PrivateProfile'
-import PopUpError from '../../ErrorPages/PopUpError'
 import { Space, Row, Col, Divider } from 'antd'
 import { useMediaQuery } from 'react-responsive'
+import ErrorNotification from '../../notifications/ErrorNotificartion'
+
 
 interface PrivateChannelProps {
   userInfos: User
@@ -26,9 +27,6 @@ const PrivateChannel: React.FC<PrivateChannelProps> = ({
 }) => {
   const [chat, setChat] = useState<PrivateMessage[]>([])
   const friend = friends.find((friend) => friend.id === friendId)
-  const [, setIsError] = useState(false)
-  const [, setErrorMessage] = useState('')
-
   const isSmallScreen = useMediaQuery({ maxWidth: 768 })
 
   if (!friend) throw new Error()
@@ -111,9 +109,7 @@ const PrivateChannel: React.FC<PrivateChannelProps> = ({
     )
   } catch (Error) {
     const error_message = (Error as Error).message
-    setIsError(true)
-    setErrorMessage(error_message)
-    return <PopUpError message={'Private channel error'} />
+    ErrorNotification('Login Error', error_message)
   }
 }
 

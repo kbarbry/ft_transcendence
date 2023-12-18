@@ -24,9 +24,11 @@ import {
   UpdatePrivateMessageMutationVariables,
   User
 } from '../../gql/graphql'
+
 import PrivateMessageComponent from './PrivateMessage'
 import { Avatar, Button, Input, List, Skeleton, Space } from 'antd'
-import PopUpError from '../../ErrorPages/PopUpError'
+import ErrorNotification from '../../notifications/ErrorNotificartion'
+
 import DefaultProfilePicture from '/DefaultProfilePicture.svg'
 
 interface PrivateChatProps {
@@ -46,8 +48,6 @@ const PrivateChat: React.FC<PrivateChatProps> = ({
   chatState
 }) => {
   const [messageInput, setMessageInput] = useState('')
-  const [isError, setIsError] = useState(false)
-  const [errorMessage, setErrorMessage] = useState('')
   const [editionInfos, setEditionsInfos] = useState<{
     id: string
     content: string
@@ -159,8 +159,8 @@ const PrivateChat: React.FC<PrivateChatProps> = ({
       })
     } catch (Error) {
       const error_message = (Error as Error).message
-      setIsError(true)
-      setErrorMessage(error_message)
+      ErrorNotification('Channel error', error_message)
+
     }
 
     setMessageInput('')
@@ -184,8 +184,7 @@ const PrivateChat: React.FC<PrivateChatProps> = ({
       chatState.chat[index].content = oldMessage
       setEditionsInfos(null)
       const error_message = (Error as Error).message
-      setIsError(true)
-      setErrorMessage(error_message)
+      ErrorNotification('Channel error', error_message)
     }
   }
 
@@ -198,8 +197,7 @@ const PrivateChat: React.FC<PrivateChatProps> = ({
       })
     } catch (Error) {
       const error_message = 'Cannot delete this message'
-      setIsError(true)
-      setErrorMessage(error_message)
+      ErrorNotification('Login Error', error_message)
     }
   }
 
@@ -258,8 +256,6 @@ const PrivateChat: React.FC<PrivateChatProps> = ({
           overflowWrap: 'break-word'
         }}
       >
-        {isError && <PopUpError message={errorMessage} />}
-
         {!chatState ? (
           <Skeleton active style={{ padding: '6px 6px 0px 6px' }} />
         ) : (

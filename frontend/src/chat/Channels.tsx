@@ -13,6 +13,7 @@ import {
   queryFindOneChannelByName,
   queryIsChannelPasswordSet
 } from './graphql'
+import SuccessNotification from '../notifications/SuccessNotification'
 import {
   Channel,
   CreateChannelMemberMutation,
@@ -27,7 +28,7 @@ import {
   IsChannelPasswordSetQueryVariables
 } from '../gql/graphql'
 import { client } from '../main'
-import PopUpError from '../ErrorPages/PopUpError'
+import ErrorNotification from '../notifications/ErrorNotificartion'
 import {
   Button,
   Col,
@@ -44,8 +45,6 @@ import {
 } from 'antd'
 
 const Channels: React.FC = () => {
-  const [isError, setIsError] = useState(false)
-  const [errorMessage, setErrorMessage] = useState('')
 
   const dispatch = useAppDispatch()
   const user = useAppSelector((state) => state.userInformations.user)
@@ -131,6 +130,10 @@ const Channels: React.FC = () => {
       const resChannelCreated = resChannel.data?.createChannel
 
       if (!resChannelCreated) throw new Error('Error on channel creation')
+      SuccessNotification(
+        'Success',
+        `${channelNameInput} created with success !`
+      )
 
       dispatch(
         addChannelInfo({ channelId: resChannelCreated.id, userId: user.id })
@@ -138,8 +141,7 @@ const Channels: React.FC = () => {
       setChannelNameInput('')
     } catch (Error) {
       let error_message = (Error as Error).message
-      setIsError(true)
-      setErrorMessage(error_message)
+      ErrorNotification('Channel Error', error_message)
     }
   }
 
@@ -214,6 +216,11 @@ const Channels: React.FC = () => {
           }
         }
       })
+      SuccessNotification(
+        'Success',
+        `${channelNameInput} joined with success !`
+      )
+
       setChannelNameInput('')
     } catch (Error) {
       let error_message = (Error as Error).message
@@ -224,8 +231,7 @@ const Channels: React.FC = () => {
       ) {
         error_message = 'Cannot join channel'
       }
-      setIsError(true)
-      setErrorMessage(error_message)
+      ErrorNotification('Login Error', error_message)
     }
   }
 
@@ -273,10 +279,8 @@ const Channels: React.FC = () => {
         }
       })
     } catch (Error) {
-      const error_message =
-        'Failed to accept invitation, or limit of 25 channels reached'
-      setIsError(true)
-      setErrorMessage(error_message)
+      const error_message = 'Failed to accept invitation'
+      ErrorNotification('Channel Error', error_message)
     }
   }
 
@@ -290,8 +294,7 @@ const Channels: React.FC = () => {
       })
     } catch (Error) {
       const error_message = 'Failed to refuse invitation'
-      setIsError(true)
-      setErrorMessage(error_message)
+      ErrorNotification('Channel Error', error_message)
     }
   }
 
@@ -418,8 +421,6 @@ const Channels: React.FC = () => {
 
   return (
     <>
-      {isError && <PopUpError message={errorMessage} />}
-
       <Row gutter={[16, 16]} style={{ height: '100%' }}>
         <Col span={6} style={{ height: '100%', overflowY: 'auto' }}>
           <Space

@@ -10,6 +10,7 @@ import { ChannelAndChannelMember } from '../../store/slices/channel-informations
 import PopUpError from '../../ErrorPages/PopUpError'
 import { Button, Modal, Space } from 'antd'
 import AvatarStatus, { ESize } from '../../common/avatarStatus'
+import ErrorNotification from '../../notifications/ErrorNotificartion'
 
 interface ChannelInvitedProfileProps {
   channelsInfos: ChannelAndChannelMember[]
@@ -26,8 +27,7 @@ const ChannelInvitedProfile: React.FC<ChannelInvitedProfileProps> = ({
   const channelInfo = channelsInfos.find(
     (channelInfo) => channelInfo.channel.id === channelId
   )
-  const [isError, setIsError] = useState(false)
-  const [errorMessage, setErrorMessage] = useState('')
+
   if (!channelInfo) throw new Error('Invalid cancel invitation')
 
   const invitedUser = channelInfo.channelInviteds.find(
@@ -61,8 +61,8 @@ const ChannelInvitedProfile: React.FC<ChannelInvitedProfileProps> = ({
       })
     } catch (Error) {
       const error_message = (Error as Error).message
-      setIsError(true)
-      setErrorMessage(error_message)
+      ErrorNotification('Channel error', error_message)
+
     }
   }
 
@@ -99,7 +99,6 @@ const ChannelInvitedProfile: React.FC<ChannelInvitedProfileProps> = ({
             size={ESize.large}
           />
           <p>{invitedUser.username}</p>
-          {isError && <PopUpError message={errorMessage} />}
           {adminAction && (
             <>
               <Button onClick={handleUninviteUser} danger>
