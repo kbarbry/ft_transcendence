@@ -409,7 +409,25 @@ const ChannelComponent: React.FC<ChannelProps> = ({
             onFinish={onFinish}
             onFinishFailed={onFinishFailed}
           >
-            <Form.Item label='Channel Name' name='name'>
+            <Form.Item
+              label='Channel Name'
+              name='name'
+              rules={[
+                {
+                  type: 'string',
+                  message: 'Channel Name must be a string.'
+                },
+                {
+                  max: 30,
+                  message: 'Channel Name must be at most 30 characters long.'
+                },
+                {
+                  pattern: /^[a-zA-Z0-9_\-\.]+( [a-zA-Z0-9_\-\.]+)?$/,
+                  message:
+                    'Channel Name can only contain letters, numbers, single spaces, and "_-.".'
+                }
+              ]}
+            >
               <Input
                 type='text'
                 value={editedChannel.name}
@@ -421,7 +439,30 @@ const ChannelComponent: React.FC<ChannelProps> = ({
                 showCount
               />
             </Form.Item>
-            <Form.Item label='Channel Password' name='password'>
+            <Form.Item
+              label='Channel Password'
+              name='password'
+              rules={[
+                {
+                  required: true,
+                  message: 'Please enter the Channel Password!'
+                },
+                {
+                  type: 'string',
+                  message: 'Channel Password must be a string.'
+                },
+                {
+                  max: 30,
+                  message:
+                    'Channel Password must be at most 30 characters long.'
+                },
+                {
+                  pattern: /^[a-zA-Z0-9!@#$%^&+=]*$/,
+                  message:
+                    'Channel Password must be between 1 and 30 characters long, and can only contain these special characters: "!@#$%^&+="'
+                }
+              ]}
+            >
               <Input.Password
                 type='password'
                 value={editedChannel.password}
@@ -450,7 +491,21 @@ const ChannelComponent: React.FC<ChannelProps> = ({
                 addonAfter={<UserOutlined />}
               />
             </Form.Item>
-            <Form.Item label='Channel Topic' name='topic'>
+            <Form.Item
+              label='Channel Topic'
+              name='topic'
+              rules={[
+                {
+                  type: 'string',
+                  message: 'Channel Name must be a string.'
+                },
+                {
+                  max: 1024,
+                  message:
+                    'Channel Password must be at most 1024 characters long.'
+                }
+              ]}
+            >
               <Input.TextArea
                 rows={4}
                 value={editedChannel.topic}

@@ -33,6 +33,7 @@ import {
   userContextGuard
 } from 'src/auth/guards/request.guards'
 import * as bcrypt from 'bcrypt'
+import { EChannelType } from '@prisma/client'
 
 @Resolver(() => Channel)
 @UseGuards(AuthorizationGuard)
@@ -79,7 +80,10 @@ export class ChannelResolver {
   ): Promise<Channel> {
     if (!userContextGuard(ctx?.req?.user?.id, data.ownerId))
       throw new ForbiddenAccessData()
-    if (data?.password) data.password = bcrypt.hashSync(data.password, 10)
+    if (data?.password) {
+      data.password = bcrypt.hashSync(data.password, 10)
+      data.type = EChannelType.Protected
+    }
     return this.channelService.create(data)
   }
 
@@ -96,7 +100,10 @@ export class ChannelResolver {
     const channelMembers = await this.prisma.channelMember.findMany({
       where: { channelId: id }
     })
-    if (data?.password) data.password = bcrypt.hashSync(data.password, 10)
+    if (data?.password) {
+      data.password = bcrypt.hashSync(data.password, 10)
+      data.type = EChannelType.Protected
+    }
 
     const res = await this.channelService.update(id, data)
 

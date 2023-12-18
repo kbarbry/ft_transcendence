@@ -522,7 +522,6 @@ const Channels: React.FC = () => {
           </Button>
         ]}
       >
-        {/* Password input in the modal */}
         <Form>
           <Form.Item
             label='Password'
