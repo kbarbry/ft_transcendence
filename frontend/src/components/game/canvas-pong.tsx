@@ -33,6 +33,13 @@ export const CanvasPong: React.FC<Props> = (props: Props) => {
     return controls
   }
 
+  function isEnd() {
+    if (pongGameData?.winner) {
+      return true
+    }
+    return false
+  }
+
   function keyDownHandler(e: KeyboardEvent) {
     if (e.key == 'z') {
       controls.Z_Key = true
@@ -177,6 +184,7 @@ export const CanvasPong: React.FC<Props> = (props: Props) => {
     <>
       <ControlsUpdate
         getControls={getControls}
+        isEnd={isEnd}
         gameId={props.gameId}
         playerId={props.playerId}
       />
