@@ -24,7 +24,7 @@ import {
   mutationUnmuteChannelMember
 } from '../graphql'
 import { ChannelAndChannelMember } from '../../store/slices/channel-informations.slice'
-import PopUpError from '../../ErrorPages/PopUpError'
+import ErrorNotification from '../../notifications/ErrorNotificartion'
 import { Button, Modal, Space } from 'antd'
 import AvatarStatus, { ESize } from '../../common/avatarStatus'
 
@@ -40,8 +40,6 @@ const ChannelMemberProfile: React.FC<ChannelMemberProfileProps> = ({
   memberId
 }) => {
   const [isModalVisible, setIsModalVisible] = useState(false)
-  const [isError, setIsError] = useState(false)
-  const [errorMessage, setErrorMessage] = useState('')
   const channelInfo = channelsInfos.find(
     (channelInfo) => channelInfo.channel.id === channelId
   )
@@ -105,8 +103,8 @@ const ChannelMemberProfile: React.FC<ChannelMemberProfileProps> = ({
       handleCancel()
     } catch (Error) {
       const error_message = 'Cannot kick this user'
-      setIsError(true)
-      setErrorMessage(error_message)
+      ErrorNotification('Login Error', error_message)
+
     }
   }
 
@@ -131,8 +129,8 @@ const ChannelMemberProfile: React.FC<ChannelMemberProfileProps> = ({
       }
     } catch (Error) {
       const error_message = 'Cannot mute/unmute this user'
-      setIsError(true)
-      setErrorMessage(error_message)
+      ErrorNotification('Login Error', error_message)
+
     }
   }
 
@@ -149,8 +147,8 @@ const ChannelMemberProfile: React.FC<ChannelMemberProfileProps> = ({
       handleCancel()
     } catch (Error) {
       const error_message = 'Cannot ban this user'
-      setIsError(true)
-      setErrorMessage(error_message)
+      ErrorNotification('Login Error', error_message)
+
     }
   }
 
@@ -165,8 +163,8 @@ const ChannelMemberProfile: React.FC<ChannelMemberProfileProps> = ({
       handleCancel()
     } catch (Error) {
       const error_message = (Error as Error).message
-      setIsError(true)
-      setErrorMessage(error_message)
+      ErrorNotification('Login Error', error_message)
+
     }
   }
 
@@ -181,8 +179,8 @@ const ChannelMemberProfile: React.FC<ChannelMemberProfileProps> = ({
       handleCancel()
     } catch (Error) {
       const error_message = (Error as Error).message
-      setIsError(true)
-      setErrorMessage(error_message)
+      ErrorNotification('Login Error', error_message)
+
     }
   }
 
@@ -223,7 +221,6 @@ const ChannelMemberProfile: React.FC<ChannelMemberProfileProps> = ({
             size={ESize.large}
           />
           <p>{member.nickname}</p>
-          {isError && <PopUpError message={errorMessage} />}
           {(adminAction || ownerAction) && (
             <>
               {member.type !== EMemberType.Admin && (

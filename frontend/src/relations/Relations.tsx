@@ -9,11 +9,11 @@ import { useAppDispatch, useAppSelector } from '../store/hooks'
 import { setRequestSentInformations } from '../store/slices/request-sent-informations.slice'
 import { setRequestReceivedInformations } from '../store/slices/request-received-informations.slice'
 import { setFriendInformations } from '../store/slices/friend-informations.slice'
-import PopUpError from '../ErrorPages/PopUpError'
+import ErrorNotification from '../notifications/ErrorNotificartion'
+
 
 const Relations: React.FC = () => {
-  const [isError, setIsError] = useState(false)
-  const [errorMessage, setErrorMessage] = useState('')
+
   const dispatch = useAppDispatch()
   const user = useAppSelector((state) => state.userInformations.user)
   const friends = useAppSelector((state) => state.friendInformations.friends)
@@ -106,14 +106,13 @@ const Relations: React.FC = () => {
       ) {
         error_message = 'Cannot add this friend'
       }
-      setIsError(true)
-      setErrorMessage(error_message)
+      ErrorNotification('Error', error_message)
+
     }
   }
 
   return (
     <>
-      {isError && <PopUpError message={errorMessage} />}
 
       <div style={{ display: 'flex', flexDirection: 'row' }}>
         <div style={{ width: '200px', marginRight: '20px' }}>

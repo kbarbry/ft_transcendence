@@ -20,7 +20,7 @@ import {
 } from '../../gql/graphql'
 import { setRequestSentInformations } from '../../store/slices/request-sent-informations.slice'
 import DefaultProfilePicture from '/DefaultProfilePicture.svg'
-import PopUpError from '../../ErrorPages/PopUpError'
+import ErrorNotification from '../../notifications/ErrorNotificartion'
 
 interface RequestReceivedProps {
   userId: string
@@ -32,8 +32,6 @@ const RequestReceived: React.FC<RequestReceivedProps> = ({
   requestReceived
 }) => {
   const dispatch = useAppDispatch()
-  const [isError, setIsError] = useState(false)
-  const [errorMessage, setErrorMessage] = useState('')
 
   const [acceptRequest] = useMutation<
     CreateRelationRequestsMutation,
@@ -62,12 +60,12 @@ const RequestReceived: React.FC<RequestReceivedProps> = ({
       await dispatch(setFriendInformations(userId))
     } catch (Error) {
       const error_message = (Error as Error).message
-      setIsError(true)
-      setErrorMessage(error_message)
+      ErrorNotification('Error', error_message)
+
     }
   }
 
-  const handleRefuseRequestClick = async () => { // Todoo DONT FORGET TO FIX
+  const handleRefuseRequestClick = async () => {
     try {
       await refuseRequest({
         variables: { userReceiverId: userId, userSenderId: requestReceived.id }
@@ -77,8 +75,7 @@ const RequestReceived: React.FC<RequestReceivedProps> = ({
       await dispatch(setRequestReceivedInformations(userId))
     } catch (Error) {
       const error_message = (Error as Error).message
-      setIsError(true)
-      setErrorMessage(error_message)
+      ErrorNotification('Error', error_message)
     }
   }
 
@@ -88,7 +85,7 @@ const RequestReceived: React.FC<RequestReceivedProps> = ({
         variables: {
           data: {
             userBlockingId: userId,
-            userBlockedId: 'requestReceived.id'
+            userBlockedId: requestReceived.id
           }
         }
       })
@@ -96,16 +93,13 @@ const RequestReceived: React.FC<RequestReceivedProps> = ({
       await dispatch(setRequestReceivedInformations(userId))
       await dispatch(setBlockedInformations(userId))
     } catch (Error) {
-      const error_message = 'Cannot block this user'
-      setIsError(true)
-      setErrorMessage(error_message)
+      const error_message = (Error as Error).message
+      ErrorNotification('Error', error_message)
     }
   }
 
   return (
     <div style={{ display: 'flex', alignItems: 'center' }}>
-      {isError && <PopUpError message={errorMessage} />}
-
       <img
         src={
           requestReceived?.avatarUrl

@@ -10,6 +10,8 @@ import { ChannelAndChannelMember } from '../../store/slices/channel-informations
 import PopUpError from '../../ErrorPages/PopUpError'
 import { Button, Modal, Space } from 'antd'
 import AvatarStatus, { ESize } from '../../common/avatarStatus'
+import ErrorNotification from '../../notifications/ErrorNotificartion'
+
 
 interface ChannelBlockedProfileProps {
   channelsInfos: ChannelAndChannelMember[]
@@ -26,8 +28,7 @@ const ChannelBlockedProfile: React.FC<ChannelBlockedProfileProps> = ({
   const channelInfo = channelsInfos.find(
     (channelInfo) => channelInfo.channel.id === channelId
   )
-  const [isError, setIsError] = useState(false)
-  const [errorMessage, setErrorMessage] = useState('')
+
 
   if (!channelInfo) throw new Error('Block Error')
 
@@ -61,8 +62,7 @@ const ChannelBlockedProfile: React.FC<ChannelBlockedProfileProps> = ({
       })
     } catch (Error) {
       const error_message = (Error as Error).message
-      setIsError(true)
-      setErrorMessage(error_message)
+      ErrorNotification('Login Error', error_message)
     }
   }
 
@@ -99,7 +99,6 @@ const ChannelBlockedProfile: React.FC<ChannelBlockedProfileProps> = ({
             size={ESize.large}
           />
           <p>{blockedUser.username}</p>
-          {isError && <PopUpError message={errorMessage} />}
           {adminAction && (
             <>
               <Button onClick={handleUnblockUser} danger>
