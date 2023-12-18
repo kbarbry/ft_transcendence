@@ -5,6 +5,8 @@ import { PongGame } from '../../gql/graphql'
 import { SubPong } from './subPong'
 import { ReadyButton } from './ready-button'
 import { LeaveButton } from './leave-button'
+import { Flex } from 'antd'
+import './pongstyle.css'
 
 type Props = {
   gameId: string
@@ -13,7 +15,6 @@ type Props = {
 }
 
 export const Pong: React.FC<Props> = (props) => {
-  console.log('Pong: gameId = ' + props.gameId)
   let pongGameData: PongGame | null = null
   const [subscriptionError, setGameError] = useState<ApolloError | undefined>(
     undefined
@@ -42,14 +43,18 @@ export const Pong: React.FC<Props> = (props) => {
         updateGameElement={setPongGameData}
         setGameError={setGameError}
       />
-      <h1>Pong !</h1>
-      <ReadyButton gameId={props.gameId} playerId={props.playerId} />
-      <LeaveButton playerId={props.playerId} gameId={props.gameId} />
-      <CanvasPong
-        gameId={props.gameId}
-        playerId={props.playerId}
-        getPongData={getPongData}
-      />
+      <Flex vertical={true} justify='center' align='center'>
+        <h1>Pong !</h1>
+        <Flex vertical={false} justify='center' gap='large'>
+          <ReadyButton gameId={props.gameId} playerId={props.playerId} />
+          <LeaveButton playerId={props.playerId} gameId={props.gameId} />
+        </Flex>
+        <CanvasPong
+          gameId={props.gameId}
+          playerId={props.playerId}
+          getPongData={getPongData}
+        />
+      </Flex>
     </>
   )
 }

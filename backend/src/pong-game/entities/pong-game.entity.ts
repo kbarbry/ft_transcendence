@@ -28,21 +28,21 @@ class racket {
   @Field(() => Number)
   vPos = 270
 
-  velocity = 6
+  velocity = 8
 }
 
 @ObjectType()
 class ball {
   @Field(() => Int)
-  radius = 16
+  radius = 10
 
   @Field(() => Number)
-  hPos = 392
+  hPos = 395
 
   @Field(() => Number)
-  vPos = 292
+  vPos = 295
 
-  dir: { x: number; y: number } = { x: 100, y: 100 }
+  dir: { x: number; y: number } = { x: 180, y: 210 }
 }
 
 export class Controls {
@@ -91,6 +91,8 @@ export class PongGame {
 
     if (type === EGameType.Special) {
       this.update = this.updateSpecial
+      this.ball.dir.x = 300
+      this.ball.dir.y = 320
     } else {
       this.update = this.updateClassic
     }
@@ -247,7 +249,7 @@ export class PongGame {
     //ball update
     //  ball playfield left and right collision
     if (this.ball.hPos > this.playfield.width - this.ball.radius) {
-      this.ball.dir.x = -this.ball.dir.x //TODO Add random angle up and down
+      this.ball.dir.x = -this.ball.dir.x
       this.ball.hPos = this.playfield.width / 2
       this.ball.vPos = this.playfield.height / 2 - this.ball.radius
       this.player1.score += 1

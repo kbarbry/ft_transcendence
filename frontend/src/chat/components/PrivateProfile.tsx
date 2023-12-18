@@ -16,7 +16,7 @@ import { useMutation } from '@apollo/client'
 import { useAppDispatch } from '../../store/hooks'
 import { setFriendInformations } from '../../store/slices/friend-informations.slice'
 import { setBlockedInformations } from '../../store/slices/blocked-informations.slice'
-import PopUpError from '../../ErrorPages/PopUpError'
+import ErrorNotification from '../../notifications/ErrorNotificartion'
 
 interface PrivateProfileProps {
   userId: string
@@ -25,8 +25,6 @@ interface PrivateProfileProps {
 
 const PrivateProfile: React.FC<PrivateProfileProps> = ({ userId, member }) => {
   const dispatch = useAppDispatch()
-  const [isError, setIsError] = useState(false)
-  const [errorMessage, setErrorMessage] = useState('')
   const [isModalVisible, setIsModalVisible] = useState(false)
 
   const showModal = () => {
@@ -58,8 +56,8 @@ const PrivateProfile: React.FC<PrivateProfileProps> = ({ userId, member }) => {
       await dispatch(setBlockedInformations(userId))
     } catch (Error) {
       const error_message = (Error as Error).message
-      setIsError(true)
-      setErrorMessage(error_message)
+      ErrorNotification('Profile', error_message)
+
     }
   }
 
@@ -70,8 +68,8 @@ const PrivateProfile: React.FC<PrivateProfileProps> = ({ userId, member }) => {
       await dispatch(setFriendInformations(userId))
     } catch (Error) {
       const error_message = (Error as Error).message
-      setIsError(true)
-      setErrorMessage(error_message)
+      ErrorNotification('Profile', error_message)
+
     }
   }
 
@@ -102,7 +100,6 @@ const PrivateProfile: React.FC<PrivateProfileProps> = ({ userId, member }) => {
             size={ESize.large}
           />
           <p>{member.username}</p>
-          {isError && <PopUpError message={errorMessage} />}
           {member.id !== userId && (
             <>
               <Button onClick={handleRemoveFriendClick} danger>

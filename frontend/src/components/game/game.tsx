@@ -17,7 +17,6 @@ export const Game: React.FC = () => {
   let gameId: string | null = useAppSelector(
     (state) => state.gameIdInformation.gameId
   )
-  console.log('Game: gameId = ' + gameId)
 
   const { data, loading, error } = useQuery<
     IsGameValidQuery,
@@ -31,14 +30,14 @@ export const Game: React.FC = () => {
   if (user === null || user?.id === undefined) {
     return <p>Error : Username is not set.</p>
   }
-  if (gameId !== null && data && data.isGameValid === true) {
-    return <Pong gameId={gameId} username={user.username} playerId={user.id} />
-  }
   if (loading) {
     return <p>Loading...</p>
   }
   if (error) {
     return <p>An error occured while connecting to the server</p>
+  }
+  if (gameId !== null && data && data.isGameValid === true) {
+    return <Pong gameId={gameId} username={user.username} playerId={user.id} />
   }
   return (
     <>

@@ -54,7 +54,6 @@ export const setBlockedInformations = createAsyncThunk(
 
       return requestVerified
     } catch (e) {
-      console.log('Error blockeds slice: ', e)
       throw e
     }
   }

@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit'
 import { EGameType } from '../../gql/graphql'
 
-type GameInvitationState = {
+export type GameInvitationState = {
   gameType: EGameType
   gameId: string
   senderUsername: string
@@ -29,7 +29,7 @@ const gameInvitationSlice = createSlice({
       state.splice(index, 1)
     },
     clearInvitations(state) {
-      state = new Array<GameInvitationState>()
+      state.splice(0, state.length)
     }
   }
 })

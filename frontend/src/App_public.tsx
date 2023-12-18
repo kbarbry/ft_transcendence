@@ -17,7 +17,8 @@ const App_public: React.FC = () => {
         <Route path='/testUser' component={ForbiddenAccess} />
         <Route path='/forbidden' component={ForbiddenAccess} />
         <Route path='/Welcome' component={ForbiddenAccess} />
-        <Route path='/Game' component={ForbiddenAccess} />
+        <Route path='/game' component={ForbiddenAccess} />
+        <Route path='/leaderboard' component={ForbiddenAccess} />
         <Route path='/UserPage' component={ForbiddenAccess} />
 
         <Route component={NotFound} />

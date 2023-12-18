@@ -8,6 +8,7 @@ import {
   CloseCircleOutlined
 } from '@ant-design/icons'
 
+
 interface ChannelMessageProps {
   message: ChannelMessage
   sender: ChannelMember
