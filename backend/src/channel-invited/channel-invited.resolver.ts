@@ -43,7 +43,6 @@ export class ChannelInvitedResolver {
     @Args('id', { type: () => String }, NanoidValidationPipe)
     id: string
   ) {
-    console.log('channelInvitedCreation sub')
     return this.pubSub.asyncIterator('invitationReceived-' + id)
   }
 
@@ -55,7 +54,6 @@ export class ChannelInvitedResolver {
     @Args('id', { type: () => String }, NanoidValidationPipe)
     id: string
   ) {
-    console.log('channelInvitedDeletion sub')
     return this.pubSub.asyncIterator('invitationDeleted-' + id)
   }
 
@@ -101,8 +99,6 @@ export class ChannelInvitedResolver {
     channelId: string,
     @Context() ctx: any
   ): Promise<ChannelInvited> {
-    console.log('userId:', userId)
-    console.log('userIdcontext:', ctx?.req?.user?.id)
     if (
       !(await channelAdminGuard(ctx?.req?.user?.id, channelId, this.prisma)) &&
       !userContextGuard(ctx?.req?.user?.id, userId)

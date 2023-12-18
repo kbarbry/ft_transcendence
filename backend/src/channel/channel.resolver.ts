@@ -54,7 +54,6 @@ export class ChannelResolver {
     @Args('id', { type: () => String }, NanoidValidationPipe)
     id: string
   ) {
-    console.log('channelEdition sub')
     return this.pubSub.asyncIterator('channelEdited-' + id)
   }
 
@@ -66,7 +65,6 @@ export class ChannelResolver {
     @Args('id', { type: () => String }, NanoidValidationPipe)
     id: string
   ) {
-    console.log('channelDeletion sub')
     return this.pubSub.asyncIterator('channelDeleted-' + id)
   }
 
@@ -98,6 +96,7 @@ export class ChannelResolver {
     const channelMembers = await this.prisma.channelMember.findMany({
       where: { channelId: id }
     })
+    if (data?.password) data.password = bcrypt.hashSync(data.password, 10)
 
     const res = await this.channelService.update(id, data)
 
@@ -204,5 +203,13 @@ export class ChannelResolver {
     @Args('userId', { type: () => String }, NanoidValidationPipe) userId: string
   ): Promise<Channel[]> {
     return this.channelService.findAllChannelOfOwner(userId)
+  }
+
+  @Query(() => Boolean)
+  isChannelPasswordSet(
+    @Args('channelId', { type: () => String }, NanoidValidationPipe)
+    channelId: string
+  ): Promise<boolean> {
+    return this.channelService.isChannelPasswordSet(channelId)
   }
 }

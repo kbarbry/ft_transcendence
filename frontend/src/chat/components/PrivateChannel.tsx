@@ -27,7 +27,7 @@ const PrivateChannel: React.FC<PrivateChannelProps> = ({
   const [chat, setChat] = useState<PrivateMessage[]>([])
   const friend = friends.find((friend) => friend.id === friendId)
   const [, setIsError] = useState(false)
-  const [errorMessage, setErrorMessage] = useState('')
+  const [, setErrorMessage] = useState('')
 
   const isSmallScreen = useMediaQuery({ maxWidth: 768 })
 

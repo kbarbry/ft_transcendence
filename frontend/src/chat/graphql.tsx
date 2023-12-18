@@ -282,6 +282,25 @@ export const mutationUnmakeChannelMemberAdmin = gql`
   }
 `
 
+export const mutationUpdateChannel = gql`
+  mutation UpdateChannel(
+    $data: UpdateChannelInput!
+    $updateChannelId: String!
+  ) {
+    updateChannel(data: $data, id: $updateChannelId) {
+      avatarUrl
+      createdAt
+      id
+      maxUsers
+      name
+      ownerId
+      password
+      topic
+      type
+    }
+  }
+`
+
 //**************************************************//
 //  QUERY
 //**************************************************//
@@ -320,9 +339,14 @@ export const queryFindOneChannelByName = gql`
       maxUsers
       name
       ownerId
-      password
       topic
       type
     }
+  }
+`
+
+export const queryIsChannelPasswordSet = gql`
+  query IsChannelPasswordSet($channelId: String!) {
+    isChannelPasswordSet(channelId: $channelId)
   }
 `
