@@ -12,7 +12,9 @@ import {
   UnmakeChannelMemberAdminMutation,
   UnmakeChannelMemberAdminMutationVariables,
   UnmuteChannelMemberMutation,
-  UnmuteChannelMemberMutationVariables
+  UnmuteChannelMemberMutationVariables,
+  UpdateChannelMemberMutation,
+  UpdateChannelMemberMutationVariables
 } from '../../gql/graphql'
 import { useMutation } from '@apollo/client'
 import {
@@ -21,11 +23,12 @@ import {
   mutationMakeChannelMemberAdmin,
   mutationMuteChannelMember,
   mutationUnmakeChannelMemberAdmin,
-  mutationUnmuteChannelMember
+  mutationUnmuteChannelMember,
+  mutationUpdateChannelMember
 } from '../graphql'
 import { ChannelAndChannelMember } from '../../store/slices/channel-informations.slice'
 import ErrorNotification from '../../notifications/ErrorNotificartion'
-import { Button, Modal, Space } from 'antd'
+import { Button, Form, Input, Modal, Space } from 'antd'
 import AvatarStatus, { ESize } from '../../common/avatarStatus'
 
 interface ChannelMemberProfileProps {
@@ -84,6 +87,11 @@ const ChannelMemberProfile: React.FC<ChannelMemberProfileProps> = ({
     UnmakeChannelMemberAdminMutationVariables
   >(mutationUnmakeChannelMemberAdmin)
 
+  const [updateChannelMember] = useMutation<
+    UpdateChannelMemberMutation,
+    UpdateChannelMemberMutationVariables
+  >(mutationUpdateChannelMember)
+
   const showModal = () => {
     setIsModalVisible(true)
   }
@@ -104,7 +112,6 @@ const ChannelMemberProfile: React.FC<ChannelMemberProfileProps> = ({
     } catch (Error) {
       const error_message = 'Cannot kick this user'
       ErrorNotification('Login Error', error_message)
-
     }
   }
 
@@ -130,7 +137,6 @@ const ChannelMemberProfile: React.FC<ChannelMemberProfileProps> = ({
     } catch (Error) {
       const error_message = 'Cannot mute/unmute this user'
       ErrorNotification('Login Error', error_message)
-
     }
   }
 
@@ -148,7 +154,6 @@ const ChannelMemberProfile: React.FC<ChannelMemberProfileProps> = ({
     } catch (Error) {
       const error_message = 'Cannot ban this user'
       ErrorNotification('Login Error', error_message)
-
     }
   }
 
@@ -164,7 +169,6 @@ const ChannelMemberProfile: React.FC<ChannelMemberProfileProps> = ({
     } catch (Error) {
       const error_message = (Error as Error).message
       ErrorNotification('Login Error', error_message)
-
     }
   }
 
@@ -180,7 +184,22 @@ const ChannelMemberProfile: React.FC<ChannelMemberProfileProps> = ({
     } catch (Error) {
       const error_message = (Error as Error).message
       ErrorNotification('Login Error', error_message)
+    }
+  }
 
+  const handleUpdateNickname = async (values: any) => {
+    try {
+      await updateChannelMember({
+        variables: {
+          channelId: member.channelId,
+          data: { nickname: values.nickname },
+          userId: member.userId
+        }
+      })
+      handleCancel()
+    } catch (error) {
+      const error_message = 'Cannot update nickname'
+      ErrorNotification('Login Error', error_message)
     }
   }
 
@@ -221,6 +240,7 @@ const ChannelMemberProfile: React.FC<ChannelMemberProfileProps> = ({
             size={ESize.large}
           />
           <p>{member.nickname}</p>
+
           {(adminAction || ownerAction) && (
             <>
               {member.type !== EMemberType.Admin && (
@@ -248,6 +268,51 @@ const ChannelMemberProfile: React.FC<ChannelMemberProfileProps> = ({
               <Button onClick={handleBanMember} danger>
                 Ban Member
               </Button>
+            </>
+          )}
+
+          {member.userId === channelInfo.channelMemberUser.userId && (
+            <>
+              <Form onFinish={handleUpdateNickname}>
+                <Form.Item
+                  name='nickname'
+                  style={{ marginBottom: 2 }}
+                  rules={[
+                    { required: true, message: 'New nickname is required' },
+                    {
+                      type: 'string',
+                      message: 'New nickname must be a string'
+                    },
+                    {
+                      max: 30,
+                      min: 1,
+                      message:
+                        'New nickname must be between 1 and 30 characters long'
+                    },
+                    {
+                      pattern: /^[a-zA-Z0-9_\-\.]+( [a-zA-Z0-9_\-\.]+)?$/,
+                      message:
+                        'New nickname can only contain letters, numbers, single spaces, and "_-.".'
+                    }
+                  ]}
+                >
+                  <Input
+                    type='text'
+                    maxLength={30}
+                    showCount
+                    placeholder='New Nickname'
+                  />
+                </Form.Item>
+                <Form.Item style={{ marginBottom: 0 }}>
+                  <Button
+                    type='primary'
+                    htmlType='submit'
+                    style={{ width: '100%' }}
+                  >
+                    Update Nickname
+                  </Button>
+                </Form.Item>
+              </Form>
             </>
           )}
 

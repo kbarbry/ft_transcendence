@@ -181,6 +181,7 @@ const AppPrivateSubscription: React.FC<AppPrivateSubscriptionProps> = ({
     onData: async (received) => {
       if (received.data.data?.relationRequestDeleted) {
         await dispatch(setRequestReceivedInformations(userId))
+        await dispatch(setRequestSentInformations(userId))
       }
     },
     onError: (e) => {

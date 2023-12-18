@@ -82,7 +82,6 @@ export class ChannelResolver {
       throw new ForbiddenAccessData()
     if (data?.password) {
       data.password = bcrypt.hashSync(data.password, 10)
-      data.type = EChannelType.Protected
     }
     return this.channelService.create(data)
   }
@@ -102,7 +101,6 @@ export class ChannelResolver {
     })
     if (data?.password) {
       data.password = bcrypt.hashSync(data.password, 10)
-      data.type = EChannelType.Protected
     }
 
     const res = await this.channelService.update(id, data)

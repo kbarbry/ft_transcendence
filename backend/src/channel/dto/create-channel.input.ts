@@ -12,7 +12,6 @@ import {
 } from 'class-validator'
 import { CustomIsName } from '../../common/pipes/username.pipe'
 import { CustomIsTopic } from '../../common/pipes/topic.pipe'
-import { CustomIsMessage } from 'src/common/pipes/message.pipe'
 import { CustomIsChannelPassword } from 'src/common/pipes/password-channel.pipe'
 
 @InputType()

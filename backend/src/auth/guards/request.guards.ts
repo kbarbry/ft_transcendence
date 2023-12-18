@@ -33,9 +33,9 @@ export const userContextGuard = (
   userId: string,
   userId2?: string
 ) => {
-  if (userId2) if (contextId !== userId && contextId !== userId2) return false
-  if (contextId !== userId) return false
-  return true
+  if (userId2) if (contextId === userId || contextId === userId2) return true
+  if (contextId === userId) return true
+  return false
 }
 
 export const channelAdminGuard = async (

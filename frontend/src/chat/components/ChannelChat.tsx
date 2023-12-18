@@ -25,13 +25,11 @@ import {
 } from '../graphql'
 import ChannelMessageComponent from './ChannelMessage'
 import { ChannelAndChannelMember } from '../../store/slices/channel-informations.slice'
-import PopUpError from '../../ErrorPages/PopUpError'
 import { Avatar, Button, Input, List, Skeleton, Space } from 'antd'
 import DefaultProfilePicture from '/DefaultProfilePicture.svg'
 import { GiMute } from 'react-icons/gi'
 import Notification from '../../notifications/MuteNotification'
 import ErrorNotification from '../../notifications/ErrorNotificartion'
-
 
 interface ChannelChatProps {
   channelsInfos: ChannelAndChannelMember[]
@@ -179,7 +177,6 @@ const ChannelChat: React.FC<ChannelChatProps> = ({
     } catch (Error) {
       const error_message = 'Invalid message'
       ErrorNotification('Channel error', error_message)
-
     }
   }
 
@@ -218,7 +215,6 @@ const ChannelChat: React.FC<ChannelChatProps> = ({
     } catch (Error) {
       const error_message = 'Cannot delete this message'
       ErrorNotification('Channel error', error_message)
-
     }
   }
 
@@ -289,7 +285,6 @@ const ChannelChat: React.FC<ChannelChatProps> = ({
           overflowWrap: 'break-word'
         }}
       >
-
         {!chatState ? (
           <Skeleton active style={{ padding: '6px 6px 0px 6px' }} />
         ) : (
