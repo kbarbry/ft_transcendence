@@ -189,6 +189,7 @@ const ChannelComponent: React.FC<ChannelProps> = ({
           }
         })
         setIsEditModalVisible(false)
+        SuccessNotification('Success', 'Edit complete')
       } catch (Error) {
         const error_message = (Error as Error).message
         ErrorNotification('Channel Error', error_message)
@@ -207,7 +208,6 @@ const ChannelComponent: React.FC<ChannelProps> = ({
     })
 
     const showEditModal = () => {
-      console.log(channelInfo.channel.name)
       setEditedChannel({
         name: channelInfo.channel.name,
         password: channelInfo.channel.password || '',
@@ -218,7 +218,6 @@ const ChannelComponent: React.FC<ChannelProps> = ({
     }
 
     const handleEditModalCancel = () => {
-      console.log(channelInfo.channel.name)
       setIsEditModalVisible(false)
     }
 

@@ -7,7 +7,6 @@ import {
 } from '../../gql/graphql'
 import { mutationDeleteChannelBlocked } from '../graphql'
 import { ChannelAndChannelMember } from '../../store/slices/channel-informations.slice'
-import PopUpError from '../../ErrorPages/PopUpError'
 import { Button, Modal, Space } from 'antd'
 import AvatarStatus, { ESize } from '../../common/avatarStatus'
 import ErrorNotification from '../../notifications/ErrorNotificartion'

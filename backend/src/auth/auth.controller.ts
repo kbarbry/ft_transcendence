@@ -132,6 +132,7 @@ export class AuthController {
   @UseGuards(GoogleAuthGuard)
   @Get('google/login')
   getGoogleAuth(@Res() res: any) {
+    console.log('Login google')
     return res.status(200).json({ msg: 'Google Auth Login' })
   }
 
@@ -146,6 +147,7 @@ export class AuthController {
     const resUser = await this.prisma.userPresence.create({
       data: { userId: req.user.id }
     })
+
     return res.redirect('http://127.0.0.1:5173')
   }
 

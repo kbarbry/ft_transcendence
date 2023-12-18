@@ -2,7 +2,10 @@ import { Inject, Injectable } from '@nestjs/common'
 import { PassportStrategy } from '@nestjs/passport'
 import { Profile, Strategy } from 'passport-google-oauth20'
 import { AuthService } from '../auth.service'
-import { ExceptionInvalidCredentials } from 'src/common/exceptions/unauthorized-strategy.exception'
+import {
+  ExceptionCustom,
+  ExceptionInvalidCredentials
+} from 'src/common/exceptions/unauthorized-strategy.exception'
 import { checkLanguage } from '../utils/check.utils'
 import { ELanguage, User } from '@prisma/client'
 import { ELogType, LoggingService } from 'src/common/logging/file.logging'
@@ -22,7 +25,6 @@ export class GoogleStrategy extends PassportStrategy(Strategy) {
   private readonly authService: AuthService
 
   private readonly loggingService = new LoggingService(ELogType.login)
-
   async validate(
     token: string,
     refreshToken: string,
@@ -60,13 +62,16 @@ export class GoogleStrategy extends PassportStrategy(Strategy) {
         language
       })
     } catch (e) {
-      throw e
+      throw new ExceptionCustom(
+        'Google auth Error : come back at 127.0.0.1:5173'
+      )
     }
     if (!user) {
       throw new ExceptionInvalidCredentials(
         'Google OAuth20 failed: user not found'
       )
     }
+    console.log('strategy')
 
     this.loggingService.log('-- Google Auth --')
     return callback(null, user)
