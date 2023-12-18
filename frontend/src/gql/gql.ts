@@ -44,10 +44,9 @@ const documents = {
     "\n  query FindAllPrivateMessageWith($receiverId: String!, $senderId: String!) {\n    findAllPrivateMessageWith(receiverId: $receiverId, senderId: $senderId) {\n      content\n      createdAt\n      id\n      senderId\n      receiverId\n      updatedAt\n    }\n  }\n": types.FindAllPrivateMessageWithDocument,
     "\n  query FindAllChannelMessageInChannel($channelId: String!) {\n    findAllChannelMessageInChannel(channelId: $channelId) {\n      channelId\n      content\n      createdAt\n      id\n      senderId\n      updatedAt\n    }\n  }\n": types.FindAllChannelMessageInChannelDocument,
     "\n  query FindOneChannelByName($name: String!) {\n    findOneChannelByName(name: $name) {\n      avatarUrl\n      createdAt\n      id\n      maxUsers\n      name\n      ownerId\n      password\n      topic\n      type\n    }\n  }\n": types.FindOneChannelByNameDocument,
-    "\n  subscription PongInvitationSubcription($userId: String!) {\n    pongInvitationSubcription(userId: $userId) {\n      gameId\n      gameType\n      senderNickname\n    }\n  }\n": types.PongInvitationSubcriptionDocument,
     "\n  query FindOneUserStatus($findOneUserId: String!) {\n    findOneUser(id: $findOneUserId) {\n      status\n      id\n    }\n  }\n": types.FindOneUserStatusDocument,
     "\n  query FindLastUserPresenceByUserId($findLastUserPresenceByUserIdId: String!) {\n    findLastUserPresenceByUserId(id: $findLastUserPresenceByUserIdId) {\n      userId\n      disconnectedAt\n      connectedAt\n    }\n  }\n": types.FindLastUserPresenceByUserIdDocument,
-    "\n  subscription PongInvitationSubcription($nickname: String!) {\n    pongInvitationSubcription(nickname: $nickname) {\n      gameId\n      gameType\n      senderNickname\n    }\n  }\n": types.PongInvitationSubcriptionDocument,
+    "\n  subscription PongInvitationSubcription($userId: String!) {\n    pongInvitationSubcription(userId: $userId) {\n      gameId\n      gameType\n      senderNickname\n    }\n  }\n": types.PongInvitationSubcriptionDocument,
     "\n  mutation SendPongInvitation(\n    $gameType: EGameType!\n    $receiverNickname: String!\n    $senderId: String!\n    $senderNickname: String!\n  ) {\n    sendPongInvitation(\n      gameType: $gameType\n      receiverNickname: $receiverNickname\n      senderId: $senderId\n      senderNickname: $senderNickname\n    )\n  }\n": types.SendPongInvitationDocument,
     "\n  subscription PongData($gameId: String!) {\n    pongData(gameId: $gameId) {\n      ball {\n        hPos\n        radius\n        vPos\n      }\n      elapsedTime\n      p1racket {\n        hPos\n        height\n        vPos\n        width\n      }\n      p2racket {\n        hPos\n        height\n        vPos\n        width\n      }\n      player1 {\n        nickname\n        presence\n        score\n      }\n      player2 {\n        nickname\n        presence\n        score\n      }\n      playfield {\n        height\n        width\n      }\n      type\n      winner\n      message\n    }\n  }\n": types.PongDataDocument,
     "\n  mutation readyForGame($gameId: String!, $playerId: String!) {\n    readyForGame(gameId: $gameId, playerId: $playerId)\n  }\n": types.ReadyForGameDocument,
@@ -240,9 +239,6 @@ export function graphql(source: "\n  query FindOneChannelByName($name: String!) 
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-
-export function graphql(source: "\n  subscription PongInvitationSubcription($userId: String!) {\n    pongInvitationSubcription(userId: $userId) {\n      gameId\n      gameType\n      senderNickname\n    }\n  }\n"): (typeof documents)["\n  subscription PongInvitationSubcription($userId: String!) {\n    pongInvitationSubcription(userId: $userId) {\n      gameId\n      gameType\n      senderNickname\n    }\n  }\n"];
-
 export function graphql(source: "\n  query FindOneUserStatus($findOneUserId: String!) {\n    findOneUser(id: $findOneUserId) {\n      status\n      id\n    }\n  }\n"): (typeof documents)["\n  query FindOneUserStatus($findOneUserId: String!) {\n    findOneUser(id: $findOneUserId) {\n      status\n      id\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
@@ -251,8 +247,7 @@ export function graphql(source: "\n  query FindLastUserPresenceByUserId($findLas
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  subscription PongInvitationSubcription($nickname: String!) {\n    pongInvitationSubcription(nickname: $nickname) {\n      gameId\n      gameType\n      senderNickname\n    }\n  }\n"): (typeof documents)["\n  subscription PongInvitationSubcription($nickname: String!) {\n    pongInvitationSubcription(nickname: $nickname) {\n      gameId\n      gameType\n      senderNickname\n    }\n  }\n"];
-
+export function graphql(source: "\n  subscription PongInvitationSubcription($userId: String!) {\n    pongInvitationSubcription(userId: $userId) {\n      gameId\n      gameType\n      senderNickname\n    }\n  }\n"): (typeof documents)["\n  subscription PongInvitationSubcription($userId: String!) {\n    pongInvitationSubcription(userId: $userId) {\n      gameId\n      gameType\n      senderNickname\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
