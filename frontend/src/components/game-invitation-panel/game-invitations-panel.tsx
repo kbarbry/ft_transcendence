@@ -1,7 +1,8 @@
 import React from 'react'
 import { useAppDispatch, useAppSelector } from '../../store/hooks'
-import { removeOneInvitationValue } from '../../store/slices/gameInvitations.slice'
-import { setGameIdValue } from '../../store/slices/gameId.slice'
+import { Invitation } from './invitation'
+import { Button } from 'antd'
+import { clearInvitations } from '../../store/slices/gameInvitations.slice'
 
 type Props = {
   playerId: string
@@ -15,37 +16,15 @@ export const GameInvitationPanel: React.FC<Props> = (props: Props) => {
   )
 
   const invitationElements = invitations.map((invitation, index) => (
-    <li className='showcase-element' key={index}>
-      <p>
-        From:{' '}
-        {invitation.senderUsername
-          ? invitation.senderUsername
-          : 'username is null'}
-      </p>
-      <p>
-        Game Type:{' '}
-        {invitation.gameType ? invitation.gameType : 'invitation is null'}
-      </p>
-      <button
-        onClick={() => {
-          dispatch(setGameIdValue(invitation.gameId))
-          dispatch(removeOneInvitationValue(invitation.gameId))
-        }}
-      >
-        Accept
-      </button>
-      <button
-        onClick={() => dispatch(removeOneInvitationValue(invitation.gameId))}
-      >
-        Decline
-      </button>
-    </li>
+    <Invitation invitation={invitation} userId={props.playerId} key={index} />
   ))
 
   return (
     <div className='game-invitations-panel'>
       <h2>Invitations to games</h2>
-      <button>Clear all</button>
+      <Button danger={true} onClick={() => dispatch(clearInvitations())}>
+        Clear all
+      </Button>
       <ul>{invitationElements}</ul>
     </div>
   )

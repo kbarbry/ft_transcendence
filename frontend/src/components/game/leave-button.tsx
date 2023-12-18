@@ -4,6 +4,7 @@ import { unsetGameIdValue } from '../../store/slices/gameId.slice'
 import { useMutation } from '@apollo/client'
 import { QuitGameMutation, QuitGameMutationVariables } from '../../gql/graphql'
 import { leaveGame } from './graphql'
+import { Button } from 'antd'
 
 type Props = {
   playerId: string
@@ -24,5 +25,9 @@ export const LeaveButton: React.FC<Props> = (props: Props) => {
     dispatch(unsetGameIdValue())
   }
 
-  return <button onClick={leaveHandler}>Leave Game</button>
+  return (
+    <Button danger={true} onClick={leaveHandler}>
+      Leave Game
+    </Button>
+  )
 }
