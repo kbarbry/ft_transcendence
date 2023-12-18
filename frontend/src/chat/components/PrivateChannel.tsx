@@ -10,7 +10,8 @@ import { queryFindAllPrivateMessageWith } from '../graphql'
 import PrivateChat from './PrivateChat'
 import PrivateProfile from './PrivateProfile'
 import PopUpError from '../../ErrorPages/PopUpError'
-
+import { Space, Row, Col, Divider } from 'antd'
+import { useMediaQuery } from 'react-responsive'
 
 interface PrivateChannelProps {
   userInfos: User
@@ -25,8 +26,10 @@ const PrivateChannel: React.FC<PrivateChannelProps> = ({
 }) => {
   const [chat, setChat] = useState<PrivateMessage[]>([])
   const friend = friends.find((friend) => friend.id === friendId)
-  const [isError, setIsError] = useState(false)
+  const [, setIsError] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
+
+  const isSmallScreen = useMediaQuery({ maxWidth: 768 })
 
   if (!friend) throw new Error()
 
@@ -46,63 +49,65 @@ const PrivateChannel: React.FC<PrivateChannelProps> = ({
     })
 
     return (
-      <div style={{ display: 'flex', height: '100%' }}>
-        <div
-          style={{
-            width: '70%',
-            padding: '0px',
-            borderRight: '1px solid #333'
-          }}
-        >
-          <h2
-            style={{
-              borderBottom: '1px solid #333',
-              paddingBottom: '10px',
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center'
-            }}
-          >
-            {friend.username}
-          </h2>
-          {loading && <p>Loading conversation...</p>}
-          {error && (
-            <p>
-              Error loading conversation, please try later. You can still use
-              the chat.
-            </p>
-          )}
-          <PrivateChat
-            userInfos={userInfos}
-            friends={friends}
-            friendId={friendId}
-            chatState={{ chat, setChat }}
-            key={userInfos.id + friend.id}
-          />
-        </div>
-        <div
-          style={{
-            width: '30%',
-            padding: '0px 0px 0px 20px'
-          }}
-        >
-          <h2
-            style={{
-              borderBottom: '1px solid #333',
-              paddingBottom: '10px',
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center'
-            }}
-          >
-            Members
-          </h2>
-          <div style={{ overflowY: 'auto', maxHeight: '100%' }}>
-            <PrivateProfile member={userInfos} key={userInfos.id} />
-            <PrivateProfile member={friend} key={friendId} />
-          </div>
-        </div>
-      </div>
+      <Row gutter={[16, 16]} style={{ height: '100%', width: '100%' }}>
+        <Col span={isSmallScreen ? 24 : 18}>
+          <Space direction='vertical'>
+            <h2>{friend.username}</h2>
+            {loading && <p>Loading conversation...</p>}
+            {error && (
+              <p>
+                Error loading conversation, please try later. You can still use
+                the chat.
+              </p>
+            )}
+            <PrivateChat
+              userInfos={userInfos}
+              friends={friends}
+              friendId={friendId}
+              chatState={{ chat, setChat }}
+              key={userInfos.id + friend.id}
+            />
+          </Space>
+        </Col>
+
+        {!isSmallScreen && (
+          <>
+            <Col span={1} style={{ height: '100%' }}>
+              <Divider
+                type='vertical'
+                style={{ height: '100%', marginLeft: '50%' }}
+              />
+            </Col>
+            <Col span={5} style={{ height: '100%' }}>
+              <Space direction='vertical' style={{ width: '100%' }}>
+                <h2
+                  style={{
+                    marginBottom: '0px',
+                    textAlign: 'center'
+                  }}
+                >
+                  Members
+                </h2>
+                <Divider
+                  style={{ height: '10px', margin: '0px', marginTop: '10px' }}
+                />
+                <div style={{ overflowX: 'hidden' }}>
+                  <PrivateProfile
+                    userId={userInfos.id}
+                    member={userInfos}
+                    key={userInfos.id}
+                  />
+                  <PrivateProfile
+                    userId={userInfos.id}
+                    member={friend}
+                    key={friendId}
+                  />
+                </div>
+              </Space>
+            </Col>
+          </>
+        )}
+      </Row>
     )
   } catch (Error) {
     const error_message = (Error as Error).message

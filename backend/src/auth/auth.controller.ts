@@ -13,12 +13,17 @@ import { GithubGuard } from './guards/github.guard'
 import { LocalAuthGuard } from './guards/local.guard'
 import { AuthService } from './auth.service'
 import { CreateUserAuthLocalInput } from './dto/create-user-auth.input'
-import e from 'express'
 import { ExceptionCustom } from 'src/common/exceptions/unauthorized-strategy.exception'
+import { PrismaService } from 'src/prisma/prisma.service'
+import { UserPresenceService } from 'src/user-presence/user-presence.service'
 
 @Controller('auth')
 export class AuthController {
-  constructor(readonly authService: AuthService) {}
+  constructor(
+    readonly authService: AuthService,
+    readonly userPresenceService: UserPresenceService,
+    readonly prisma: PrismaService
+  ) {}
 
   @Post('signup')
   async postRegister(@Body() userInput: CreateUserAuthLocalInput) {
@@ -78,19 +83,28 @@ export class AuthController {
   @UseGuards(LocalAuthGuard)
   @Post('login')
   async login(@Req() req: any, @Res() res: any) {
-    try {
-      const is2fa = await this.authService.isUser2fa(req.user.id)
-      if (is2fa === true) {
-        this.authService.unset2faValidation(req.user.id)
-      }
-    } catch (e) {
-      throw new ExceptionCustom('Login error')
+    let is2faverified = true
+    const is2fa = await this.authService.isUser2fa(req.user.id)
+    if (is2fa == true) {
+      this.authService.unset2faValidation(req.user.id)
+      is2faverified = false
     }
+
+    const resUser = await this.prisma.userPresence.create({
+      data: { userId: req.user.id }
+    })
     return res.status(200).json({ msg: 'Local Auth Login' })
   }
 
   @Get('logout')
-  logout(@Req() req: any, @Res() res: any) {
+  async logout(@Req() req: any, @Res() res: any) {
+    if (req?.user?.id) {
+      const lastUserPresence = await this.userPresenceService.findLastByUserId(
+        req.user.id
+      )
+      if (lastUserPresence)
+        await this.userPresenceService.disconnected(lastUserPresence.id)
+    }
     req.session.destroy()
     return res.redirect('http://127.0.0.1:5173/')
   }
@@ -109,6 +123,9 @@ export class AuthController {
       this.authService.unset2faValidation(req.user.id)
       return res.redirect('http://127.0.0.1:5173/2fa/login')
     }
+    const resUser = await this.prisma.userPresence.create({
+      data: { userId: req.user.id }
+    })
     return res.redirect('http://127.0.0.1:5173')
   }
 
@@ -126,6 +143,9 @@ export class AuthController {
       this.authService.unset2faValidation(req.user.id)
       return res.redirect('http://127.0.0.1:5173/2fa/login')
     }
+    const resUser = await this.prisma.userPresence.create({
+      data: { userId: req.user.id }
+    })
     return res.redirect('http://127.0.0.1:5173')
   }
 
@@ -143,6 +163,9 @@ export class AuthController {
       this.authService.unset2faValidation(req.user.id)
       return res.redirect('http://127.0.0.1:5173/2fa/login')
     }
+    const resUser = await this.prisma.userPresence.create({
+      data: { userId: req.user.id }
+    })
     return res.redirect('http://127.0.0.1:5173')
   }
 }

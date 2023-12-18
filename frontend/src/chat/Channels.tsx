@@ -1,6 +1,9 @@
 import React, { useState } from 'react'
-import { useAppSelector } from '../store/hooks'
-import { ChannelAndChannelMember } from '../store/slices/channel-informations.slice'
+import { useAppDispatch, useAppSelector } from '../store/hooks'
+import {
+  ChannelAndChannelMember,
+  addChannelInfo
+} from '../store/slices/channel-informations.slice'
 import Channel from './components/Channel'
 import { useMutation } from '@apollo/client'
 import {
@@ -21,10 +24,23 @@ import {
 } from '../gql/graphql'
 import { client } from '../main'
 import PopUpError from '../ErrorPages/PopUpError'
+import {
+  Button,
+  Col,
+  Collapse,
+  CollapseProps,
+  Divider,
+  Empty,
+  Input,
+  List,
+  Row,
+  Space
+} from 'antd'
 
 const Channels: React.FC = () => {
   const [isError, setIsError] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
+  const dispatch = useAppDispatch()
   const user = useAppSelector((state) => state.userInformations.user)
   const channelInvited = useAppSelector(
     (state) => state.channelInvitedInformations.channelInvitation
@@ -94,9 +110,18 @@ const Channels: React.FC = () => {
         setChannelNameInput('')
         throw new Error('Too many channels')
       }
-      await createChannel({
+      
+      const resChannel = await createChannel({
         variables: { data: { name: channelNameInput, ownerId: user.id } }
       })
+
+      const resChannelCreated = resChannel.data?.createChannel
+
+      if (!resChannelCreated) throw new Error('Error on channel creation')
+
+      dispatch(
+        addChannelInfo({ channelId: resChannelCreated.id, userId: user.id })
+      )
       setChannelNameInput('')
     } catch (Error) {
       let error_message = (Error as Error).message
@@ -224,53 +249,175 @@ const Channels: React.FC = () => {
     }
   }
 
+  const items: CollapseProps['items'] = [
+    {
+      key: '1',
+      label: 'Channel Invitations',
+      children: (
+        <List
+          dataSource={channelInvited}
+          renderItem={(channelInvitation) => (
+            <List.Item>
+              <Space
+                direction='vertical'
+                style={{ width: '100%' }}
+                className='unselectable'
+              >
+                <span
+                  style={{
+                    overflow: 'hidden',
+                    display: 'flex',
+                    alignContent: 'center',
+                    justifyContent: 'center'
+                  }}
+                >
+                  {channelInvitation.name}
+                </span>
+                <Space
+                  style={{
+                    width: '100%',
+                    display: 'flex',
+                    justifyContent: 'space-evenly'
+                  }}
+                >
+                  <Button
+                    style={{ width: '10vw' }}
+                    type='primary'
+                    onClick={() =>
+                      handleAcceptInvitation(channelInvitation.name)
+                    }
+                  >
+                    Accept
+                  </Button>
+                  <Button
+                    style={{ width: '10vw' }}
+                    type='default'
+                    onClick={() =>
+                      handleRefuseInvitationClick(channelInvitation.id, user.id)
+                    }
+                  >
+                    Refuse
+                  </Button>
+                </Space>
+              </Space>
+            </List.Item>
+          )}
+        />
+      ),
+      extra: <>{channelInvited.length}</>
+    },
+    {
+      key: '2',
+      label: 'Channels',
+      children: (
+        <List
+          dataSource={channelsInfos}
+          renderItem={(channelInfos) => (
+            <List.Item>
+              <Button
+                type='text'
+                block
+                style={{
+                  height: '50px',
+                  border: '1px solid #333',
+                  borderRadius: '3px',
+                  overflow: 'hidden',
+                  backgroundColor:
+                    selectedChannel &&
+                    selectedChannel.channel.id === channelInfos.channel.id
+                      ? '#333'
+                      : 'transparent',
+                  transition: 'background-color 0.3s'
+                }}
+                onClick={() => setSelectedChannel(channelInfos)}
+              >
+                {channelInfos.channel.name}
+              </Button>
+            </List.Item>
+          )}
+        />
+      )
+    }
+  ]
+
   return (
     <>
       {isError && <PopUpError message={errorMessage} />}
 
-      <div style={{ display: 'flex', flexDirection: 'row' }}>
-        <div style={{ width: '200px', marginRight: '20px' }}>
-          <h2>Channel Invitations</h2>
-          <ul>
-            {channelInvited.map((channelInvitation) => (
-              <li key={channelInvitation.id}>
-                {channelInvitation.name}
-                <button
-                  onClick={() => handleAcceptInvitation(channelInvitation.name)}
-                >
-                  Accept
-                </button>
-                <button
-                  onClick={() =>
-                    handleRefuseInvitationClick(channelInvitation.id, user.id)
-                  }
-                >
-                  Refuse
-                </button>
-              </li>
-            ))}
-          </ul>
-          <h2>Channels</h2>
-          <ul>
-            {channelsInfos.map((channelInfos) => (
-              <li key={channelInfos.channel.id}>
-                <button onClick={() => setSelectedChannel(channelInfos)}>
-                  {channelInfos.channel.name}
-                </button>
-              </li>
-            ))}
-          </ul>
-        </div>
-        <div>
-          <input
-            type='text'
-            value={channelNameInput}
-            onChange={handleChannelNameInput}
+      <Row gutter={[16, 16]} style={{ height: '100%' }}>
+        <Col span={6} style={{ height: '100%', overflowY: 'auto' }}>
+          <Space
+            direction='vertical'
+            style={{ width: '100%' }}
+            className='unselectable'
+          >
+            <h2
+              style={{
+                marginBottom: '0px',
+                textAlign: 'center'
+              }}
+            >
+              Channels
+            </h2>
+            <Divider
+              style={{ height: '10px', margin: '0px', marginTop: '10px' }}
+            />
+            <Input
+              type='text'
+              value={channelNameInput}
+              onChange={handleChannelNameInput}
+              placeholder='Enter channel name'
+              style={{ width: '100%' }}
+            />
+            <Space
+              style={{
+                width: '100%',
+                display: 'flex',
+                justifyContent: 'space-evenly'
+              }}
+            >
+              <Button
+                style={{ width: '10vw' }}
+                type='primary'
+                onClick={handleCreateChannelClick}
+              >
+                Create
+              </Button>
+              <Button
+                style={{ width: '10vw' }}
+                type='primary'
+                onClick={handleJoinChannelClick}
+              >
+                Join
+              </Button>
+            </Space>
+            <Divider
+              style={{ height: '10px', margin: '0px', marginTop: '10px' }}
+            />
+            <Collapse
+              ghost
+              style={{ border: '1px solid #333' }}
+              defaultActiveKey={['2']}
+              items={items}
+            />
+          </Space>
+        </Col>
+        <Col span={1} style={{ height: '100%' }}>
+          <Divider
+            type='vertical'
+            style={{ height: '100%', marginLeft: '50%' }}
           />
-          <button onClick={handleCreateChannelClick}>Create Channel</button>
-          <button onClick={handleJoinChannelClick}>Join Channel</button>
-        </div>
-        <div>
+        </Col>
+        <Col
+          span={17}
+          style={{
+            height: '100%',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            alignItems: 'center'
+          }}
+        >
           {selectedChannel ? (
             <Channel
               channelsInfos={channelsInfos}
@@ -278,11 +425,16 @@ const Channels: React.FC = () => {
               key={selectedChannel.channel.id}
             />
           ) : (
-            <p>select a channel to start chatting</p>
+            <Empty
+              image='https://gw.alipayobjects.com/zos/antfincdn/ZHrcdLPrvN/empty.svg'
+              imageStyle={{ height: 100 }}
+              description={<span>Select a channel</span>}
+            />
           )}
-        </div>
-      </div>
+        </Col>
+      </Row>
     </>
   )
 }
+
 export default Channels
