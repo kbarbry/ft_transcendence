@@ -15,9 +15,15 @@ export const Home: React.FC = () => {
   }
 
   return (
-    <Flex vertical={false} justify='space-evenly'>
-      <Leaderboard />
-      <GamesHistory playerId={userId} />
+    <Flex vertical={true} align='center'>
+      <h1>Welcome on Transcendence !</h1>
+      <p>
+        Immerse yourself in the thrill of real-time multiplayer Pong battles !
+      </p>
+      <Flex vertical={false} justify='space-evenly'>
+        <Leaderboard />
+        <GamesHistory playerId={userId} />
+      </Flex>
     </Flex>
   )
 }

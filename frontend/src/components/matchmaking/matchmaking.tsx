@@ -16,7 +16,7 @@ export const Matchmaking: React.FC<Props> = (props) => {
           <GameSelection username={props.username} playerId={props.playerId} />
         </Flex>
         <Flex vertical={true}>
-          <Divider orientation='left'>Left Text</Divider>
+          <Divider orientation='left'>Pong rules</Divider>
           <p>
             Pong is a two-dimensional sports game that simulates table tennis.
             <br />

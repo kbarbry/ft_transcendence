@@ -5,7 +5,7 @@ import {
   FindGameStatClassicQueryVariables
 } from '../../gql/graphql'
 import { findGameStatClassic } from './graphql'
-import { Flex } from 'antd'
+import { Divider, Flex } from 'antd'
 
 type Props = {
   playerId: string
@@ -33,7 +33,7 @@ export const ClassicGamesShowcase: React.FC<Props> = (props: Props) => {
   const gameElements: React.JSX.Element[] = data.findGameStatClassic.map(
     (game) => (
       <li className='showcase-element' key={game.id}>
-        <p>Date: {game.createdAt}</p>
+        <p>Date: {new Date(game.createdAt).toLocaleDateString('en-US')}</p>
         <p>Type: {game.type}</p>
         <p>Result: {game.winnerId === props.playerId ? 'Win' : 'Lose'}</p>
         <p>
@@ -42,12 +42,13 @@ export const ClassicGamesShowcase: React.FC<Props> = (props: Props) => {
             ? game.scoreWinner
             : game.scoreLoser}
         </p>
+        <Divider />
       </li>
     )
   )
 
   return (
-    <Flex vertical={true}>
+    <Flex vertical={true} gap={0}>
       <h1>Classic</h1>
       <ul className='showcase'>{gameElements}</ul>
     </Flex>
