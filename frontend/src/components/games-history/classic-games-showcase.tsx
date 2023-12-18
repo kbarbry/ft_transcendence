@@ -5,6 +5,7 @@ import {
   FindGameStatClassicQueryVariables
 } from '../../gql/graphql'
 import { findGameStatClassic } from './graphql'
+import { Flex } from 'antd'
 
 type Props = {
   playerId: string
@@ -23,7 +24,7 @@ export const ClassicGamesShowcase: React.FC<Props> = (props: Props) => {
     return <p>Loading...</p>
   }
   if (error) {
-    return <p>An error occured.</p>
+    return <p>An error occured while loading classic game history.</p>
   }
   if (data === undefined) {
     return <p>No games yet.</p>
@@ -36,7 +37,7 @@ export const ClassicGamesShowcase: React.FC<Props> = (props: Props) => {
         <p>Type: {game.type}</p>
         <p>Result: {game.winnerId === props.playerId ? 'Win' : 'Lose'}</p>
         <p>
-          Score:
+          Score:{' '}
           {game.winnerId === props.playerId
             ? game.scoreWinner
             : game.scoreLoser}
@@ -45,5 +46,10 @@ export const ClassicGamesShowcase: React.FC<Props> = (props: Props) => {
     )
   )
 
-  return <ul className='showcase'>{gameElements}</ul>
+  return (
+    <Flex vertical={true}>
+      <h1>Classic</h1>
+      <ul className='showcase'>{gameElements}</ul>
+    </Flex>
+  )
 }

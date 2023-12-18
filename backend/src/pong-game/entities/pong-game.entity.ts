@@ -153,7 +153,7 @@ export class PongGame {
     //ball update
     //  ball playfield left and right collision
     if (this.ball.hPos > this.playfield.width - this.ball.radius) {
-      this.ball.dir.x = -this.ball.dir.x //TODO Add random angle up and down
+      this.ball.dir.x = -this.ball.dir.x
       this.ball.hPos = this.playfield.width / 2
       this.ball.vPos = this.playfield.height / 2 - this.ball.radius
       this.player1.score += 1
@@ -208,7 +208,10 @@ export class PongGame {
     this.ball.vPos += this.ball.dir.y * delta
 
     //this.p1racket update
-    if (this.p1racket.vPos > 0 && this.player1.controls.Z_Key) {
+    if (
+      this.p1racket.vPos > 0 &&
+      (this.player1.controls.Z_Key || this.player1.controls.Up_Key)
+    ) {
       this.p1racket.vPos -= this.p1racket.velocity
     }
     if (this.p1racket.vPos < 0) {
@@ -216,7 +219,7 @@ export class PongGame {
     }
     if (
       this.p1racket.vPos < this.playfield.height - this.p1racket.height &&
-      this.player1.controls.S_Key
+      (this.player1.controls.S_Key || this.player1.controls.Down_Key)
     ) {
       this.p1racket.vPos += this.p1racket.velocity
     }
@@ -225,7 +228,10 @@ export class PongGame {
     }
 
     //this.p2racket update
-    if (this.p2racket.vPos > 0 && this.player2.controls.Z_Key) {
+    if (
+      this.p2racket.vPos > 0 &&
+      (this.player2.controls.Z_Key || this.player2.controls.Up_Key)
+    ) {
       this.p2racket.vPos -= this.p2racket.velocity
     }
     if (this.p2racket.vPos < 0) {
@@ -233,7 +239,7 @@ export class PongGame {
     }
     if (
       this.p2racket.vPos < this.playfield.height - this.p2racket.height &&
-      this.player2.controls.S_Key
+      (this.player2.controls.S_Key || this.player2.controls.Down_Key)
     ) {
       this.p2racket.vPos += this.p2racket.velocity
     }
@@ -304,7 +310,10 @@ export class PongGame {
     this.ball.vPos += this.ball.dir.y * delta
 
     //this.p1racket update
-    if (this.p1racket.vPos > 0 && this.player1.controls.S_Key) {
+    if (
+      this.p1racket.vPos > 0 &&
+      (this.player1.controls.S_Key || this.player1.controls.Down_Key)
+    ) {
       this.p1racket.vPos -= this.p1racket.velocity
     }
     if (this.p1racket.vPos < 0) {
@@ -312,7 +321,7 @@ export class PongGame {
     }
     if (
       this.p1racket.vPos < this.playfield.height - this.p1racket.height &&
-      this.player1.controls.Z_Key
+      (this.player1.controls.Z_Key || this.player1.controls.Up_Key)
     ) {
       this.p1racket.vPos += this.p1racket.velocity
     }
@@ -321,7 +330,10 @@ export class PongGame {
     }
 
     //this.p2racket update
-    if (this.p2racket.vPos > 0 && this.player2.controls.S_Key) {
+    if (
+      this.p2racket.vPos > 0 &&
+      (this.player2.controls.S_Key || this.player2.controls.Down_Key)
+    ) {
       this.p2racket.vPos -= this.p2racket.velocity
     }
     if (this.p2racket.vPos < 0) {
@@ -329,7 +341,7 @@ export class PongGame {
     }
     if (
       this.p2racket.vPos < this.playfield.height - this.p2racket.height &&
-      this.player2.controls.Z_Key
+      (this.player2.controls.Z_Key || this.player2.controls.Down_Key)
     ) {
       this.p2racket.vPos += this.p2racket.velocity
     }

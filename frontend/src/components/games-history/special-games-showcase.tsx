@@ -5,6 +5,7 @@ import {
   FindGameStatSpecialQueryVariables
 } from '../../gql/graphql'
 import { findGameStatSpecial } from './graphql'
+import { Flex } from 'antd'
 
 type Props = {
   playerId: string
@@ -23,7 +24,7 @@ export const SpecialGamesShowcase: React.FC<Props> = (props: Props) => {
     return <p>Loading...</p>
   }
   if (error) {
-    return <p>An error occured.</p>
+    return <p>An error occured while loading special game history.</p>
   }
   if (data === undefined) {
     return <p>No games yet.</p>
@@ -45,5 +46,10 @@ export const SpecialGamesShowcase: React.FC<Props> = (props: Props) => {
     )
   )
 
-  return <ul className='showcase'>{gameElements}</ul>
+  return (
+    <Flex vertical={true}>
+      <h1>Special</h1>
+      <ul className='showcase'>{gameElements}</ul>
+    </Flex>
+  )
 }
