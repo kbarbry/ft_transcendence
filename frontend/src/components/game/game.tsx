@@ -30,14 +30,14 @@ export const Game: React.FC = () => {
   if (user === null || user?.id === undefined) {
     return <p>Error : Username is not set.</p>
   }
-  if (gameId !== null && data && data.isGameValid === true) {
-    return <Pong gameId={gameId} username={user.username} playerId={user.id} />
-  }
   if (loading) {
     return <p>Loading...</p>
   }
   if (error) {
     return <p>An error occured while connecting to the server</p>
+  }
+  if (gameId !== null && data && data.isGameValid === true) {
+    return <Pong gameId={gameId} username={user.username} playerId={user.id} />
   }
   return (
     <>

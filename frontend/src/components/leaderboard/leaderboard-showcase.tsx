@@ -53,5 +53,11 @@ export const LeaderboardShowcase: React.FC = () => {
     )
   )
 
-  return <ul className='showcase'>{userElements}</ul>
+  return (
+    <ul className='showcase'>
+      <Flex vertical={true} justify='center' align='flex-start' gap='large'>
+        {userElements}
+      </Flex>
+    </ul>
+  )
 }

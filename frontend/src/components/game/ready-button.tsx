@@ -7,6 +7,7 @@ import {
   ReadyForGameMutation,
   ReadyForGameMutationVariables
 } from '../../gql/graphql'
+import { Button } from 'antd'
 
 type Props = {
   gameId: string
@@ -32,24 +33,24 @@ export const ReadyButton: React.FC<Props> = (props: Props) => {
   >(readyForGame)
 
   if (gameReadyError || mutationError) {
-    return <button>Error</button>
+    return <Button danger={true}>Error</Button>
   }
   if (mutationData) {
     if (mutationData.readyForGame === false) {
-      return <button>Error</button>
+      return <Button>Error</Button>
     }
     if (mutationData.readyForGame === true) {
-      return <button>You're in !</button>
+      return <Button>You're in !</Button>
     }
   }
   if (gameReadyData && gameReadyData.isUserReadyInGame) {
-    return <button>You're in !</button>
+    return <Button>You're in !</Button>
   }
   if (gameReadyLoading) {
-    return <button>Loading</button>
+    return <Button>Loading</Button>
   }
   return (
-    <button
+    <Button
       onClick={() => {
         sendReady({
           variables: { gameId: props.gameId, playerId: props.playerId }
@@ -57,6 +58,6 @@ export const ReadyButton: React.FC<Props> = (props: Props) => {
       }}
     >
       Ready !
-    </button>
+    </Button>
   )
 }

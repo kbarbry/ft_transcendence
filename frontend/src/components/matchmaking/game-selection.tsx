@@ -15,6 +15,7 @@ import {
   isPlayerQueued,
   removePlayerFromQueue
 } from './graphql'
+import { Button } from 'antd'
 
 type Props = {
   username: string
@@ -72,7 +73,8 @@ export const GameSelection: React.FC<Props> = (props) => {
   }
   if (queryData?.isUserInGameQueue === true) {
     return (
-      <button
+      <Button
+        danger={true}
         onClick={() => {
           removeFromQueue({
             variables: { playerId: props.playerId },
@@ -87,14 +89,14 @@ export const GameSelection: React.FC<Props> = (props) => {
         }}
       >
         Leave Queue
-      </button>
+      </Button>
     )
   }
   return (
     <div className='game-selection'>
       <h2>Hello {props.username}, select your game type :</h2>
-      <button onClick={() => join(EGameType.Classic)}>Classic Game</button>
-      <button onClick={() => join(EGameType.Special)}>Extra Game</button>
+      <Button onClick={() => join(EGameType.Classic)}>Classic Game</Button>
+      <Button onClick={() => join(EGameType.Special)}>Extra Game</Button>
       <GameInvitationPanel playerId={props.playerId} />
     </div>
   )
