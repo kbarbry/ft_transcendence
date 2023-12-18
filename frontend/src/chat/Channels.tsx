@@ -49,7 +49,6 @@ const Channels: React.FC = () => {
   )
   if (!user || !channelsInfos || !channelInvited) throw new Error()
 
-  
   const [selectedChannel, setSelectedChannel] =
     useState<ChannelAndChannelMember | null>(null)
   const [channelNameInput, setChannelNameInput] = useState<string>('')
@@ -110,7 +109,7 @@ const Channels: React.FC = () => {
         setChannelNameInput('')
         throw new Error('Too many channels')
       }
-      
+
       const resChannel = await createChannel({
         variables: { data: { name: channelNameInput, ownerId: user.id } }
       })
@@ -118,7 +117,10 @@ const Channels: React.FC = () => {
       const resChannelCreated = resChannel.data?.createChannel
 
       if (!resChannelCreated) throw new Error('Error on channel creation')
-      SuccessNotification('Success', `${channelNameInput} created with success !`)
+      SuccessNotification(
+        'Success',
+        `${channelNameInput} created with success !`
+      )
 
       dispatch(
         addChannelInfo({ channelId: resChannelCreated.id, userId: user.id })
@@ -127,7 +129,6 @@ const Channels: React.FC = () => {
     } catch (Error) {
       let error_message = (Error as Error).message
       ErrorNotification('Channel Error', error_message)
-
     }
   }
 
@@ -187,19 +188,22 @@ const Channels: React.FC = () => {
           }
         }
       })
-      SuccessNotification('Success', `${channelNameInput} joined with success !`)
+      SuccessNotification(
+        'Success',
+        `${channelNameInput} joined with success !`
+      )
 
       setChannelNameInput('')
     } catch (Error) {
       let error_message = (Error as Error).message
       if (
-        error_message !== `${channelNameInput} : You are already a member of this channel` &&
+        error_message !==
+          `${channelNameInput} : You are already a member of this channel` &&
         error_message !== `${channelNameInput} : Channel does not exist`
       ) {
         error_message = 'Cannot join channel'
       }
       ErrorNotification('Login Error', error_message)
-
     }
   }
 
@@ -233,7 +237,6 @@ const Channels: React.FC = () => {
     } catch (Error) {
       const error_message = 'Failed to accept invitation'
       ErrorNotification('Channel Error', error_message)
-
     }
   }
 
@@ -248,7 +251,6 @@ const Channels: React.FC = () => {
     } catch (Error) {
       const error_message = 'Failed to refuse invitation'
       ErrorNotification('Channel Error', error_message)
-
     }
   }
 
@@ -345,7 +347,6 @@ const Channels: React.FC = () => {
 
   return (
     <>
-
       <Row gutter={[16, 16]} style={{ height: '100%' }}>
         <Col span={6} style={{ height: '100%', overflowY: 'auto' }}>
           <Space
