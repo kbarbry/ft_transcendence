@@ -47,7 +47,6 @@ export class PrivateMessageResolver {
   ) {
     const [notificationSenderId, notificationReceiverId] =
       senderId > receiverId ? [receiverId, senderId] : [senderId, receiverId]
-    console.log('privateMessageCreation')
     return this.pubSub.asyncIterator(
       'messageReceived-' + notificationSenderId + notificationReceiverId
     )
@@ -65,7 +64,6 @@ export class PrivateMessageResolver {
   ) {
     const [notificationSenderId, notificationReceiverId] =
       senderId > receiverId ? [receiverId, senderId] : [senderId, receiverId]
-    console.log('privateMessageEdition')
     return this.pubSub.asyncIterator(
       'messageEdited-' + notificationSenderId + notificationReceiverId
     )
@@ -83,7 +81,6 @@ export class PrivateMessageResolver {
   ) {
     const [notificationSenderId, notificationReceiverId] =
       senderId > receiverId ? [receiverId, senderId] : [senderId, receiverId]
-    console.log('privateMessageDeletion')
     return this.pubSub.asyncIterator(
       'messageDeleted-' + notificationSenderId + notificationReceiverId
     )
@@ -106,7 +103,6 @@ export class PrivateMessageResolver {
       senderId > receiverId ? [receiverId, senderId] : [senderId, receiverId]
 
     const res = await this.privateMessageService.create(data)
-    console.log('createPrivateMessage')
 
     await this.pubSub.publish(
       'messageReceived-' + notificationSenderId + notificationReceiverId,
@@ -135,7 +131,6 @@ export class PrivateMessageResolver {
       senderId > receiverId ? [receiverId, senderId] : [senderId, receiverId]
 
     const res = await this.privateMessageService.update(id, data)
-    console.log('updatePrivateMessage')
 
     await this.pubSub.publish(
       'messageEdited-' + notificationSenderId + notificationReceiverId,
@@ -160,7 +155,6 @@ export class PrivateMessageResolver {
       senderId > receiverId ? [receiverId, senderId] : [senderId, receiverId]
 
     const res = await this.privateMessageService.delete(id)
-    console.log('deletePrivateMessage')
 
     await this.pubSub.publish(
       'messageDeleted-' + notificationSenderId + notificationReceiverId,
@@ -186,7 +180,6 @@ export class PrivateMessageResolver {
     @Args('receiverId', { type: () => String }, NanoidValidationPipe)
     receiverId: string
   ): Promise<PrivateMessage[]> {
-    console.log('findAllPrivateMessageWith')
     return this.privateMessageService.findAllMessageWith(senderId, receiverId)
   }
 

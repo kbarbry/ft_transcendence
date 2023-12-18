@@ -50,7 +50,6 @@ export class ChannelMemberResolver {
     @Args('id', { type: () => String }, NanoidValidationPipe)
     id: string
   ) {
-    console.log('channelMemberCreation sub')
     return this.pubSub.asyncIterator('memberReceived-' + id)
   }
 
@@ -62,7 +61,6 @@ export class ChannelMemberResolver {
     @Args('id', { type: () => String }, NanoidValidationPipe)
     id: string
   ) {
-    console.log('channelMemberEdition sub')
     return this.pubSub.asyncIterator('memberEdited-' + id)
   }
 
@@ -74,7 +72,6 @@ export class ChannelMemberResolver {
     @Args('id', { type: () => String }, NanoidValidationPipe)
     id: string
   ) {
-    console.log('channelMemberDeletion sub')
     return this.pubSub.asyncIterator('memberDeleted-' + id)
   }
 
@@ -94,13 +91,20 @@ export class ChannelMemberResolver {
       where: { id: data.channelId }
     })
 
-    if (
-      channel?.password &&
-      !(await bcrypt.compare(channel.password, data.channelPassword as string))
-    )
-      throw new ExceptionWrongChannelPassword()
+    if (channel?.password) {
+      if (
+        !(await bcrypt.compare(
+          data.channelPassword as string,
+          channel.password
+        ))
+      ) {
+        throw new ExceptionWrongChannelPassword()
+      }
+    }
 
-    const res = await this.channelMemberService.create(data)
+    const { channelPassword, ...dataWithoutPassword } = data
+
+    const res = await this.channelMemberService.create(dataWithoutPassword)
 
     const channelMembers = await this.findAllChannelMemberInChannel(
       data.channelId

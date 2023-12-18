@@ -42,7 +42,6 @@ export class ChannelBlockedResolver {
     @Args('id', { type: () => String }, NanoidValidationPipe)
     id: string
   ) {
-    console.log('channelBlockedCreation sub')
     return this.pubSub.asyncIterator('blockedCreation-' + id)
   }
 
@@ -54,7 +53,6 @@ export class ChannelBlockedResolver {
     @Args('id', { type: () => String }, NanoidValidationPipe)
     id: string
   ) {
-    console.log('channelBlockedDeletion sub')
     return this.pubSub.asyncIterator('blockedDeleted-' + id)
   }
 

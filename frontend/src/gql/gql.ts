@@ -41,9 +41,11 @@ const documents = {
     "\n  mutation DeleteChannelInvited($channelId: String!, $userId: String!) {\n    deleteChannelInvited(channelId: $channelId, userId: $userId) {\n      channelId\n      userId\n    }\n  }\n": types.DeleteChannelInvitedDocument,
     "\n  mutation MakeChannelMemberAdmin($channelId: String!, $userId: String!) {\n    makeChannelMemberAdmin(channelId: $channelId, userId: $userId) {\n      userId\n      type\n    }\n  }\n": types.MakeChannelMemberAdminDocument,
     "\n  mutation UnmakeChannelMemberAdmin($channelId: String!, $userId: String!) {\n    unmakeChannelMemberAdmin(channelId: $channelId, userId: $userId) {\n      userId\n      type\n    }\n  }\n": types.UnmakeChannelMemberAdminDocument,
+    "\n  mutation UpdateChannel(\n    $data: UpdateChannelInput!\n    $updateChannelId: String!\n  ) {\n    updateChannel(data: $data, id: $updateChannelId) {\n      avatarUrl\n      createdAt\n      id\n      maxUsers\n      name\n      ownerId\n      password\n      topic\n      type\n    }\n  }\n": types.UpdateChannelDocument,
     "\n  query FindAllPrivateMessageWith($receiverId: String!, $senderId: String!) {\n    findAllPrivateMessageWith(receiverId: $receiverId, senderId: $senderId) {\n      content\n      createdAt\n      id\n      senderId\n      receiverId\n      updatedAt\n    }\n  }\n": types.FindAllPrivateMessageWithDocument,
     "\n  query FindAllChannelMessageInChannel($channelId: String!) {\n    findAllChannelMessageInChannel(channelId: $channelId) {\n      channelId\n      content\n      createdAt\n      id\n      senderId\n      updatedAt\n    }\n  }\n": types.FindAllChannelMessageInChannelDocument,
-    "\n  query FindOneChannelByName($name: String!) {\n    findOneChannelByName(name: $name) {\n      avatarUrl\n      createdAt\n      id\n      maxUsers\n      name\n      ownerId\n      password\n      topic\n      type\n    }\n  }\n": types.FindOneChannelByNameDocument,
+    "\n  query FindOneChannelByName($name: String!) {\n    findOneChannelByName(name: $name) {\n      avatarUrl\n      createdAt\n      id\n      maxUsers\n      name\n      ownerId\n      topic\n      type\n    }\n  }\n": types.FindOneChannelByNameDocument,
+    "\n  query IsChannelPasswordSet($channelId: String!) {\n    isChannelPasswordSet(channelId: $channelId)\n  }\n": types.IsChannelPasswordSetDocument,
     "\n  query FindOneUserStatus($findOneUserId: String!) {\n    findOneUser(id: $findOneUserId) {\n      status\n      id\n    }\n  }\n": types.FindOneUserStatusDocument,
     "\n  query FindLastUserPresenceByUserId($findLastUserPresenceByUserIdId: String!) {\n    findLastUserPresenceByUserId(id: $findLastUserPresenceByUserIdId) {\n      userId\n      disconnectedAt\n      connectedAt\n    }\n  }\n": types.FindLastUserPresenceByUserIdDocument,
     "\n  subscription PongInvitationSubcription($userId: String!) {\n    pongInvitationSubcription(userId: $userId) {\n      gameId\n      gameType\n      senderNickname\n    }\n  }\n": types.PongInvitationSubcriptionDocument,
@@ -89,11 +91,11 @@ const documents = {
     "\n  query FindAllRelationBlocked($findAllRelationBlockedByUserId: String!) {\n    findAllRelationBlockedByUser(id: $findAllRelationBlockedByUserId)\n  }\n": types.FindAllRelationBlockedDocument,
     "\n  query FindAllChannelMemberOfUser($userId: String!) {\n    findAllChannelMemberOfUser(userId: $userId) {\n      avatarUrl\n      channelId\n      createdAt\n      muted\n      nickname\n      type\n      userId\n    }\n  }\n": types.FindAllChannelMemberOfUserDocument,
     "\n  query FindAllChannelInvitedOfUser($userId: String!) {\n    findAllChannelInvitedOfUser(userId: $userId) {\n      channelId\n      userId\n    }\n  }\n": types.FindAllChannelInvitedOfUserDocument,
-    "\n  query FindChannelByChannelIds($channelIds: [String!]!) {\n    findChannelByChannelIds(channelIds: $channelIds) {\n      avatarUrl\n      createdAt\n      id\n      maxUsers\n      name\n      ownerId\n      password\n      topic\n      type\n    }\n  }\n": types.FindChannelByChannelIdsDocument,
+    "\n  query FindChannelByChannelIds($channelIds: [String!]!) {\n    findChannelByChannelIds(channelIds: $channelIds) {\n      avatarUrl\n      createdAt\n      id\n      maxUsers\n      name\n      ownerId\n      topic\n      type\n    }\n  }\n": types.FindChannelByChannelIdsDocument,
     "\n  query FindAllChannelMemberInChannel($channelId: String!) {\n    findAllChannelMemberInChannel(channelId: $channelId) {\n      avatarUrl\n      channelId\n      createdAt\n      muted\n      nickname\n      type\n      userId\n    }\n  }\n": types.FindAllChannelMemberInChannelDocument,
     "\n  query FindAllChannelInvitedInChannel($channelId: String!) {\n    findAllChannelInvitedInChannel(channelId: $channelId) {\n      channelId\n      userId\n    }\n  }\n": types.FindAllChannelInvitedInChannelDocument,
     "\n  query FindAllInChannelBlocked($channelId: String!) {\n    findAllInChannelBlocked(channelId: $channelId) {\n      channelId\n      userId\n    }\n  }\n": types.FindAllInChannelBlockedDocument,
-    "\n  query FindOneChannel($findOneChannelId: String!) {\n    findOneChannel(id: $findOneChannelId) {\n      avatarUrl\n      createdAt\n      id\n      maxUsers\n      name\n      ownerId\n      password\n      topic\n      type\n    }\n  }\n": types.FindOneChannelDocument,
+    "\n  query FindOneChannel($findOneChannelId: String!) {\n    findOneChannel(id: $findOneChannelId) {\n      avatarUrl\n      createdAt\n      id\n      maxUsers\n      name\n      ownerId\n      topic\n      type\n    }\n  }\n": types.FindOneChannelDocument,
     "\n  query Query($username: String!) {\n    isUserUsernameUsed(username: $username)\n  }\n": types.QueryDocument,
     "\n  mutation UpdateUser($id: String!, $data: UpdateUserInput!) {\n    updateUser(id: $id, data: $data) {\n      id\n    }\n  }\n": types.UpdateUserDocument,
 };
@@ -227,6 +229,10 @@ export function graphql(source: "\n  mutation UnmakeChannelMemberAdmin($channelI
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
+export function graphql(source: "\n  mutation UpdateChannel(\n    $data: UpdateChannelInput!\n    $updateChannelId: String!\n  ) {\n    updateChannel(data: $data, id: $updateChannelId) {\n      avatarUrl\n      createdAt\n      id\n      maxUsers\n      name\n      ownerId\n      password\n      topic\n      type\n    }\n  }\n"): (typeof documents)["\n  mutation UpdateChannel(\n    $data: UpdateChannelInput!\n    $updateChannelId: String!\n  ) {\n    updateChannel(data: $data, id: $updateChannelId) {\n      avatarUrl\n      createdAt\n      id\n      maxUsers\n      name\n      ownerId\n      password\n      topic\n      type\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
 export function graphql(source: "\n  query FindAllPrivateMessageWith($receiverId: String!, $senderId: String!) {\n    findAllPrivateMessageWith(receiverId: $receiverId, senderId: $senderId) {\n      content\n      createdAt\n      id\n      senderId\n      receiverId\n      updatedAt\n    }\n  }\n"): (typeof documents)["\n  query FindAllPrivateMessageWith($receiverId: String!, $senderId: String!) {\n    findAllPrivateMessageWith(receiverId: $receiverId, senderId: $senderId) {\n      content\n      createdAt\n      id\n      senderId\n      receiverId\n      updatedAt\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
@@ -235,7 +241,11 @@ export function graphql(source: "\n  query FindAllChannelMessageInChannel($chann
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  query FindOneChannelByName($name: String!) {\n    findOneChannelByName(name: $name) {\n      avatarUrl\n      createdAt\n      id\n      maxUsers\n      name\n      ownerId\n      password\n      topic\n      type\n    }\n  }\n"): (typeof documents)["\n  query FindOneChannelByName($name: String!) {\n    findOneChannelByName(name: $name) {\n      avatarUrl\n      createdAt\n      id\n      maxUsers\n      name\n      ownerId\n      password\n      topic\n      type\n    }\n  }\n"];
+export function graphql(source: "\n  query FindOneChannelByName($name: String!) {\n    findOneChannelByName(name: $name) {\n      avatarUrl\n      createdAt\n      id\n      maxUsers\n      name\n      ownerId\n      topic\n      type\n    }\n  }\n"): (typeof documents)["\n  query FindOneChannelByName($name: String!) {\n    findOneChannelByName(name: $name) {\n      avatarUrl\n      createdAt\n      id\n      maxUsers\n      name\n      ownerId\n      topic\n      type\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query IsChannelPasswordSet($channelId: String!) {\n    isChannelPasswordSet(channelId: $channelId)\n  }\n"): (typeof documents)["\n  query IsChannelPasswordSet($channelId: String!) {\n    isChannelPasswordSet(channelId: $channelId)\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
@@ -419,7 +429,7 @@ export function graphql(source: "\n  query FindAllChannelInvitedOfUser($userId: 
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  query FindChannelByChannelIds($channelIds: [String!]!) {\n    findChannelByChannelIds(channelIds: $channelIds) {\n      avatarUrl\n      createdAt\n      id\n      maxUsers\n      name\n      ownerId\n      password\n      topic\n      type\n    }\n  }\n"): (typeof documents)["\n  query FindChannelByChannelIds($channelIds: [String!]!) {\n    findChannelByChannelIds(channelIds: $channelIds) {\n      avatarUrl\n      createdAt\n      id\n      maxUsers\n      name\n      ownerId\n      password\n      topic\n      type\n    }\n  }\n"];
+export function graphql(source: "\n  query FindChannelByChannelIds($channelIds: [String!]!) {\n    findChannelByChannelIds(channelIds: $channelIds) {\n      avatarUrl\n      createdAt\n      id\n      maxUsers\n      name\n      ownerId\n      topic\n      type\n    }\n  }\n"): (typeof documents)["\n  query FindChannelByChannelIds($channelIds: [String!]!) {\n    findChannelByChannelIds(channelIds: $channelIds) {\n      avatarUrl\n      createdAt\n      id\n      maxUsers\n      name\n      ownerId\n      topic\n      type\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
@@ -435,7 +445,7 @@ export function graphql(source: "\n  query FindAllInChannelBlocked($channelId: S
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  query FindOneChannel($findOneChannelId: String!) {\n    findOneChannel(id: $findOneChannelId) {\n      avatarUrl\n      createdAt\n      id\n      maxUsers\n      name\n      ownerId\n      password\n      topic\n      type\n    }\n  }\n"): (typeof documents)["\n  query FindOneChannel($findOneChannelId: String!) {\n    findOneChannel(id: $findOneChannelId) {\n      avatarUrl\n      createdAt\n      id\n      maxUsers\n      name\n      ownerId\n      password\n      topic\n      type\n    }\n  }\n"];
+export function graphql(source: "\n  query FindOneChannel($findOneChannelId: String!) {\n    findOneChannel(id: $findOneChannelId) {\n      avatarUrl\n      createdAt\n      id\n      maxUsers\n      name\n      ownerId\n      topic\n      type\n    }\n  }\n"): (typeof documents)["\n  query FindOneChannel($findOneChannelId: String!) {\n    findOneChannel(id: $findOneChannelId) {\n      avatarUrl\n      createdAt\n      id\n      maxUsers\n      name\n      ownerId\n      topic\n      type\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
