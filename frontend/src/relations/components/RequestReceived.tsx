@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { useMutation } from '@apollo/client'
 import { useAppDispatch } from '../../store/hooks'
 import {
@@ -21,6 +21,7 @@ import {
 import { setRequestSentInformations } from '../../store/slices/request-sent-informations.slice'
 import DefaultProfilePicture from '/DefaultProfilePicture.svg'
 import ErrorNotification from '../../notifications/ErrorNotificartion'
+import SuccessNotification from '../../notifications/SuccessNotification'
 
 interface RequestReceivedProps {
   userId: string
@@ -58,6 +59,7 @@ const RequestReceived: React.FC<RequestReceivedProps> = ({
 
       await dispatch(setRequestReceivedInformations(userId))
       await dispatch(setFriendInformations(userId))
+      SuccessNotification('success', `You are now friends !`)
     } catch (Error) {
       const error_message = (Error as Error).message
       ErrorNotification('Error', error_message)

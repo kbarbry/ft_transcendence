@@ -10,6 +10,7 @@ import { setRequestSentInformations } from '../store/slices/request-sent-informa
 import { setRequestReceivedInformations } from '../store/slices/request-received-informations.slice'
 import { setFriendInformations } from '../store/slices/friend-informations.slice'
 import ErrorNotification from '../notifications/ErrorNotificartion'
+import SuccessNotification from '../notifications/SuccessNotification'
 
 
 const Relations: React.FC = () => {
@@ -97,7 +98,8 @@ const Relations: React.FC = () => {
         await dispatch(setRequestSentInformations(user.id))
         await dispatch(setRequestReceivedInformations(user.id))
         setUsernameInput('')
-      }
+        SuccessNotification('Success', `Friend request to ${usernameInput} has been sent with success`)     
+    }
     } catch (Error) {
       let error_message = (Error as Error).message
       if (

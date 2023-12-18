@@ -1,6 +1,9 @@
-import { LogError } from '../../common/filters/general.filters'
 
 export async function LogUser(mail: string, password: string) {
+  if (!mail || !password)
+  {
+    throw new Error('Empty mail/password')
+  }
   try {
     const response = await fetch('http://127.0.0.1:3000/api/auth/login', {
       method: 'POST',

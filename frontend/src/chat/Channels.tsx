@@ -12,6 +12,7 @@ import {
   mutationDeleteChannelInvited,
   queryFindOneChannelByName
 } from './graphql'
+import SuccessNotification from '../notifications/SuccessNotification'
 import {
   CreateChannelMemberMutation,
   CreateChannelMemberMutationVariables,
@@ -117,6 +118,7 @@ const Channels: React.FC = () => {
       const resChannelCreated = resChannel.data?.createChannel
 
       if (!resChannelCreated) throw new Error('Error on channel creation')
+      SuccessNotification('Success', `${channelNameInput} created with success !`)
 
       dispatch(
         addChannelInfo({ channelId: resChannelCreated.id, userId: user.id })
@@ -185,6 +187,8 @@ const Channels: React.FC = () => {
           }
         }
       })
+      SuccessNotification('Success', `${channelNameInput} joined with success !`)
+
       setChannelNameInput('')
     } catch (Error) {
       let error_message = (Error as Error).message

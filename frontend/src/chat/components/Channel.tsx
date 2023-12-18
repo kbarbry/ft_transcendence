@@ -39,6 +39,7 @@ import {
 import { useMediaQuery } from 'react-responsive'
 import { DeleteOutlined } from '@ant-design/icons'
 import ErrorNotification from '../../notifications/ErrorNotificartion'
+import SuccessNotification from '../../notifications/SuccessNotification'
 
 
 interface ChannelProps {
@@ -99,6 +100,7 @@ const ChannelComponent: React.FC<ChannelProps> = ({
             }
           }
         })
+        SuccessNotification('Success', `User has been ${channelInviteInput} invited with success !`)
         setChannelInviteInput('')
       } catch (Error) {
         const error_message = 'Cannot invit this user in this channel'
@@ -111,6 +113,7 @@ const ChannelComponent: React.FC<ChannelProps> = ({
         await deleteChannel({
           variables: { deleteChannelId: channelId }
         })
+        SuccessNotification('Success', 'Channel has been deleted with success !')
       } catch (Error) {
         const error_message = 'Cannot delete channel'
         ErrorNotification('Channel Error', error_message)
