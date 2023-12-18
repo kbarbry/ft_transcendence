@@ -8,12 +8,15 @@ import {
   FindAllChannelMessageInChannelQuery,
   FindAllChannelMessageInChannelQueryVariables,
   FindOneUserByUsernameQuery,
-  FindOneUserByUsernameQueryVariables
+  FindOneUserByUsernameQueryVariables,
+  UpdateChannelMutation,
+  UpdateChannelMutationVariables
 } from '../../gql/graphql'
 import { useMutation, useQuery } from '@apollo/client'
 import {
   mutationCreateChannelInvited,
   mutationDeleteChannel,
+  mutationUpdateChannel,
   queryFindAllChannelMessageInChannel
 } from '../graphql'
 import ChannelChat from './ChannelChat'
@@ -30,8 +33,11 @@ import {
   Collapse,
   CollapseProps,
   Divider,
+  Form,
   Input,
+  InputNumber,
   List,
+  Modal,
   Row,
   Space,
   Tooltip
@@ -40,6 +46,15 @@ import { useMediaQuery } from 'react-responsive'
 import { DeleteOutlined } from '@ant-design/icons'
 import ErrorNotification from '../../notifications/ErrorNotificartion'
 import SuccessNotification from '../../notifications/SuccessNotification'
+
+
+import {
+  DeleteOutlined,
+  EditOutlined,
+  UserOutlined,
+  EyeTwoTone,
+  EyeInvisibleOutlined
+} from '@ant-design/icons'
 
 
 interface ChannelProps {
@@ -54,11 +69,12 @@ const ChannelComponent: React.FC<ChannelProps> = ({
   const [chat, setChat] = useState<ChannelMessage[]>([])
   const [isHovered, setIsHovered] = useState(false)
   const [channelInviteInput, setChannelInviteInput] = useState('')
+  const [isEditModalVisible, setIsEditModalVisible] = useState(false)
   const channelInfo = channelsInfos.find(
     (channelInfo) => channelInfo.channel.id === channelId
   )
 
-  if (!channelInfo) throw new Error()
+  if (!channelInfo || !channelInfo.channel) throw new Error()
 
   const [createChannelInvited] = useMutation<
     CreateChannelInvitedMutation,
@@ -69,6 +85,11 @@ const ChannelComponent: React.FC<ChannelProps> = ({
     DeleteChannelMutation,
     DeleteChannelMutationVariables
   >(mutationDeleteChannel)
+
+  const [updateChannel] = useMutation<
+    UpdateChannelMutation,
+    UpdateChannelMutationVariables
+  >(mutationUpdateChannel)
 
   try {
     const { loading, error } = useQuery<
@@ -122,6 +143,86 @@ const ChannelComponent: React.FC<ChannelProps> = ({
     }
 
     const isSmallScreen = useMediaQuery({ maxWidth: 768 })
+
+    const onFinish = async () => {
+      try {
+        let name =
+          editedChannel.name.trim() === channelInfo.channel.name
+            ? undefined
+            : editedChannel.name
+
+        let password =
+          editedChannel.password.trim() === channelInfo.channel.password
+            ? undefined
+            : editedChannel.password
+        if (
+          password?.trim() === '' &&
+          (channelInfo.channel.password === undefined ||
+            channelInfo.channel.password === null)
+        )
+          password = undefined
+
+        let topic =
+          editedChannel.topic.trim() === channelInfo.channel.topic
+            ? undefined
+            : editedChannel.topic
+        if (
+          topic?.trim() === '' &&
+          (channelInfo.channel.topic === undefined ||
+            channelInfo.channel.topic === null)
+        )
+          topic = undefined
+
+        let maxUsers =
+          editedChannel.maxUsers === channelInfo.channel.maxUsers
+            ? undefined
+            : editedChannel.maxUsers
+
+        await updateChannel({
+          variables: {
+            updateChannelId: channelId,
+            data: {
+              name,
+              password,
+              topic,
+              maxUsers
+            }
+          }
+        })
+        setIsEditModalVisible(false)
+      } catch (Error) {
+        const error_message = (Error as Error).message
+        setIsError(true)
+        setErrorMessage(error_message)
+      }
+    }
+
+    const onFinishFailed = () => {
+      console.log('Failed')
+    }
+
+    const [editedChannel, setEditedChannel] = useState({
+      name: channelInfo.channel.name,
+      password: channelInfo.channel.password || '',
+      topic: channelInfo.channel.topic || '',
+      maxUsers: channelInfo.channel.maxUsers
+    })
+
+    const showEditModal = () => {
+      console.log(channelInfo.channel.name)
+      setEditedChannel({
+        name: channelInfo.channel.name,
+        password: channelInfo.channel.password || '',
+        topic: channelInfo.channel.topic || '',
+        maxUsers: channelInfo.channel.maxUsers
+      })
+      setIsEditModalVisible(true)
+    }
+
+    const handleEditModalCancel = () => {
+      console.log(channelInfo.channel.name)
+      setIsEditModalVisible(false)
+    }
 
     const items: CollapseProps['items'] = [
       {
@@ -208,15 +309,27 @@ const ChannelComponent: React.FC<ChannelProps> = ({
               <h2>{channelInfo.channel.name}</h2>
               {channelInfo.channelMemberUser.userId ===
                 channelInfo.channel.ownerId && (
-                <Tooltip title='Delete Channel'>
-                  <DeleteOutlined
-                    style={{
-                      opacity: isHovered ? 1 : 0.5,
-                      transition: 'opacity 0.3s ease-in-out'
-                    }}
-                    onClick={() => handleDeleteChannel()}
-                  />
-                </Tooltip>
+                <>
+                  <Tooltip title='Edit Channel'>
+                    <EditOutlined
+                      style={{
+                        marginLeft: '10px',
+                        opacity: isHovered ? 1 : 0.5,
+                        transition: 'opacity 0.3s ease-in-out'
+                      }}
+                      onClick={showEditModal}
+                    />
+                  </Tooltip>
+                  <Tooltip title='Delete Channel'>
+                    <DeleteOutlined
+                      style={{
+                        opacity: isHovered ? 1 : 0.5,
+                        transition: 'opacity 0.3s ease-in-out'
+                      }}
+                      onClick={() => handleDeleteChannel()}
+                    />
+                  </Tooltip>
+                </>
               )}
               {loading && <p>Loading conversation...</p>}
               {error && (
@@ -280,6 +393,135 @@ const ChannelComponent: React.FC<ChannelProps> = ({
             </Col>
           </>
         )}
+        <Modal
+          title='Edit Channel'
+          open={isEditModalVisible}
+          onCancel={handleEditModalCancel}
+          footer={[
+            <Button key='cancel' onClick={handleEditModalCancel}>
+              Cancel
+            </Button>,
+            <Button key='submit' type='primary' onClick={onFinish}>
+              Submit
+            </Button>
+          ]}
+        >
+          <Form
+            layout='vertical'
+            initialValues={editedChannel}
+            onFinish={onFinish}
+            onFinishFailed={onFinishFailed}
+          >
+            <Form.Item
+              label='Channel Name'
+              name='name'
+              rules={[
+                {
+                  type: 'string',
+                  message: 'Channel Name must be a string.'
+                },
+                {
+                  max: 30,
+                  message: 'Channel Name must be at most 30 characters long.'
+                },
+                {
+                  pattern: /^[a-zA-Z0-9_\-\.]+( [a-zA-Z0-9_\-\.]+)?$/,
+                  message:
+                    'Channel Name can only contain letters, numbers, single spaces, and "_-.".'
+                }
+              ]}
+            >
+              <Input
+                type='text'
+                value={editedChannel.name}
+                onChange={(e) =>
+                  setEditedChannel({ ...editedChannel, name: e.target.value })
+                }
+                placeholder='Enter Channel Name'
+                maxLength={30}
+                showCount
+              />
+            </Form.Item>
+            <Form.Item
+              label='Channel Password'
+              name='password'
+              rules={[
+                {
+                  required: true,
+                  message: 'Please enter the Channel Password!'
+                },
+                {
+                  type: 'string',
+                  message: 'Channel Password must be a string.'
+                },
+                {
+                  max: 30,
+                  message:
+                    'Channel Password must be at most 30 characters long.'
+                },
+                {
+                  pattern: /^[a-zA-Z0-9!@#$%^&+=]*$/,
+                  message:
+                    'Channel Password must be between 1 and 30 characters long, and can only contain these special characters: "!@#$%^&+="'
+                }
+              ]}
+            >
+              <Input.Password
+                type='password'
+                value={editedChannel.password}
+                onChange={(e) =>
+                  setEditedChannel({
+                    ...editedChannel,
+                    password: e.target.value
+                  })
+                }
+                placeholder='Enter Channel Password'
+                iconRender={(visible) =>
+                  visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />
+                }
+              />
+            </Form.Item>
+            <Form.Item label='Maximum Users' name='maxUsers'>
+              <InputNumber
+                min={1}
+                max={50}
+                value={editedChannel.maxUsers}
+                onChange={(value) =>
+                  setEditedChannel({ ...editedChannel, maxUsers: value || 50 })
+                }
+                placeholder='Enter Maximum Users'
+                style={{ width: '100%' }}
+                addonAfter={<UserOutlined />}
+              />
+            </Form.Item>
+            <Form.Item
+              label='Channel Topic'
+              name='topic'
+              rules={[
+                {
+                  type: 'string',
+                  message: 'Channel Name must be a string.'
+                },
+                {
+                  max: 1024,
+                  message:
+                    'Channel Password must be at most 1024 characters long.'
+                }
+              ]}
+            >
+              <Input.TextArea
+                rows={4}
+                value={editedChannel.topic}
+                onChange={(e) =>
+                  setEditedChannel({ ...editedChannel, topic: e.target.value })
+                }
+                placeholder='Enter Channel Topic'
+                maxLength={1024}
+                showCount
+              />
+            </Form.Item>
+          </Form>
+        </Modal>
       </Row>
     )
   } catch (e) {

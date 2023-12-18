@@ -28,7 +28,7 @@ export const LeaderboardShowcase: React.FC = () => {
   const userElements: React.JSX.Element[] = data.findBestUsers.map(
     (user, index) => (
       <li className='showcase-element' key={index}>
-        <Flex gap='middle'>
+        <Flex gap='middle' align='center' justify='flex-start'>
           <Avatar
             shape='square'
             size='large'
@@ -53,5 +53,11 @@ export const LeaderboardShowcase: React.FC = () => {
     )
   )
 
-  return <ul className='showcase'>{userElements}</ul>
+  return (
+    <ul className='showcase'>
+      <Flex vertical={true} justify='center' align='flex-start' gap='large'>
+        {userElements}
+      </Flex>
+    </ul>
+  )
 }

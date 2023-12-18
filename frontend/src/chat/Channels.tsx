@@ -4,16 +4,18 @@ import {
   ChannelAndChannelMember,
   addChannelInfo
 } from '../store/slices/channel-informations.slice'
-import Channel from './components/Channel'
+import ChannelComponent from './components/Channel'
 import { useMutation } from '@apollo/client'
 import {
   mutationCreateChannel,
   mutationCreateChannelMember,
   mutationDeleteChannelInvited,
-  queryFindOneChannelByName
+  queryFindOneChannelByName,
+  queryIsChannelPasswordSet
 } from './graphql'
 import SuccessNotification from '../notifications/SuccessNotification'
 import {
+  Channel,
   CreateChannelMemberMutation,
   CreateChannelMemberMutationVariables,
   CreateChannelMutation,
@@ -21,7 +23,9 @@ import {
   DeleteChannelInvitedMutation,
   DeleteChannelInvitedMutationVariables,
   FindOneChannelByNameQuery,
-  FindOneChannelByNameQueryVariables
+  FindOneChannelByNameQueryVariables,
+  IsChannelPasswordSetQuery,
+  IsChannelPasswordSetQueryVariables
 } from '../gql/graphql'
 import { client } from '../main'
 import ErrorNotification from '../notifications/ErrorNotificartion'
@@ -32,13 +36,16 @@ import {
   CollapseProps,
   Divider,
   Empty,
+  Form,
   Input,
   List,
+  Modal,
   Row,
   Space
 } from 'antd'
 
 const Channels: React.FC = () => {
+
   const dispatch = useAppDispatch()
   const user = useAppSelector((state) => state.userInformations.user)
   const channelInvited = useAppSelector(
@@ -47,6 +54,12 @@ const Channels: React.FC = () => {
   const channelsInfos = useAppSelector(
     (state) => state.channelInformations.channelsInfos
   )
+
+  const [passwordModalVisible, setPasswordModalVisible] = useState(false)
+  const [currentChannelPassword, setCurrentChannelPassword] =
+    useState<Channel | null>(null)
+  const [password, setPassword] = useState('')
+
   if (!user || !channelsInfos || !channelInvited) throw new Error()
 
   const [selectedChannel, setSelectedChannel] =
@@ -87,7 +100,7 @@ const Channels: React.FC = () => {
   const handleCreateChannelClick = async () => {
     let isChannelAlsreadySet = true
     try {
-      const { data: createChannel } = await client.query<
+      await client.query<
         FindOneChannelByNameQuery,
         FindOneChannelByNameQueryVariables
       >({
@@ -103,11 +116,11 @@ const Channels: React.FC = () => {
         throw new Error('Empty channel name')
       }
 
-      if (isChannelAlsreadySet == true)
+      if (isChannelAlsreadySet === true)
         throw new Error(`"${channelNameInput}" : Channel name already use`)
       if (numberChannels >= 25) {
         setChannelNameInput('')
-        throw new Error('Too many channels')
+        throw new Error('Limit of 25 channels reached')
       }
 
       const resChannel = await createChannel({
@@ -140,11 +153,11 @@ const Channels: React.FC = () => {
     }
     if (numberChannels >= 25) {
       setChannelNameInput('')
-      throw new Error('Too many channels')
+      throw new Error('Limit of 25 channels reached')
     }
 
     try {
-      const { data: createChannel } = await client.query<
+      await client.query<
         FindOneChannelByNameQuery,
         FindOneChannelByNameQueryVariables
       >({
@@ -157,7 +170,7 @@ const Channels: React.FC = () => {
 
     const channelsList = channelsInfos.map((item) => item.channel.name)
     try {
-      if (doestchannelexist == false) {
+      if (doestchannelexist === false) {
         throw new Error(`${channelNameInput} : Channel does not exist`)
       }
       const { data: dataFindChannel } = await client.query<
@@ -177,6 +190,21 @@ const Channels: React.FC = () => {
       }
 
       const channel = dataFindChannel.findOneChannelByName
+
+      const { data: dataIsPassword } = await client.query<
+        IsChannelPasswordSetQuery,
+        IsChannelPasswordSetQueryVariables
+      >({
+        query: queryIsChannelPasswordSet,
+        variables: { channelId: channel.id }
+      })
+      const isPasswordSet = dataIsPassword.isChannelPasswordSet
+
+      if (isPasswordSet) {
+        setPasswordModalVisible(true)
+        setCurrentChannelPassword(channel)
+        return
+      }
 
       await createChannelMember({
         variables: {
@@ -214,6 +242,7 @@ const Channels: React.FC = () => {
     }
 
     try {
+      console.log('try join channel with, ', channelName)
       const { data: dataFindChannel } = await client.query<
         FindOneChannelByNameQuery,
         FindOneChannelByNameQueryVariables
@@ -221,9 +250,24 @@ const Channels: React.FC = () => {
         query: queryFindOneChannelByName,
         variables: { name: channelName }
       })
-
       const channel = dataFindChannel.findOneChannelByName
 
+      const { data: dataIsPassword } = await client.query<
+        IsChannelPasswordSetQuery,
+        IsChannelPasswordSetQueryVariables
+      >({
+        query: queryIsChannelPasswordSet,
+        variables: { channelId: channel.id }
+      })
+      const isPasswordSet = dataIsPassword.isChannelPasswordSet
+
+      if (isPasswordSet) {
+        setPasswordModalVisible(true)
+        setCurrentChannelPassword(channel)
+        return
+      }
+
+      console.log(channel)
       await createChannelMember({
         variables: {
           data: {
@@ -251,6 +295,36 @@ const Channels: React.FC = () => {
     } catch (Error) {
       const error_message = 'Failed to refuse invitation'
       ErrorNotification('Channel Error', error_message)
+    }
+  }
+
+  const handlePasswordSubmit = async () => {
+    try {
+      setPasswordModalVisible(false)
+      if (!currentChannelPassword) throw new Error()
+
+      await createChannelMember({
+        variables: {
+          data: {
+            channelId: currentChannelPassword.id,
+            userId: user.id,
+            avatarUrl: user.avatarUrl,
+            nickname: user.username,
+            channelPassword: password
+          }
+        }
+      })
+
+      setCurrentChannelPassword(null)
+      setChannelNameInput('')
+      setPassword('')
+    } catch (error) {
+      const error_message = 'Wrong password'
+      setIsError(true)
+      setErrorMessage(error_message)
+      setCurrentChannelPassword(null)
+      setChannelNameInput('')
+      setPassword('')
     }
   }
 
@@ -422,7 +496,7 @@ const Channels: React.FC = () => {
           }}
         >
           {selectedChannel ? (
-            <Channel
+            <ChannelComponent
               channelsInfos={channelsInfos}
               channelId={selectedChannel.channel.id}
               key={selectedChannel.channel.id}
@@ -436,6 +510,34 @@ const Channels: React.FC = () => {
           )}
         </Col>
       </Row>
+      <Modal
+        title='Enter Channel Password'
+        open={passwordModalVisible}
+        onCancel={() => setPasswordModalVisible(false)}
+        footer={[
+          <Button key='cancel' onClick={() => setPasswordModalVisible(false)}>
+            Cancel
+          </Button>,
+          <Button key='submit' type='primary' onClick={handlePasswordSubmit}>
+            Submit
+          </Button>
+        ]}
+      >
+        <Form>
+          <Form.Item
+            label='Password'
+            name='password'
+            rules={[
+              { required: true, message: 'Please enter the channel password!' }
+            ]}
+          >
+            <Input.Password
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </Form.Item>
+        </Form>
+      </Modal>
     </>
   )
 }

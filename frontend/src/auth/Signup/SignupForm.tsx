@@ -132,8 +132,8 @@ const SignUp: React.FC<SignUpProps> = ({setActiveTab}) => {
       })
       .catch((error) => {
         const error_message = error.message
-        setIsError(true) // Set isError to true
-        setErrorMessage(error_message) // Set error message
+        setIsError(true)
+        setErrorMessage(error_message)
       })
   }
 

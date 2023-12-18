@@ -17,7 +17,6 @@ type Props = {
 }
 
 export const CanvasPong: React.FC<Props> = (props: Props) => {
-  console.log('CanvasPong:')
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
   const canvasCtxRef = useRef<CanvasRenderingContext2D | null>(null)
   let pongGameData: PongGame | null = props.getPongData()
@@ -31,6 +30,13 @@ export const CanvasPong: React.FC<Props> = (props: Props) => {
 
   function getControls() {
     return controls
+  }
+
+  function isEnd() {
+    if (pongGameData?.winner) {
+      return true
+    }
+    return false
   }
 
   function keyDownHandler(e: KeyboardEvent) {
@@ -177,6 +183,7 @@ export const CanvasPong: React.FC<Props> = (props: Props) => {
     <>
       <ControlsUpdate
         getControls={getControls}
+        isEnd={isEnd}
         gameId={props.gameId}
         playerId={props.playerId}
       />

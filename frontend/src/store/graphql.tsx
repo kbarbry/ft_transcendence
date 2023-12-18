@@ -108,7 +108,6 @@ export const findChannelByChannelIds = gql`
       maxUsers
       name
       ownerId
-      password
       topic
       type
     }
@@ -156,7 +155,6 @@ export const findOneChannel = gql`
       maxUsers
       name
       ownerId
-      password
       topic
       type
     }

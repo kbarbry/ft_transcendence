@@ -43,7 +43,6 @@ export class ChannelMessageResolver {
     @Args('channelId', { type: () => String }, NanoidValidationPipe)
     channelId: string
   ) {
-    console.log('channelMessageCreation sub')
     return this.pubSub.asyncIterator('messageReceived-' + channelId)
   }
 
@@ -55,7 +54,6 @@ export class ChannelMessageResolver {
     @Args('channelId', { type: () => String }, NanoidValidationPipe)
     channelId: string
   ) {
-    console.log('channelMessageEdition sub')
     return this.pubSub.asyncIterator('messageEdited-' + channelId)
   }
 
@@ -67,7 +65,6 @@ export class ChannelMessageResolver {
     @Args('channelId', { type: () => String }, NanoidValidationPipe)
     channelId: string
   ) {
-    console.log('channelMessageDeletion sub')
     return this.pubSub.asyncIterator('messageDeleted-' + channelId)
   }
 
