@@ -31,7 +31,6 @@ export const ControlsUpdate: React.FC<Props> = (props: Props) => {
         playerId: props.playerId
       },
       onError: () => {
-        console.log('removing the simeout')
         if (timeoutid !== undefined) {
           clearTimeout(timeoutid)
           timeoutid = undefined
@@ -47,9 +46,6 @@ export const ControlsUpdate: React.FC<Props> = (props: Props) => {
   if (props.isEnd()) {
     return null
   }
-
   timeoutid = setTimeout(update, 40)
-  console.log('settimeout = ' + timeoutid)
-
   return null
 }

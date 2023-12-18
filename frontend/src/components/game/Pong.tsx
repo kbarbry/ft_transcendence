@@ -13,7 +13,6 @@ type Props = {
 }
 
 export const Pong: React.FC<Props> = (props) => {
-  console.log('Pong: gameId = ' + props.gameId)
   let pongGameData: PongGame | null = null
   const [subscriptionError, setGameError] = useState<ApolloError | undefined>(
     undefined

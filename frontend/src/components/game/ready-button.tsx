@@ -32,11 +32,6 @@ export const ReadyButton: React.FC<Props> = (props: Props) => {
   >(readyForGame)
 
   if (gameReadyError || mutationError) {
-    if (gameReadyError) {
-      console.log(
-        'gameReadyError : ' + JSON.stringify(gameReadyError, undefined, 3)
-      )
-    }
     return <button>Error</button>
   }
   if (mutationData) {

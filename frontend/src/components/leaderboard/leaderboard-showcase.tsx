@@ -8,6 +8,7 @@ import {
 import DefaultProfilePicture from '/DefaultProfilePicture.svg'
 import { validateAvatarUrl } from '../../store/utils'
 import { Avatar, Flex } from 'antd'
+import { GameInvitationButton } from '../game-invitation-button/game-invitation'
 
 export const LeaderboardShowcase: React.FC = () => {
   const { data, loading, error } = useQuery<
@@ -19,7 +20,6 @@ export const LeaderboardShowcase: React.FC = () => {
     return <p>Loading...</p>
   }
   if (error) {
-    console.log('leaderboard error : ' + JSON.stringify(error, undefined, 3))
     return <p>An error occured while loading player leaderboard.</p>
   }
   if (data === undefined) {
@@ -50,6 +50,7 @@ export const LeaderboardShowcase: React.FC = () => {
           <p>{user.username}</p>
           <p>Level {user.level.toFixed(1)}</p>
         </Flex>
+        <GameInvitationButton targetPlayerUsername={user.username} />
       </li>
     )
   )

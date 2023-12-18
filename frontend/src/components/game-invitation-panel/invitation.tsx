@@ -6,9 +6,14 @@ import {
 import { useAppDispatch } from '../../store/hooks'
 import { setGameIdValue } from '../../store/slices/gameId.slice'
 import { Button, Flex } from 'antd'
-import { useQuery } from '@apollo/client'
-import { isGameValid } from '../game/graphql'
-import { IsGameValidQuery, IsGameValidQueryVariables } from '../../gql/graphql'
+import { useMutation, useQuery } from '@apollo/client'
+import { isGameValid, leaveGame } from '../game/graphql'
+import {
+  IsGameValidQuery,
+  IsGameValidQueryVariables,
+  QuitGameMutation,
+  QuitGameMutationVariables
+} from '../../gql/graphql'
 
 type Props = {
   invitation: GameInvitationState
@@ -26,6 +31,18 @@ export const Invitation: React.FC<Props> = (props: Props) => {
     fetchPolicy: 'cache-and-network'
   })
 
+  const [leaveGameMutation] = useMutation<
+    QuitGameMutation,
+    QuitGameMutationVariables
+  >(leaveGame)
+
+  async function declineHandler() {
+    await leaveGameMutation({
+      variables: { gameId: props.invitation.gameId, playerId: props.userId }
+    })
+    dispatch(removeOneInvitationValue(props.invitation.gameId))
+  }
+
   useEffect(() => {
     if (data && data.isGameValid === false) {
       dispatch(removeOneInvitationValue(props.invitation.gameId))
@@ -36,7 +53,6 @@ export const Invitation: React.FC<Props> = (props: Props) => {
     return <p>Loading... </p>
   }
   if (error) {
-    console.log('Invitation: error = ' + JSON.stringify(error, undefined, 3))
     return <p>Error</p>
   }
   return (
@@ -54,12 +70,7 @@ export const Invitation: React.FC<Props> = (props: Props) => {
         >
           Accept
         </Button>
-        <Button
-          danger={true}
-          onClick={() =>
-            dispatch(removeOneInvitationValue(props.invitation.gameId))
-          }
-        >
+        <Button danger={true} onClick={declineHandler}>
           Decline
         </Button>
       </Flex>

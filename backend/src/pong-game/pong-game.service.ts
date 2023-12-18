@@ -31,17 +31,14 @@ export class PongGameService {
   isPlayerInQueue(playerId: string) {
     for (const player of classicQueue) {
       if (player.id === playerId) {
-        console.log('isPlayerInQueue return true, id = ' + playerId)
         return true
       }
     }
     for (const player of specialQueue) {
       if (player.id === playerId) {
-        console.log('isPlayerInQueue return true, id = ' + playerId)
         return true
       }
     }
-    console.log('isPlayerInQueue return false, id = ' + playerId)
     return false
   }
 
@@ -106,10 +103,6 @@ export class PongGameService {
 
   async addPlayerToGameQueue(playerWaiting: PlayerWaiting): Promise<boolean> {
     if (this.isPlayerInQueue(playerWaiting.id)) {
-      console.log(
-        'Service: addPlayerToGameQueue: player already in queue : ' +
-          playerWaiting.nickname
-      )
       return true
     }
     let size = 0
@@ -133,41 +126,25 @@ export class PongGameService {
     let index = classicQueue.findIndex((player) => player.id === playerId)
     if (index !== -1) {
       classicQueue.splice(index, 1)
-      console.log('return true')
       return true
     }
     index = specialQueue.findIndex((player) => player.id === playerId)
     if (index !== -1) {
       specialQueue.splice(index, 1)
-      console.log('return true')
       return true
     }
-    console.log('return false')
     return false
   }
 
   async matchClassicqQueue() {
-    console.log(
-      'Service: matchClassicQueue: playerQueue = ' +
-        JSON.stringify(classicQueue, undefined, 2)
-    )
     if (classicQueue.length >= 2) {
       const player1 = classicQueue.pop()
       const player2 = classicQueue.pop()
-      console.log(
-        'Service: matchClassicQueue: player1 = ' +
-          JSON.stringify(player1, undefined, 2)
-      )
-      console.log(
-        'Service: matchClassicQueue: player2 = ' +
-          JSON.stringify(player2, undefined, 2)
-      )
       const gameId = 'matchClassic' + player1?.id + player2?.id
 
       if (player1 === undefined || player2 === undefined) {
         return null
       }
-      console.log('Service: matchClassicQueue: gameid = ' + gameId)
       this.gameInit(
         EGameType.Classic,
         gameId,
@@ -188,26 +165,14 @@ export class PongGameService {
   }
 
   async matchSpecialQueue(): Promise<string | null> {
-    console.log(
-      'Service: matchSpecialQueue: playerQueue = ' +
-        JSON.stringify(specialQueue, undefined, 2)
-    )
     if (specialQueue.length >= 2) {
       const player1 = specialQueue.pop()
       const player2 = specialQueue.pop()
-      console.log(
-        'Service: matchSpecialQueue: player1 = ' + JSON.stringify(player1)
-      )
-      console.log(
-        'Service: matchSpecialQueue: player2 = ' + JSON.stringify(player2)
-      )
       const gameId = 'matchSpecial' + player1?.id + player2?.id
 
       if (player1 === undefined || player2 === undefined) {
         return null
       }
-
-      console.log('Service: matchSpecialQueue: gameid = ' + gameId)
       this.gameInit(
         EGameType.Special,
         gameId,
@@ -233,11 +198,9 @@ export class PongGameService {
     switch (type) {
       case EGameType.Classic:
         res = await this.matchClassicqQueue()
-        console.log('match classic queue')
         break
       case EGameType.Special:
         res = await this.matchSpecialQueue()
-        console.log('match special queue')
         break
     }
     return res

@@ -17,7 +17,6 @@ type Props = {
 }
 
 export const CanvasPong: React.FC<Props> = (props: Props) => {
-  console.log('CanvasPong:')
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
   const canvasCtxRef = useRef<CanvasRenderingContext2D | null>(null)
   let pongGameData: PongGame | null = props.getPongData()

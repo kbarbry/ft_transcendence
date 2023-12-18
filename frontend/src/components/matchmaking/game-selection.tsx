@@ -22,8 +22,6 @@ type Props = {
 }
 
 export const GameSelection: React.FC<Props> = (props) => {
-  console.log('GameSelection')
-
   const {
     data: queryData,
     loading: queryLoading,

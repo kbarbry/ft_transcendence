@@ -13,11 +13,14 @@ import { useAppDispatch, useAppSelector } from '../../store/hooks'
 import { setGameIdValue } from '../../store/slices/gameId.slice'
 import { Button, Flex } from 'antd'
 import { isGameValid } from '../game/graphql'
+import { useLocation } from 'wouter'
 
 type Props = {
   targetPlayerUsername: string
 }
 export const GameInvitationButton: React.FC<Props> = (props: Props) => {
+  const [, setLocation] = useLocation()
+
   const user: User | null = useAppSelector(
     (state) => state.userInformations.user
   )
@@ -46,9 +49,9 @@ export const GameInvitationButton: React.FC<Props> = (props: Props) => {
   >(gameInvitationMutation)
 
   useEffect(() => {
-    if (mutationData?.sendPongInvitation) {
-      console.log('invitationButton: setGameId')
+    if (mutationData && mutationData.sendPongInvitation !== null) {
       dispatch(setGameIdValue(mutationData.sendPongInvitation))
+      setLocation('/game', { replace: true })
     }
   })
 

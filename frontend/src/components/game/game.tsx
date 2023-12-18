@@ -17,7 +17,6 @@ export const Game: React.FC = () => {
   let gameId: string | null = useAppSelector(
     (state) => state.gameIdInformation.gameId
   )
-  console.log('Game: gameId = ' + gameId)
 
   const { data, loading, error } = useQuery<
     IsGameValidQuery,

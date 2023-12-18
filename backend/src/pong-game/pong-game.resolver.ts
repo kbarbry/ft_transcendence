@@ -24,10 +24,6 @@ export class PongGameResolver {
     @Args('playerId', { type: () => String }) playerId: string
   ) {
     const triggerName = 'queue' + playerId
-
-    console.log(
-      'Subscription: matchmakingNotification:  triggerName = ' + triggerName
-    )
     return this.pubSub.asyncIterator(triggerName)
   }
 
@@ -35,7 +31,6 @@ export class PongGameResolver {
     resolve: (payload) => (payload?.data !== undefined ? payload.data : null)
   })
   pongData(@Args('gameId', { type: () => String }) gameId: string) {
-    console.log('Subscription: pongData:  gameId = ' + gameId)
     return this.pubSub.asyncIterator(gameId)
   }
 
@@ -75,7 +70,6 @@ export class PongGameResolver {
     @Args('nickname', { type: () => String }) nickname: string,
     @Args('gameType', { type: () => EGameType }) gameType: EGameType
   ): Promise<boolean> {
-    console.log('Mutation: addPlayerToMatchmakingQueue:')
     const isQueued: boolean = await this.pongService.addPlayerToGameQueue({
       id: playerId,
       nickname,
@@ -92,7 +86,6 @@ export class PongGameResolver {
   removePlayerFromMatchmakingQueue(
     @Args('playerId', { type: () => String }) playerId: string
   ): boolean {
-    console.log('Mutation: removePlayerFromMatchmakingQueue:')
     const isRemoved: boolean =
       this.pongService.removePlayerFromMatchmakingQueue(playerId)
     return isRemoved
@@ -103,9 +96,6 @@ export class PongGameResolver {
     @Args('gameId', { type: () => String }) gameId: string,
     @Args('playerId', { type: () => String }) playerId: string
   ): Promise<boolean> {
-    console.log(
-      'Mutation: readyForGame: gameid = ' + gameId + ', playerId = ' + playerId
-    )
     const presenceValidattion = this.pongService.setPresenceInGame(
       gameId,
       playerId,
@@ -119,9 +109,6 @@ export class PongGameResolver {
     @Args('gameId', { type: () => String }) gameId: string,
     @Args('playerId', { type: () => String }) playerId: string
   ): Promise<boolean> {
-    console.log(
-      'Mutation: quitGame: gameid = ' + gameId + ', playerId = ' + playerId
-    )
     const quitValidation = this.pongService.quitGame(gameId, playerId)
     return quitValidation
   }
@@ -151,7 +138,6 @@ export class PongGameResolver {
     @Args('gameId', { type: () => String })
     gameId: string
   ): Promise<boolean> {
-    console.log('PongGameResolver: isGameValid:')
     return this.pongService.isGameValid(userId, gameId)
   }
 
@@ -160,7 +146,6 @@ export class PongGameResolver {
     @Args('userId', { type: () => String }, NanoidValidationPipe)
     userId: string
   ): boolean {
-    console.log('PongGameResolver: isUserInGameQueue:')
     return this.pongService.isPlayerInQueue(userId)
   }
 
@@ -171,7 +156,6 @@ export class PongGameResolver {
     @Args('gameId', { type: () => String })
     gameId: string
   ): boolean {
-    console.log('PongGameResolver: isUserReadyInGame:')
     return this.pongService.isUserReadyInGame(userId, gameId)
   }
 }
