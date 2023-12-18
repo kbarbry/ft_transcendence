@@ -4,7 +4,6 @@ import PrivateChannel from './chat/PrivateChannels'
 import Relations from './relations/Relations'
 import Channels from './chat/Channels'
 import { Link, Route, Switch } from 'wouter'
-import { Settings } from './auth/2fa/settings'
 import { NotFound } from './ErrorPages/404'
 import { Home } from './home/Home'
 import { Layout, Menu, MenuProps } from 'antd'
@@ -85,15 +84,6 @@ const AppPrivateSplit: React.FC<AppPrivateSubscriptionProps> = ({ userId }) => {
     },
     {
       label: (
-        <Link href='/settings'>
-          <a>Settings</a>
-        </Link>
-      ),
-      icon: <SettingOutlined />,
-      key: 'settings'
-    },
-    {
-      label: (
         <Link href='/profile'>
           <a>profile</a>
         </Link>
@@ -168,7 +158,6 @@ const AppPrivateSplit: React.FC<AppPrivateSubscriptionProps> = ({ userId }) => {
                 <Route path='/channel' component={Channels} />
                 <Route path='/relations' component={Relations} />
                 <Route path='/game' component={Game} />
-                <Route path='/settings' component={Settings} />
                 <Route path='/profile' component={ProfilPage} />
                 <Route component={NotFound} />
               </Switch>
