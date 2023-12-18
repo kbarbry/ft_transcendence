@@ -320,8 +320,7 @@ const Channels: React.FC = () => {
       setPassword('')
     } catch (error) {
       const error_message = 'Wrong password'
-      setIsError(true)
-      setErrorMessage(error_message)
+      ErrorNotification('Channel Error', error_message)
       setCurrentChannelPassword(null)
       setChannelNameInput('')
       setPassword('')

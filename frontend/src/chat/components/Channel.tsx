@@ -43,7 +43,6 @@ import {
   Tooltip
 } from 'antd'
 import { useMediaQuery } from 'react-responsive'
-import { DeleteOutlined } from '@ant-design/icons'
 import ErrorNotification from '../../notifications/ErrorNotificartion'
 import SuccessNotification from '../../notifications/SuccessNotification'
 
@@ -192,8 +191,7 @@ const ChannelComponent: React.FC<ChannelProps> = ({
         setIsEditModalVisible(false)
       } catch (Error) {
         const error_message = (Error as Error).message
-        setIsError(true)
-        setErrorMessage(error_message)
+        ErrorNotification('Channel Error', error_message)
       }
     }
 
