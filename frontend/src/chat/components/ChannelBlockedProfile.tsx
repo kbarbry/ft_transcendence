@@ -11,7 +11,6 @@ import { Button, Modal, Space } from 'antd'
 import AvatarStatus, { ESize } from '../../common/avatarStatus'
 import ErrorNotification from '../../notifications/ErrorNotificartion'
 
-
 interface ChannelBlockedProfileProps {
   channelsInfos: ChannelAndChannelMember[]
   channelId: string
@@ -27,7 +26,6 @@ const ChannelBlockedProfile: React.FC<ChannelBlockedProfileProps> = ({
   const channelInfo = channelsInfos.find(
     (channelInfo) => channelInfo.channel.id === channelId
   )
-
 
   if (!channelInfo) throw new Error('Block Error')
 

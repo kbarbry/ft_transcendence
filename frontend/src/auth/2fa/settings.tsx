@@ -87,7 +87,6 @@ export const Settings: React.FC = () => {
           </div>
         </div>
       )}
-      <br></br>
       <form onSubmit={handleSubmit}>
         <label htmlFor='otpCode'>Enter OTP Code:</label>
         <input
@@ -97,12 +96,12 @@ export const Settings: React.FC = () => {
           value={otpCode}
           onChange={(e) => setOtpCode(e.target.value)}
         />
-        <button onClick={handleValidateSecretClick} type='submit'>
+        <Button onClick={handleValidateSecretClick} htmlType='submit'>
           Validate
-        </button>
-        <button onClick={handleUnset2faClick} type='submit'>
+        </Button>
+        <Button onClick={handleUnset2faClick} htmlType='submit'>
           Disable 2fa
-        </button>
+        </Button>
       </form>
     </div>
   )

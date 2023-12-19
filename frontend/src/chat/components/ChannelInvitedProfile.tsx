@@ -7,7 +7,6 @@ import {
 } from '../../gql/graphql'
 import { mutationDeleteChannelInvited } from '../graphql'
 import { ChannelAndChannelMember } from '../../store/slices/channel-informations.slice'
-import PopUpError from '../../ErrorPages/PopUpError'
 import { Button, Modal, Space } from 'antd'
 import AvatarStatus, { ESize } from '../../common/avatarStatus'
 import ErrorNotification from '../../notifications/ErrorNotificartion'
@@ -62,7 +61,6 @@ const ChannelInvitedProfile: React.FC<ChannelInvitedProfileProps> = ({
     } catch (Error) {
       const error_message = (Error as Error).message
       ErrorNotification('Channel error', error_message)
-
     }
   }
 

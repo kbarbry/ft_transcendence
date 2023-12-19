@@ -6,8 +6,14 @@ import { ControlsInput } from './dto/player-controls.input'
 import { EGameType } from '@prisma/client'
 import { GameInvitation } from './entities/game-invitation.entity'
 import { NanoidValidationPipe } from 'src/common/pipes/nanoid.pipe'
+import {
+  AuthorizationGuard,
+  Unprotected
+} from 'src/auth/guards/authorization.guard'
+import { UseGuards } from '@nestjs/common'
 
 @Resolver(() => PongGame)
+@UseGuards(AuthorizationGuard)
 export class PongGameResolver {
   constructor(
     private readonly pubSub: PubSub,
@@ -20,6 +26,7 @@ export class PongGameResolver {
   @Subscription(() => String, {
     resolve: (payload) => (payload?.data !== undefined ? payload.data : null)
   })
+  @Unprotected()
   matchmakingNotification(
     @Args('playerId', { type: () => String }) playerId: string
   ) {
@@ -30,6 +37,7 @@ export class PongGameResolver {
   @Subscription(() => PongGame, {
     resolve: (payload) => (payload?.data !== undefined ? payload.data : null)
   })
+  @Unprotected()
   pongData(@Args('gameId', { type: () => String }) gameId: string) {
     return this.pubSub.asyncIterator(gameId)
   }
@@ -37,6 +45,7 @@ export class PongGameResolver {
   @Subscription(() => GameInvitation, {
     resolve: (payload) => (payload?.data !== undefined ? payload.data : null)
   })
+  @Unprotected()
   pongInvitationSubcription(
     @Args('userId', { type: () => String }, NanoidValidationPipe)
     userId: string

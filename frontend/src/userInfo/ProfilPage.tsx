@@ -2,6 +2,7 @@ import React from 'react'
 import { useAppSelector } from '../store/hooks'
 import UpdateProfil from './UpdateProfilForm'
 import { Space } from 'antd'
+import Settings from '../auth/2fa/settings'
 
 export const ProfilPage: React.FC = () => {
   const user = useAppSelector((state) => state.userInformations.user)
@@ -16,21 +17,16 @@ export const ProfilPage: React.FC = () => {
           style={{ width: '100px', height: '100px' }}
         />
       </a>
-      <div>AvatarUrl: {user?.avatarUrl}</div>
-      <div>Id: {user?.id}</div>
-      <div>Mail: {user?.mail}</div>
-      <div>Username: {user?.username}</div>
-      <div>Status: {user?.status}</div>
-      <div>Language: {user?.languages}</div>
-      <br></br>
-      <div>
-        <h2>Player Informations</h2>
-      </div>
-      <div>Level: {user?.level}</div>
-      <br></br>
-      <br></br>
-      <br></br>
+      <p>AvatarUrl: {user?.avatarUrl}</p>
+      <p>Id: {user?.id}</p>
+      <p>Mail: {user?.mail}</p>
+      <p>Username: {user?.username}</p>
+      <p>Status: {user?.status}</p>
+      <p>Language: {user?.languages}</p>
+      <h2>Player Informations</h2>
+      <p>Level: {user?.level}</p>
       <UpdateProfil />
+      <Settings />
     </Space>
   )
 }

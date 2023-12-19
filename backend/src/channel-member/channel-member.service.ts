@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common'
 import { PrismaService } from '../prisma/prisma.service'
-import { ChannelMember, EMemberType } from '@prisma/client'
+import { ChannelMember, EChannelType, EMemberType } from '@prisma/client'
 import { CreateChannelMemberInput } from './dto/create-channel-member.input'
 import { UpdateChannelMemberInput } from './dto/update-channel-member.input'
 import { ChannelBlockedService } from '../channel-blocked/channel-blocked.service'
@@ -15,7 +15,9 @@ import {
   ExceptionTryingToUnmuteAnUnmuted,
   ExceptionTryingToUnmakeAdminAMember,
   ExceptionUserNotFound,
-  ExceptionTryingToUnmakeAdminTheOwner
+  ExceptionTryingToUnmakeAdminTheOwner,
+  ExceptionChannelNotFound,
+  ExceptionChannelIsPrivate
 } from '../channel/exceptions/channel-member.exceptions'
 
 @Injectable()
@@ -55,12 +57,17 @@ export class ChannelMemberService {
     const user = await this.userService.findOne(data.userId)
 
     if (!user) throw new ExceptionUserNotFound()
+    if (!channel) throw new ExceptionChannelNotFound()
 
     if (userBlocked) {
       throw new ExceptionUserBlockedInChannel()
     }
 
-    if (userInvited) await this.channelInvitedService.delete(userId, channelId)
+    if (!userInvited && channel?.type === EChannelType.Protected)
+      throw new ExceptionChannelIsPrivate()
+    if (userInvited) {
+      await this.channelInvitedService.delete(userId, channelId)
+    }
 
     if (channel && numberMembers >= channel.maxUsers) {
       throw new ExceptionMaxUserReachedInChannel()

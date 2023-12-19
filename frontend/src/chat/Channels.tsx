@@ -45,7 +45,6 @@ import {
 } from 'antd'
 
 const Channels: React.FC = () => {
-
   const dispatch = useAppDispatch()
   const user = useAppSelector((state) => state.userInformations.user)
   const channelInvited = useAppSelector(

@@ -5,6 +5,7 @@ import {
   CreateChannelInvitedMutationVariables,
   DeleteChannelMutation,
   DeleteChannelMutationVariables,
+  EChannelType,
   FindAllChannelMessageInChannelQuery,
   FindAllChannelMessageInChannelQueryVariables,
   FindOneUserByUsernameQuery,
@@ -26,7 +27,6 @@ import ChannelInvitedProfile from './ChannelInvitedProfile'
 import ChannelBlockedProfile from './ChannelBlockedProfile'
 import { client } from '../../main'
 import { findOneUserByUsername } from '../../relations/graphql'
-import PopUpError from '../../ErrorPages/PopUpError'
 import {
   Button,
   Col,
@@ -40,12 +40,12 @@ import {
   Modal,
   Row,
   Space,
-  Tooltip
+  Tooltip,
+  Switch
 } from 'antd'
 import { useMediaQuery } from 'react-responsive'
 import ErrorNotification from '../../notifications/ErrorNotificartion'
 import SuccessNotification from '../../notifications/SuccessNotification'
-
 
 import {
   DeleteOutlined,
@@ -54,7 +54,6 @@ import {
   EyeTwoTone,
   EyeInvisibleOutlined
 } from '@ant-design/icons'
-
 
 interface ChannelProps {
   channelsInfos: ChannelAndChannelMember[]
@@ -120,7 +119,10 @@ const ChannelComponent: React.FC<ChannelProps> = ({
             }
           }
         })
-        SuccessNotification('Success', `User has been ${channelInviteInput} invited with success !`)
+        SuccessNotification(
+          'Success',
+          `User has been ${channelInviteInput} invited with success !`
+        )
         setChannelInviteInput('')
       } catch (Error) {
         const error_message = 'Cannot invit this user in this channel'
@@ -133,11 +135,13 @@ const ChannelComponent: React.FC<ChannelProps> = ({
         await deleteChannel({
           variables: { deleteChannelId: channelId }
         })
-        SuccessNotification('Success', 'Channel has been deleted with success !')
+        SuccessNotification(
+          'Success',
+          'Channel has been deleted with success !'
+        )
       } catch (Error) {
         const error_message = 'Cannot delete channel'
         ErrorNotification('Channel Error', error_message)
-
       }
     }
 
@@ -177,6 +181,10 @@ const ChannelComponent: React.FC<ChannelProps> = ({
             ? undefined
             : editedChannel.maxUsers
 
+        let type =
+          editedChannel.type === channelInfo.channel.type
+            ? undefined
+            : editedChannel.type
         await updateChannel({
           variables: {
             updateChannelId: channelId,
@@ -184,7 +192,8 @@ const ChannelComponent: React.FC<ChannelProps> = ({
               name,
               password,
               topic,
-              maxUsers
+              maxUsers,
+              type
             }
           }
         })
@@ -202,6 +211,7 @@ const ChannelComponent: React.FC<ChannelProps> = ({
 
     const [editedChannel, setEditedChannel] = useState({
       name: channelInfo.channel.name,
+      type: channelInfo.channel.type,
       password: channelInfo.channel.password || '',
       topic: channelInfo.channel.topic || '',
       maxUsers: channelInfo.channel.maxUsers
@@ -210,6 +220,7 @@ const ChannelComponent: React.FC<ChannelProps> = ({
     const showEditModal = () => {
       setEditedChannel({
         name: channelInfo.channel.name,
+        type: channelInfo.channel.type,
         password: channelInfo.channel.password || '',
         topic: channelInfo.channel.topic || '',
         maxUsers: channelInfo.channel.maxUsers
@@ -371,6 +382,7 @@ const ChannelComponent: React.FC<ChannelProps> = ({
                     placeholder='Enter username'
                     value={channelInviteInput}
                     onChange={(e) => setChannelInviteInput(e.target.value)}
+                    onPressEnter={handleInviteUser}
                   />
                   <Button
                     style={{ width: '100%' }}
@@ -444,10 +456,6 @@ const ChannelComponent: React.FC<ChannelProps> = ({
               name='password'
               rules={[
                 {
-                  required: true,
-                  message: 'Please enter the Channel Password!'
-                },
-                {
                   type: 'string',
                   message: 'Channel Password must be a string.'
                 },
@@ -489,6 +497,25 @@ const ChannelComponent: React.FC<ChannelProps> = ({
                 placeholder='Enter Maximum Users'
                 style={{ width: '100%' }}
                 addonAfter={<UserOutlined />}
+              />
+            </Form.Item>
+            <Form.Item
+              label='Private Channel'
+              name='privateChannel'
+              valuePropName='checked'
+            >
+              <Switch
+                checked={
+                  editedChannel.type === EChannelType.Public ? false : true
+                }
+                checkedChildren={'Private'}
+                unCheckedChildren={'Public'}
+                onChange={(checked) =>
+                  setEditedChannel({
+                    ...editedChannel,
+                    type: checked ? EChannelType.Protected : EChannelType.Public
+                  })
+                }
               />
             </Form.Item>
             <Form.Item
