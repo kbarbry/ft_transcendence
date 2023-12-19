@@ -1,6 +1,6 @@
 import React from 'react'
 import { GameSelection } from './game-selection'
-import { Divider, Flex } from 'antd'
+import { Col, Divider, Flex, Row } from 'antd'
 
 type Props = {
   username: string
@@ -9,12 +9,14 @@ type Props = {
 
 export const Matchmaking: React.FC<Props> = (props) => {
   return (
-    <div id='matchmaking'>
-      <Flex vertical={false} gap={80}>
+    <Row>
+      <Col flex='29em' offset={6}>
         <Flex vertical={true}>
           <h1>Matchmaking</h1>
           <GameSelection username={props.username} playerId={props.playerId} />
         </Flex>
+      </Col>
+      <Col flex='25em' offset={1}>
         <Flex vertical={true}>
           <Divider orientation='left'>Pong rules</Divider>
           <p>
@@ -28,7 +30,7 @@ export const Matchmaking: React.FC<Props> = (props) => {
             are earned when one fails to return the ball to the other.
           </p>
         </Flex>
-      </Flex>
-    </div>
+      </Col>
+    </Row>
   )
 }
