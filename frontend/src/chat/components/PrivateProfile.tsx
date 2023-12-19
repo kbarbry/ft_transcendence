@@ -17,6 +17,7 @@ import { useAppDispatch } from '../../store/hooks'
 import { setFriendInformations } from '../../store/slices/friend-informations.slice'
 import { setBlockedInformations } from '../../store/slices/blocked-informations.slice'
 import ErrorNotification from '../../notifications/ErrorNotificartion'
+import { GameInvitationButton } from '../../components/game-invitation-button/game-invitation'
 
 interface PrivateProfileProps {
   userId: string
@@ -57,7 +58,6 @@ const PrivateProfile: React.FC<PrivateProfileProps> = ({ userId, member }) => {
     } catch (Error) {
       const error_message = (Error as Error).message
       ErrorNotification('Profile', error_message)
-
     }
   }
 
@@ -69,7 +69,6 @@ const PrivateProfile: React.FC<PrivateProfileProps> = ({ userId, member }) => {
     } catch (Error) {
       const error_message = (Error as Error).message
       ErrorNotification('Profile', error_message)
-
     }
   }
 
@@ -102,6 +101,7 @@ const PrivateProfile: React.FC<PrivateProfileProps> = ({ userId, member }) => {
           <p>{member.username}</p>
           {member.id !== userId && (
             <>
+              <GameInvitationButton targetPlayerUsername={member.username} />
               <Button onClick={handleRemoveFriendClick} danger>
                 Remove Friend
               </Button>

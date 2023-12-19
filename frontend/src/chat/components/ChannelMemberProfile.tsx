@@ -30,6 +30,7 @@ import { ChannelAndChannelMember } from '../../store/slices/channel-informations
 import ErrorNotification from '../../notifications/ErrorNotificartion'
 import { Button, Form, Input, Modal, Space } from 'antd'
 import AvatarStatus, { ESize } from '../../common/avatarStatus'
+import { GameInvitationButton } from '../../components/game-invitation-button/game-invitation'
 
 interface ChannelMemberProfileProps {
   channelsInfos: ChannelAndChannelMember[]
@@ -240,7 +241,9 @@ const ChannelMemberProfile: React.FC<ChannelMemberProfileProps> = ({
             size={ESize.large}
           />
           <p>{member.nickname}</p>
-
+          {memberId !== channelInfo.channelMemberUser.userId && (
+            <GameInvitationButton targetPlayerUsername={member.nickname} />
+          )}
           {(adminAction || ownerAction) && (
             <>
               {member.type !== EMemberType.Admin && (

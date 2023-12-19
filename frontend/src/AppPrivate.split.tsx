@@ -4,7 +4,6 @@ import PrivateChannel from './chat/PrivateChannels'
 import Relations from './relations/Relations'
 import Channels from './chat/Channels'
 import { Link, Route, Switch } from 'wouter'
-import { Settings } from './auth/2fa/settings'
 import { NotFound } from './ErrorPages/404'
 import { Home } from './home/Home'
 import { Layout, Menu, MenuProps } from 'antd'
@@ -18,9 +17,7 @@ import {
   TeamOutlined
 } from '@ant-design/icons'
 import { Game } from './components/game/game'
-import { Leaderboard } from './components/leaderboard/leaderboard'
 import { ProfilPage } from './userInfo/ProfilPage'
-import { BsLadder } from 'react-icons/bs'
 
 interface AppPrivateSubscriptionProps {
   userId: string
@@ -48,15 +45,6 @@ const AppPrivateSplit: React.FC<AppPrivateSubscriptionProps> = ({ userId }) => {
       ),
       icon: <HomeOutlined />,
       key: 'home'
-    },
-    {
-      label: (
-        <Link href='/leaderboard'>
-          <a>Leaderboard</a>
-        </Link>
-      ),
-      icon: <BsLadder />,
-      key: 'leaderboard'
     },
     {
       label: (
@@ -93,15 +81,6 @@ const AppPrivateSplit: React.FC<AppPrivateSubscriptionProps> = ({ userId }) => {
       ),
       icon: <TeamOutlined />,
       key: 'relations'
-    },
-    {
-      label: (
-        <Link href='/settings'>
-          <a>Settings</a>
-        </Link>
-      ),
-      icon: <SettingOutlined />,
-      key: 'settings'
     },
     {
       label: (
@@ -179,8 +158,6 @@ const AppPrivateSplit: React.FC<AppPrivateSubscriptionProps> = ({ userId }) => {
                 <Route path='/channel' component={Channels} />
                 <Route path='/relations' component={Relations} />
                 <Route path='/game' component={Game} />
-                <Route path='/leaderboard' component={Leaderboard} />
-                <Route path='/settings' component={Settings} />
                 <Route path='/profile' component={ProfilPage} />
                 <Route component={NotFound} />
               </Switch>

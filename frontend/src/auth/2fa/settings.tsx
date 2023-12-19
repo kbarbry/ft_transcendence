@@ -2,18 +2,16 @@ import React, { useState } from 'react'
 import { getToken } from './getToken'
 import QRCode from 'qrcode.react'
 import { useAppSelector } from '../../store/hooks'
-import { verifySecret } from './verifyToken'
 import { useLocation } from 'wouter'
 import { unset2fa } from './unset2fa'
 import { validateSecret } from './validateToken'
-import PopUpError from '../../ErrorPages/PopUpError'
+import ErrorNotification from '../../notifications/ErrorNotificartion'
+import { Button } from 'antd'
 
 export const Settings: React.FC = () => {
   const [otpCode, setOtpCode] = useState('')
   const [otpAuthURL, setOtpAuthURL] = useState('')
   const [, setLocation] = useLocation()
-  const [isError, setIsError] = useState(false)
-  const [errorMessage, setErrorMessage] = useState('')
 
   const user = useAppSelector((state) => state.userInformations.user)
   const userId = user?.id
@@ -29,8 +27,7 @@ export const Settings: React.FC = () => {
       })
       .catch((error) => {
         const error_message = error.message
-        setIsError(true)
-        setErrorMessage(error_message)
+        ErrorNotification('2fa Error', error_message)
       })
   }
 
@@ -43,8 +40,7 @@ export const Settings: React.FC = () => {
       })
       .catch((error) => {
         const error_message = error.message
-        setIsError(true)
-        setErrorMessage(error_message)
+        ErrorNotification('2fa Error', error_message)
       })
   }
 
@@ -57,8 +53,7 @@ export const Settings: React.FC = () => {
       })
       .catch((error) => {
         const error_message = error.message
-        setIsError(true)
-        setErrorMessage(error_message)
+        ErrorNotification('2fa Error', error_message)
       })
   }
 
@@ -79,10 +74,9 @@ export const Settings: React.FC = () => {
 
   return (
     <div>
-      <h1>THIS IS SETTINGS PAGE</h1>
-      <button onClick={handleLogout}>Logout</button>
-      {isError && <PopUpError message={errorMessage} />}
-      <button onClick={handleGetSecretClick}>Get your own QR Code!</button>
+      <h1>Settings</h1>
+      <Button onClick={handleLogout}>Logout</Button>
+      <Button onClick={handleGetSecretClick}>Get your own QR Code!</Button>
 
       {otpAuthURL && (
         <div>
@@ -92,7 +86,6 @@ export const Settings: React.FC = () => {
           </div>
         </div>
       )}
-      <br></br>
       <form onSubmit={handleSubmit}>
         <label htmlFor='otpCode'>Enter OTP Code:</label>
         <input
@@ -102,12 +95,12 @@ export const Settings: React.FC = () => {
           value={otpCode}
           onChange={(e) => setOtpCode(e.target.value)}
         />
-        <button onClick={handleValidateSecretClick} type='submit'>
+        <Button onClick={handleValidateSecretClick} htmlType='submit'>
           Validate
-        </button>
-        <button onClick={handleUnset2faClick} type='submit'>
+        </Button>
+        <Button onClick={handleUnset2faClick} htmlType='submit'>
           Disable 2fa
-        </button>
+        </Button>
       </form>
     </div>
   )

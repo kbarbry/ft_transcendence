@@ -15,11 +15,8 @@ import PopUpError from '../../ErrorPages/PopUpError'
 import SuccessNotification from '../../notifications/SuccessNotification'
 // import { PROFILE_PICTURE_URL } from '../../store/slices/user-informations.slice'
 
-interface SignUpProps {
-  setActiveTab: React.Dispatch<React.SetStateAction<string>>
-}
 
-const SignUp: React.FC<SignUpProps> = ({setActiveTab}) => {
+const SignUp: React.FC = () => {
   const [mail, setMail] = useState('')
   const [pass, setPass] = useState('')
   const [confirmPass, setConfirmPass] = useState('')
@@ -127,7 +124,7 @@ const SignUp: React.FC<SignUpProps> = ({setActiveTab}) => {
         setUserData(userData)
         if (userData !== null) {
           SuccessNotification('SignIn', 'You are nw registred, please LogIn')
-          setTimeout(() => {  window.location.reload() }, 2000);
+          setTimeout(() => {  window.location.reload() }, 1000);
         }
       })
       .catch((error) => {

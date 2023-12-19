@@ -15,7 +15,7 @@ import {
   isPlayerQueued,
   removePlayerFromQueue
 } from './graphql'
-import { Button } from 'antd'
+import { Button, Flex } from 'antd'
 
 type Props = {
   username: string
@@ -93,11 +93,13 @@ export const GameSelection: React.FC<Props> = (props) => {
     )
   }
   return (
-    <div className='game-selection'>
+    <Flex vertical={true}>
       <h2>Hello {props.username}, select your game type :</h2>
-      <Button onClick={() => join(EGameType.Classic)}>Classic Game</Button>
-      <Button onClick={() => join(EGameType.Special)}>Extra Game</Button>
+      <Flex vertical={false}>
+        <Button onClick={() => join(EGameType.Classic)}>Classic Game</Button>
+        <Button onClick={() => join(EGameType.Special)}>Extra Game</Button>
+      </Flex>
       <GameInvitationPanel playerId={props.playerId} />
-    </div>
+    </Flex>
   )
 }
