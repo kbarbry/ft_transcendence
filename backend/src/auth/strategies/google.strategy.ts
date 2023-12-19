@@ -71,7 +71,6 @@ export class GoogleStrategy extends PassportStrategy(Strategy) {
         'Google OAuth20 failed: user not found'
       )
     }
-    console.log('strategy')
 
     this.loggingService.log('-- Google Auth --')
     return callback(null, user)
