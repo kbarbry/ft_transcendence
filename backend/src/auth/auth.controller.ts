@@ -132,7 +132,6 @@ export class AuthController {
   @UseGuards(GoogleAuthGuard)
   @Get('google/login')
   getGoogleAuth(@Res() res: any) {
-    console.log('Login google')
     return res.status(200).json({ msg: 'Google Auth Login' })
   }
 
