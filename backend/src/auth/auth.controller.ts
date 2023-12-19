@@ -111,22 +111,28 @@ export class AuthController {
 
   @Get('42/login')
   @UseGuards(School42AuthGuard)
-  ftLogin(@Res() res: any) {
-    return res.status(200).json({ msg: '42 Auth Login' })
+  async ftLogin(@Req() req: any, @Res() res: any) {
+    if (req.needsRedirect) {
+      return res.redirect('http://127.0.0.1:5173/')
+    }
   }
 
   @Get('42/redirect')
   @UseGuards(School42AuthGuard)
   async ftRedirect(@Req() req: any, @Res() res: any) {
-    const is2fa = await this.authService.isUser2fa(req.user.id)
-    if (is2fa === true) {
-      this.authService.unset2faValidation(req.user.id)
-      return res.redirect('http://127.0.0.1:5173/2fa/login')
+    try {
+      const is2fa = await this.authService.isUser2fa(req.user.id)
+      if (is2fa === true) {
+        this.authService.unset2faValidation(req.user.id)
+        return res.redirect('http://127.0.0.1:5173/2fa/login')
+      }
+      const resUser = await this.prisma.userPresence.create({
+        data: { userId: req.user.id }
+      })
+      return res.redirect('http://127.0.0.1:5173')
+    } catch (Error) {
+      return res.redirect('http://127.0.0.1:5173')
     }
-    const resUser = await this.prisma.userPresence.create({
-      data: { userId: req.user.id }
-    })
-    return res.redirect('http://127.0.0.1:5173')
   }
 
   @UseGuards(GoogleAuthGuard)
