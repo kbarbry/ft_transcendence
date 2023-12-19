@@ -277,6 +277,10 @@ export class PongGameService {
     p2nick: string,
     p2Id: string
   ): PongGame | undefined {
+    const game = gamesMap.get(gameId)
+    if (game !== undefined) {
+      return game
+    }
     gamesMap.set(gameId, new PongGame(type, gameId, p1nick, p1Id, p2nick, p2Id))
     return gamesMap.get(gameId)
   }
