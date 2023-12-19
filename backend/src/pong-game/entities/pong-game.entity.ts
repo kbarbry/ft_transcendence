@@ -185,6 +185,22 @@ export class PongGame {
       this.ball.hPos =
         this.p1racket.hPos + this.p1racket.width + this.ball.radius
       this.ball.dir.x = -this.ball.dir.x
+      if (
+        this.ball.vPos >
+        this.p1racket.vPos + this.p1racket.height - this.p1racket.height / 3
+      ) {
+        this.ball.dir.y = 210
+        this.ball.dir.x > 0 ? 180 : -180
+      } else if (
+        this.ball.vPos <
+        this.p1racket.vPos + this.p1racket.height / 3
+      ) {
+        this.ball.dir.y = -210
+        this.ball.dir.x > 0 ? 180 : -180
+      } else {
+        this.ball.dir.y = 0
+        this.ball.dir.x = this.ball.dir.x > 0 ? 300 : -300
+      }
     }
     //  ball racket2 collision
     if (
@@ -195,6 +211,22 @@ export class PongGame {
     ) {
       this.ball.hPos = this.p2racket.hPos - this.ball.radius
       this.ball.dir.x = -this.ball.dir.x
+      if (
+        this.ball.vPos >
+        this.p2racket.vPos + this.p2racket.height - this.p2racket.height / 3
+      ) {
+        this.ball.dir.y = 210
+        this.ball.dir.x > 0 ? 180 : -180
+      } else if (
+        this.ball.vPos <
+        this.p2racket.vPos + this.p2racket.height / 3
+      ) {
+        this.ball.dir.y = -210
+        this.ball.dir.x > 0 ? 180 : -180
+      } else {
+        this.ball.dir.y = 0
+        this.ball.dir.x = this.ball.dir.x > 0 ? 300 : -300
+      }
     }
 
     //  ball playfield up and bottom collision
@@ -287,6 +319,22 @@ export class PongGame {
       this.ball.hPos =
         this.p1racket.hPos + this.p1racket.width + this.ball.radius
       this.ball.dir.x = -this.ball.dir.x
+      if (
+        this.ball.vPos >
+        this.p1racket.vPos + this.p1racket.height - this.p1racket.height / 3
+      ) {
+        this.ball.dir.y = 320
+        this.ball.dir.x > 0 ? 300 : -300
+      } else if (
+        this.ball.vPos <
+        this.p1racket.vPos + this.p1racket.height / 3
+      ) {
+        this.ball.dir.y = -320
+        this.ball.dir.x > 0 ? 300 : -300
+      } else {
+        this.ball.dir.y = 0
+        this.ball.dir.x = this.ball.dir.x > 0 ? 600 : -600
+      }
     }
     //  ball racket2 collision
     if (
@@ -297,6 +345,22 @@ export class PongGame {
     ) {
       this.ball.hPos = this.p2racket.hPos - this.ball.radius
       this.ball.dir.x = -this.ball.dir.x
+      if (
+        this.ball.vPos >
+        this.p2racket.vPos + this.p2racket.height - this.p2racket.height / 3
+      ) {
+        this.ball.dir.y = 320
+        this.ball.dir.x > 0 ? 300 : -300
+      } else if (
+        this.ball.vPos <
+        this.p2racket.vPos + this.p2racket.height / 3
+      ) {
+        this.ball.dir.y = -320
+        this.ball.dir.x > 0 ? 300 : -300
+      } else {
+        this.ball.dir.y = 0
+        this.ball.dir.x = this.ball.dir.x > 0 ? 600 : -600
+      }
     }
 
     //  ball playfield up and bottom collision
