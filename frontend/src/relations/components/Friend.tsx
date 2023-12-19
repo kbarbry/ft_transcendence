@@ -14,6 +14,7 @@ import {
 import ErrorNotification from '../../notifications/ErrorNotificartion'
 import { Button, Space } from 'antd'
 import AvatarStatus, { ESize } from '../../common/avatarStatus'
+import { GameInvitationButton } from '../../components/game-invitation-button/game-invitation'
 
 interface FriendProps {
   userId: string
@@ -67,6 +68,7 @@ const Friend: React.FC<FriendProps> = ({ userId, friend }) => {
         userId={friend.id}
       />
       <span>{friend.username}</span>
+      <GameInvitationButton targetPlayerUsername={friend.username} />
       <Button type='default' onClick={handleRemoveFriendClick}>
         Remove Friend
       </Button>

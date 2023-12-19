@@ -20,7 +20,7 @@ type Props = {
 }
 export const GameInvitationButton: React.FC<Props> = (props: Props) => {
   const [, setLocation] = useLocation()
-
+  const dispatch = useAppDispatch()
   const user: User | null = useAppSelector(
     (state) => state.userInformations.user
   )
@@ -30,8 +30,6 @@ export const GameInvitationButton: React.FC<Props> = (props: Props) => {
   if (user === null) {
     return null
   }
-
-  const dispatch = useAppDispatch()
 
   const {
     data: queryData,
@@ -83,40 +81,37 @@ export const GameInvitationButton: React.FC<Props> = (props: Props) => {
     )
   }
   return (
-    <div className='game-invitation'>
-      <Flex gap='small' align='center' justify='flex-start'>
-        <p>Invitation :</p>
-        <Button
-          className='classic-game'
-          onClick={() => {
-            invite({
-              variables: {
-                gameType: EGameType.Classic,
-                receiverNickname: props.targetPlayerUsername,
-                senderId: user.id,
-                senderNickname: user.username
-              }
-            })
-          }}
-        >
-          Classic
-        </Button>
-        <Button
-          className='special-game'
-          onClick={() => {
-            invite({
-              variables: {
-                gameType: EGameType.Special,
-                receiverNickname: props.targetPlayerUsername,
-                senderId: user.id,
-                senderNickname: user.username
-              }
-            })
-          }}
-        >
-          Special
-        </Button>
-      </Flex>
-    </div>
+    <Flex gap='small' align='center' vertical={true}>
+      <Button
+        className='classic-game'
+        onClick={() => {
+          invite({
+            variables: {
+              gameType: EGameType.Classic,
+              receiverNickname: props.targetPlayerUsername,
+              senderId: user.id,
+              senderNickname: user.username
+            }
+          })
+        }}
+      >
+        Invite Classic
+      </Button>
+      <Button
+        className='special-game'
+        onClick={() => {
+          invite({
+            variables: {
+              gameType: EGameType.Special,
+              receiverNickname: props.targetPlayerUsername,
+              senderId: user.id,
+              senderNickname: user.username
+            }
+          })
+        }}
+      >
+        Invite Special
+      </Button>
+    </Flex>
   )
 }
