@@ -1,5 +1,13 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { ChannelMember, ChannelMessage } from '../../gql/graphql'
+import { Button, Input, Space, Tooltip } from 'antd'
+import {
+  EditOutlined,
+  DeleteOutlined,
+  CheckCircleOutlined,
+  CloseCircleOutlined
+} from '@ant-design/icons'
+
 
 interface ChannelMessageProps {
   message: ChannelMessage
@@ -17,12 +25,14 @@ interface ChannelMessageProps {
 
 const ChannelMessageComponent: React.FC<ChannelMessageProps> = ({
   message,
-  sender,
   userId,
   onEdit,
   onDelete,
   editionMode
 }) => {
+  const [isHovered, setIsHovered] = useState(false)
+  const [, setPastEdit] = useState<string | null>(null)
+
   const handleOnEdit = () => {
     const trimmedMessage = editionMode.editionInfos?.content.trim()
 
@@ -35,15 +45,25 @@ const ChannelMessageComponent: React.FC<ChannelMessageProps> = ({
       onEdit(editionMode.editionInfos.id, trimmedMessage)
     } else {
       editionMode.setEditionsInfos(null)
+      setPastEdit(null)
     }
   }
 
+  const handleCancelEdit = () => {
+    setPastEdit(null)
+    editionMode.setEditionsInfos(null)
+  }
+
   return (
-    <>
+    <Space
+      direction='vertical'
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
       {editionMode.editionInfos !== null &&
       editionMode.editionInfos?.id === message.id ? (
-        <>
-          <input
+        <Space>
+          <Input
             type='text'
             value={editionMode.editionInfos.content}
             onChange={(e) =>
@@ -51,33 +71,57 @@ const ChannelMessageComponent: React.FC<ChannelMessageProps> = ({
                 prev !== null ? { ...prev, content: e.target.value } : null
               )
             }
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') handleOnEdit()
-            }}
+            style={{ overflowWrap: 'break-word' }}
+            onPressEnter={handleOnEdit}
           />
-          <button onClick={() => handleOnEdit()}>Save</button>
-        </>
+          <Tooltip title='Validate'>
+            <Button
+              type='default'
+              onClick={handleOnEdit}
+              icon={<CheckCircleOutlined />}
+            />
+          </Tooltip>
+          <Tooltip title='Cancel'>
+            <Button
+              type='default'
+              onClick={handleCancelEdit}
+              icon={<CloseCircleOutlined />}
+            />
+          </Tooltip>
+        </Space>
       ) : (
-        <>
-          <strong>{sender.nickname}</strong> {message.content}
-          {!editionMode.editionInfos && message.senderId === userId && (
-            <>
-              <button
-                onClick={() =>
-                  editionMode.setEditionsInfos({
-                    id: message.id,
-                    content: message.content
-                  })
-                }
-              >
-                Edit
-              </button>
-              <button onClick={() => onDelete(message.id)}>Delete</button>
-            </>
+        <Space>
+          {message.senderId === userId && (
+            <Space>
+              <Tooltip title='Edit'>
+                <EditOutlined
+                  style={{
+                    opacity: isHovered ? 1 : 0.5,
+                    transition: 'opacity 0.3s ease-in-out'
+                  }}
+                  onClick={() => {
+                    setPastEdit(message.content)
+                    editionMode.setEditionsInfos({
+                      id: message.id,
+                      content: message.content
+                    })
+                  }}
+                />
+              </Tooltip>
+              <Tooltip title='Delete'>
+                <DeleteOutlined
+                  style={{
+                    opacity: isHovered ? 1 : 0.5,
+                    transition: 'opacity 0.3s ease-in-out'
+                  }}
+                  onClick={() => onDelete(message.id)}
+                />
+              </Tooltip>
+            </Space>
           )}
-        </>
+        </Space>
       )}
-    </>
+    </Space>
   )
 }
 

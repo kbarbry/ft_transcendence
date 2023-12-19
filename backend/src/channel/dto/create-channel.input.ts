@@ -12,7 +12,7 @@ import {
 } from 'class-validator'
 import { CustomIsName } from '../../common/pipes/username.pipe'
 import { CustomIsTopic } from '../../common/pipes/topic.pipe'
-import { CustomIsMessage } from 'src/common/pipes/message.pipe'
+import { CustomIsChannelPassword } from 'src/common/pipes/password-channel.pipe'
 
 @InputType()
 export class CreateChannelInput {
@@ -41,8 +41,9 @@ export class CreateChannelInput {
 
   @Field(() => String, { nullable: true })
   @IsOptional()
-  @CustomIsMessage({
-    message: '$property must be between 1 and 2000 characters.)'
+  @CustomIsChannelPassword({
+    message:
+      '$property must be between 1 and 30 characters long, and can only contain these special characters: "!@#$%^&+=" '
   })
   password?: string
 

@@ -1,5 +1,5 @@
 import { useMutation, useSubscription } from '@apollo/client'
-import React, { useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import {
   mutationCreatePrivateMessage,
   mutationDeletePrivateMessage,
@@ -24,9 +24,12 @@ import {
   UpdatePrivateMessageMutationVariables,
   User
 } from '../../gql/graphql'
+
 import PrivateMessageComponent from './PrivateMessage'
-import { Button, Input } from 'antd'
-import PopUpError from '../../ErrorPages/PopUpError'
+import { Avatar, Button, Input, List, Skeleton, Space } from 'antd'
+import ErrorNotification from '../../notifications/ErrorNotificartion'
+
+import DefaultProfilePicture from '/DefaultProfilePicture.svg'
 
 interface PrivateChatProps {
   userInfos: User
@@ -45,8 +48,6 @@ const PrivateChat: React.FC<PrivateChatProps> = ({
   chatState
 }) => {
   const [messageInput, setMessageInput] = useState('')
-  const [isError, setIsError] = useState(false)
-  const [errorMessage, setErrorMessage] = useState('')
   const [editionInfos, setEditionsInfos] = useState<{
     id: string
     content: string
@@ -54,7 +55,15 @@ const PrivateChat: React.FC<PrivateChatProps> = ({
   const senderId = userInfos.id
   const friend = friends.find((friend) => friend.id === friendId)
 
+  const chatContainerRef = useRef<HTMLDivElement>(null)
+
   if (!friend) throw new Error()
+
+  useEffect(() => {
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight
+    }
+  }, [chatState.chat.length])
 
   const setChatWithLimit = (message: PrivateMessage) => {
     const updatedChat = [...chatState.chat, message].slice(-50)
@@ -150,8 +159,8 @@ const PrivateChat: React.FC<PrivateChatProps> = ({
       })
     } catch (Error) {
       const error_message = (Error as Error).message
-      setIsError(true)
-      setErrorMessage(error_message)
+      ErrorNotification('Channel error', error_message)
+
     }
 
     setMessageInput('')
@@ -175,8 +184,7 @@ const PrivateChat: React.FC<PrivateChatProps> = ({
       chatState.chat[index].content = oldMessage
       setEditionsInfos(null)
       const error_message = (Error as Error).message
-      setIsError(true)
-      setErrorMessage(error_message)
+      ErrorNotification('Channel error', error_message)
     }
   }
 
@@ -189,8 +197,7 @@ const PrivateChat: React.FC<PrivateChatProps> = ({
       })
     } catch (Error) {
       const error_message = 'Cannot delete this message'
-      setIsError(true)
-      setErrorMessage(error_message)
+      ErrorNotification('Login Error', error_message)
     }
   }
 
@@ -199,42 +206,72 @@ const PrivateChat: React.FC<PrivateChatProps> = ({
   }
 
   const listItems = chatState.chat.map((message, index) => {
+    const senderMessage = sender(message.senderId)
+
     return (
-      <li key={index}>
+      <List.Item
+        key={index}
+        style={{
+          transition: 'background-color 0.3s ease-in-out',
+          backgroundColor: message.senderId === senderId ? '#333' : '#222',
+          padding: '10px'
+        }}
+      >
+        <List.Item.Meta
+          avatar={
+            <Avatar src={senderMessage.avatarUrl || DefaultProfilePicture} />
+          }
+          title={senderMessage.username}
+          description={message.content}
+        />
         <PrivateMessageComponent
           message={message}
-          sender={sender(message.senderId)}
+          sender={senderMessage}
           userId={senderId}
           onEdit={handleEditMessage}
           onDelete={handleDeleteMessage}
           editionMode={{ editionInfos, setEditionsInfos }}
           key={message.id}
         />
-      </li>
+      </List.Item>
     )
   })
 
   return (
-    <div
+    <Space
+      direction='vertical'
       style={{
-        maxHeight: '90%',
-        paddingBottom: '10px',
-        overflowY: 'auto'
+        boxSizing: 'border-box',
+        height: '100%',
+        border: '5px solid #333'
       }}
     >
-      {isError && <PopUpError message={errorMessage} />}
-
-      <ul>{listItems}</ul>
-      <div
+      <Space
+        ref={chatContainerRef}
+        direction='vertical'
         style={{
-          position: 'fixed',
-          bottom: 0,
-          padding: '5px',
-          backgroundColor: '#333',
-          borderTop: '1px solid #333',
+          width: '49vw',
+          height: '60vh',
+          overflowY: 'scroll',
+          overflowWrap: 'break-word'
+        }}
+      >
+        {!chatState ? (
+          <Skeleton active style={{ padding: '6px 6px 0px 6px' }} />
+        ) : (
+          <List style={{ padding: '6px 6px 0px 6px' }}>{listItems}</List>
+        )}
+        {(errorMessageCreation ||
+          errorMessageEdition ||
+          errorMessageDeletion) && <div>Error: subscription failed</div>}
+      </Space>
+      <Space
+        style={{
           width: '100%',
-          display: 'flex',
-          alignItems: 'center'
+          position: 'sticky',
+          bottom: 0,
+          backgroundColor: '#333',
+          padding: '8px'
         }}
       >
         <Input
@@ -243,16 +280,17 @@ const PrivateChat: React.FC<PrivateChatProps> = ({
           onChange={(e) => setMessageInput(e.target.value)}
           placeholder='Type your message...'
           onPressEnter={handleSendMessage}
-          style={{ flex: 1, marginRight: '8px' }} // Take remaining space, add spacing to the right
+          style={{ width: '100%' }}
         />
-        <Button type='primary' onClick={handleSendMessage}>
+        <Button
+          type='primary'
+          onClick={handleSendMessage}
+          style={{ marginLeft: 8 }}
+        >
           Send
         </Button>
-      </div>
-      {(errorMessageCreation ||
-        errorMessageEdition ||
-        errorMessageDeletion) && <div>Error: subscription failed</div>}
-    </div>
+      </Space>
+    </Space>
   )
 }
 

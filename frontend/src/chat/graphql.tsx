@@ -264,6 +264,61 @@ export const mutationDeleteChannelInvited = gql`
   }
 `
 
+export const mutationMakeChannelMemberAdmin = gql`
+  mutation MakeChannelMemberAdmin($channelId: String!, $userId: String!) {
+    makeChannelMemberAdmin(channelId: $channelId, userId: $userId) {
+      userId
+      type
+    }
+  }
+`
+
+export const mutationUnmakeChannelMemberAdmin = gql`
+  mutation UnmakeChannelMemberAdmin($channelId: String!, $userId: String!) {
+    unmakeChannelMemberAdmin(channelId: $channelId, userId: $userId) {
+      userId
+      type
+    }
+  }
+`
+
+export const mutationUpdateChannel = gql`
+  mutation UpdateChannel(
+    $data: UpdateChannelInput!
+    $updateChannelId: String!
+  ) {
+    updateChannel(data: $data, id: $updateChannelId) {
+      avatarUrl
+      createdAt
+      id
+      maxUsers
+      name
+      ownerId
+      password
+      topic
+      type
+    }
+  }
+`
+
+export const mutationUpdateChannelMember = gql`
+  mutation UpdateChannelMember(
+    $channelId: String!
+    $data: UpdateChannelMemberInput!
+    $userId: String!
+  ) {
+    updateChannelMember(channelId: $channelId, data: $data, userId: $userId) {
+      avatarUrl
+      channelId
+      createdAt
+      muted
+      nickname
+      type
+      userId
+    }
+  }
+`
+
 //**************************************************//
 //  QUERY
 //**************************************************//
@@ -302,9 +357,14 @@ export const queryFindOneChannelByName = gql`
       maxUsers
       name
       ownerId
-      password
       topic
       type
     }
+  }
+`
+
+export const queryIsChannelPasswordSet = gql`
+  query IsChannelPasswordSet($channelId: String!) {
+    isChannelPasswordSet(channelId: $channelId)
   }
 `

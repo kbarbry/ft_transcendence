@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { useMutation } from '@apollo/client'
 import { useAppDispatch } from '../../store/hooks'
 import { createRelationBlocked, deleteRelationRequest } from '../graphql'
@@ -11,8 +11,9 @@ import {
   DeleteRelationRequestsMutationVariables,
   User
 } from '../../gql/graphql'
-import DefaultProfilePicture from '/DefaultProfilePicture.svg'
-import PopUpError from '../../ErrorPages/PopUpError'
+import ErrorNotification from '../../notifications/ErrorNotificartion'
+import { Button, Space } from 'antd'
+import AvatarStatus, { ESize } from '../../common/avatarStatus'
 
 interface RequestSentProps {
   userId: string
@@ -21,8 +22,6 @@ interface RequestSentProps {
 
 const RequestSent: React.FC<RequestSentProps> = ({ userId, requestSent }) => {
   const dispatch = useAppDispatch()
-  const [isError, setIsError] = useState(false)
-  const [errorMessage, setErrorMessage] = useState('')
 
   const [removeRequestSent] = useMutation<
     DeleteRelationRequestsMutation,
@@ -42,8 +41,7 @@ const RequestSent: React.FC<RequestSentProps> = ({ userId, requestSent }) => {
       await dispatch(setRequestSentInformations(userId))
     } catch (Error) {
       const error_message = 'Cannot remove this request'
-      setIsError(true)
-      setErrorMessage(error_message)
+      ErrorNotification('Error', error_message)
     }
   }
 
@@ -59,33 +57,23 @@ const RequestSent: React.FC<RequestSentProps> = ({ userId, requestSent }) => {
       await dispatch(setBlockedInformations(userId))
     } catch (Error) {
       const error_message = 'Cannot block this user'
-      setIsError(true)
-      setErrorMessage(error_message)
+      ErrorNotification('Error', error_message)
     }
   }
 
   return (
-    <div style={{ display: 'flex', alignItems: 'center' }}>
-      {isError && <PopUpError message={errorMessage} />}
-
-      <img
-        src={
-          requestSent?.avatarUrl ? requestSent.avatarUrl : DefaultProfilePicture
-        }
-        alt='Avatar'
-        style={{
-          width: '40px',
-          height: '40px',
-          borderRadius: '50%',
-          marginRight: '10px'
-        }}
+    <Space align='center' style={{ marginBottom: '10px' }}>
+      <AvatarStatus
+        avatarUrl={requestSent.avatarUrl}
+        size={ESize.small}
+        userId={requestSent.id}
       />
-
-      <span style={{ marginRight: '10px' }}>{requestSent.username}</span>
-
-      <button onClick={handleRemoveRequestSentClick}>Remove Request</button>
-      <button onClick={handleBlockPersonClick}>Block Person</button>
-    </div>
+      <span>{requestSent.username}</span>
+      <Button onClick={handleRemoveRequestSentClick}>Remove Request</Button>
+      <Button danger onClick={handleBlockPersonClick}>
+        Block
+      </Button>
+    </Space>
   )
 }
 

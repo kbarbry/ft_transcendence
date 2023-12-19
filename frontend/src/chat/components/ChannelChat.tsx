@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import {
   ChannelMessage,
   ChannelMessageCreationSubscription,
@@ -25,8 +25,11 @@ import {
 } from '../graphql'
 import ChannelMessageComponent from './ChannelMessage'
 import { ChannelAndChannelMember } from '../../store/slices/channel-informations.slice'
-import PopUpError from '../../ErrorPages/PopUpError'
-
+import { Avatar, Button, Input, List, Skeleton, Space } from 'antd'
+import DefaultProfilePicture from '/DefaultProfilePicture.svg'
+import { GiMute } from 'react-icons/gi'
+import Notification from '../../notifications/MuteNotification'
+import ErrorNotification from '../../notifications/ErrorNotificartion'
 
 interface ChannelChatProps {
   channelsInfos: ChannelAndChannelMember[]
@@ -43,8 +46,6 @@ const ChannelChat: React.FC<ChannelChatProps> = ({
   chatState
 }) => {
   const [messageInput, setMessageInput] = useState('')
-  const [isError, setIsError] = useState(false)
-  const [errorMessage, setErrorMessage] = useState('')
   const [editionInfos, setEditionsInfos] = useState<{
     id: string
     content: string
@@ -53,7 +54,15 @@ const ChannelChat: React.FC<ChannelChatProps> = ({
     (channelInfo) => channelInfo.channel.id === channelId
   )
 
+  const chatContainerRef = useRef<HTMLDivElement>(null)
+
   if (!channelInfo) throw new Error()
+
+  useEffect(() => {
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight
+    }
+  }, [chatState.chat.length])
 
   const setChatWithLimit = (message: ChannelMessage) => {
     const updatedChat = [...chatState.chat, message].slice(-50)
@@ -139,10 +148,17 @@ const ChannelChat: React.FC<ChannelChatProps> = ({
   >(mutationDeleteChannelMessage)
 
   const handleSendMessage = async () => {
-    if (
-      channelInfo.channelMemberUser.muted === true ||
-      messageInput.trim() === ''
-    ) {
+    if (channelInfo.channelMemberUser.muted === true) {
+      Notification(
+        'Muted',
+        "You are muted and can't send messages for now.",
+        <GiMute style={{ color: '#108ee9' }} />
+      )
+
+      setMessageInput('')
+      return
+    }
+    if (messageInput.trim() === '') {
       setMessageInput('')
       return
     }
@@ -160,8 +176,7 @@ const ChannelChat: React.FC<ChannelChatProps> = ({
       setMessageInput('')
     } catch (Error) {
       const error_message = 'Invalid message'
-      setIsError(true)
-      setErrorMessage(error_message)
+      ErrorNotification('Channel error', error_message)
     }
   }
 
@@ -188,8 +203,7 @@ const ChannelChat: React.FC<ChannelChatProps> = ({
       setEditionsInfos(null)
     } catch (Error) {
       const error_message = (Error as Error).message
-      setIsError(true)
-      setErrorMessage(error_message)
+      ErrorNotification('Channel error', error_message)
       chatState.chat[index].content = oldMessage
       setEditionsInfos(null)
     }
@@ -200,8 +214,7 @@ const ChannelChat: React.FC<ChannelChatProps> = ({
       await deleteMessage({ variables: { deleteChannelMessageId: messageId } })
     } catch (Error) {
       const error_message = 'Cannot delete this message'
-      setIsError(true)
-      setErrorMessage(error_message)
+      ErrorNotification('Channel error', error_message)
     }
   }
 
@@ -222,7 +235,24 @@ const ChannelChat: React.FC<ChannelChatProps> = ({
     if (!messageSender) return
 
     return (
-      <li key={index}>
+      <List.Item
+        key={index}
+        style={{
+          transition: 'background-color 0.3s ease-in-out',
+          backgroundColor:
+            message.senderId === channelInfo.channelMemberUser.userId
+              ? '#333'
+              : '#222',
+          padding: '10px'
+        }}
+      >
+        <List.Item.Meta
+          avatar={
+            <Avatar src={messageSender.avatarUrl || DefaultProfilePicture} />
+          }
+          title={messageSender.nickname}
+          description={message.content}
+        />
         <ChannelMessageComponent
           message={message}
           sender={messageSender}
@@ -232,31 +262,64 @@ const ChannelChat: React.FC<ChannelChatProps> = ({
           editionMode={{ editionInfos, setEditionsInfos }}
           key={message.id}
         />
-      </li>
+      </List.Item>
     )
   })
 
   return (
-    <>
-          {isError && <PopUpError message={errorMessage} />}
-
-      <ul>{listItems}</ul>
-      <div>
-        <input
+    <Space
+      direction='vertical'
+      style={{
+        boxSizing: 'border-box',
+        height: '100%',
+        border: '5px solid #333'
+      }}
+    >
+      <Space
+        ref={chatContainerRef}
+        direction='vertical'
+        style={{
+          width: '42vw',
+          height: '60vh',
+          overflowY: 'scroll',
+          overflowWrap: 'break-word'
+        }}
+      >
+        {!chatState ? (
+          <Skeleton active style={{ padding: '6px 6px 0px 6px' }} />
+        ) : (
+          <List style={{ padding: '6px 6px 0px 6px' }}>{listItems}</List>
+        )}
+        {(errorMessageCreation ||
+          errorMessageEdition ||
+          errorMessageDeletion) && <div>Error: subscription failed</div>}
+      </Space>
+      <Space
+        style={{
+          width: '100%',
+          position: 'sticky',
+          bottom: 0,
+          backgroundColor: '#333',
+          padding: '8px'
+        }}
+      >
+        <Input
           type='text'
           value={messageInput}
           onChange={(e) => setMessageInput(e.target.value)}
           placeholder='Type your message...'
-          onKeyDown={(e) => {
-            if (e.key === 'Enter') handleSendMessage()
-          }}
+          onPressEnter={handleSendMessage}
+          style={{ width: '100%' }}
         />
-        <button onClick={handleSendMessage}>Send</button>
-      </div>
-      {(errorMessageCreation ||
-        errorMessageEdition ||
-        errorMessageDeletion) && <div>Error: subscription failed</div>}
-    </>
+        <Button
+          type='primary'
+          onClick={handleSendMessage}
+          style={{ marginLeft: 8 }}
+        >
+          Send
+        </Button>
+      </Space>
+    </Space>
   )
 }
 

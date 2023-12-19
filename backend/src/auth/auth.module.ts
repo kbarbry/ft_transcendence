@@ -9,9 +9,10 @@ import { GithubStrategy } from './strategies/github.strategy'
 import { School42Strategy } from './strategies/42.strategy'
 import { PrismaModule } from '../prisma/prisma.module'
 import { PrismaService } from 'src/prisma/prisma.service'
+import { UserPresenceModule } from 'src/user-presence/user-presence.module'
 
 @Module({
-  imports: [UserModule, PrismaModule],
+  imports: [UserModule, PrismaModule, UserPresenceModule],
   controllers: [AuthController],
   providers: [
     GoogleStrategy,

@@ -2,14 +2,15 @@ import React, { useState } from 'react'
 import { useAppSelector } from '../store/hooks'
 import PrivateChannel from './components/PrivateChannel'
 import { User } from '../gql/graphql'
-import { Button, List } from 'antd'
+import { Button, Divider, Empty, List, Space, Row, Col } from 'antd'
+import { useLocation } from 'wouter'
 
 const PrivateChannels: React.FC = () => {
   const friends = useAppSelector((state) => state.friendInformations.friends)
   const userInfos = useAppSelector((state) => state.userInformations.user)
   const [selectedFriend, setSelectedFriend] = useState<User | null>(null)
+  const [, setLocation] = useLocation()
 
-  
   if (!userInfos || !friends) throw new Error()
 
   if (
@@ -19,54 +20,67 @@ const PrivateChannels: React.FC = () => {
     setSelectedFriend(null)
   }
 
+  const handleOnAddFriendClick = () => {
+    setLocation('/relations')
+  }
+
   return (
-    <div style={{ display: 'flex', flexDirection: 'row', height: '100%' }}>
-      <div
+    <Row gutter={[16, 16]} style={{ height: '100%' }}>
+      <Col span={6} style={{ height: '100%' }}>
+        <Space direction='vertical' style={{ width: '100%' }}>
+          <h2
+            style={{
+              marginBottom: '0px',
+              textAlign: 'center'
+            }}
+          >
+            Private Messages
+          </h2>
+          <Divider
+            style={{ height: '10px', margin: '0px', marginTop: '10px' }}
+          />
+          <List
+            dataSource={friends}
+            renderItem={(friend) => (
+              <List.Item>
+                <Button
+                  type='text'
+                  block
+                  style={{
+                    height: '50px',
+                    border: '1px solid #333',
+                    borderRadius: '3px',
+                    backgroundColor:
+                      selectedFriend && selectedFriend.id === friend.id
+                        ? '#333'
+                        : 'transparent',
+                    transition: 'background-color 0.3s'
+                  }}
+                  onClick={() => setSelectedFriend(friend)}
+                >
+                  {friend.username}
+                </Button>
+              </List.Item>
+            )}
+          />
+        </Space>
+      </Col>
+      <Col span={1} style={{ height: '100%' }}>
+        <Divider
+          type='vertical'
+          style={{ height: '100%', marginLeft: '50%' }}
+        />
+      </Col>
+      <Col
+        span={17}
         style={{
-          minWidth: '200px',
-          paddingRight: '20px',
-          overflowY: 'auto',
-          borderRight: '1px solid #333',
-          height: '100%'
+          height: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          alignItems: 'center'
         }}
       >
-        <h2
-          style={{
-            borderBottom: '1px solid #333',
-            paddingBottom: '10px',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center'
-          }}
-        >
-          Private Message
-        </h2>
-        <List
-          dataSource={friends}
-          renderItem={(friend) => (
-            <List.Item>
-              <Button
-                type='text'
-                block
-                style={{
-                  height: '50px',
-                  border: '1px solid #333',
-                  borderRadius: '3px',
-                  backgroundColor:
-                    selectedFriend && selectedFriend.id === friend.id
-                      ? '#333'
-                      : 'transparent',
-                  transition: 'background-color 0.3s'
-                }}
-                onClick={() => setSelectedFriend(friend)}
-              >
-                {friend.username}
-              </Button>
-            </List.Item>
-          )}
-        />
-      </div>
-      <div style={{ flex: 1 }}>
         {selectedFriend ? (
           <PrivateChannel
             userInfos={userInfos}
@@ -75,10 +89,22 @@ const PrivateChannels: React.FC = () => {
             key={selectedFriend.id}
           />
         ) : (
-          <p>select a friend to start chatting</p>
+          <Empty
+            image='https://gw.alipayobjects.com/zos/antfincdn/ZHrcdLPrvN/empty.svg'
+            imageStyle={{ height: 100 }}
+            description={
+              <span>
+                Select a chat
+                <Divider>or</Divider>
+                <Button type='dashed' onClick={handleOnAddFriendClick}>
+                  add friend
+                </Button>
+              </span>
+            }
+          />
         )}
-      </div>
-    </div>
+      </Col>
+    </Row>
   )
 }
 

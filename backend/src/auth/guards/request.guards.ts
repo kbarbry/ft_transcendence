@@ -33,10 +33,9 @@ export const userContextGuard = (
   userId: string,
   userId2?: string
 ) => {
-  console.log('User guard')
-  if (userId2) if (contextId !== userId && contextId !== userId2) return false
-  if (contextId !== userId) return false
-  return true
+  if (userId2) if (contextId === userId || contextId === userId2) return true
+  if (contextId === userId) return true
+  return false
 }
 
 export const channelAdminGuard = async (
@@ -44,7 +43,6 @@ export const channelAdminGuard = async (
   channelId: string,
   prisma: PrismaService
 ) => {
-  console.log('Admin guard')
   const channelMember = await prisma.channelMember.findUnique({
     where: {
       userId_channelId: {
@@ -53,7 +51,6 @@ export const channelAdminGuard = async (
       }
     }
   })
-  console.log(JSON.stringify(channelMember))
   if (channelMember?.type === 'Member') return false
   return true
 }
@@ -63,7 +60,6 @@ export const channelOwnerGuard = async (
   channelId: string,
   prisma: PrismaService
 ) => {
-  console.log('Owner guard')
   const channel = await prisma.channel.findUnique({ where: { id: channelId } })
   if (channel?.ownerId !== userId) return false
   return true

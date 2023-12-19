@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { useMutation } from '@apollo/client'
 import { useAppDispatch } from '../../store/hooks'
 import { createRelationBlocked, deleteRelationFriend } from '../graphql'
@@ -11,8 +11,9 @@ import {
   DeleteRelationFriendMutationVariables,
   User
 } from '../../gql/graphql'
-import DefaultProfilePicture from '/DefaultProfilePicture.svg'
-import PopUpError from '../../ErrorPages/PopUpError'
+import ErrorNotification from '../../notifications/ErrorNotificartion'
+import { Button, Space } from 'antd'
+import AvatarStatus, { ESize } from '../../common/avatarStatus'
 
 interface FriendProps {
   userId: string
@@ -21,8 +22,6 @@ interface FriendProps {
 
 const Friend: React.FC<FriendProps> = ({ userId, friend }) => {
   const dispatch = useAppDispatch()
-  const [isError, setIsError] = useState(false)
-  const [errorMessage, setErrorMessage] = useState('')
 
   const [removeFriend] = useMutation<
     DeleteRelationFriendMutation,
@@ -40,8 +39,7 @@ const Friend: React.FC<FriendProps> = ({ userId, friend }) => {
       await dispatch(setFriendInformations(userId))
     } catch (Error) {
       const error_message = 'Cannot remove this friend'
-      setIsError(true)
-      setErrorMessage(error_message)
+      ErrorNotification('Error', error_message)
     }
   }
 
@@ -57,31 +55,25 @@ const Friend: React.FC<FriendProps> = ({ userId, friend }) => {
       await dispatch(setBlockedInformations(userId))
     } catch (Error) {
       const error_message = 'Cannot block this friend'
-      setIsError(true)
-      setErrorMessage(error_message)
+      ErrorNotification('Error', error_message)
     }
   }
 
   return (
-    <div style={{ display: 'flex', alignItems: 'center' }}>
-      {isError && <PopUpError message={errorMessage} />}
-      <img
-        src={friend?.avatarUrl ? friend.avatarUrl : DefaultProfilePicture}
-        alt='Profile'
-        style={{
-          width: '40px',
-          height: '40px',
-          borderRadius: '50%',
-          marginRight: '10px'
-        }}
+    <Space align='center' style={{ marginBottom: '10px' }}>
+      <AvatarStatus
+        avatarUrl={friend.avatarUrl}
+        size={ESize.small}
+        userId={friend.id}
       />
-
-      <span style={{ marginRight: '10px' }}>{friend.username}</span>
-      <span style={{ marginRight: '10px' }}>{friend.status}</span>
-
-      <button onClick={handleRemoveFriendClick}>Remove Friend</button>
-      <button onClick={handleBlockFriendClick}>Block Friend</button>
-    </div>
+      <span>{friend.username}</span>
+      <Button type='default' onClick={handleRemoveFriendClick}>
+        Remove Friend
+      </Button>
+      <Button danger onClick={handleBlockFriendClick}>
+        Block Friend
+      </Button>
+    </Space>
   )
 }
 

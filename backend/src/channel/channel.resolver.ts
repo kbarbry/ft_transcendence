@@ -33,6 +33,7 @@ import {
   userContextGuard
 } from 'src/auth/guards/request.guards'
 import * as bcrypt from 'bcrypt'
+import { EChannelType } from '@prisma/client'
 
 @Resolver(() => Channel)
 @UseGuards(AuthorizationGuard)
@@ -54,7 +55,6 @@ export class ChannelResolver {
     @Args('id', { type: () => String }, NanoidValidationPipe)
     id: string
   ) {
-    console.log('channelEdition sub')
     return this.pubSub.asyncIterator('channelEdited-' + id)
   }
 
@@ -66,7 +66,6 @@ export class ChannelResolver {
     @Args('id', { type: () => String }, NanoidValidationPipe)
     id: string
   ) {
-    console.log('channelDeletion sub')
     return this.pubSub.asyncIterator('channelDeleted-' + id)
   }
 
@@ -81,7 +80,9 @@ export class ChannelResolver {
   ): Promise<Channel> {
     if (!userContextGuard(ctx?.req?.user?.id, data.ownerId))
       throw new ForbiddenAccessData()
-    if (data?.password) data.password = bcrypt.hashSync(data.password, 10)
+    if (data?.password) {
+      data.password = bcrypt.hashSync(data.password, 10)
+    }
     return this.channelService.create(data)
   }
 
@@ -98,6 +99,9 @@ export class ChannelResolver {
     const channelMembers = await this.prisma.channelMember.findMany({
       where: { channelId: id }
     })
+    if (data?.password) {
+      data.password = bcrypt.hashSync(data.password, 10)
+    }
 
     const res = await this.channelService.update(id, data)
 
@@ -204,5 +208,13 @@ export class ChannelResolver {
     @Args('userId', { type: () => String }, NanoidValidationPipe) userId: string
   ): Promise<Channel[]> {
     return this.channelService.findAllChannelOfOwner(userId)
+  }
+
+  @Query(() => Boolean)
+  isChannelPasswordSet(
+    @Args('channelId', { type: () => String }, NanoidValidationPipe)
+    channelId: string
+  ): Promise<boolean> {
+    return this.channelService.isChannelPasswordSet(channelId)
   }
 }

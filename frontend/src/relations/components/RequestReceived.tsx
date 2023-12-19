@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { useMutation } from '@apollo/client'
 import { useAppDispatch } from '../../store/hooks'
 import {
@@ -19,8 +19,10 @@ import {
   User
 } from '../../gql/graphql'
 import { setRequestSentInformations } from '../../store/slices/request-sent-informations.slice'
-import DefaultProfilePicture from '/DefaultProfilePicture.svg'
-import PopUpError from '../../ErrorPages/PopUpError'
+import ErrorNotification from '../../notifications/ErrorNotificartion'
+import SuccessNotification from '../../notifications/SuccessNotification'
+import { Button, Space } from 'antd'
+import AvatarStatus, { ESize } from '../../common/avatarStatus'
 
 interface RequestReceivedProps {
   userId: string
@@ -32,8 +34,6 @@ const RequestReceived: React.FC<RequestReceivedProps> = ({
   requestReceived
 }) => {
   const dispatch = useAppDispatch()
-  const [isError, setIsError] = useState(false)
-  const [errorMessage, setErrorMessage] = useState('')
 
   const [acceptRequest] = useMutation<
     CreateRelationRequestsMutation,
@@ -60,14 +60,14 @@ const RequestReceived: React.FC<RequestReceivedProps> = ({
 
       await dispatch(setRequestReceivedInformations(userId))
       await dispatch(setFriendInformations(userId))
+      SuccessNotification('success', `You are now friends !`)
     } catch (Error) {
       const error_message = (Error as Error).message
-      setIsError(true)
-      setErrorMessage(error_message)
+      ErrorNotification('Error', error_message)
     }
   }
 
-  const handleRefuseRequestClick = async () => { // Todoo DONT FORGET TO FIX
+  const handleRefuseRequestClick = async () => {
     try {
       await refuseRequest({
         variables: { userReceiverId: userId, userSenderId: requestReceived.id }
@@ -77,8 +77,7 @@ const RequestReceived: React.FC<RequestReceivedProps> = ({
       await dispatch(setRequestReceivedInformations(userId))
     } catch (Error) {
       const error_message = (Error as Error).message
-      setIsError(true)
-      setErrorMessage(error_message)
+      ErrorNotification('Error', error_message)
     }
   }
 
@@ -88,7 +87,7 @@ const RequestReceived: React.FC<RequestReceivedProps> = ({
         variables: {
           data: {
             userBlockingId: userId,
-            userBlockedId: 'requestReceived.id'
+            userBlockedId: requestReceived.id
           }
         }
       })
@@ -96,37 +95,27 @@ const RequestReceived: React.FC<RequestReceivedProps> = ({
       await dispatch(setRequestReceivedInformations(userId))
       await dispatch(setBlockedInformations(userId))
     } catch (Error) {
-      const error_message = 'Cannot block this user'
-      setIsError(true)
-      setErrorMessage(error_message)
+      const error_message = (Error as Error).message
+      ErrorNotification('Error', error_message)
     }
   }
 
   return (
-    <div style={{ display: 'flex', alignItems: 'center' }}>
-      {isError && <PopUpError message={errorMessage} />}
-
-      <img
-        src={
-          requestReceived?.avatarUrl
-            ? requestReceived.avatarUrl
-            : DefaultProfilePicture
-        }
-        alt='Avatar'
-        style={{
-          width: '40px',
-          height: '40px',
-          borderRadius: '50%',
-          marginRight: '10px'
-        }}
+    <Space align='center' style={{ marginBottom: '10px' }}>
+      <AvatarStatus
+        avatarUrl={requestReceived.avatarUrl}
+        size={ESize.small}
+        userId={requestReceived.id}
       />
-
-      <span style={{ marginRight: '10px' }}>{requestReceived.username}</span>
-
-      <button onClick={handleAcceptRequestClick}>Accept</button>
-      <button onClick={handleRefuseRequestClick}>Refuse</button>
-      <button onClick={handleBlockUserClick}>Block</button>
-    </div>
+      <span>{requestReceived.username}</span>
+      <Button type='primary' onClick={handleAcceptRequestClick}>
+        Accept
+      </Button>
+      <Button onClick={handleRefuseRequestClick}>Refuse</Button>
+      <Button danger onClick={handleBlockUserClick}>
+        Block
+      </Button>
+    </Space>
   )
 }
 

@@ -5,21 +5,31 @@ import {
   DeleteChannelMemberMutation,
   DeleteChannelMemberMutationVariables,
   EMemberType,
+  MakeChannelMemberAdminMutation,
+  MakeChannelMemberAdminMutationVariables,
   MuteChannelMemberMutation,
   MuteChannelMemberMutationVariables,
+  UnmakeChannelMemberAdminMutation,
+  UnmakeChannelMemberAdminMutationVariables,
   UnmuteChannelMemberMutation,
-  UnmuteChannelMemberMutationVariables
+  UnmuteChannelMemberMutationVariables,
+  UpdateChannelMemberMutation,
+  UpdateChannelMemberMutationVariables
 } from '../../gql/graphql'
-import DefaultProfilePicture from '/DefaultProfilePicture.svg'
 import { useMutation } from '@apollo/client'
 import {
   mutationCreateChannelBlocked,
   mutationDeleteChannelMember,
+  mutationMakeChannelMemberAdmin,
   mutationMuteChannelMember,
-  mutationUnmuteChannelMember
+  mutationUnmakeChannelMemberAdmin,
+  mutationUnmuteChannelMember,
+  mutationUpdateChannelMember
 } from '../graphql'
 import { ChannelAndChannelMember } from '../../store/slices/channel-informations.slice'
-import PopUpError from '../../ErrorPages/PopUpError'
+import ErrorNotification from '../../notifications/ErrorNotificartion'
+import { Button, Form, Input, Modal, Space } from 'antd'
+import AvatarStatus, { ESize } from '../../common/avatarStatus'
 
 interface ChannelMemberProfileProps {
   channelsInfos: ChannelAndChannelMember[]
@@ -32,9 +42,7 @@ const ChannelMemberProfile: React.FC<ChannelMemberProfileProps> = ({
   channelId,
   memberId
 }) => {
-  const [showProfileOverlay, setShowProfileOverlay] = useState(false)
-  const [isError, setIsError] = useState(false)
-  const [errorMessage, setErrorMessage] = useState('')
+  const [isModalVisible, setIsModalVisible] = useState(false)
   const channelInfo = channelsInfos.find(
     (channelInfo) => channelInfo.channel.id === channelId
   )
@@ -69,12 +77,27 @@ const ChannelMemberProfile: React.FC<ChannelMemberProfileProps> = ({
     CreateChannelBlockedMutationVariables
   >(mutationCreateChannelBlocked)
 
-  const handleViewProfile = () => {
-    setShowProfileOverlay(true)
+  const [makeAdmin] = useMutation<
+    MakeChannelMemberAdminMutation,
+    MakeChannelMemberAdminMutationVariables
+  >(mutationMakeChannelMemberAdmin)
+
+  const [unmakeAdmin] = useMutation<
+    UnmakeChannelMemberAdminMutation,
+    UnmakeChannelMemberAdminMutationVariables
+  >(mutationUnmakeChannelMemberAdmin)
+
+  const [updateChannelMember] = useMutation<
+    UpdateChannelMemberMutation,
+    UpdateChannelMemberMutationVariables
+  >(mutationUpdateChannelMember)
+
+  const showModal = () => {
+    setIsModalVisible(true)
   }
 
-  const handleCloseOverlay = () => {
-    setShowProfileOverlay(false)
+  const handleCancel = () => {
+    setIsModalVisible(false)
   }
 
   const handleKickMember = async () => {
@@ -85,11 +108,10 @@ const ChannelMemberProfile: React.FC<ChannelMemberProfileProps> = ({
           channelId: member.channelId
         }
       })
-      handleCloseOverlay()
+      handleCancel()
     } catch (Error) {
       const error_message = 'Cannot kick this user'
-      setIsError(true)
-      setErrorMessage(error_message)
+      ErrorNotification('Login Error', error_message)
     }
   }
 
@@ -102,6 +124,7 @@ const ChannelMemberProfile: React.FC<ChannelMemberProfileProps> = ({
             channelId: member.channelId
           }
         })
+        handleCancel()
       } else {
         await muteMember({
           variables: {
@@ -109,11 +132,11 @@ const ChannelMemberProfile: React.FC<ChannelMemberProfileProps> = ({
             channelId: member.channelId
           }
         })
+        handleCancel()
       }
     } catch (Error) {
       const error_message = 'Cannot mute/unmute this user'
-      setIsError(true)
-      setErrorMessage(error_message)
+      ErrorNotification('Login Error', error_message)
     }
   }
 
@@ -127,20 +150,57 @@ const ChannelMemberProfile: React.FC<ChannelMemberProfileProps> = ({
           }
         }
       })
-      handleCloseOverlay()
+      handleCancel()
     } catch (Error) {
       const error_message = 'Cannot ban this user'
-      setIsError(true)
-      setErrorMessage(error_message)
+      ErrorNotification('Login Error', error_message)
     }
   }
 
-  const overlayMouseDownHandler = () => {
-    handleCloseOverlay()
+  const handleMakeAdmin = async () => {
+    try {
+      await makeAdmin({
+        variables: {
+          userId: member.userId,
+          channelId: member.channelId
+        }
+      })
+      handleCancel()
+    } catch (Error) {
+      const error_message = (Error as Error).message
+      ErrorNotification('Login Error', error_message)
+    }
   }
 
-  const contentDivClickHandler = (event: React.MouseEvent<HTMLDivElement>) => {
-    event.stopPropagation()
+  const handleUnmakeAdmin = async () => {
+    try {
+      await unmakeAdmin({
+        variables: {
+          userId: member.userId,
+          channelId: member.channelId
+        }
+      })
+      handleCancel()
+    } catch (Error) {
+      const error_message = (Error as Error).message
+      ErrorNotification('Login Error', error_message)
+    }
+  }
+
+  const handleUpdateNickname = async (values: any) => {
+    try {
+      await updateChannelMember({
+        variables: {
+          channelId: member.channelId,
+          data: { nickname: values.nickname },
+          userId: member.userId
+        }
+      })
+      handleCancel()
+    } catch (error) {
+      const error_message = 'Cannot update nickname'
+      ErrorNotification('Login Error', error_message)
+    }
   }
 
   const adminAction =
@@ -150,75 +210,116 @@ const ChannelMemberProfile: React.FC<ChannelMemberProfileProps> = ({
     member.userId !== memberUser.userId
 
   return (
-    <div style={{ display: 'flex', alignItems: 'center', margin: '10px 0' }}>
-      {isError && <PopUpError message={errorMessage} />}
-      <img
-        src={member?.avatarUrl ? member.avatarUrl : DefaultProfilePicture}
-        alt={`Profile for ${member.nickname}`}
-        style={{
-          width: '40px',
-          height: '40px',
-          borderRadius: '50%',
-          marginRight: '10px',
-          cursor: 'pointer'
-        }}
-        onClick={handleViewProfile}
-      />
-      <span>{member.nickname}</span>
+    <>
+      <Button
+        type='text'
+        onClick={showModal}
+        style={{ height: '50px', padding: '0px', margin: '0px' }}
+      >
+        <Space>
+          <AvatarStatus
+            userId={member.userId}
+            avatarUrl={member.avatarUrl}
+            size={ESize.small}
+          />
+          <span>{member.nickname}</span>
+        </Space>
+      </Button>
 
-      <button onClick={handleViewProfile}>View Profile</button>
+      <Modal
+        open={isModalVisible}
+        onCancel={handleCancel}
+        footer={null}
+        width={200}
+        centered
+      >
+        <Space direction='vertical' align='center'>
+          <AvatarStatus
+            userId={member.userId}
+            avatarUrl={member.avatarUrl}
+            size={ESize.large}
+          />
+          <p>{member.nickname}</p>
 
-      {(adminAction || ownerAction) && member.muted && (
-        <button onClick={handleMuteUnmuteMember}>Unmute</button>
-      )}
+          {(adminAction || ownerAction) && (
+            <>
+              {member.type !== EMemberType.Admin && (
+                <Button onClick={handleMakeAdmin} type='default'>
+                  Promote
+                </Button>
+              )}
+              {member.type === EMemberType.Admin && (
+                <Button onClick={handleUnmakeAdmin} danger>
+                  Unpromote
+                </Button>
+              )}
+              {member.muted ? (
+                <Button onClick={handleMuteUnmuteMember} type='default'>
+                  Unmute Member
+                </Button>
+              ) : (
+                <Button onClick={handleMuteUnmuteMember} danger>
+                  Mute Member
+                </Button>
+              )}
+              <Button onClick={handleKickMember} danger>
+                Kick Member
+              </Button>
+              <Button onClick={handleBanMember} danger>
+                Ban Member
+              </Button>
+            </>
+          )}
 
-      {(adminAction || ownerAction) && !member.muted && (
-        <button onClick={handleMuteUnmuteMember}>Mute</button>
-      )}
+          {member.userId === channelInfo.channelMemberUser.userId && (
+            <>
+              <Form onFinish={handleUpdateNickname}>
+                <Form.Item
+                  name='nickname'
+                  style={{ marginBottom: 2 }}
+                  rules={[
+                    { required: true, message: 'New nickname is required' },
+                    {
+                      type: 'string',
+                      message: 'New nickname must be a string'
+                    },
+                    {
+                      max: 30,
+                      min: 1,
+                      message:
+                        'New nickname must be between 1 and 30 characters long'
+                    },
+                    {
+                      pattern: /^[a-zA-Z0-9_\-\.]+( [a-zA-Z0-9_\-\.]+)?$/,
+                      message:
+                        'New nickname can only contain letters, numbers, single spaces, and "_-.".'
+                    }
+                  ]}
+                >
+                  <Input
+                    type='text'
+                    maxLength={30}
+                    showCount
+                    placeholder='New Nickname'
+                  />
+                </Form.Item>
+                <Form.Item style={{ marginBottom: 0 }}>
+                  <Button
+                    type='primary'
+                    htmlType='submit'
+                    style={{ width: '100%' }}
+                  >
+                    Update Nickname
+                  </Button>
+                </Form.Item>
+              </Form>
+            </>
+          )}
 
-      {(adminAction || ownerAction) && (
-        <button onClick={handleKickMember}>Kick Member</button>
-      )}
-
-      {(adminAction || ownerAction) && (
-        <button onClick={handleBanMember}>Ban Member</button>
-      )}
-
-      {showProfileOverlay && (
-        <div
-          onMouseDown={overlayMouseDownHandler}
-          style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            width: '100%',
-            height: '100%',
-            background: 'rgba(0, 0, 0, 0.5)',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center'
-          }}
-        >
-          <div
-            onMouseDown={contentDivClickHandler}
-            style={{
-              background: '#fff',
-              padding: '20px',
-              borderRadius: '8px',
-              textAlign: 'center'
-            }}
-          >
-            <img
-              src={member.avatarUrl || DefaultProfilePicture}
-              alt={`Profile for ${member.nickname}`}
-              style={{ width: '80px', height: '80px', borderRadius: '50%' }}
-            />
-            <p>{member.nickname}</p>
-            <button onClick={handleCloseOverlay}>Close</button>
-          </div>
-        </div>
-      )}
-    </div>
+          <Button onClick={handleCancel}>Close</Button>
+        </Space>
+      </Modal>
+    </>
   )
 }
 

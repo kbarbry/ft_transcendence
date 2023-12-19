@@ -5,6 +5,7 @@ import SignUp from './Signup/SignupForm'
 
 const Auth: React.FC = () => {
   const [, setActiveTab] = useState('SignIn')
+  
 
   const handleTabChange = (key: string) => {
     setActiveTab(key)
@@ -12,7 +13,7 @@ const Auth: React.FC = () => {
 
   const items: TabsProps['items'] = [
     { key: '1', label: 'SignIn', children: <SignIn /> },
-    { key: '2', label: 'SignUp', children: <SignUp /> }
+    { key: '2', label: 'SignUp', children: <SignUp setActiveTab={setActiveTab} /> },
   ]
 
   return (

@@ -1,15 +1,21 @@
 import React, { useState } from 'react'
-import { useAppSelector } from '../store/hooks'
-import { ChannelAndChannelMember } from '../store/slices/channel-informations.slice'
-import Channel from './components/Channel'
+import { useAppDispatch, useAppSelector } from '../store/hooks'
+import {
+  ChannelAndChannelMember,
+  addChannelInfo
+} from '../store/slices/channel-informations.slice'
+import ChannelComponent from './components/Channel'
 import { useMutation } from '@apollo/client'
 import {
   mutationCreateChannel,
   mutationCreateChannelMember,
   mutationDeleteChannelInvited,
-  queryFindOneChannelByName
+  queryFindOneChannelByName,
+  queryIsChannelPasswordSet
 } from './graphql'
+import SuccessNotification from '../notifications/SuccessNotification'
 import {
+  Channel,
   CreateChannelMemberMutation,
   CreateChannelMemberMutationVariables,
   CreateChannelMutation,
@@ -17,14 +23,29 @@ import {
   DeleteChannelInvitedMutation,
   DeleteChannelInvitedMutationVariables,
   FindOneChannelByNameQuery,
-  FindOneChannelByNameQueryVariables
+  FindOneChannelByNameQueryVariables,
+  IsChannelPasswordSetQuery,
+  IsChannelPasswordSetQueryVariables
 } from '../gql/graphql'
 import { client } from '../main'
-import PopUpError from '../ErrorPages/PopUpError'
+import ErrorNotification from '../notifications/ErrorNotificartion'
+import {
+  Button,
+  Col,
+  Collapse,
+  CollapseProps,
+  Divider,
+  Empty,
+  Form,
+  Input,
+  List,
+  Modal,
+  Row,
+  Space
+} from 'antd'
 
 const Channels: React.FC = () => {
-  const [isError, setIsError] = useState(false)
-  const [errorMessage, setErrorMessage] = useState('')
+  const dispatch = useAppDispatch()
   const user = useAppSelector((state) => state.userInformations.user)
   const channelInvited = useAppSelector(
     (state) => state.channelInvitedInformations.channelInvitation
@@ -32,6 +53,12 @@ const Channels: React.FC = () => {
   const channelsInfos = useAppSelector(
     (state) => state.channelInformations.channelsInfos
   )
+
+  const [passwordModalVisible, setPasswordModalVisible] = useState(false)
+  const [currentChannelPassword, setCurrentChannelPassword] =
+    useState<Channel | null>(null)
+  const [password, setPassword] = useState('')
+
   if (!user || !channelsInfos || !channelInvited) throw new Error()
 
   const [selectedChannel, setSelectedChannel] =
@@ -72,7 +99,7 @@ const Channels: React.FC = () => {
   const handleCreateChannelClick = async () => {
     let isChannelAlsreadySet = true
     try {
-      const { data: createChannel } = await client.query<
+      await client.query<
         FindOneChannelByNameQuery,
         FindOneChannelByNameQueryVariables
       >({
@@ -88,20 +115,32 @@ const Channels: React.FC = () => {
         throw new Error('Empty channel name')
       }
 
-      if (isChannelAlsreadySet == true)
+      if (isChannelAlsreadySet === true)
         throw new Error(`"${channelNameInput}" : Channel name already use`)
       if (numberChannels >= 25) {
         setChannelNameInput('')
-        throw new Error('Too many channels')
+        throw new Error('Limit of 25 channels reached')
       }
-      await createChannel({
+
+      const resChannel = await createChannel({
         variables: { data: { name: channelNameInput, ownerId: user.id } }
       })
+
+      const resChannelCreated = resChannel.data?.createChannel
+
+      if (!resChannelCreated) throw new Error('Error on channel creation')
+      SuccessNotification(
+        'Success',
+        `${channelNameInput} created with success !`
+      )
+
+      dispatch(
+        addChannelInfo({ channelId: resChannelCreated.id, userId: user.id })
+      )
       setChannelNameInput('')
     } catch (Error) {
       let error_message = (Error as Error).message
-      setIsError(true)
-      setErrorMessage(error_message)
+      ErrorNotification('Channel Error', error_message)
     }
   }
 
@@ -113,11 +152,11 @@ const Channels: React.FC = () => {
     }
     if (numberChannels >= 25) {
       setChannelNameInput('')
-      throw new Error('Too many channels')
+      throw new Error('Limit of 25 channels reached')
     }
 
     try {
-      const { data: createChannel } = await client.query<
+      await client.query<
         FindOneChannelByNameQuery,
         FindOneChannelByNameQueryVariables
       >({
@@ -130,7 +169,7 @@ const Channels: React.FC = () => {
 
     const channelsList = channelsInfos.map((item) => item.channel.name)
     try {
-      if (doestchannelexist == false) {
+      if (doestchannelexist === false) {
         throw new Error(`${channelNameInput} : Channel does not exist`)
       }
       const { data: dataFindChannel } = await client.query<
@@ -151,6 +190,21 @@ const Channels: React.FC = () => {
 
       const channel = dataFindChannel.findOneChannelByName
 
+      const { data: dataIsPassword } = await client.query<
+        IsChannelPasswordSetQuery,
+        IsChannelPasswordSetQueryVariables
+      >({
+        query: queryIsChannelPasswordSet,
+        variables: { channelId: channel.id }
+      })
+      const isPasswordSet = dataIsPassword.isChannelPasswordSet
+
+      if (isPasswordSet) {
+        setPasswordModalVisible(true)
+        setCurrentChannelPassword(channel)
+        return
+      }
+
       await createChannelMember({
         variables: {
           data: {
@@ -161,17 +215,22 @@ const Channels: React.FC = () => {
           }
         }
       })
+      SuccessNotification(
+        'Success',
+        `${channelNameInput} joined with success !`
+      )
+
       setChannelNameInput('')
     } catch (Error) {
       let error_message = (Error as Error).message
       if (
-        error_message !== `${channelNameInput} : You are already a member of this channel` &&
+        error_message !==
+          `${channelNameInput} : You are already a member of this channel` &&
         error_message !== `${channelNameInput} : Channel does not exist`
       ) {
         error_message = 'Cannot join channel'
       }
-      setIsError(true)
-      setErrorMessage(error_message)
+      ErrorNotification('Login Error', error_message)
     }
   }
 
@@ -182,6 +241,7 @@ const Channels: React.FC = () => {
     }
 
     try {
+      console.log('try join channel with, ', channelName)
       const { data: dataFindChannel } = await client.query<
         FindOneChannelByNameQuery,
         FindOneChannelByNameQueryVariables
@@ -189,9 +249,24 @@ const Channels: React.FC = () => {
         query: queryFindOneChannelByName,
         variables: { name: channelName }
       })
-
       const channel = dataFindChannel.findOneChannelByName
 
+      const { data: dataIsPassword } = await client.query<
+        IsChannelPasswordSetQuery,
+        IsChannelPasswordSetQueryVariables
+      >({
+        query: queryIsChannelPasswordSet,
+        variables: { channelId: channel.id }
+      })
+      const isPasswordSet = dataIsPassword.isChannelPasswordSet
+
+      if (isPasswordSet) {
+        setPasswordModalVisible(true)
+        setCurrentChannelPassword(channel)
+        return
+      }
+
+      console.log(channel)
       await createChannelMember({
         variables: {
           data: {
@@ -204,8 +279,7 @@ const Channels: React.FC = () => {
       })
     } catch (Error) {
       const error_message = 'Failed to accept invitation'
-      setIsError(true)
-      setErrorMessage(error_message)
+      ErrorNotification('Channel Error', error_message)
     }
   }
 
@@ -219,70 +293,251 @@ const Channels: React.FC = () => {
       })
     } catch (Error) {
       const error_message = 'Failed to refuse invitation'
-      setIsError(true)
-      setErrorMessage(error_message)
+      ErrorNotification('Channel Error', error_message)
     }
   }
 
+  const handlePasswordSubmit = async () => {
+    try {
+      setPasswordModalVisible(false)
+      if (!currentChannelPassword) throw new Error()
+
+      await createChannelMember({
+        variables: {
+          data: {
+            channelId: currentChannelPassword.id,
+            userId: user.id,
+            avatarUrl: user.avatarUrl,
+            nickname: user.username,
+            channelPassword: password
+          }
+        }
+      })
+
+      setCurrentChannelPassword(null)
+      setChannelNameInput('')
+      setPassword('')
+    } catch (error) {
+      const error_message = 'Wrong password'
+      ErrorNotification('Channel Error', error_message)
+      setCurrentChannelPassword(null)
+      setChannelNameInput('')
+      setPassword('')
+    }
+  }
+
+  const items: CollapseProps['items'] = [
+    {
+      key: '1',
+      label: 'Channel Invitations',
+      children: (
+        <List
+          dataSource={channelInvited}
+          renderItem={(channelInvitation) => (
+            <List.Item>
+              <Space
+                direction='vertical'
+                style={{ width: '100%' }}
+                className='unselectable'
+              >
+                <span
+                  style={{
+                    overflow: 'hidden',
+                    display: 'flex',
+                    alignContent: 'center',
+                    justifyContent: 'center'
+                  }}
+                >
+                  {channelInvitation.name}
+                </span>
+                <Space
+                  style={{
+                    width: '100%',
+                    display: 'flex',
+                    justifyContent: 'space-evenly'
+                  }}
+                >
+                  <Button
+                    style={{ width: '10vw' }}
+                    type='primary'
+                    onClick={() =>
+                      handleAcceptInvitation(channelInvitation.name)
+                    }
+                  >
+                    Accept
+                  </Button>
+                  <Button
+                    style={{ width: '10vw' }}
+                    type='default'
+                    onClick={() =>
+                      handleRefuseInvitationClick(channelInvitation.id, user.id)
+                    }
+                  >
+                    Refuse
+                  </Button>
+                </Space>
+              </Space>
+            </List.Item>
+          )}
+        />
+      ),
+      extra: <>{channelInvited.length}</>
+    },
+    {
+      key: '2',
+      label: 'Channels',
+      children: (
+        <List
+          dataSource={channelsInfos}
+          renderItem={(channelInfos) => (
+            <List.Item>
+              <Button
+                type='text'
+                block
+                style={{
+                  height: '50px',
+                  border: '1px solid #333',
+                  borderRadius: '3px',
+                  overflow: 'hidden',
+                  backgroundColor:
+                    selectedChannel &&
+                    selectedChannel.channel.id === channelInfos.channel.id
+                      ? '#333'
+                      : 'transparent',
+                  transition: 'background-color 0.3s'
+                }}
+                onClick={() => setSelectedChannel(channelInfos)}
+              >
+                {channelInfos.channel.name}
+              </Button>
+            </List.Item>
+          )}
+        />
+      )
+    }
+  ]
+
   return (
     <>
-      {isError && <PopUpError message={errorMessage} />}
-
-      <div style={{ display: 'flex', flexDirection: 'row' }}>
-        <div style={{ width: '200px', marginRight: '20px' }}>
-          <h2>Channel Invitations</h2>
-          <ul>
-            {channelInvited.map((channelInvitation) => (
-              <li key={channelInvitation.id}>
-                {channelInvitation.name}
-                <button
-                  onClick={() => handleAcceptInvitation(channelInvitation.name)}
-                >
-                  Accept
-                </button>
-                <button
-                  onClick={() =>
-                    handleRefuseInvitationClick(channelInvitation.id, user.id)
-                  }
-                >
-                  Refuse
-                </button>
-              </li>
-            ))}
-          </ul>
-          <h2>Channels</h2>
-          <ul>
-            {channelsInfos.map((channelInfos) => (
-              <li key={channelInfos.channel.id}>
-                <button onClick={() => setSelectedChannel(channelInfos)}>
-                  {channelInfos.channel.name}
-                </button>
-              </li>
-            ))}
-          </ul>
-        </div>
-        <div>
-          <input
-            type='text'
-            value={channelNameInput}
-            onChange={handleChannelNameInput}
+      <Row gutter={[16, 16]} style={{ height: '100%' }}>
+        <Col span={6} style={{ height: '100%', overflowY: 'auto' }}>
+          <Space
+            direction='vertical'
+            style={{ width: '100%' }}
+            className='unselectable'
+          >
+            <h2
+              style={{
+                marginBottom: '0px',
+                textAlign: 'center'
+              }}
+            >
+              Channels
+            </h2>
+            <Divider
+              style={{ height: '10px', margin: '0px', marginTop: '10px' }}
+            />
+            <Input
+              type='text'
+              value={channelNameInput}
+              onChange={handleChannelNameInput}
+              placeholder='Enter channel name'
+              style={{ width: '100%' }}
+            />
+            <Space
+              style={{
+                width: '100%',
+                display: 'flex',
+                justifyContent: 'space-evenly'
+              }}
+            >
+              <Button
+                style={{ width: '10vw' }}
+                type='primary'
+                onClick={handleCreateChannelClick}
+              >
+                Create
+              </Button>
+              <Button
+                style={{ width: '10vw' }}
+                type='primary'
+                onClick={handleJoinChannelClick}
+              >
+                Join
+              </Button>
+            </Space>
+            <Divider
+              style={{ height: '10px', margin: '0px', marginTop: '10px' }}
+            />
+            <Collapse
+              ghost
+              style={{ border: '1px solid #333' }}
+              defaultActiveKey={['2']}
+              items={items}
+            />
+          </Space>
+        </Col>
+        <Col span={1} style={{ height: '100%' }}>
+          <Divider
+            type='vertical'
+            style={{ height: '100%', marginLeft: '50%' }}
           />
-          <button onClick={handleCreateChannelClick}>Create Channel</button>
-          <button onClick={handleJoinChannelClick}>Join Channel</button>
-        </div>
-        <div>
+        </Col>
+        <Col
+          span={17}
+          style={{
+            height: '100%',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            alignItems: 'center'
+          }}
+        >
           {selectedChannel ? (
-            <Channel
+            <ChannelComponent
               channelsInfos={channelsInfos}
               channelId={selectedChannel.channel.id}
               key={selectedChannel.channel.id}
             />
           ) : (
-            <p>select a channel to start chatting</p>
+            <Empty
+              image='https://gw.alipayobjects.com/zos/antfincdn/ZHrcdLPrvN/empty.svg'
+              imageStyle={{ height: 100 }}
+              description={<span>Select a channel</span>}
+            />
           )}
-        </div>
-      </div>
+        </Col>
+      </Row>
+      <Modal
+        title='Enter Channel Password'
+        open={passwordModalVisible}
+        onCancel={() => setPasswordModalVisible(false)}
+        footer={[
+          <Button key='cancel' onClick={() => setPasswordModalVisible(false)}>
+            Cancel
+          </Button>,
+          <Button key='submit' type='primary' onClick={handlePasswordSubmit}>
+            Submit
+          </Button>
+        ]}
+      >
+        <Form>
+          <Form.Item
+            label='Password'
+            name='password'
+            rules={[
+              { required: true, message: 'Please enter the channel password!' }
+            ]}
+          >
+            <Input.Password
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </Form.Item>
+        </Form>
+      </Modal>
     </>
   )
 }
+
 export default Channels

@@ -5,8 +5,7 @@ import { useAppSelector } from '../../store/hooks'
 import { useLocation } from 'wouter'
 import { unset2fa } from './unset2fa'
 import { validateSecret } from './validateToken'
-import PopUpError from '../../ErrorPages/PopUpError'
-import { Button } from 'antd'
+import ErrorNotification from '../../notifications/ErrorNotificartion'
 
 export const Settings: React.FC = () => {
   const [otpCode, setOtpCode] = useState('')
@@ -29,8 +28,7 @@ export const Settings: React.FC = () => {
       })
       .catch((error) => {
         const error_message = error.message
-        setIsError(true)
-        setErrorMessage(error_message)
+        ErrorNotification('2fa Error', error_message)
       })
   }
 
@@ -43,8 +41,7 @@ export const Settings: React.FC = () => {
       })
       .catch((error) => {
         const error_message = error.message
-        setIsError(true)
-        setErrorMessage(error_message)
+        ErrorNotification('2fa Error', error_message)
       })
   }
 
@@ -57,8 +54,7 @@ export const Settings: React.FC = () => {
       })
       .catch((error) => {
         const error_message = error.message
-        setIsError(true)
-        setErrorMessage(error_message)
+        ErrorNotification('2fa Error', error_message)
       })
   }
 
@@ -79,10 +75,9 @@ export const Settings: React.FC = () => {
 
   return (
     <div>
-      <h1>Settings</h1>
-      <Button onClick={handleLogout}>Logout</Button>
-      {isError && <PopUpError message={errorMessage} />}
-      <Button onClick={handleGetSecretClick}>Get your own QR Code!</Button>
+      <h1>THIS IS SETTINGS PAGE</h1>
+      <button onClick={handleLogout}>Logout</button>
+      <button onClick={handleGetSecretClick}>Get your own QR Code!</button>
 
       {otpAuthURL && (
         <div>

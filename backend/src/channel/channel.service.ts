@@ -142,4 +142,12 @@ export class ChannelService {
       }
     })
   }
+
+  async isChannelPasswordSet(channelid: string): Promise<boolean> {
+    const res = await this.prisma.channel.findUnique({
+      where: { id: channelid }
+    })
+
+    return res?.password ? true : false
+  }
 }

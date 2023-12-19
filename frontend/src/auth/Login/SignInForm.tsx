@@ -11,35 +11,44 @@ import {
 import FortyTwoLogo from '/42.svg'
 import GithubLogo from '/github.svg'
 import GoogleLogo from '/google.svg'
-
-import PopUpError from '../../ErrorPages/PopUpError'
+import { useAppSelector } from '../../store/hooks'
+import ErrorNotification from '../../notifications/ErrorNotificartion'
 
 export const SignIn: React.FC = () => {
   const [email, setEmail] = useState('')
   const [pass, setPass] = useState('')
   const [, setLocation] = useLocation()
-  const [isError, setIsError] = useState(false)
-  const [errorMessage, setErrorMessage] = useState('')
+  const auth = useAppSelector(
+    (state) => state.userInformations.user?.validation2fa
+  )
 
   const handleLogUserClick = () => {
     LogUser(email, pass)
-      .then((userData) => {
+    .then((userData) => {
         if (userData !== null) {
-          setLocation('http://127.0.0.1:5173/', { replace: true })
-          window.location.reload()
+          console.log(auth)
+          if (userData.is2faverified == false)
+          {
+            setLocation('http://127.0.0.1:5173/2fa/login', { replace: true })
+             window.location.reload()
+          }
+          else
+          {
+            setLocation('http://127.0.0.1:5173/', { replace: true })
+             window.location.reload()
+
+          }
         }
       })
       .catch((error) => {
         const error_message = error.message
-        setIsError(true)
-        setErrorMessage(error_message) 
+        ErrorNotification('Login Error', error_message)
       })
   }
 
   return (
     
     <Space direction='vertical'>
-    {isError && <PopUpError message={errorMessage} />}
 
       <Form name='login'>
         <Form.Item

@@ -1,6 +1,5 @@
 import React, { useState } from 'react'
 import { useMutation } from '@apollo/client'
-import DefaultProfilePicture from '/DefaultProfilePicture.svg'
 import {
   DeleteChannelInvitedMutation,
   DeleteChannelInvitedMutationVariables,
@@ -8,7 +7,9 @@ import {
 } from '../../gql/graphql'
 import { mutationDeleteChannelInvited } from '../graphql'
 import { ChannelAndChannelMember } from '../../store/slices/channel-informations.slice'
-import PopUpError from '../../ErrorPages/PopUpError'
+import { Button, Modal, Space } from 'antd'
+import AvatarStatus, { ESize } from '../../common/avatarStatus'
+import ErrorNotification from '../../notifications/ErrorNotificartion'
 
 interface ChannelInvitedProfileProps {
   channelsInfos: ChannelAndChannelMember[]
@@ -21,11 +22,11 @@ const ChannelInvitedProfile: React.FC<ChannelInvitedProfileProps> = ({
   channelId,
   memberId
 }) => {
+  const [isModalVisible, setIsModalVisible] = useState(false)
   const channelInfo = channelsInfos.find(
     (channelInfo) => channelInfo.channel.id === channelId
   )
-  const [isError, setIsError] = useState(false)
-  const [errorMessage, setErrorMessage] = useState('')
+
   if (!channelInfo) throw new Error('Invalid cancel invitation')
 
   const invitedUser = channelInfo.channelInviteds.find(
@@ -41,6 +42,14 @@ const ChannelInvitedProfile: React.FC<ChannelInvitedProfileProps> = ({
     DeleteChannelInvitedMutationVariables
   >(mutationDeleteChannelInvited)
 
+  const showModal = () => {
+    setIsModalVisible(true)
+  }
+
+  const handleCancel = () => {
+    setIsModalVisible(false)
+  }
+
   const handleUninviteUser = async () => {
     try {
       await uninviteUser({
@@ -51,32 +60,55 @@ const ChannelInvitedProfile: React.FC<ChannelInvitedProfileProps> = ({
       })
     } catch (Error) {
       const error_message = (Error as Error).message
-      setIsError(true)
-      setErrorMessage(error_message)
+      ErrorNotification('Channel error', error_message)
     }
   }
 
   const adminAction = memberUser.type === EMemberType.Admin
 
   return (
-    <div style={{ display: 'flex', alignItems: 'center', margin: '10px 0' }}>
-      {isError && <PopUpError message={errorMessage} />}
+    <>
+      <Button
+        type='text'
+        onClick={showModal}
+        style={{ height: '50px', padding: '0px', margin: '0px' }}
+      >
+        <Space>
+          <AvatarStatus
+            userId={invitedUser.id}
+            avatarUrl={invitedUser.avatarUrl}
+            size={ESize.small}
+          />
+          <span>{invitedUser.username}</span>
+        </Space>
+      </Button>
 
-      <img
-        src={invitedUser.avatarUrl || DefaultProfilePicture}
-        alt={`Profile for ${invitedUser.username}`}
-        style={{
-          width: '40px',
-          height: '40px',
-          borderRadius: '50%',
-          marginRight: '10px',
-          cursor: 'pointer'
-        }}
-      />
-      <span>{invitedUser.username}</span>
+      <Modal
+        open={isModalVisible}
+        onCancel={handleCancel}
+        footer={null}
+        width={200}
+        centered
+      >
+        <Space direction='vertical' align='center'>
+          <AvatarStatus
+            userId={invitedUser.id}
+            avatarUrl={invitedUser.avatarUrl}
+            size={ESize.large}
+          />
+          <p>{invitedUser.username}</p>
+          {adminAction && (
+            <>
+              <Button onClick={handleUninviteUser} danger>
+                Uninvite Member
+              </Button>
+            </>
+          )}
 
-      {adminAction && <button onClick={handleUninviteUser}>Uninvite</button>}
-    </div>
+          <Button onClick={handleCancel}>Close</Button>
+        </Space>
+      </Modal>
+    </>
   )
 }
 
