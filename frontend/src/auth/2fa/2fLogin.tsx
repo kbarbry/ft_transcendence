@@ -4,13 +4,12 @@ import { getId } from '../graphql'
 import { GetIdQuery, GetIdQueryVariables } from '../../gql/graphql'
 import { client } from '../../main'
 import { useLocation } from 'wouter'
-import PopUpError from '../../ErrorPages/PopUpError'
+import ErrorNotification from '../../notifications/ErrorNotificartion'
 
 export const validation2fa: React.FC = () => {
   const [otpCode, setOtpCode] = useState('')
   const [, setLocation] = useLocation()
-  const [isError, setIsError] = useState(false)
-  const [errorMessage, setErrorMessage] = useState('')
+
 
   const handleVerifySecretClick = async () => {
     const { data: dataGetId } = await client.query<
@@ -28,8 +27,8 @@ export const validation2fa: React.FC = () => {
       })
       .catch((error) => {
         const error_message = error.message
-        setIsError(true)
-        setErrorMessage(error_message)
+        ErrorNotification('2fa error', error_message)
+
       })
   }
 
@@ -40,7 +39,6 @@ export const validation2fa: React.FC = () => {
 
   return (
     <div>
-      {isError && <PopUpError message={errorMessage} />}
 
       <h1>Settings Page</h1>
 

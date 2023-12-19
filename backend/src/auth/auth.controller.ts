@@ -146,6 +146,7 @@ export class AuthController {
     const resUser = await this.prisma.userPresence.create({
       data: { userId: req.user.id }
     })
+
     return res.redirect('http://127.0.0.1:5173')
   }
 
