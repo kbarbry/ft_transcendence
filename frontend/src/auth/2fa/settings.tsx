@@ -6,13 +6,12 @@ import { useLocation } from 'wouter'
 import { unset2fa } from './unset2fa'
 import { validateSecret } from './validateToken'
 import ErrorNotification from '../../notifications/ErrorNotificartion'
+import { Button } from 'antd'
 
 export const Settings: React.FC = () => {
   const [otpCode, setOtpCode] = useState('')
   const [otpAuthURL, setOtpAuthURL] = useState('')
   const [, setLocation] = useLocation()
-  const [isError, setIsError] = useState(false)
-  const [errorMessage, setErrorMessage] = useState('')
 
   const user = useAppSelector((state) => state.userInformations.user)
   const userId = user?.id
@@ -75,9 +74,9 @@ export const Settings: React.FC = () => {
 
   return (
     <div>
-      <h1>THIS IS SETTINGS PAGE</h1>
-      <button onClick={handleLogout}>Logout</button>
-      <button onClick={handleGetSecretClick}>Get your own QR Code!</button>
+      <h1>Settings</h1>
+      <Button onClick={handleLogout}>Logout</Button>
+      <Button onClick={handleGetSecretClick}>Get your own QR Code!</Button>
 
       {otpAuthURL && (
         <div>

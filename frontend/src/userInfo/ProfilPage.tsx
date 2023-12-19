@@ -24,7 +24,7 @@ export const ProfilPage: React.FC = () => {
       <p>Status: {user?.status}</p>
       <p>Language: {user?.languages}</p>
       <h2>Player Informations</h2>
-      <p>Level: {user?.level}</p>
+      <p>Level: {user?.level.toFixed(1)}</p>
       <UpdateProfil />
       <Settings />
     </Space>
