@@ -7,11 +7,9 @@ import {
 } from '../../gql/graphql'
 import { mutationDeleteChannelBlocked } from '../graphql'
 import { ChannelAndChannelMember } from '../../store/slices/channel-informations.slice'
-import PopUpError from '../../ErrorPages/PopUpError'
 import { Button, Modal, Space } from 'antd'
 import AvatarStatus, { ESize } from '../../common/avatarStatus'
 import ErrorNotification from '../../notifications/ErrorNotificartion'
-
 
 interface ChannelBlockedProfileProps {
   channelsInfos: ChannelAndChannelMember[]
@@ -28,7 +26,6 @@ const ChannelBlockedProfile: React.FC<ChannelBlockedProfileProps> = ({
   const channelInfo = channelsInfos.find(
     (channelInfo) => channelInfo.channel.id === channelId
   )
-
 
   if (!channelInfo) throw new Error('Block Error')
 

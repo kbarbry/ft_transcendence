@@ -19,9 +19,10 @@ import {
   User
 } from '../../gql/graphql'
 import { setRequestSentInformations } from '../../store/slices/request-sent-informations.slice'
-import DefaultProfilePicture from '/DefaultProfilePicture.svg'
 import ErrorNotification from '../../notifications/ErrorNotificartion'
 import SuccessNotification from '../../notifications/SuccessNotification'
+import { Button, Space } from 'antd'
+import AvatarStatus, { ESize } from '../../common/avatarStatus'
 
 interface RequestReceivedProps {
   userId: string
@@ -63,7 +64,6 @@ const RequestReceived: React.FC<RequestReceivedProps> = ({
     } catch (Error) {
       const error_message = (Error as Error).message
       ErrorNotification('Error', error_message)
-
     }
   }
 
@@ -101,28 +101,21 @@ const RequestReceived: React.FC<RequestReceivedProps> = ({
   }
 
   return (
-    <div style={{ display: 'flex', alignItems: 'center' }}>
-      <img
-        src={
-          requestReceived?.avatarUrl
-            ? requestReceived.avatarUrl
-            : DefaultProfilePicture
-        }
-        alt='Avatar'
-        style={{
-          width: '40px',
-          height: '40px',
-          borderRadius: '50%',
-          marginRight: '10px'
-        }}
+    <Space align='center' style={{ marginBottom: '10px' }}>
+      <AvatarStatus
+        avatarUrl={requestReceived.avatarUrl}
+        size={ESize.small}
+        userId={requestReceived.id}
       />
-
-      <span style={{ marginRight: '10px' }}>{requestReceived.username}</span>
-
-      <button onClick={handleAcceptRequestClick}>Accept</button>
-      <button onClick={handleRefuseRequestClick}>Refuse</button>
-      <button onClick={handleBlockUserClick}>Block</button>
-    </div>
+      <span>{requestReceived.username}</span>
+      <Button type='primary' onClick={handleAcceptRequestClick}>
+        Accept
+      </Button>
+      <Button onClick={handleRefuseRequestClick}>Refuse</Button>
+      <Button danger onClick={handleBlockUserClick}>
+        Block
+      </Button>
+    </Space>
   )
 }
 

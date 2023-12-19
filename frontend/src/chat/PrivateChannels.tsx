@@ -36,7 +36,9 @@ const PrivateChannels: React.FC = () => {
           >
             Private Messages
           </h2>
-          <Divider />
+          <Divider
+            style={{ height: '10px', margin: '0px', marginTop: '10px' }}
+          />
           <List
             dataSource={friends}
             renderItem={(friend) => (

@@ -301,6 +301,24 @@ export const mutationUpdateChannel = gql`
   }
 `
 
+export const mutationUpdateChannelMember = gql`
+  mutation UpdateChannelMember(
+    $channelId: String!
+    $data: UpdateChannelMemberInput!
+    $userId: String!
+  ) {
+    updateChannelMember(channelId: $channelId, data: $data, userId: $userId) {
+      avatarUrl
+      channelId
+      createdAt
+      muted
+      nickname
+      type
+      userId
+    }
+  }
+`
+
 //**************************************************//
 //  QUERY
 //**************************************************//
