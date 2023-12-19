@@ -9,14 +9,14 @@ type Props = {
 
 export const Matchmaking: React.FC<Props> = (props) => {
   return (
-    <Row>
-      <Col flex='29em' offset={6}>
+    <Row justify='space-evenly'>
+      <Col flex='29em'>
         <Flex vertical={true}>
           <h1>Matchmaking</h1>
           <GameSelection username={props.username} playerId={props.playerId} />
         </Flex>
       </Col>
-      <Col flex='25em' offset={1}>
+      <Col flex='25em'>
         <Flex vertical={true}>
           <Divider orientation='left'>Pong rules</Divider>
           <p>
