@@ -33,7 +33,8 @@ export const ProfilPage: React.FC = () => {
 
   const handleLogout = async () => {
     try {
-      window.location.href = 'http://127.0.0.1:3000/api/auth/logout'
+      window.location.href =
+        import.meta.env.VITE_COMPUTER_ADRESS_BACK + '/api/auth/logout'
       localStorage.removeItem('userInfo')
       sessionStorage.removeItem('userInfo')
     } catch (e) {
