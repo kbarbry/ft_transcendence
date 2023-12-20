@@ -456,7 +456,7 @@ const AppPrivateSubscription: React.FC<AppPrivateSubscriptionProps> = ({
   })
 
   //**************************************************//
-  //  MATCHMAKING
+  //  GAME
   //**************************************************//
   function listenMatchmaking(options: OnDataOptions<any>) {
     let res = options.data.data.matchmakingNotification
