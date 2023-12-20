@@ -299,6 +299,9 @@ const Channels: React.FC = () => {
 
   const handlePasswordSubmit = async () => {
     try {
+      setCurrentChannelPassword(null)
+      setChannelNameInput('')
+      setPassword('')
       setPasswordModalVisible(false)
       if (!currentChannelPassword) throw new Error()
 
@@ -313,10 +316,6 @@ const Channels: React.FC = () => {
           }
         }
       })
-
-      setCurrentChannelPassword(null)
-      setChannelNameInput('')
-      setPassword('')
     } catch (error) {
       const error_message = 'Wrong password'
       ErrorNotification('Channel Error', error_message)
@@ -531,6 +530,7 @@ const Channels: React.FC = () => {
           >
             <Input.Password
               value={password}
+              defaultValue={''}
               onChange={(e) => setPassword(e.target.value)}
             />
           </Form.Item>
