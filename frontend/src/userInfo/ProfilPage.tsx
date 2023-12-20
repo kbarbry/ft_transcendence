@@ -1,32 +1,83 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useAppSelector } from '../store/hooks'
-import UpdateProfil from './UpdateProfilForm'
-import { Space } from 'antd'
+import { Col, Divider, Menu, MenuProps, Row, Space } from 'antd'
 import Settings from '../auth/2fa/settings'
+import { UserOutlined } from '@ant-design/icons'
+import { MdOutlineSecurity } from 'react-icons/md'
+import UserInformations from './components/UserInformations'
 
 export const ProfilPage: React.FC = () => {
   const user = useAppSelector((state) => state.userInformations.user)
+  const [selectedItem, setSelectedItem] = useState<string>('UserInformations')
+
+  if (!user) throw new Error()
+
+  const items: MenuProps['items'] = [
+    {
+      label: 'User Informations',
+      icon: <UserOutlined />,
+      key: 'UserInformations'
+    },
+    {
+      label: '2FA',
+      icon: <MdOutlineSecurity />,
+      key: '2fa'
+    }
+  ]
+
+  const handleItemClick = (item: string) => {
+    setSelectedItem(item)
+  }
+
   return (
-    <Space direction='vertical'>
-      <h1>User Informations</h1>
-      <a href={user?.avatarUrl ?? undefined} target='_blank'>
-        <img
-          src={user?.avatarUrl || undefined}
-          className='avatar'
-          alt='Avatar'
-          style={{ width: '100px', height: '100px' }}
+    <Row
+      gutter={[16, 16]}
+      style={{ height: '100%', width: '100%' }}
+      className='unselectable'
+    >
+      <Col span={6} style={{ height: '100%', width: '100%' }}>
+        <Space direction='vertical' style={{ width: '100%' }}>
+          <h2
+            style={{
+              marginBottom: '0px',
+              textAlign: 'center'
+            }}
+          >
+            User Informations
+          </h2>
+          <Divider
+            style={{ height: '10px', margin: '0px', marginTop: '10px' }}
+          />
+          <Menu
+            mode='vertical'
+            style={{ backgroundColor: '#242424', borderRight: 'none' }}
+            defaultSelectedKeys={['UserInformations']}
+            items={items}
+            onClick={(item) => handleItemClick(item.key as string)}
+          />
+        </Space>
+      </Col>
+      <Col span={1} style={{ height: '100%' }}>
+        <Divider
+          type='vertical'
+          style={{ height: '100%', marginLeft: '50%' }}
         />
-      </a>
-      <p>AvatarUrl: {user?.avatarUrl}</p>
-      <p>Id: {user?.id}</p>
-      <p>Mail: {user?.mail}</p>
-      <p>Username: {user?.username}</p>
-      <p>Status: {user?.status}</p>
-      <p>Language: {user?.languages}</p>
-      <h2>Player Informations</h2>
-      <p>Level: {user?.level.toFixed(1)}</p>
-      <UpdateProfil />
-      <Settings />
-    </Space>
+      </Col>
+      <Col
+        span={17}
+        style={{
+          height: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          alignItems: 'center'
+        }}
+      >
+        {selectedItem === 'UserInformations' && (
+          <UserInformations key='friends' user={user} />
+        )}
+        {selectedItem === '2fa' && <Settings />}
+      </Col>
+    </Row>
   )
 }

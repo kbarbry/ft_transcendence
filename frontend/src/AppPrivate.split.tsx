@@ -85,7 +85,7 @@ const AppPrivateSplit: React.FC<AppPrivateSubscriptionProps> = ({ userId }) => {
     {
       label: (
         <Link href='/profile'>
-          <a>profile</a>
+          <a>User Settings</a>
         </Link>
       ),
       icon: <SettingOutlined />,
