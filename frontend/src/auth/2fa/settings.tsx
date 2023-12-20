@@ -76,6 +76,7 @@ export const Settings: React.FC = () => {
     <div>
       <h1>Settings</h1>
       <Button onClick={handleLogout}>Logout</Button>
+      <h2>2fa configuration</h2>
       <Button onClick={handleGetSecretClick}>Get your own QR Code!</Button>
 
       {otpAuthURL && (

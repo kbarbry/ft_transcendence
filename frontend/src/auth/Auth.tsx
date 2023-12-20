@@ -13,7 +13,7 @@ const Auth: React.FC = () => {
 
   const items: TabsProps['items'] = [
     { key: '1', label: 'SignIn', children: <SignIn /> },
-    { key: '2', label: 'SignUp', children: <SignUp setActiveTab={setActiveTab} /> },
+    { key: '2', label: 'SignUp', children: <SignUp /> },
   ]
 
   return (
