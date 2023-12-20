@@ -424,7 +424,7 @@ export class PongGame {
     }
     if (
       this.p2racket.vPos < this.playfield.height - this.p2racket.height &&
-      (this.player2.controls.Z_Key || this.player2.controls.Down_Key)
+      (this.player2.controls.Z_Key || this.player2.controls.Up_Key)
     ) {
       this.p2racket.vPos += this.p2racket.velocity
     }

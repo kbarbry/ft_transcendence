@@ -8,7 +8,6 @@ import {
   RemovePlayerFromMatchmakingQueueMutation,
   RemovePlayerFromMatchmakingQueueMutationVariables
 } from '../../gql/graphql'
-import { GameInvitationPanel } from '../game-invitation-panel/game-invitations-panel'
 import { useMutation, useQuery } from '@apollo/client'
 import {
   addPlayerToMatchmakingQueue,
