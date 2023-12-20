@@ -42,8 +42,6 @@ class ball {
   @Field(() => Number)
   vPos = 295
 
-  accelFactor = 1
-
   dir: { x: number; y: number } = { x: 180, y: 210 }
 }
 
@@ -203,11 +201,10 @@ export class PongGame {
         this.ball.dir.x = 180
       } else {
         this.ball.dir.y = 0
-        this.ball.dir.x =
-          (this.ball.dir.x > 0 ? 276 : -276) * this.ball.accelFactor
+        this.ball.dir.x = this.ball.dir.x > 0 ? 276 : -276
       }
-      this.ball.dir.x = this.ball.dir.x * this.ball.accelFactor
-      this.ball.dir.y = this.ball.dir.y * this.ball.accelFactor
+      this.ball.dir.x = this.ball.dir.x
+      this.ball.dir.y = this.ball.dir.y
     }
 
     //  ball racket2 collision
@@ -233,11 +230,10 @@ export class PongGame {
         this.ball.dir.x = -180
       } else {
         this.ball.dir.y = 0
-        this.ball.dir.x =
-          (this.ball.dir.x > 0 ? 276 : -276) * this.ball.accelFactor
+        this.ball.dir.x = this.ball.dir.x > 0 ? 276 : -276
       }
-      this.ball.dir.x = this.ball.dir.x * this.ball.accelFactor
-      this.ball.dir.y = this.ball.dir.y * this.ball.accelFactor
+      this.ball.dir.x = this.ball.dir.x
+      this.ball.dir.y = this.ball.dir.y
     }
 
     //  ball playfield up and bottom collision
@@ -344,11 +340,10 @@ export class PongGame {
         this.ball.dir.x = 240
       } else {
         this.ball.dir.y = 0
-        this.ball.dir.x =
-          (this.ball.dir.x > 0 ? 318 : -318) * this.ball.accelFactor
+        this.ball.dir.x = this.ball.dir.x > 0 ? 318 : -318
       }
-      this.ball.dir.x = this.ball.dir.x * this.ball.accelFactor
-      this.ball.dir.y = this.ball.dir.y * this.ball.accelFactor
+      this.ball.dir.x = this.ball.dir.x
+      this.ball.dir.y = this.ball.dir.y
       if (this.p1racket.height > 40) {
         this.p1racket.height = this.p1racket.height - 5
         this.p1racket.vPos = this.p1racket.vPos + 2
@@ -377,11 +372,10 @@ export class PongGame {
         this.ball.dir.x = -240
       } else {
         this.ball.dir.y = 0
-        this.ball.dir.x =
-          (this.ball.dir.x > 0 ? 318 : -318) * this.ball.accelFactor
+        this.ball.dir.x = this.ball.dir.x > 0 ? 318 : -318
       }
-      this.ball.dir.x = this.ball.dir.x * this.ball.accelFactor
-      this.ball.dir.y = this.ball.dir.y * this.ball.accelFactor
+      this.ball.dir.x = this.ball.dir.x
+      this.ball.dir.y = this.ball.dir.y
       if (this.p2racket.height > 40) {
         this.p2racket.height = this.p2racket.height - 5
         this.p2racket.vPos = this.p2racket.vPos + 2
