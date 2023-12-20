@@ -17,12 +17,12 @@ import { persistor, store } from './store/store.tsx'
 import { PersistGate } from 'redux-persist/integration/react'
 
 const httpLink = new HttpLink({
-  uri: import.meta.env.VITE_COMPUTER_ADRESS_BACK + '/graphql',
+  uri: `${import.meta.env.VITE_COMPUTER_ADRESS_BACK}/graphql`,
   credentials: 'include'
 })
 const wsLink = new GraphQLWsLink(
   createClient({
-    url: import.meta.env.VITE_COMPUTER_ADRESS_BACK + '/graphql',
+    url: `${import.meta.env.VITE_COMPUTER_ADRESS_WS}/graphql`,
     connectionParams: {
       credentials: 'include'
     }
