@@ -63,7 +63,7 @@ export class GoogleStrategy extends PassportStrategy(Strategy) {
       })
     } catch (e) {
       throw new ExceptionCustom(
-        'Google auth Error : come back at 127.0.0.1:5173'
+        'Google auth Error : come back at computer address'
       )
     }
     if (!user) {

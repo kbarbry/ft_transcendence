@@ -6,9 +6,10 @@ COPY ./package.json         ./
 COPY ./package-lock.json    ./
 
 RUN npm i
-# RUN npm run build
+
 COPY . .
 
 EXPOSE 5173
 
-CMD [ "npm", "run", "dev" ]
+CMD [ "npm", "run", "dev", "--strictPort", "--host" ]
+# -l 5157 is a port

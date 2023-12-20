@@ -35,7 +35,7 @@ export const Settings: React.FC = () => {
     validateSecret(userId, otpCode)
       .then((isVerified) => {
         if (isVerified) {
-          setLocation('http://127.0.0.1:5173', { replace: true })
+          setLocation('/', { replace: true })
         }
       })
       .catch((error) => {
@@ -48,7 +48,7 @@ export const Settings: React.FC = () => {
     unset2fa(userId, otpCode)
       .then((isVerified) => {
         if (isVerified) {
-          setLocation('http://127.0.0.1:5173', { replace: true })
+          setLocation('/', { replace: true })
         }
       })
       .catch((error) => {
@@ -63,7 +63,12 @@ export const Settings: React.FC = () => {
 
   const handleLogout = async () => {
     try {
-      window.location.href = 'http://127.0.0.1:3000/api/auth/logout'
+      const computerAddress = import.meta.env.VITE_COMPUTER_ADDRESS
+      if (computerAddress) {
+        const logoutUrl = `http://${computerAddress}/api/auth/logout`
+        window.location.href = logoutUrl
+      }
+
       localStorage.removeItem('userInfo')
       sessionStorage.removeItem('userInfo')
     } catch (e) {

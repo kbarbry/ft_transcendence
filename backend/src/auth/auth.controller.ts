@@ -106,14 +106,14 @@ export class AuthController {
         await this.userPresenceService.disconnected(lastUserPresence.id)
     }
     req.session.destroy()
-    return res.redirect('http://127.0.0.1:5173/')
+    return res.redirect(process.env['COMPUTER_ADRESS'])
   }
 
   @Get('42/login')
   @UseGuards(School42AuthGuard)
   async ftLogin(@Req() req: any, @Res() res: any) {
     if (req.needsRedirect) {
-      return res.redirect('http://127.0.0.1:5173/')
+      return res.redirect(process.env['COMPUTER_ADRESS'])
     }
   }
 
@@ -124,14 +124,15 @@ export class AuthController {
       const is2fa = await this.authService.isUser2fa(req.user.id)
       if (is2fa === true) {
         this.authService.unset2faValidation(req.user.id)
-        return res.redirect('http://127.0.0.1:5173/2fa/login')
+        return res.redirect(`${process.env['COMPUTER_ADRESS']}/2fa/login`)
       }
       const resUser = await this.prisma.userPresence.create({
         data: { userId: req.user.id }
       })
-      return res.redirect('http://127.0.0.1:5173')
+      return res.redirect(process.env['COMPUTER_ADRESS'])
     } catch (Error) {
-      return res.redirect('http://127.0.0.1:5173')
+      console.log('42 REDIRECT ERROR')
+      return res.redirect(process.env['COMPUTER_ADRESS'])
     }
   }
 
@@ -148,15 +149,15 @@ export class AuthController {
       const is2fa = await this.authService.isUser2fa(req.user.id)
       if (is2fa === true) {
         this.authService.unset2faValidation(req.user.id)
-        return res.redirect('http://127.0.0.1:5173/2fa/login')
+        return res.redirect(`${process.env['COMPUTER_ADRESS']}/2fa/login`)
       }
       const resUser = await this.prisma.userPresence.create({
         data: { userId: req.user.id }
       })
 
-      return res.redirect('http://127.0.0.1:5173')
+      return res.redirect(process.env['COMPUTER_ADRESS'])
     } catch (Error) {
-      return res.redirect('http://127.0.0.1:5173?message=AuthError')
+      return res.redirect(`${process.env['COMPUTER_ADRESS']}?message=AuthError`)
     }
   }
 
@@ -173,15 +174,15 @@ export class AuthController {
       const is2fa = await this.authService.isUser2fa(req.user.id)
       if (is2fa === true) {
         this.authService.unset2faValidation(req.user.id)
-        return res.redirect('http://127.0.0.1:5173/2fa/login')
+        return res.redirect(`${process.env['COMPUTER_ADRESS']}/2fa/login`)
       }
       const resUser = await this.prisma.userPresence.create({
         data: { userId: req.user.id }
       })
 
-      return res.redirect('http://127.0.0.1:5173')
+      return res.redirect(process.env['COMPUTER_ADRESS'])
     } catch (Error) {
-      return res.redirect('http://127.0.0.1:5173?message=AuthError')
+      return res.redirect(`${process.env['COMPUTER_ADRESS']}?message=AuthError`)
     }
   }
 }

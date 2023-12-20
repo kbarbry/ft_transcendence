@@ -13,10 +13,6 @@ const PopUpError: React.FC<PopUpErrorProps> = ({ message }) => {
     setIsAlertVisible(true)
   }, [message])
 
-  const handleClose = () => {
-    setIsAlertVisible(false)
-  }
-
   return (
     <>
       {isAlertVisible && (

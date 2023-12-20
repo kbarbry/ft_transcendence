@@ -10,7 +10,6 @@ export const validation2fa: React.FC = () => {
   const [otpCode, setOtpCode] = useState('')
   const [, setLocation] = useLocation()
 
-
   const handleVerifySecretClick = async () => {
     const { data: dataGetId } = await client.query<
       GetIdQuery,
@@ -21,14 +20,13 @@ export const validation2fa: React.FC = () => {
     verifySecret(userId, otpCode)
       .then((validation) => {
         if (validation) {
-          setLocation('http://127.0.0.1:5173', { replace: true })
+          setLocation('http://z3r3p3.42lyon.fr:5173', { replace: true })
           window.location.reload()
         }
       })
       .catch((error) => {
         const error_message = error.message
         ErrorNotification('2fa error', error_message)
-
       })
   }
 
@@ -39,7 +37,6 @@ export const validation2fa: React.FC = () => {
 
   return (
     <div>
-
       <h1>Settings Page</h1>
 
       <form onSubmit={handleSubmit}>
