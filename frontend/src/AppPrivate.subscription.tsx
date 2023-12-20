@@ -412,6 +412,7 @@ const AppPrivateSubscription: React.FC<AppPrivateSubscriptionProps> = ({
       if (received.data.data?.channelBlockedDeletion) {
         const res = received.data.data?.channelBlockedDeletion
         await dispatch(setChannelBlockedsInformations(res.channelId))
+        await dispatch(setChannelMembersInformations(res.channelId))
       }
     },
     onError: () => {

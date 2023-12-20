@@ -14,6 +14,7 @@ import {
 import ErrorNotification from '../../notifications/ErrorNotificartion'
 import { Button, Space } from 'antd'
 import AvatarStatus, { ESize } from '../../common/avatarStatus'
+import SuccessNotification from '../../notifications/SuccessNotification'
 
 interface RequestSentProps {
   userId: string
@@ -52,6 +53,10 @@ const RequestSent: React.FC<RequestSentProps> = ({ userId, requestSent }) => {
           data: { userBlockingId: userId, userBlockedId: requestSent.id }
         }
       })
+      SuccessNotification(
+        'Success',
+        'The user is now blocked (You need to refresh or relog to delete their messages from public channels. ) !'
+      )
 
       await dispatch(setRequestSentInformations(userId))
       await dispatch(setBlockedInformations(userId))

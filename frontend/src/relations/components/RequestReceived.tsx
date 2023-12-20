@@ -91,6 +91,10 @@ const RequestReceived: React.FC<RequestReceivedProps> = ({
           }
         }
       })
+      SuccessNotification(
+        'Success',
+        'The user is now blocked (You need to refresh or relog to delete their messages from public channels. ) !'
+      )
 
       await dispatch(setRequestReceivedInformations(userId))
       await dispatch(setBlockedInformations(userId))
