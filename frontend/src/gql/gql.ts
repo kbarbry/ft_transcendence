@@ -68,6 +68,7 @@ const documents = {
     "\n  subscription RelationFriendDeleted($userId: String!) {\n    relationFriendDeleted(userId: $userId) {\n      userAId\n      userBId\n    }\n  }\n": types.RelationFriendDeletedDocument,
     "\n  subscription RelationRequestCreation($userId: String!) {\n    relationRequestCreation(userId: $userId) {\n      userReceiverId\n      userSenderId\n    }\n  }\n": types.RelationRequestCreationDocument,
     "\n  subscription RelationRequestDeleted($userId: String!) {\n    relationRequestDeleted(userId: $userId) {\n      userReceiverId\n      userSenderId\n    }\n  }\n": types.RelationRequestDeletedDocument,
+    "\n  subscription UserEdition($userEditionId: String!) {\n    userEdition(id: $userEditionId) {\n      id\n      username\n    }\n  }\n": types.UserEditionDocument,
     "\n  subscription ChannelEdition($channelEditionId: String!) {\n    channelEdition(id: $channelEditionId) {\n      id\n    }\n  }\n": types.ChannelEditionDocument,
     "\n  subscription ChannelDeletion($channelDeletionId: String!) {\n    channelDeletion(id: $channelDeletionId) {\n      id\n    }\n  }\n": types.ChannelDeletionDocument,
     "\n  subscription ChannelMemberCreation($channelMemberCreationId: String!) {\n    channelMemberCreation(id: $channelMemberCreationId) {\n      userId\n      channelId\n    }\n  }\n": types.ChannelMemberCreationDocument,
@@ -335,6 +336,10 @@ export function graphql(source: "\n  subscription RelationRequestCreation($userI
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  subscription RelationRequestDeleted($userId: String!) {\n    relationRequestDeleted(userId: $userId) {\n      userReceiverId\n      userSenderId\n    }\n  }\n"): (typeof documents)["\n  subscription RelationRequestDeleted($userId: String!) {\n    relationRequestDeleted(userId: $userId) {\n      userReceiverId\n      userSenderId\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  subscription UserEdition($userEditionId: String!) {\n    userEdition(id: $userEditionId) {\n      id\n      username\n    }\n  }\n"): (typeof documents)["\n  subscription UserEdition($userEditionId: String!) {\n    userEdition(id: $userEditionId) {\n      id\n      username\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

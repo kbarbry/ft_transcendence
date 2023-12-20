@@ -11,32 +11,23 @@ import {
 import FortyTwoLogo from '/42.svg'
 import GithubLogo from '/github.svg'
 import GoogleLogo from '/google.svg'
-import { useAppSelector } from '../../store/hooks'
 import ErrorNotification from '../../notifications/ErrorNotificartion'
 
 export const SignIn: React.FC = () => {
   const [email, setEmail] = useState('')
   const [pass, setPass] = useState('')
   const [, setLocation] = useLocation()
-  const auth = useAppSelector(
-    (state) => state.userInformations.user?.validation2fa
-  )
 
   const handleLogUserClick = () => {
     LogUser(email, pass)
-    .then((userData) => {
+      .then((userData) => {
         if (userData !== null) {
-          console.log(auth)
-          if (userData.is2faverified == false)
-          {
+          if (userData.is2faverified == false) {
             setLocation('http://127.0.0.1:5173/2fa/login', { replace: true })
-             window.location.reload()
-          }
-          else
-          {
+            window.location.reload()
+          } else {
             setLocation('http://127.0.0.1:5173/', { replace: true })
-             window.location.reload()
-
+            window.location.reload()
           }
         }
       })
@@ -47,16 +38,15 @@ export const SignIn: React.FC = () => {
   }
 
   return (
-    
     <Space direction='vertical'>
-
       <Form name='login'>
         <Form.Item
           name='mail'
           rules={[
             { required: true, message: 'Mail is required' },
             { type: 'email', message: 'Must be a valid email' }
-          ]}>
+          ]}
+        >
           <Input
             prefix={<UserOutlined className='site-form-item-icon' />}
             placeholder='youremail@gmail.com'

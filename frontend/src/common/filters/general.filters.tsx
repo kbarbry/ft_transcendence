@@ -10,7 +10,6 @@ export class LogError extends Error {
     canRetry: boolean
   ) {
     super(message)
-    console.log(message)
     this.name = message
     this._type = type
     this._isFatal = isFatal

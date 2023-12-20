@@ -24,7 +24,6 @@ export const setChannelInvitations = createAsyncThunk(
   'channelInvitation/fetchChannelInvitationInformations',
   async (userId: string) => {
     try {
-      console.log('newChannelInvitation')
       let res: Channel[] = []
 
       const { data: dataChannelInvitation } = await client.query<
@@ -35,17 +34,14 @@ export const setChannelInvitations = createAsyncThunk(
         variables: { userId },
         fetchPolicy: 'network-only'
       })
-      console.log(JSON.stringify(dataChannelInvitation))
 
       const channelInvitation =
         dataChannelInvitation?.findAllChannelInvitedOfUser
 
       if (!channelInvitation.length) return res
-      console.log('CHANNELSINVIT', channelInvitation)
       const userIdsArray = channelInvitation.map(
         (invitation) => invitation.channelId
       )
-      console.log('USERIDS TAB', userIdsArray)
       const { data: dataChannels } = await client.query<
         FindChannelByChannelIdsQuery,
         FindChannelByChannelIdsQueryVariables
@@ -55,10 +51,8 @@ export const setChannelInvitations = createAsyncThunk(
       })
 
       const channels = dataChannels.findChannelByChannelIds
-      console.log('CHANNELS', channels)
       return channels
     } catch (e) {
-      console.log('Error channelInvitation slice: ', e)
       throw e
     }
   }
@@ -68,12 +62,10 @@ export const removeChannelInvitation = createAsyncThunk(
   'channelInvitation/removeChannelInvitationInformations',
   async (channelId: string, { getState }) => {
     try {
-      console.log('delete channel infos')
       const state = getState() as {
         channelInvitation: ChannelInvitationInformations
       }
       const channelsInfos = state?.channelInvitation?.channelInvitation
-      console.log('infos', JSON.stringify(channelsInfos))
       if (!channelsInfos) return []
 
       const updatedChannelInvitedInfo = channelsInfos.map(
@@ -87,12 +79,8 @@ export const removeChannelInvitation = createAsyncThunk(
       const filteredChannelsInfos = updatedChannelInvitedInfo.filter(
         (channelInfo): channelInfo is Channel => channelInfo !== null
       )
-
-      console.log('DATA: ', JSON.stringify(filteredChannelsInfos))
-
       return filteredChannelsInfos
     } catch (e) {
-      console.log('Error channelInvitation slice, remove: ', e)
       throw e
     }
   }
