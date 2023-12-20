@@ -69,10 +69,8 @@ import { matchmakingNotification } from './components/matchmaking/graphql'
 import { setGameIdValue } from './store/slices/gameId.slice'
 import { gameInvitationSubscription } from './components/game-invitation-button/graphql'
 import { addGameInvitationValue } from './store/slices/gameInvitations.slice'
-import SuccessNotification from './notifications/SuccessNotification'
 import InfoNotification from './notifications/InformationNotification'
-import { GiBeaver } from "react-icons/gi";
-
+import { GiBeaver } from 'react-icons/gi'
 
 interface AppPrivateSubscriptionProps {
   userId: string
@@ -166,7 +164,11 @@ const AppPrivateSubscription: React.FC<AppPrivateSubscriptionProps> = ({
         await dispatch(setRequestReceivedInformations(userId))
       }
       if (userId != res?.userSenderId)
-        InfoNotification('Friend Notification', 'You have a new friend notification, lucky you !', <GiBeaver />)
+        InfoNotification(
+          'Friend Notification',
+          'You have a new friend notification, lucky you !',
+          <GiBeaver />
+        )
     },
     onError: (e) => {
       console.log(
@@ -487,7 +489,10 @@ const AppPrivateSubscription: React.FC<AppPrivateSubscriptionProps> = ({
       if (options.data.data === undefined) {
         return
       }
-      InfoNotification('Game notification', 'you have a new game notification! Lets pong!')
+      InfoNotification(
+        'Game notification',
+        'you have a new game notification! Lets pong!'
+      )
       const invitation: GameInvitation = {
         gameId: options.data.data.pongInvitationSubcription.gameId,
         gameType: options.data.data.pongInvitationSubcription.gameType,

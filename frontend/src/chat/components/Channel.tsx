@@ -10,6 +10,8 @@ import {
   EChannelType,
   FindAllChannelMessageInChannelQuery,
   FindAllChannelMessageInChannelQueryVariables,
+  FindOneChannelByNameQuery,
+  FindOneChannelByNameQueryVariables,
   FindOneUserByUsernameQuery,
   FindOneUserByUsernameQueryVariables,
   UpdateChannelMutation,
@@ -21,7 +23,8 @@ import {
   mutationDeleteChannel,
   mutationDeleteChannelMember,
   mutationUpdateChannel,
-  queryFindAllChannelMessageInChannel
+  queryFindAllChannelMessageInChannel,
+  queryFindOneChannelByName
 } from '../graphql'
 import ChannelChat from './ChannelChat'
 import { ChannelAndChannelMember } from '../../store/slices/channel-informations.slice'
@@ -72,6 +75,7 @@ const ChannelComponent: React.FC<ChannelProps> = ({
   const [isHovered, setIsHovered] = useState(false)
   const [channelInviteInput, setChannelInviteInput] = useState('')
   const [isEditModalVisible, setIsEditModalVisible] = useState(false)
+
   const channelInfo = channelsInfos.find(
     (channelInfo) => channelInfo.channel.id === channelId
   )
@@ -173,6 +177,31 @@ const ChannelComponent: React.FC<ChannelProps> = ({
 
     const onFinish = async () => {
       try {
+        if (editedChannel.name.trim() !== channelInfo.channel.name) {
+          let channelNameUsedRes
+          try {
+            channelNameUsedRes = await client.query<
+              FindOneChannelByNameQuery,
+              FindOneChannelByNameQueryVariables
+            >({
+              query: queryFindOneChannelByName,
+              variables: { name: editedChannel.name }
+            })
+          } catch {}
+
+          const channelNamedUsed = channelNameUsedRes?.data.findOneChannelByName
+            ? true
+            : false
+
+          console.log(channelNamedUsed)
+          console.log(channelNamedUsed)
+          if (
+            editedChannel.name.trim() !== channelInfo.channel.name &&
+            channelNamedUsed
+          )
+            throw new Error('Channel name already used')
+        }
+
         let name =
           editedChannel.name.trim() === channelInfo.channel.name
             ? undefined

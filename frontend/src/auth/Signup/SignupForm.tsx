@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import { createUser } from './createUser'
-import { Button, Form, Input, Space, TabsProps } from 'antd'
-import SignIn from '../Login/SignInForm'
+import { Button, Form, Input, Space } from 'antd'
 import {
   UserOutlined,
   MailOutlined,
@@ -15,7 +14,6 @@ import PopUpError from '../../ErrorPages/PopUpError'
 import SuccessNotification from '../../notifications/SuccessNotification'
 // import { PROFILE_PICTURE_URL } from '../../store/slices/user-informations.slice'
 
-
 const SignUp: React.FC = () => {
   const [mail, setMail] = useState('')
   const [pass, setPass] = useState('')
@@ -27,7 +25,6 @@ const SignUp: React.FC = () => {
   const [isMailUsed, setIsMailUsed] = useState(false)
   const [isError, setIsError] = useState(false) // State for tracking errors
   const [errorMessage, setErrorMessage] = useState('') // State for error message
-
 
   // const [avatarUrl, setAvatarUrl] = useState('')
   // const [isValidAvatarUrl, setIsValidAvatarUrl] = useState(false)
@@ -54,7 +51,7 @@ const SignUp: React.FC = () => {
       setIsButtonDisabled(false)
     }
   })
-  
+
   // const handleAvatarUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
   //   const newAvatarUrl = e.target.value
   //   setAvatarUrl(newAvatarUrl)
@@ -124,7 +121,9 @@ const SignUp: React.FC = () => {
         setUserData(userData)
         if (userData !== null) {
           SuccessNotification('SignIn', 'You are nw registred, please LogIn')
-          setTimeout(() => {  window.location.reload() }, 1000);
+          setTimeout(() => {
+            window.location.reload()
+          }, 1000)
         }
       })
       .catch((error) => {
