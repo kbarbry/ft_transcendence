@@ -1,16 +1,13 @@
 import React from 'react'
-import { useAppDispatch, useAppSelector } from '../../store/hooks'
+import { useAppSelector } from '../../store/hooks'
 import { Invitation } from './invitation'
-import { Button } from 'antd'
-import { clearInvitations } from '../../store/slices/gameInvitations.slice'
+import { Divider, Flex } from 'antd'
 
 type Props = {
   playerId: string
 }
 
 export const GameInvitationPanel: React.FC<Props> = (props: Props) => {
-  const dispatch = useAppDispatch()
-
   const invitations = useAppSelector(
     (state) => state.gameInvitationsInformation
   )
@@ -20,12 +17,10 @@ export const GameInvitationPanel: React.FC<Props> = (props: Props) => {
   ))
 
   return (
-    <div className='game-invitations-panel'>
+    <Flex vertical={true}>
       <h2>Invitations to games</h2>
-      <Button danger={true} onClick={() => dispatch(clearInvitations())}>
-        Clear all
-      </Button>
+      <Divider />
       <ul>{invitationElements}</ul>
-    </div>
+    </Flex>
   )
 }

@@ -43,9 +43,9 @@ export const Pong: React.FC<Props> = (props) => {
         updateGameElement={setPongGameData}
         setGameError={setGameError}
       />
-      <Flex vertical={true} justify='center' align='center'>
+      <Flex vertical={true} align='center'>
         <h1>Pong !</h1>
-        <Flex vertical={false} justify='center' gap='large'>
+        <Flex vertical={false} align='center' gap='large'>
           <ReadyButton gameId={props.gameId} playerId={props.playerId} />
           <LeaveButton playerId={props.playerId} gameId={props.gameId} />
         </Flex>

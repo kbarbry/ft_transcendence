@@ -48,7 +48,7 @@ export const SpecialGamesShowcase: React.FC<Props> = (props: Props) => {
   )
 
   return (
-    <Flex vertical={true} gap={0}>
+    <Flex vertical={true} gap={0} align='center'>
       <h1>Special</h1>
       <ul className='showcase'>{gameElements}</ul>
     </Flex>

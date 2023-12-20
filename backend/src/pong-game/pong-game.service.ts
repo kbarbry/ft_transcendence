@@ -67,6 +67,19 @@ export class PongGameService {
     return false
   }
 
+  makeid(length: number) {
+    let result = ''
+    const characters =
+      'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+    const charactersLength = characters.length
+    let counter = 0
+    while (counter < length) {
+      result += characters.charAt(Math.floor(Math.random() * charactersLength))
+      counter += 1
+    }
+    return result
+  }
+
   async sendPongInvitation(
     gameType: EGameType,
     senderNickname: string,
@@ -76,12 +89,13 @@ export class PongGameService {
     const invitedUser: User | null = await this.userService.findOneByUsername(
       receiverNickname
     )
+
     if (invitedUser === null) {
       return null
     }
     const inviteGame = this.gameInit(
       gameType,
-      'invite' + senderId + invitedUser.id,
+      'invite' + senderId + invitedUser.id + this.makeid(5),
       senderNickname,
       senderId,
       invitedUser.username,
@@ -300,7 +314,6 @@ export class PongGameService {
   async gamesUpdate() {
     for (const [gameId, game] of gamesMap) {
       if (!game.isRunning) {
-        //TODO check for how many time the game is innactive and delete it if needed
         continue
       }
       game.update()

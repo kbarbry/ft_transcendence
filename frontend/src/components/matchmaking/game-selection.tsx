@@ -94,12 +94,11 @@ export const GameSelection: React.FC<Props> = (props) => {
   }
   return (
     <Flex vertical={true}>
-      <h2>Hello {props.username}, select your game type :</h2>
+      <p>Hello {props.username}, select your game type :</p>
       <Flex vertical={false}>
         <Button onClick={() => join(EGameType.Classic)}>Classic Game</Button>
         <Button onClick={() => join(EGameType.Special)}>Extra Game</Button>
       </Flex>
-      <GameInvitationPanel playerId={props.playerId} />
     </Flex>
   )
 }

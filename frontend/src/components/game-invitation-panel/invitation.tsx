@@ -5,7 +5,7 @@ import {
 } from '../../store/slices/gameInvitations.slice'
 import { useAppDispatch } from '../../store/hooks'
 import { setGameIdValue } from '../../store/slices/gameId.slice'
-import { Button, Flex } from 'antd'
+import { Button, Divider, Flex } from 'antd'
 import { useMutation, useQuery } from '@apollo/client'
 import { isGameValid, leaveGame } from '../game/graphql'
 import {
@@ -26,9 +26,9 @@ export const Invitation: React.FC<Props> = (props: Props) => {
     IsGameValidQuery,
     IsGameValidQueryVariables
   >(isGameValid, {
-    skip: props.invitation.gameId === null,
     variables: { gameId: props.invitation.gameId, userId: props.userId },
-    fetchPolicy: 'cache-and-network'
+    pollInterval: 500,
+    fetchPolicy: 'network-only'
   })
 
   const [leaveGameMutation] = useMutation<
@@ -56,24 +56,21 @@ export const Invitation: React.FC<Props> = (props: Props) => {
     return <p>Error</p>
   }
   return (
-    <Flex vertical={false}>
-      <Flex vertical={true}>
-        <p>From: {props.invitation.senderUsername}</p>
-        <p>Game Type: {props.invitation.gameType}</p>
-      </Flex>
-      <Flex vertical={true}>
-        <Button
-          onClick={() => {
-            dispatch(setGameIdValue(props.invitation.gameId))
-            dispatch(removeOneInvitationValue(props.invitation.gameId))
-          }}
-        >
-          Accept
-        </Button>
-        <Button danger={true} onClick={declineHandler}>
-          Decline
-        </Button>
-      </Flex>
+    <Flex vertical={true}>
+      <p>From: {props.invitation.senderUsername}</p>
+      <p>Game Type: {props.invitation.gameType}</p>
+      <Button
+        onClick={() => {
+          dispatch(setGameIdValue(props.invitation.gameId))
+          dispatch(removeOneInvitationValue(props.invitation.gameId))
+        }}
+      >
+        Accept
+      </Button>
+      <Button danger={true} onClick={declineHandler}>
+        Decline
+      </Button>
+      <Divider />
     </Flex>
   )
 }

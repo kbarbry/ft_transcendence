@@ -3,7 +3,7 @@ import { Leaderboard } from '../components/leaderboard/leaderboard'
 import { GamesHistory } from '../components/games-history/gamesHistory'
 import { useAppSelector } from '../store/hooks'
 import { NotFound } from '../ErrorPages/404'
-import { Flex } from 'antd'
+import { Col, Flex, Row } from 'antd'
 
 export const Home: React.FC = () => {
   const userId: string | undefined = useAppSelector(
@@ -15,15 +15,21 @@ export const Home: React.FC = () => {
   }
 
   return (
-    <Flex vertical={true} align='center'>
-      <h1>Welcome on Transcendence !</h1>
-      <p>
-        Immerse yourself in the thrill of real-time multiplayer Pong battles !
-      </p>
-      <Flex vertical={false} justify='space-evenly'>
-        <Leaderboard />
-        <GamesHistory playerId={userId} />
+    <>
+      <Flex vertical={true} align='center'>
+        <h1>Welcome on Transcendence !</h1>
+        <p>
+          Immerse yourself in the thrill of real-time multiplayer Pong battles !
+        </p>
       </Flex>
-    </Flex>
+      <Row justify='space-evenly'>
+        <Col flex='20em'>
+          <Leaderboard />
+        </Col>
+        <Col flex='30em'>
+          <GamesHistory playerId={userId} />
+        </Col>
+      </Row>
+    </>
   )
 }
