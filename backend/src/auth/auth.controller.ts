@@ -144,16 +144,20 @@ export class AuthController {
   @UseGuards(GoogleAuthGuard)
   @Get('google/redirect')
   async getGoogleCallback(@Req() req: any, @Res() res: any) {
-    const is2fa = await this.authService.isUser2fa(req.user.id)
-    if (is2fa === true) {
-      this.authService.unset2faValidation(req.user.id)
-      return res.redirect('http://127.0.0.1:5173/2fa/login')
-    }
-    const resUser = await this.prisma.userPresence.create({
-      data: { userId: req.user.id }
-    })
+    try {
+      const is2fa = await this.authService.isUser2fa(req.user.id)
+      if (is2fa === true) {
+        this.authService.unset2faValidation(req.user.id)
+        return res.redirect('http://127.0.0.1:5173/2fa/login')
+      }
+      const resUser = await this.prisma.userPresence.create({
+        data: { userId: req.user.id }
+      })
 
-    return res.redirect('http://127.0.0.1:5173')
+      return res.redirect('http://127.0.0.1:5173')
+    } catch (Error) {
+      return res.redirect('http://127.0.0.1:5173?message=AuthError')
+    }
   }
 
   @Get('github/login')
@@ -165,14 +169,19 @@ export class AuthController {
   @UseGuards(GithubGuard)
   @Get('github/redirect')
   async getGithubAuthCallback(@Req() req: any, @Res() res: any) {
-    const is2fa = await this.authService.isUser2fa(req.user.id)
-    if (is2fa === true) {
-      this.authService.unset2faValidation(req.user.id)
-      return res.redirect('http://127.0.0.1:5173/2fa/login')
+    try {
+      const is2fa = await this.authService.isUser2fa(req.user.id)
+      if (is2fa === true) {
+        this.authService.unset2faValidation(req.user.id)
+        return res.redirect('http://127.0.0.1:5173/2fa/login')
+      }
+      const resUser = await this.prisma.userPresence.create({
+        data: { userId: req.user.id }
+      })
+
+      return res.redirect('http://127.0.0.1:5173')
+    } catch (Error) {
+      return res.redirect('http://127.0.0.1:5173?message=AuthError')
     }
-    const resUser = await this.prisma.userPresence.create({
-      data: { userId: req.user.id }
-    })
-    return res.redirect('http://127.0.0.1:5173')
   }
 }
