@@ -93,8 +93,8 @@ export class PongGame {
 
     if (type === EGameType.Special) {
       this.update = this.updateSpecial
-      this.ball.dir.x = 300
-      this.ball.dir.y = 320
+      this.ball.dir.x = 240
+      this.ball.dir.y = 210
       this.p1racket.height = 180
       this.p2racket.height = 180
     } else {
@@ -194,21 +194,17 @@ export class PongGame {
         this.p1racket.vPos + this.p1racket.height - this.p1racket.height / 3
       ) {
         this.ball.dir.y = 210
+        this.ball.dir.x = 180
       } else if (
         this.ball.vPos <
         this.p1racket.vPos + this.p1racket.height / 3
       ) {
         this.ball.dir.y = -210
+        this.ball.dir.x = 180
       } else {
         this.ball.dir.y = 0
         this.ball.dir.x =
-          (this.ball.dir.x > 0 ? 180 : -180) * this.ball.accelFactor
-      }
-      if (
-        this.ball.dir.x * this.ball.accelFactor < 250 &&
-        this.ball.dir.x * this.ball.accelFactor > -250
-      ) {
-        this.ball.accelFactor += 0.1
+          (this.ball.dir.x > 0 ? 276 : -276) * this.ball.accelFactor
       }
       this.ball.dir.x = this.ball.dir.x * this.ball.accelFactor
       this.ball.dir.y = this.ball.dir.y * this.ball.accelFactor
@@ -228,21 +224,17 @@ export class PongGame {
         this.p2racket.vPos + this.p2racket.height - this.p2racket.height / 3
       ) {
         this.ball.dir.y = 210
+        this.ball.dir.x = -180
       } else if (
         this.ball.vPos <
         this.p2racket.vPos + this.p2racket.height / 3
       ) {
         this.ball.dir.y = -210
+        this.ball.dir.x = -180
       } else {
         this.ball.dir.y = 0
         this.ball.dir.x =
-          (this.ball.dir.x > 0 ? 180 : -180) * this.ball.accelFactor
-      }
-      if (
-        this.ball.dir.x * this.ball.accelFactor < 250 &&
-        this.ball.dir.x * this.ball.accelFactor > -250
-      ) {
-        this.ball.accelFactor += 0.1
+          (this.ball.dir.x > 0 ? 276 : -276) * this.ball.accelFactor
       }
       this.ball.dir.x = this.ball.dir.x * this.ball.accelFactor
       this.ball.dir.y = this.ball.dir.y * this.ball.accelFactor
@@ -342,16 +334,18 @@ export class PongGame {
         this.ball.vPos >
         this.p1racket.vPos + this.p1racket.height - this.p1racket.height / 3
       ) {
-        this.ball.dir.y = 280
+        this.ball.dir.y = 210
+        this.ball.dir.x = 240
       } else if (
         this.ball.vPos <
         this.p1racket.vPos + this.p1racket.height / 3
       ) {
-        this.ball.dir.y = -280
+        this.ball.dir.y = -210
+        this.ball.dir.x = 240
       } else {
         this.ball.dir.y = 0
         this.ball.dir.x =
-          (this.ball.dir.x > 0 ? 280 : -280) * this.ball.accelFactor
+          (this.ball.dir.x > 0 ? 318 : -318) * this.ball.accelFactor
       }
       this.ball.dir.x = this.ball.dir.x * this.ball.accelFactor
       this.ball.dir.y = this.ball.dir.y * this.ball.accelFactor
@@ -373,16 +367,18 @@ export class PongGame {
         this.ball.vPos >
         this.p2racket.vPos + this.p2racket.height - this.p2racket.height / 3
       ) {
-        this.ball.dir.y = 320
+        this.ball.dir.y = 210
+        this.ball.dir.x = -240
       } else if (
         this.ball.vPos <
         this.p2racket.vPos + this.p2racket.height / 3
       ) {
-        this.ball.dir.y = -320
+        this.ball.dir.y = -210
+        this.ball.dir.x = -240
       } else {
         this.ball.dir.y = 0
         this.ball.dir.x =
-          (this.ball.dir.x > 0 ? 300 : -300) * this.ball.accelFactor
+          (this.ball.dir.x > 0 ? 318 : -318) * this.ball.accelFactor
       }
       this.ball.dir.x = this.ball.dir.x * this.ball.accelFactor
       this.ball.dir.y = this.ball.dir.y * this.ball.accelFactor
