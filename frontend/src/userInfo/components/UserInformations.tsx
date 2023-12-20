@@ -32,7 +32,6 @@ import { setUserInformations } from '../../store/slices/user-informations.slice'
 import { client } from '../../main'
 import SuccessNotification from '../../notifications/SuccessNotification'
 
-
 interface UserInformationsProps {
   user: User
 }
@@ -95,11 +94,11 @@ const UserInformations: React.FC<UserInformationsProps> = ({ user }) => {
       })
 
       setIsEditing(false)
+      SuccessNotification('Success', 'Your informations has been updated !')
     } catch (Error) {
       let error_message = (Error as Error).message
       ErrorNotification('Error', error_message)
     }
-    SuccessNotification('Success', 'Your informations has been updated !')
   }
 
   const handleCancelClick = () => {
