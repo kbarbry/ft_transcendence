@@ -22,7 +22,7 @@ export const SignIn: React.FC = () => {
     LogUser(email, pass)
       .then((userData) => {
         if (userData !== null) {
-          if (userData.is2faverified == false) {
+          if (userData.is2faverified === false) {
             setLocation(
               import.meta.env.VITE_COMPUTER_ADRESS_FRONT + '/2fa/login',
               {

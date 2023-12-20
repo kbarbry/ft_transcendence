@@ -93,7 +93,7 @@ export class AuthController {
     const resUser = await this.prisma.userPresence.create({
       data: { userId: req.user.id }
     })
-    return res.status(200).json({ msg: 'Local Auth Login' })
+    return res.status(200).json({ is2faverified })
   }
 
   @Get('logout')
