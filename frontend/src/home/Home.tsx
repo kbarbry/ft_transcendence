@@ -19,7 +19,8 @@ export const Home: React.FC = () => {
       <Flex vertical={true} align='center'>
         <h1>Welcome on Transcendence !</h1>
         <p>
-          Immerse yourself in the thrill of real-time multiplayer Pong battles !
+          Don't forget to set more data on your profile user on User Settings
+          sections.
         </p>
       </Flex>
       <Row justify='space-evenly'>

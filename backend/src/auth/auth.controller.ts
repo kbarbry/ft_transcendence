@@ -87,6 +87,9 @@ export class AuthController {
     const is2fa = await this.authService.isUser2fa(req.user.id)
     if (is2fa == true) {
       this.authService.unset2faValidation(req.user.id)
+      const resUser = await this.prisma.userPresence.create({
+        data: { userId: req.user.id }
+      })
       is2faverified = false
     }
 
@@ -124,6 +127,9 @@ export class AuthController {
       const is2fa = await this.authService.isUser2fa(req.user.id)
       if (is2fa === true) {
         this.authService.unset2faValidation(req.user.id)
+        const resUser = await this.prisma.userPresence.create({
+          data: { userId: req.user.id }
+        })
         return res.redirect(`${process.env['COMPUTER_ADRESS']}/2fa/login`)
       }
       const resUser = await this.prisma.userPresence.create({
@@ -148,6 +154,9 @@ export class AuthController {
       const is2fa = await this.authService.isUser2fa(req.user.id)
       if (is2fa === true) {
         this.authService.unset2faValidation(req.user.id)
+        const resUser = await this.prisma.userPresence.create({
+          data: { userId: req.user.id }
+        })
         return res.redirect(`${process.env['COMPUTER_ADRESS']}/2fa/login`)
       }
       const resUser = await this.prisma.userPresence.create({
@@ -173,6 +182,9 @@ export class AuthController {
       const is2fa = await this.authService.isUser2fa(req.user.id)
       if (is2fa === true) {
         this.authService.unset2faValidation(req.user.id)
+        const resUser = await this.prisma.userPresence.create({
+          data: { userId: req.user.id }
+        })
         return res.redirect(`${process.env['COMPUTER_ADRESS']}/2fa/login`)
       }
       const resUser = await this.prisma.userPresence.create({

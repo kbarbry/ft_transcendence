@@ -7,7 +7,7 @@ import {
   CheckCircleOutlined,
   CloseCircleOutlined
 } from '@ant-design/icons'
-
+import { useAppSelector } from '../../store/hooks'
 
 interface ChannelMessageProps {
   message: ChannelMessage
@@ -32,10 +32,15 @@ const ChannelMessageComponent: React.FC<ChannelMessageProps> = ({
 }) => {
   const [isHovered, setIsHovered] = useState(false)
   const [, setPastEdit] = useState<string | null>(null)
-
+  const userBlocked = useAppSelector(
+    (state) => state.blockedInformations.blockeds
+  )
   const handleOnEdit = () => {
     const trimmedMessage = editionMode.editionInfos?.content.trim()
 
+    if (userBlocked.some((user) => user.id === sender.userId)) {
+      return <></>
+    }
     if (
       editionMode.editionInfos &&
       editionMode.editionInfos.id &&

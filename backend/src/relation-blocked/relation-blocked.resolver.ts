@@ -59,6 +59,9 @@ export class RelationBlockedResolver {
     await this.pubSub.publish('blockedReceived-' + data.userBlockedId, {
       res
     })
+    await this.pubSub.publish('blockedReceived-' + data.userBlockingId, {
+      res
+    })
     return res
   }
 

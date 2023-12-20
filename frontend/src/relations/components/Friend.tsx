@@ -15,6 +15,7 @@ import ErrorNotification from '../../notifications/ErrorNotificartion'
 import { Button, Divider, Modal, Space } from 'antd'
 import AvatarStatus, { ESize } from '../../common/avatarStatus'
 import { GameInvitationButton } from '../../components/game-invitation-button/game-invitation'
+import SuccessNotification from '../../notifications/SuccessNotification'
 
 interface FriendProps {
   userId: string
@@ -59,6 +60,10 @@ const Friend: React.FC<FriendProps> = ({ userId, friend }) => {
           data: { userBlockingId: userId, userBlockedId: friend.id }
         }
       })
+      SuccessNotification(
+        'Success',
+        'The user is now blocked (You need to refresh or relog to delete their messages from public channels. ) !'
+      )
 
       await dispatch(setFriendInformations(userId))
       await dispatch(setBlockedInformations(userId))

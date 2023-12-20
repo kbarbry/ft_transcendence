@@ -120,7 +120,7 @@ const SignUp: React.FC = () => {
       .then((userData) => {
         setUserData(userData)
         if (userData !== null) {
-          SuccessNotification('SignIn', 'You are nw registred, please LogIn')
+          SuccessNotification('SignIn', 'You are new registred, please LogIn')
           setTimeout(() => {
             window.location.reload()
           }, 1000)

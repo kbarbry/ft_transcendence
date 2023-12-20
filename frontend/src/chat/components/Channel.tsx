@@ -256,8 +256,7 @@ const ChannelComponent: React.FC<ChannelProps> = ({
       }
     }
 
-    const onFinishFailed = () => {
-    }
+    const onFinishFailed = () => {}
 
     const [editedChannel, setEditedChannel] = useState({
       name: channelInfo.channel.name,
@@ -440,6 +439,14 @@ const ChannelComponent: React.FC<ChannelProps> = ({
                 <Divider
                   style={{ height: '10px', margin: '0px', marginTop: '10px' }}
                 />
+                <p>
+                  {channelInfo.channel.topic
+                    ? channelInfo.channel.topic
+                    : 'No topic set'}
+                </p>
+                <Divider
+                  style={{ height: '10px', margin: '0px', marginTop: '10px' }}
+                />
                 <Space direction='vertical'>
                   <Input
                     type='text'
@@ -553,7 +560,7 @@ const ChannelComponent: React.FC<ChannelProps> = ({
             </Form.Item>
             <Form.Item label='Maximum Users' name='maxUsers'>
               <InputNumber
-                min={1}
+                min={2}
                 max={50}
                 value={editedChannel.maxUsers}
                 onChange={(value) =>
