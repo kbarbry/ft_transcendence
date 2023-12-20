@@ -51,7 +51,6 @@ const AvatarStatus: React.FC<avatarStatusProps> = ({
     variables: { findLastUserPresenceByUserIdId: userId },
     fetchPolicy: 'network-only'
   })
-  console.log(dataPresence, dataStatus)
 
   if (loadingStatus || loadingPresence) return <></>
 

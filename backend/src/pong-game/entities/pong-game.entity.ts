@@ -95,6 +95,8 @@ export class PongGame {
       this.update = this.updateSpecial
       this.ball.dir.x = 300
       this.ball.dir.y = 320
+      this.p1racket.height = 180
+      this.p2racket.height = 180
     } else {
       this.update = this.updateClassic
     }
@@ -353,6 +355,10 @@ export class PongGame {
       }
       this.ball.dir.x = this.ball.dir.x * this.ball.accelFactor
       this.ball.dir.y = this.ball.dir.y * this.ball.accelFactor
+      if (this.p1racket.height > 40) {
+        this.p1racket.height = this.p1racket.height - 5
+        this.p1racket.vPos = this.p1racket.vPos + 2
+      }
     }
     //  ball racket2 collision
     if (
@@ -380,6 +386,10 @@ export class PongGame {
       }
       this.ball.dir.x = this.ball.dir.x * this.ball.accelFactor
       this.ball.dir.y = this.ball.dir.y * this.ball.accelFactor
+      if (this.p2racket.height > 40) {
+        this.p2racket.height = this.p2racket.height - 5
+        this.p2racket.vPos = this.p2racket.vPos + 2
+      }
     }
 
     //  ball playfield up and bottom collision
@@ -424,7 +434,7 @@ export class PongGame {
     }
     if (
       this.p2racket.vPos < this.playfield.height - this.p2racket.height &&
-      (this.player2.controls.Z_Key || this.player2.controls.Down_Key)
+      (this.player2.controls.Z_Key || this.player2.controls.Up_Key)
     ) {
       this.p2racket.vPos += this.p2racket.velocity
     }

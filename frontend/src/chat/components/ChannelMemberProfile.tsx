@@ -230,6 +230,7 @@ const ChannelMemberProfile: React.FC<ChannelMemberProfileProps> = ({
       <Modal
         open={isModalVisible}
         onCancel={handleCancel}
+        destroyOnClose={true}
         footer={null}
         width={200}
         centered

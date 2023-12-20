@@ -11,16 +11,12 @@ import {
 import FortyTwoLogo from '/42.svg'
 import GithubLogo from '/github.svg'
 import GoogleLogo from '/google.svg'
-import { useAppSelector } from '../../store/hooks'
 import ErrorNotification from '../../notifications/ErrorNotificartion'
 
 export const SignIn: React.FC = () => {
   const [email, setEmail] = useState('')
   const [pass, setPass] = useState('')
   const [, setLocation] = useLocation()
-  const auth = useAppSelector(
-    (state) => state.userInformations.user?.validation2fa
-  )
 
   const handleLogUserClick = () => {
     LogUser(email, pass)

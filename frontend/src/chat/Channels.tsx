@@ -241,7 +241,6 @@ const Channels: React.FC = () => {
     }
 
     try {
-      console.log('try join channel with, ', channelName)
       const { data: dataFindChannel } = await client.query<
         FindOneChannelByNameQuery,
         FindOneChannelByNameQueryVariables
@@ -266,7 +265,6 @@ const Channels: React.FC = () => {
         return
       }
 
-      console.log(channel)
       await createChannelMember({
         variables: {
           data: {
@@ -511,6 +509,7 @@ const Channels: React.FC = () => {
         title='Enter Channel Password'
         open={passwordModalVisible}
         onCancel={() => setPasswordModalVisible(false)}
+        destroyOnClose={true}
         footer={[
           <Button key='cancel' onClick={() => setPasswordModalVisible(false)}>
             Cancel

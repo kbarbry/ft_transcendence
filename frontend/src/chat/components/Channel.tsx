@@ -193,8 +193,6 @@ const ChannelComponent: React.FC<ChannelProps> = ({
             ? true
             : false
 
-          console.log(channelNamedUsed)
-          console.log(channelNamedUsed)
           if (
             editedChannel.name.trim() !== channelInfo.channel.name &&
             channelNamedUsed
@@ -259,7 +257,6 @@ const ChannelComponent: React.FC<ChannelProps> = ({
     }
 
     const onFinishFailed = () => {
-      console.log('Failed')
     }
 
     const [editedChannel, setEditedChannel] = useState({
@@ -473,6 +470,7 @@ const ChannelComponent: React.FC<ChannelProps> = ({
           title='Edit Channel'
           open={isEditModalVisible}
           onCancel={handleEditModalCancel}
+          destroyOnClose={true}
           footer={[
             <Button key='cancel' onClick={handleEditModalCancel}>
               Cancel

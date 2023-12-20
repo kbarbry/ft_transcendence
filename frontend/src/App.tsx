@@ -8,11 +8,6 @@ import App_public from './App_public'
 import { ConfigProvider, theme } from 'antd'
 
 window.addEventListener('unhandledrejection', (event) => {
-  {
-    //window.location.href = 'http://z3r3p3.42lyon.fr:3000/api/auth/logout'
-    //window.alert('Ceci est un avertissement !')
-    console.log('fatal error')
-  }
   event.preventDefault()
 })
 
