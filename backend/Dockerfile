@@ -9,7 +9,7 @@ COPY ./prisma               ./prisma/
 
 RUN npm i
 RUN npm i global npm@10.2.5
-# RUN npx prisma generate --schema=./prisma/schema.prisma
+RUN npx prisma generate --schema=./prisma/schema.prisma
 
 COPY . .
 
@@ -19,6 +19,6 @@ EXPOSE 3000
 
 COPY --chmod=744 ./docker-entrypoint.sh /docker-entrypoint.sh
 
-# ENTRYPOINT "/docker-entrypoint.sh"
+ENTRYPOINT "/docker-entrypoint.sh"
 
 CMD [ "npm", "run", "dev" ]
