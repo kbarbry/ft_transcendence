@@ -1,64 +1,199 @@
-import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common'
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  UseGuards,
+  Res,
+  Req
+} from '@nestjs/common'
 import { GoogleAuthGuard } from './guards/google.guard'
 import { School42AuthGuard } from './guards/42.guard'
 import { GithubGuard } from './guards/github.guard'
 import { LocalAuthGuard } from './guards/local.guard'
 import { AuthService } from './auth.service'
 import { CreateUserAuthLocalInput } from './dto/create-user-auth.input'
+import { ExceptionCustom } from 'src/common/exceptions/unauthorized-strategy.exception'
+import { PrismaService } from 'src/prisma/prisma.service'
+import { UserPresenceService } from 'src/user-presence/user-presence.service'
 
 @Controller('auth')
 export class AuthController {
-  constructor(readonly authService: AuthService) {}
+  constructor(
+    readonly authService: AuthService,
+    readonly userPresenceService: UserPresenceService,
+    readonly prisma: PrismaService
+  ) {}
 
   @Post('signup')
   async postRegister(@Body() userInput: CreateUserAuthLocalInput) {
     try {
       await this.authService.createUserLocal(userInput)
     } catch (e) {
-      throw e
+      throw new ExceptionCustom('Signup error')
     }
     return { msg: 'Local SignUp OK' }
   }
 
+  @Post('2fa/getsecret')
+  async getSecret(@Req() req: any, @Res() res: any) {
+    try {
+      await this.authService.GenerateOTP(req.body.id, res)
+    } catch (e) {
+      throw e
+    }
+    return { msg: 'secret set OK' }
+  }
+
+  @Post('2fa/verify')
+  async verifyOtp(@Req() req: any, @Res() res: any) {
+    try {
+      await this.authService.VerifyOTP(req.body.id, req.body.token, res)
+    } catch (e) {
+      throw e
+    }
+    return { msg: 'verified Otp' }
+  }
+
+  @Post('2fa/validate')
+  async validateOtp(@Req() req: any, @Res() res: any) {
+    try {
+      await this.authService.ValidateOTP(req.body.id, req.body.token, res)
+    } catch (e) {
+      throw e
+    }
+    return { msg: 'validate Otp' }
+  }
+
+  @Post('2fa/disable')
+  async disableOtp(@Req() req: any, @Res() res: any) {
+    try {
+      const is2fa = await this.authService.isUser2fa(req.user.id)
+      if (is2fa === true) {
+        await this.authService.unset2fa(req.body.id, req.body.token, res)
+      } else {
+        throw new ExceptionCustom('2fa is not enable')
+      }
+    } catch (e) {
+      throw e
+    }
+    return { msg: '2fa disabled' }
+  }
+
   @UseGuards(LocalAuthGuard)
   @Post('login')
-  async login() {
-    return { msg: 'Local Auth Login' }
+  async login(@Req() req: any, @Res() res: any) {
+    let is2faverified = true
+    const is2fa = await this.authService.isUser2fa(req.user.id)
+    if (is2fa == true) {
+      this.authService.unset2faValidation(req.user.id)
+      const resUser = await this.prisma.userPresence.create({
+        data: { userId: req.user.id }
+      })
+      is2faverified = false
+    }
+
+    const resUser = await this.prisma.userPresence.create({
+      data: { userId: req.user.id }
+    })
+    return res.status(200).json({ is2faverified })
+  }
+
+  @Get('logout')
+  async logout(@Req() req: any, @Res() res: any) {
+    if (req?.user?.id) {
+      const lastUserPresence = await this.userPresenceService.findLastByUserId(
+        req.user.id
+      )
+      if (lastUserPresence)
+        await this.userPresenceService.disconnected(lastUserPresence.id)
+    }
+    req.session.destroy()
+    return res.redirect(process.env['COMPUTER_ADRESS'])
   }
 
   @Get('42/login')
   @UseGuards(School42AuthGuard)
-  ftLogin() {
-    return { msg: '42 Auth Login' }
+  async ftLogin(@Req() req: any, @Res() res: any) {
+    if (req.needsRedirect) {
+      return res.redirect(process.env['COMPUTER_ADRESS'])
+    }
   }
 
   @Get('42/redirect')
   @UseGuards(School42AuthGuard)
-  ftRedirect() {
-    return { msg: '42 OK' }
+  async ftRedirect(@Req() req: any, @Res() res: any) {
+    try {
+      const is2fa = await this.authService.isUser2fa(req.user.id)
+      if (is2fa === true) {
+        this.authService.unset2faValidation(req.user.id)
+        const resUser = await this.prisma.userPresence.create({
+          data: { userId: req.user.id }
+        })
+        return res.redirect(`${process.env['COMPUTER_ADRESS']}/2fa/login`)
+      }
+      const resUser = await this.prisma.userPresence.create({
+        data: { userId: req.user.id }
+      })
+      return res.redirect(process.env['COMPUTER_ADRESS'])
+    } catch (Error) {
+      return res.redirect(process.env['COMPUTER_ADRESS'])
+    }
   }
 
   @UseGuards(GoogleAuthGuard)
   @Get('google/login')
-  getGoogleAuth() {
-    return { msg: 'Google Auth Login' }
+  getGoogleAuth(@Res() res: any) {
+    return res.status(200).json({ msg: 'Google Auth Login' })
   }
 
   @UseGuards(GoogleAuthGuard)
   @Get('google/redirect')
-  getGoogleCallback() {
-    return { msg: 'Google OK' }
+  async getGoogleCallback(@Req() req: any, @Res() res: any) {
+    try {
+      const is2fa = await this.authService.isUser2fa(req.user.id)
+      if (is2fa === true) {
+        this.authService.unset2faValidation(req.user.id)
+        const resUser = await this.prisma.userPresence.create({
+          data: { userId: req.user.id }
+        })
+        return res.redirect(`${process.env['COMPUTER_ADRESS']}/2fa/login`)
+      }
+      const resUser = await this.prisma.userPresence.create({
+        data: { userId: req.user.id }
+      })
+
+      return res.redirect(process.env['COMPUTER_ADRESS'])
+    } catch (Error) {
+      return res.redirect(`${process.env['COMPUTER_ADRESS']}?message=AuthError`)
+    }
   }
 
   @Get('github/login')
   @UseGuards(GithubGuard)
-  async getGithubAuth() {
-    return { msg: 'GitHub Auth Login' }
+  async getGithubAuth(res: any) {
+    return res.status(200).json({ msg: 'Github Auth login' })
   }
 
-  @Get('github/redirect')
   @UseGuards(GithubGuard)
-  async getGithubAuthCallback() {
-    return { msg: 'GitHub OK' }
+  @Get('github/redirect')
+  async getGithubAuthCallback(@Req() req: any, @Res() res: any) {
+    try {
+      const is2fa = await this.authService.isUser2fa(req.user.id)
+      if (is2fa === true) {
+        this.authService.unset2faValidation(req.user.id)
+        const resUser = await this.prisma.userPresence.create({
+          data: { userId: req.user.id }
+        })
+        return res.redirect(`${process.env['COMPUTER_ADRESS']}/2fa/login`)
+      }
+      const resUser = await this.prisma.userPresence.create({
+        data: { userId: req.user.id }
+      })
+
+      return res.redirect(process.env['COMPUTER_ADRESS'])
+    } catch (Error) {
+      return res.redirect(`${process.env['COMPUTER_ADRESS']}?message=AuthError`)
+    }
   }
 }

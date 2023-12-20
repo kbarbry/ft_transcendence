@@ -93,6 +93,24 @@ export class ChannelService {
     })
   }
 
+  async findOneByUsername(name: string): Promise<Channel | null> {
+    return this.prisma.channel.findUnique({
+      where: {
+        name
+      }
+    })
+  }
+
+  async findChannelByChannelIds(channelIds: string[]): Promise<Channel[]> {
+    return this.prisma.channel.findMany({
+      where: {
+        id: {
+          in: channelIds
+        }
+      }
+    })
+  }
+
   async findAllThatContain(str: string): Promise<Channel[]> {
     return await this.prisma.channel.findMany({
       where: {
@@ -123,5 +141,13 @@ export class ChannelService {
         createdAt: 'desc'
       }
     })
+  }
+
+  async isChannelPasswordSet(channelid: string): Promise<boolean> {
+    const res = await this.prisma.channel.findUnique({
+      where: { id: channelid }
+    })
+
+    return res?.password ? true : false
   }
 }

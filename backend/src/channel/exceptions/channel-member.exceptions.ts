@@ -44,3 +44,36 @@ export class ExceptionUserNotFound extends HttpException {
     super('User not found for creation of channel member', HttpStatus.CONFLICT)
   }
 }
+
+export class ExceptionChannelNotFound extends HttpException {
+  constructor() {
+    super(
+      'Channel not found for creation of channel member',
+      HttpStatus.CONFLICT
+    )
+  }
+}
+
+export class ExceptionTryingToDeleteChannelOwner extends HttpException {
+  constructor() {
+    super('You are trying delete the channel owner', HttpStatus.CONFLICT)
+  }
+}
+
+export class ExceptionUserIsBlocked extends HttpException {
+  constructor() {
+    super(
+      'You are trying to join a channel that blocked you',
+      HttpStatus.CONFLICT
+    )
+  }
+}
+
+export class ExceptionChannelIsPrivate extends HttpException {
+  constructor() {
+    super(
+      'You are trying to join a private channel but you are not invited',
+      HttpStatus.CONFLICT
+    )
+  }
+}

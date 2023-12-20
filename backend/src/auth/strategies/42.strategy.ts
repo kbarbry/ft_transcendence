@@ -13,9 +13,9 @@ export class School42Strategy extends PassportStrategy(
 ) {
   constructor() {
     super({
-      clientID: process.env['42_CLIENT_ID'],
-      clientSecret: process.env['42_CLIENT_SECRET'],
-      callbackURL: process.env['42_CALLBACK_URL']
+      clientID: process.env['CLIENT_ID'],
+      clientSecret: process.env['CLIENT_SECRET'],
+      callbackURL: process.env['CALLBACK_URL']
     })
   }
 

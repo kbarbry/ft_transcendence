@@ -5,6 +5,7 @@ import { PrismaService } from '../prisma/prisma.service'
 import { ArgumentMetadata, ValidationPipe } from '@nestjs/common'
 import { UpdatePrivateMessageInput } from './dto/update-private-message.input'
 import { CreatePrivateMessageInput } from './dto/create-private-message.input'
+import { PubSubModule } from '../common/ws/pubsub.module'
 
 describe('PrivateMessageResolver', () => {
   let privateMessageresolver: PrivateMessageResolver
@@ -23,7 +24,8 @@ describe('PrivateMessageResolver', () => {
         PrivateMessageResolver,
         { provide: PrivateMessageService, useValue: privateMessageService },
         PrismaService
-      ]
+      ],
+      imports: [PubSubModule]
     }).compile()
     privateMessageresolver = module.get<PrivateMessageResolver>(
       PrivateMessageResolver
@@ -46,10 +48,20 @@ describe('PrivateMessageResolver', () => {
         senderId: '1',
         receiverId: '2'
       }
+      const mockContext = {
+        req: {
+          user: {
+            id: '1'
+          }
+        }
+      }
       const resExpected = { id: '1', ...data }
 
       privateMessageService.create.mockReturnValue(resExpected)
-      const result = await privateMessageresolver.createPrivateMessage(data)
+      const result = await privateMessageresolver.createPrivateMessage(
+        data,
+        mockContext
+      )
 
       expect(result).toStrictEqual(resExpected)
       expect(privateMessageService.create).toHaveBeenCalledWith(data)
@@ -58,12 +70,29 @@ describe('PrivateMessageResolver', () => {
       const data: UpdatePrivateMessageInput = {
         content: 'this is a message'
       }
+      const mockContext = {
+        req: {
+          user: {
+            id: '1'
+          }
+        }
+      }
+      jest
+        .spyOn(privateMessageresolver, 'findOnePrivateMessage')
+        .mockResolvedValue({
+          id: '1',
+          content: 'original message',
+          senderId: '1',
+          receiverId: '2',
+          createdAt: new Date()
+        })
       const resExpected = { id: '1', ...data }
 
       privateMessageService.update.mockReturnValue(resExpected)
       const result = await privateMessageresolver.updatePrivateMessage(
         '1',
-        data
+        data,
+        mockContext
       )
 
       expect(result).toStrictEqual(resExpected)
@@ -71,9 +100,28 @@ describe('PrivateMessageResolver', () => {
     })
     it('deletePrivateMessage', async () => {
       const resExpected = { id: '1' }
+      const mockContext = {
+        req: {
+          user: {
+            id: '1'
+          }
+        }
+      }
+      jest
+        .spyOn(privateMessageresolver, 'findOnePrivateMessage')
+        .mockResolvedValue({
+          id: '1',
+          content: 'original message',
+          senderId: '1',
+          receiverId: '2',
+          createdAt: new Date()
+        })
 
       privateMessageService.delete.mockReturnValue(resExpected)
-      const result = await privateMessageresolver.deletePrivateMessage('1')
+      const result = await privateMessageresolver.deletePrivateMessage(
+        '1',
+        mockContext
+      )
 
       expect(result).toStrictEqual(resExpected)
       expect(privateMessageService.delete).toHaveBeenCalledWith('1')
@@ -84,13 +132,15 @@ describe('PrivateMessageResolver', () => {
       const resExpected = {
         senderId: '1',
         receiverId: '2',
-        content: 'this is a message1'
+        content: 'original message',
+        createdAt: '2023-12-01T18:25:41.658Z'
       }
       privateMessageService.findOne.mockReturnValue(resExpected)
       const result = await privateMessageresolver.findOnePrivateMessage('1')
 
-      expect(result).toStrictEqual(resExpected)
-      expect(privateMessageService.findOne).toHaveBeenCalledWith('1')
+      expect(result?.content).toStrictEqual(resExpected.content)
+      expect(result?.senderId).toStrictEqual(resExpected.senderId)
+      expect(result?.receiverId).toStrictEqual(resExpected.receiverId)
     })
     it('findAllPrivateMessageWith', async () => {
       const resExpected = [

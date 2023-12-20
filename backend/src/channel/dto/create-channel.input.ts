@@ -10,9 +10,9 @@ import {
   Max,
   Matches
 } from 'class-validator'
-import { CustomIsPassword } from '../../common/pipes/password.pipe'
 import { CustomIsName } from '../../common/pipes/username.pipe'
 import { CustomIsTopic } from '../../common/pipes/topic.pipe'
+import { CustomIsChannelPassword } from 'src/common/pipes/password-channel.pipe'
 
 @InputType()
 export class CreateChannelInput {
@@ -41,9 +41,9 @@ export class CreateChannelInput {
 
   @Field(() => String, { nullable: true })
   @IsOptional()
-  @CustomIsPassword({
+  @CustomIsChannelPassword({
     message:
-      "$property must be between 8 and 50 characters and contain at least 1 lowercase character, 1 uppercase character, 1 number and 1 special character (all special characters aren't authorized.)"
+      '$property must be between 1 and 30 characters long, and can only contain these special characters: "!@#$%^&+=" '
   })
   password?: string
 

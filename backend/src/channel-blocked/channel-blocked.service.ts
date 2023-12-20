@@ -17,6 +17,9 @@ export class ChannelBlockedService {
     const channel = await this.prisma.channel.findUnique({
       where: { id: channelId }
     })
+    if (userId === channel?.ownerId) {
+      throw new ExceptionTryingToBlockChannelOwner()
+    }
     const userMember = await this.prisma.channelMember.findUnique({
       where: { userId_channelId: { userId, channelId } }
     })
@@ -33,9 +36,7 @@ export class ChannelBlockedService {
         where: { userId_channelId: { userId, channelId } }
       })
     }
-    if (userId === channel?.ownerId) {
-      throw new ExceptionTryingToBlockChannelOwner()
-    }
+
     return this.prisma.channelBlocked.create({ data })
   }
 
@@ -58,6 +59,14 @@ export class ChannelBlockedService {
           userId,
           channelId
         }
+      }
+    })
+  }
+
+  async findAllChannelBlockedofUser(userId: string): Promise<ChannelBlocked[]> {
+    return this.prisma.channelBlocked.findMany({
+      where: {
+        userId
       }
     })
   }

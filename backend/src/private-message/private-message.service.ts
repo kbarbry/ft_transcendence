@@ -66,7 +66,8 @@ export class PrivateMessageService {
       },
       orderBy: {
         createdAt: 'desc'
-      }
+      },
+      take: 50
     })
   }
 
@@ -93,7 +94,8 @@ export class PrivateMessageService {
       },
       orderBy: {
         createdAt: 'desc'
-      }
+      },
+      take: 50
     })
   }
 }

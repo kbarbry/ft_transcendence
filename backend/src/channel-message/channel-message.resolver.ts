@@ -1,4 +1,11 @@
-import { Resolver, Query, Mutation, Args } from '@nestjs/graphql'
+import {
+  Resolver,
+  Query,
+  Mutation,
+  Args,
+  Subscription,
+  Context
+} from '@nestjs/graphql'
 import { ChannelMessageService } from './channel-message.service'
 import { ChannelMessage } from './entities/channel-message.entity'
 import { CreateChannelMessageInput } from './dto/create-channel-message.input'
@@ -6,12 +13,60 @@ import { UseGuards, ValidationPipe } from '@nestjs/common'
 import { UpdateChannelMessageInput } from './dto/update-channel-message.input'
 import { NanoidValidationPipe } from '../common/pipes/nanoid.pipe'
 import { StringValidationPipe } from '../common/pipes/string.pipe'
-import { AuthorizationGuard } from '../auth/guards/authorization.guard'
+import {
+  AuthorizationGuard,
+  Unprotected
+} from '../auth/guards/authorization.guard'
+import { PubSub } from 'graphql-subscriptions'
+import { ExceptionChannelMessageDoesNotExist } from 'src/channel/exceptions/channel-message.exception'
+import {
+  ForbiddenAccessData,
+  userContextGuard
+} from 'src/auth/guards/request.guards'
 
 @Resolver(() => ChannelMessage)
 @UseGuards(AuthorizationGuard)
 export class ChannelMessageResolver {
-  constructor(private readonly channelMessageService: ChannelMessageService) {}
+  constructor(
+    private readonly channelMessageService: ChannelMessageService,
+    private readonly pubSub: PubSub
+  ) {}
+
+  //**************************************************//
+  //  SUBSCRIPTION
+  //**************************************************//
+  @Subscription(() => ChannelMessage, {
+    resolve: (payload) => (payload?.res !== undefined ? payload.res : null)
+  })
+  @Unprotected()
+  channelMessageCreation(
+    @Args('channelId', { type: () => String }, NanoidValidationPipe)
+    channelId: string
+  ) {
+    return this.pubSub.asyncIterator('messageReceived-' + channelId)
+  }
+
+  @Subscription(() => ChannelMessage, {
+    resolve: (payload) => (payload?.res !== undefined ? payload.res : null)
+  })
+  @Unprotected()
+  channelMessageEdition(
+    @Args('channelId', { type: () => String }, NanoidValidationPipe)
+    channelId: string
+  ) {
+    return this.pubSub.asyncIterator('messageEdited-' + channelId)
+  }
+
+  @Subscription(() => ChannelMessage, {
+    resolve: (payload) => (payload?.res !== undefined ? payload.res : null)
+  })
+  @Unprotected()
+  channelMessageDeletion(
+    @Args('channelId', { type: () => String }, NanoidValidationPipe)
+    channelId: string
+  ) {
+    return this.pubSub.asyncIterator('messageDeleted-' + channelId)
+  }
 
   //**************************************************//
   //  MUTATION
@@ -19,9 +74,16 @@ export class ChannelMessageResolver {
   @Mutation(() => ChannelMessage)
   async createChannelMessage(
     @Args('data', { type: () => CreateChannelMessageInput }, ValidationPipe)
-    data: CreateChannelMessageInput
+    data: CreateChannelMessageInput,
+    @Context() ctx: any
   ): Promise<ChannelMessage> {
-    return this.channelMessageService.create(data)
+    if (!userContextGuard(ctx?.req?.user?.id, data.senderId))
+      throw new ForbiddenAccessData()
+
+    const res = await this.channelMessageService.create(data)
+
+    await this.pubSub.publish('messageReceived-' + data.channelId, { res })
+    return res
   }
 
   @Mutation(() => ChannelMessage)
@@ -29,16 +91,36 @@ export class ChannelMessageResolver {
     @Args('id', { type: () => String }, NanoidValidationPipe)
     id: string,
     @Args('data', { type: () => UpdateChannelMessageInput }, ValidationPipe)
-    data: UpdateChannelMessageInput
+    data: UpdateChannelMessageInput,
+    @Context() ctx: any
   ): Promise<ChannelMessage> {
-    return this.channelMessageService.update(id, data)
+    const msg = await this.findOneChannelMessage(id)
+    if (!msg) throw new ExceptionChannelMessageDoesNotExist()
+
+    if (!userContextGuard(ctx?.req?.user?.id, msg.senderId))
+      throw new ForbiddenAccessData()
+
+    const res = await this.channelMessageService.update(id, data)
+
+    await this.pubSub.publish('messageEdited-' + msg.channelId, { res })
+    return res
   }
 
   @Mutation(() => ChannelMessage)
   async deleteChannelMessage(
-    @Args('id', { type: () => String }, NanoidValidationPipe) id: string
+    @Args('id', { type: () => String }, NanoidValidationPipe) id: string,
+    @Context() ctx: any
   ): Promise<ChannelMessage> {
-    return this.channelMessageService.delete(id)
+    const msg = await this.findOneChannelMessage(id)
+    if (!msg) throw new ExceptionChannelMessageDoesNotExist()
+
+    if (!userContextGuard(ctx?.req?.user?.id, msg.senderId))
+      throw new ForbiddenAccessData()
+
+    const res = await this.channelMessageService.delete(id)
+
+    await this.pubSub.publish('messageDeleted-' + msg.channelId, { res })
+    return res
   }
 
   //**************************************************//

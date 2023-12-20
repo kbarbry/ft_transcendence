@@ -1,0 +1,4 @@
+canvas {
+  aspect-ratio: 4 / 3;
+  width: min(100%, 70vh * 4 / 3);
+}

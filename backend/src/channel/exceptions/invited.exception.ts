@@ -9,10 +9,10 @@ export class ExceptionUserNotInvited extends HttpException {
   }
 }
 
-export class ExceptionChannelIsNotInProtectedMode extends HttpException {
+export class ExceptionUserAlreadyInvited extends HttpException {
   constructor() {
     super(
-      'The channel is not in protected mode, no need for invitation',
+      'The user you are trying to invite is already invited in the channel',
       HttpStatus.CONFLICT
     )
   }

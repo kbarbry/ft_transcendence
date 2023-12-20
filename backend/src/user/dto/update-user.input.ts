@@ -29,6 +29,10 @@ export class UpdateUserInput {
   })
   username?: string
 
+  @Field(() => Boolean, { nullable: true })
+  @IsOptional()
+  doubleA?: boolean
+
   @Field(() => EStatus, { nullable: true })
   @IsOptional()
   @IsEnum(EStatus, { message: '$property must be a valid EStatus.' })

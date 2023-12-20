@@ -8,7 +8,6 @@ import { ChannelInvitedService } from '../channel-invited/channel-invited.servic
 import { ChannelService } from '../channel/channel.service'
 import { UserService } from '../user/user.service'
 import { ExceptionUserBlockedInChannel } from '../channel/exceptions/blocked.exception'
-import { ExceptionUserNotInvited } from '../channel/exceptions/invited.exception'
 import { ExceptionMaxUserReachedInChannel } from '../channel/exceptions/channel.exception'
 import {
   ExceptionTryingToMakeAdminAnAdmin,
@@ -16,7 +15,9 @@ import {
   ExceptionTryingToUnmuteAnUnmuted,
   ExceptionTryingToUnmakeAdminAMember,
   ExceptionUserNotFound,
-  ExceptionTryingToUnmakeAdminTheOwner
+  ExceptionTryingToUnmakeAdminTheOwner,
+  ExceptionChannelNotFound,
+  ExceptionChannelIsPrivate
 } from '../channel/exceptions/channel-member.exceptions'
 
 @Injectable()
@@ -53,28 +54,30 @@ export class ChannelMemberService {
     const numberMembers = (
       await this.prisma.channelMember.findMany({ where: { channelId } })
     ).length
+    const user = await this.userService.findOne(data.userId)
+
+    if (!user) throw new ExceptionUserNotFound()
+    if (!channel) throw new ExceptionChannelNotFound()
 
     if (userBlocked) {
       throw new ExceptionUserBlockedInChannel()
     }
-    if (channel && channel.type === EChannelType.Protected) {
-      if (userInvited)
-        await this.channelInvitedService.delete(userId, channelId)
-      else throw new ExceptionUserNotInvited()
+
+    if (!userInvited && channel?.type === EChannelType.Protected)
+      throw new ExceptionChannelIsPrivate()
+    if (userInvited) {
+      await this.channelInvitedService.delete(userId, channelId)
     }
+
     if (channel && numberMembers >= channel.maxUsers) {
       throw new ExceptionMaxUserReachedInChannel()
     }
 
-    let nickname = data.nickname
-    if (!nickname) {
-      const user = await this.userService.findOne(data.userId)
-      if (!user) throw new ExceptionUserNotFound()
-      nickname = user.username
-    }
+    const nickname = data.nickname || user.username
+    const avatarUrl = data.avatarUrl || user.avatarUrl
 
     return this.prisma.channelMember.create({
-      data: { nickname, ...data }
+      data: { nickname, avatarUrl, ...data }
     })
   }
 
@@ -216,6 +219,14 @@ export class ChannelMemberService {
     })
     if (channel?.ownerId === userId) return true
     return false
+  }
+
+  async findAllChannelMemberofUser(userId: string): Promise<ChannelMember[]> {
+    return this.prisma.channelMember.findMany({
+      where: {
+        userId
+      }
+    })
   }
 
   async findAllInChannel(channelId: string): Promise<ChannelMember[]> {

@@ -1,18 +1,64 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client'
+import {
+  ApolloClient,
+  InMemoryCache,
+  ApolloProvider,
+  HttpLink,
+  split
+} from '@apollo/client'
 import App from './App.tsx'
 import './index.css'
+import { GraphQLWsLink } from '@apollo/client/link/subscriptions'
+import { createClient } from 'graphql-ws'
+import { getMainDefinition } from '@apollo/client/utilities'
+import { Provider } from 'react-redux'
+import { persistor, store } from './store/store.tsx'
+import { PersistGate } from 'redux-persist/integration/react'
 
-const client = new ApolloClient({
-  uri: 'http://127.0.0.1:3000/graphql',
-  cache: new InMemoryCache(),
-});
+const httpLink = new HttpLink({
+  uri: `${import.meta.env.VITE_COMPUTER_ADRESS_BACK}/graphql`,
+  credentials: 'include'
+})
+const wsLink = new GraphQLWsLink(
+  createClient({
+    url: `${import.meta.env.VITE_COMPUTER_ADRESS_WS}/graphql`,
+    connectionParams: {
+      credentials: 'include'
+    }
+  })
+)
+const splitLink = split(
+  ({ query }) => {
+    const definition = getMainDefinition(query)
+    return (
+      definition.kind === 'OperationDefinition' &&
+      definition.operation === 'subscription'
+    )
+  },
+  wsLink,
+  httpLink
+)
+
+export const client = new ApolloClient({
+  link: splitLink,
+  cache: new InMemoryCache({
+    typePolicies: {
+      ChannelInvited: {
+        keyFields: ['channelId', 'userId']
+      }
+    }
+  })
+})
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <ApolloProvider client={client}>
-      <App />
+      <Provider store={store}>
+        <PersistGate loading={null} persistor={persistor}>
+          <App />
+        </PersistGate>
+      </Provider>
     </ApolloProvider>
   </React.StrictMode>
 )
