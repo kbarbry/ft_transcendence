@@ -26,7 +26,6 @@ export const SignIn: React.FC = () => {
     LogUser(email, pass)
     .then((userData) => {
         if (userData !== null) {
-          console.log(auth)
           if (userData.is2faverified == false)
           {
             setLocation('http://127.0.0.1:5173/2fa/login', { replace: true })

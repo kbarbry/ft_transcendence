@@ -35,7 +35,6 @@ const PrivateMessageComponent: React.FC<PrivateMessageProps> = ({
   const handleOnEdit = () => {
     const trimmedMessage = editionMode.editionInfos?.content.trim()
 
-    console.log(pastEdit, ' ', trimmedMessage)
     if (pastEdit?.trim() === trimmedMessage) {
       editionMode.setEditionsInfos(null)
       setPastEdit(null)

@@ -1,4 +1,11 @@
-import { Resolver, Query, Mutation, Args, Context } from '@nestjs/graphql'
+import {
+  Resolver,
+  Query,
+  Mutation,
+  Args,
+  Context,
+  Subscription
+} from '@nestjs/graphql'
 import { UserService } from './user.service'
 import { User } from './entities/user.entity'
 import {
@@ -13,13 +20,38 @@ import { EmailValidationPipe } from '../common/pipes/email.pipe'
 import { UsernameValidationPipe } from '../common/pipes/username.pipe'
 import {
   AuthorizationGuard,
+  Unprotected,
   Unprotected2fa
 } from '../auth/guards/authorization.guard'
+import { PubSub } from 'graphql-subscriptions'
+import {
+  ForbiddenAccessData,
+  userContextGuard
+} from 'src/auth/guards/request.guards'
+import { PrismaService } from 'src/prisma/prisma.service'
 
 @Resolver(() => User)
 @UseGuards(AuthorizationGuard)
 export class UserResolver {
-  constructor(private readonly userService: UserService) {}
+  constructor(
+    private readonly userService: UserService,
+    private readonly pubSub: PubSub,
+    private readonly prisma: PrismaService
+  ) {}
+
+  //**************************************************//
+  //  SUBSCRIPTION
+  //**************************************************//
+
+  @Subscription(() => User, {
+    resolve: (payload) => (payload?.res !== undefined ? payload.res : null)
+  })
+  @Unprotected()
+  userEdition(
+    @Args('id', { type: () => String }, NanoidValidationPipe) id: string
+  ) {
+    return this.pubSub.asyncIterator('userEdited-' + id)
+  }
 
   //**************************************************//
   //  MUTATION
@@ -28,9 +60,45 @@ export class UserResolver {
   async updateUser(
     @Args('id', { type: () => String }, NanoidValidationPipe) id: string,
     @Args('data', { type: () => UpdateUserInput }, ValidationPipe)
-    data: UpdateUserInput
+    data: UpdateUserInput,
+    @Context() ctx: any
   ): Promise<User> {
-    return this.userService.update(id, data)
+    if (!userContextGuard(ctx?.req?.user?.id, id))
+      throw new ForbiddenAccessData()
+    const res = await this.userService.update(id, data)
+
+    const caseSender = (
+      await this.prisma.relationFriend.findMany({
+        where: {
+          userAId: id
+        },
+        select: {
+          userBId: true
+        }
+      })
+    ).map((elem) => elem.userBId)
+
+    const caseReceiver = (
+      await this.prisma.relationFriend.findMany({
+        where: {
+          userBId: id
+        },
+        select: {
+          userAId: true
+        }
+      })
+    ).map((elem) => elem.userAId)
+    const relationsFriend = [...caseSender, ...caseReceiver]
+
+    await Promise.all(
+      relationsFriend.map(async (value) => {
+        await this.pubSub.publish('userEdited-' + value, { res })
+      })
+    )
+
+    await this.pubSub.publish('userEdited-' + id, { res })
+
+    return res
   }
 
   @Mutation(() => User)

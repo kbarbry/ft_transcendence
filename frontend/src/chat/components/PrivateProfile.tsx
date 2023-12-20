@@ -88,6 +88,7 @@ const PrivateProfile: React.FC<PrivateProfileProps> = ({ userId, member }) => {
       <Modal
         open={isModalVisible}
         onCancel={handleCancel}
+        destroyOnClose={true}
         footer={null}
         width={200}
         centered

@@ -828,6 +828,7 @@ export type Subscription = {
   relationFriendDeleted: RelationFriend;
   relationRequestCreation: RelationRequests;
   relationRequestDeleted: RelationRequests;
+  userEdition: User;
 };
 
 
@@ -941,6 +942,11 @@ export type SubscriptionRelationRequestCreationArgs = {
 
 export type SubscriptionRelationRequestDeletedArgs = {
   userId: Scalars['String']['input'];
+};
+
+
+export type SubscriptionUserEditionArgs = {
+  id: Scalars['String']['input'];
 };
 
 export type UpdateChannelInput = {
@@ -1431,6 +1437,13 @@ export type RelationRequestDeletedSubscriptionVariables = Exact<{
 
 export type RelationRequestDeletedSubscription = { __typename?: 'Subscription', relationRequestDeleted: { __typename?: 'RelationRequests', userReceiverId: string, userSenderId: string } };
 
+export type UserEditionSubscriptionVariables = Exact<{
+  userEditionId: Scalars['String']['input'];
+}>;
+
+
+export type UserEditionSubscription = { __typename?: 'Subscription', userEdition: { __typename?: 'User', id: string, username: string } };
+
 export type ChannelEditionSubscriptionVariables = Exact<{
   channelEditionId: Scalars['String']['input'];
 }>;
@@ -1706,6 +1719,7 @@ export const RelationBlockedCreationDocument = {"kind":"Document","definitions":
 export const RelationFriendDeletedDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"subscription","name":{"kind":"Name","value":"RelationFriendDeleted"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"userId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"relationFriendDeleted"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"userId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"userId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"userAId"}},{"kind":"Field","name":{"kind":"Name","value":"userBId"}}]}}]}}]} as unknown as DocumentNode<RelationFriendDeletedSubscription, RelationFriendDeletedSubscriptionVariables>;
 export const RelationRequestCreationDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"subscription","name":{"kind":"Name","value":"RelationRequestCreation"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"userId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"relationRequestCreation"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"userId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"userId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"userReceiverId"}},{"kind":"Field","name":{"kind":"Name","value":"userSenderId"}}]}}]}}]} as unknown as DocumentNode<RelationRequestCreationSubscription, RelationRequestCreationSubscriptionVariables>;
 export const RelationRequestDeletedDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"subscription","name":{"kind":"Name","value":"RelationRequestDeleted"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"userId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"relationRequestDeleted"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"userId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"userId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"userReceiverId"}},{"kind":"Field","name":{"kind":"Name","value":"userSenderId"}}]}}]}}]} as unknown as DocumentNode<RelationRequestDeletedSubscription, RelationRequestDeletedSubscriptionVariables>;
+export const UserEditionDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"subscription","name":{"kind":"Name","value":"UserEdition"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"userEditionId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"userEdition"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"userEditionId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"username"}}]}}]}}]} as unknown as DocumentNode<UserEditionSubscription, UserEditionSubscriptionVariables>;
 export const ChannelEditionDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"subscription","name":{"kind":"Name","value":"ChannelEdition"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"channelEditionId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"channelEdition"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"channelEditionId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]} as unknown as DocumentNode<ChannelEditionSubscription, ChannelEditionSubscriptionVariables>;
 export const ChannelDeletionDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"subscription","name":{"kind":"Name","value":"ChannelDeletion"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"channelDeletionId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"channelDeletion"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"channelDeletionId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]} as unknown as DocumentNode<ChannelDeletionSubscription, ChannelDeletionSubscriptionVariables>;
 export const ChannelMemberCreationDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"subscription","name":{"kind":"Name","value":"ChannelMemberCreation"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"channelMemberCreationId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"channelMemberCreation"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"channelMemberCreationId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"userId"}},{"kind":"Field","name":{"kind":"Name","value":"channelId"}}]}}]}}]} as unknown as DocumentNode<ChannelMemberCreationSubscription, ChannelMemberCreationSubscriptionVariables>;

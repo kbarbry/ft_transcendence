@@ -4,6 +4,15 @@ import { gql } from '@apollo/client'
 //  SUBSCRIPTION
 //**************************************************//
 
+export const subscriptionOnUserEdited = gql`
+  subscription UserEdition($userEditionId: String!) {
+    userEdition(id: $userEditionId) {
+      id
+      username
+    }
+  }
+`
+
 export const subscriptionOnBlockedReceived = gql`
   subscription RelationBlockedCreation($userId: String!) {
     relationBlockedCreation(userId: $userId) {

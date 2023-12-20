@@ -14,7 +14,8 @@ import {
   subscriptionOnChannelMemberEdition,
   subscriptionOnFriendDeleted,
   subscriptionOnRequestCreated,
-  subscriptionOnRequestDeleted
+  subscriptionOnRequestDeleted,
+  subscriptionOnUserEdited
 } from './graphql'
 import { setRequestReceivedInformations } from './store/slices/request-received-informations.slice'
 import { setRequestSentInformations } from './store/slices/request-sent-informations.slice'
@@ -50,7 +51,9 @@ import {
   RelationRequestCreationSubscription,
   RelationRequestCreationSubscriptionVariables,
   RelationRequestDeletedSubscription,
-  RelationRequestDeletedSubscriptionVariables
+  RelationRequestDeletedSubscriptionVariables,
+  UserEditionSubscription,
+  UserEditionSubscriptionVariables
 } from './gql/graphql'
 import {
   addChannelInfo,
@@ -71,6 +74,7 @@ import { gameInvitationSubscription } from './components/game-invitation-button/
 import { addGameInvitationValue } from './store/slices/gameInvitations.slice'
 import InfoNotification from './notifications/InformationNotification'
 import { GiBeaver } from 'react-icons/gi'
+import { setUserInformations } from './store/slices/user-informations.slice'
 
 interface AppPrivateSubscriptionProps {
   userId: string
@@ -80,6 +84,7 @@ interface AppPrivateSubscriptionProps {
 }
 
 interface LoadingSubscriptionState {
+  userEdition: boolean
   channelEdited: boolean
   channelDeleted: boolean
   channelMemberCreated: boolean
@@ -99,6 +104,7 @@ interface LoadingSubscriptionState {
 }
 
 const LoadingSubscriptionStateInitial: LoadingSubscriptionState = {
+  userEdition: true,
   channelEdited: true,
   channelDeleted: true,
   channelMemberCreated: true,
@@ -129,6 +135,19 @@ const AppPrivateSubscription: React.FC<AppPrivateSubscriptionProps> = ({
   //**************************************************//
   //  RELATIONS
   //**************************************************//
+  const { error: subUserEdited } = useSubscription<
+    UserEditionSubscription,
+    UserEditionSubscriptionVariables
+  >(subscriptionOnUserEdited, {
+    variables: { userEditionId: userId },
+    onData: async (received) => {
+      if (received.data.data?.userEdition) {
+        await dispatch(setFriendInformations(userId))
+        await dispatch(setUserInformations())
+      }
+    }
+  })
+
   const { error: subFriendDeleted } = useSubscription<
     RelationFriendDeletedSubscription,
     RelationFriendDeletedSubscriptionVariables
@@ -139,11 +158,7 @@ const AppPrivateSubscription: React.FC<AppPrivateSubscriptionProps> = ({
         await dispatch(setFriendInformations(userId))
       }
     },
-    onError: (e) => {
-      console.log(
-        'Error in AppPrivate.subscription.tsx subscriptionOnFriendDeleted : ',
-        e
-      )
+    onError: () => {
       setLoadingSubscription((prevLoading) => ({
         ...prevLoading,
         isError: true
@@ -170,11 +185,7 @@ const AppPrivateSubscription: React.FC<AppPrivateSubscriptionProps> = ({
           <GiBeaver />
         )
     },
-    onError: (e) => {
-      console.log(
-        'Error in AppPrivate.subscription.tsx subscriptionOnRequestCreated : ',
-        e
-      )
+    onError: () => {
       setLoadingSubscription((prevLoading) => ({
         ...prevLoading,
         isError: true
@@ -193,11 +204,7 @@ const AppPrivateSubscription: React.FC<AppPrivateSubscriptionProps> = ({
         await dispatch(setRequestSentInformations(userId))
       }
     },
-    onError: (e) => {
-      console.log(
-        'Error in AppPrivate.subscription.tsx subscriptionOnRequestDeleted : ',
-        e
-      )
+    onError: () => {
       setLoadingSubscription((prevLoading) => ({
         ...prevLoading,
         isError: true
@@ -217,11 +224,7 @@ const AppPrivateSubscription: React.FC<AppPrivateSubscriptionProps> = ({
         await dispatch(setRequestReceivedInformations(userId))
       }
     },
-    onError: (e) => {
-      console.log(
-        'Error in AppPrivate.subscription.tsx subscriptionOnBlockedReceived : ',
-        e
-      )
+    onError: () => {
       setLoadingSubscription((prevLoading) => ({
         ...prevLoading,
         isError: true
@@ -238,17 +241,12 @@ const AppPrivateSubscription: React.FC<AppPrivateSubscriptionProps> = ({
   >(subscriptionOnChannelEdition, {
     variables: { channelEditionId: userId },
     onData: async (received) => {
-      console.log('ChannelEdition')
       if (received.data.data?.channelEdition) {
         const res = received.data.data?.channelEdition
         await dispatch(setChannelChannelInformations(res.id))
       }
     },
-    onError: (e) => {
-      console.log(
-        'Error in AppPrivate.subscription.tsx subscriptionOnChannelEdition : ',
-        e
-      )
+    onError: () => {
       setLoadingSubscription((prevLoading) => ({
         ...prevLoading,
         isError: true
@@ -262,17 +260,12 @@ const AppPrivateSubscription: React.FC<AppPrivateSubscriptionProps> = ({
   >(subscriptionOnChannelDeletion, {
     variables: { channelDeletionId: userId },
     onData: async (received) => {
-      console.log('ChannelDeleted')
       if (received.data.data?.channelDeletion) {
         const res = received.data.data?.channelDeletion
         await dispatch(removeChannelInfo(res.id))
       }
     },
-    onError: (e) => {
-      console.log(
-        'Error in AppPrivate.subscription.tsx subscriptionOnChannelDeletion : ',
-        e
-      )
+    onError: () => {
       setLoadingSubscription((prevLoading) => ({
         ...prevLoading,
         isError: true
@@ -286,7 +279,6 @@ const AppPrivateSubscription: React.FC<AppPrivateSubscriptionProps> = ({
   >(subscriptionOnChannelMemberCreation, {
     variables: { channelMemberCreationId: userId },
     onData: async (received) => {
-      console.log('ChannelMemberCreation HERE')
       if (received.data.data?.channelMemberCreation) {
         const res = received.data.data?.channelMemberCreation
         await dispatch(setChannelMembersInformations(res.channelId))
@@ -296,11 +288,7 @@ const AppPrivateSubscription: React.FC<AppPrivateSubscriptionProps> = ({
           await dispatch(addChannelInfo({ channelId: res.channelId, userId }))
       }
     },
-    onError: (e) => {
-      console.log(
-        'Error in AppPrivate.subscription.tsx subscriptionOnChannelMemberCreation : ',
-        e
-      )
+    onError: () => {
       setLoadingSubscription((prevLoading) => ({
         ...prevLoading,
         isError: true
@@ -314,17 +302,12 @@ const AppPrivateSubscription: React.FC<AppPrivateSubscriptionProps> = ({
   >(subscriptionOnChannelMemberEdition, {
     variables: { channelMemberEditionId: userId },
     onData: async (received) => {
-      console.log('ChannelMemberEdition')
       if (received.data.data?.channelMemberEdition) {
         const res = received.data.data?.channelMemberEdition
         await dispatch(setChannelMembersInformations(res.channelId))
       }
     },
-    onError: (e) => {
-      console.log(
-        'Error in AppPrivate.subscription.tsx subscriptionOnChannelMemberEdition : ',
-        e
-      )
+    onError: () => {
       setLoadingSubscription((prevLoading) => ({
         ...prevLoading,
         isError: true
@@ -338,7 +321,6 @@ const AppPrivateSubscription: React.FC<AppPrivateSubscriptionProps> = ({
   >(subscriptionOnChannelMemberDeletion, {
     variables: { channelMemberDeletionId: userId },
     onData: async (received) => {
-      console.log('ChannelMemberDeletion')
       if (received.data.data?.channelMemberDeletion) {
         const res = received.data.data?.channelMemberDeletion
         if (res.userId === userId)
@@ -346,11 +328,7 @@ const AppPrivateSubscription: React.FC<AppPrivateSubscriptionProps> = ({
         await dispatch(setChannelMembersInformations(res.channelId))
       }
     },
-    onError: (e) => {
-      console.log(
-        'Error in AppPrivate.subscription.tsx subscriptionOnChannelMemberDeletion : ',
-        e
-      )
+    onError: () => {
       setLoadingSubscription((prevLoading) => ({
         ...prevLoading,
         isError: true
@@ -364,18 +342,13 @@ const AppPrivateSubscription: React.FC<AppPrivateSubscriptionProps> = ({
   >(subscriptionOnChannelInvitedCreation, {
     variables: { channelInvitedCreationId: userId },
     onData: async (received) => {
-      console.log('ChannelInvitedCreation')
       if (received.data.data?.channelInvitedCreation) {
         const res = received.data.data?.channelInvitedCreation
         await dispatch(setChannelInvitedsInformations(res.channelId))
         await dispatch(setChannelInvitations(userId))
       }
     },
-    onError: (e) => {
-      console.log(
-        'Error in AppPrivate.subscription.tsx subscriptionOnChannelInvitedCreation : ',
-        e
-      )
+    onError: () => {
       setLoadingSubscription((prevLoading) => ({
         ...prevLoading,
         isError: true
@@ -389,7 +362,6 @@ const AppPrivateSubscription: React.FC<AppPrivateSubscriptionProps> = ({
   >(subscriptionOnChannelInvitedDeletion, {
     variables: { channelInvitedDeletionId: userId },
     onData: async (received) => {
-      console.log('ChannelInvitedDeletion')
       if (received.data.data?.channelInvitedDeletion) {
         const res = received.data.data?.channelInvitedDeletion
         await dispatch(setChannelInvitedsInformations(res.channelId))
@@ -398,11 +370,7 @@ const AppPrivateSubscription: React.FC<AppPrivateSubscriptionProps> = ({
         else await dispatch(setChannelInvitations(userId))
       }
     },
-    onError: (e) => {
-      console.log(
-        'Error in AppPrivate.subscription.tsx subscriptionOnChannelInvitedDeletion : ',
-        e
-      )
+    onError: () => {
       setLoadingSubscription((prevLoading) => ({
         ...prevLoading,
         isError: true
@@ -416,7 +384,6 @@ const AppPrivateSubscription: React.FC<AppPrivateSubscriptionProps> = ({
   >(subscriptionOnChannelBlockedCreation, {
     variables: { channelBlockedCreationId: userId },
     onData: async (received) => {
-      console.log('ChannelBlockedCreation')
       if (received.data.data?.channelBlockedCreation) {
         const res = received.data.data.channelBlockedCreation
         if (res.userId === userId) {
@@ -428,11 +395,7 @@ const AppPrivateSubscription: React.FC<AppPrivateSubscriptionProps> = ({
         }
       }
     },
-    onError: (e) => {
-      console.log(
-        'Error in AppPrivate.subscription.tsx subscriptionOnChannelBlockedCreation : ',
-        e
-      )
+    onError: () => {
       setLoadingSubscription((prevLoading) => ({
         ...prevLoading,
         isError: true
@@ -446,17 +409,12 @@ const AppPrivateSubscription: React.FC<AppPrivateSubscriptionProps> = ({
   >(subscriptionOnChannelBlockedDeletion, {
     variables: { channelBlockedDeletionId: userId },
     onData: async (received) => {
-      console.log('ChannelBlockedDeltion')
       if (received.data.data?.channelBlockedDeletion) {
         const res = received.data.data?.channelBlockedDeletion
         await dispatch(setChannelBlockedsInformations(res.channelId))
       }
     },
-    onError: (e) => {
-      console.log(
-        'Error in AppPrivate.subscription.tsx subscriptionOnChannelBlockedDeletion : ',
-        e
-      )
+    onError: () => {
       setLoadingSubscription((prevLoading) => ({
         ...prevLoading,
         isError: true
@@ -508,6 +466,11 @@ const AppPrivateSubscription: React.FC<AppPrivateSubscriptionProps> = ({
   ).every((load) => !load)
 
   useEffect(() => {
+    if (!subUserEdited)
+      setLoadingSubscription((prevLoading) => ({
+        ...prevLoading,
+        userEdition: false
+      }))
     if (!subBlockedReceived)
       setLoadingSubscription((prevLoading) => ({
         ...prevLoading,

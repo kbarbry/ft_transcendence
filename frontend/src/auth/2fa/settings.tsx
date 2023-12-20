@@ -61,21 +61,9 @@ export const Settings: React.FC = () => {
     e.preventDefault()
   }
 
-  const handleLogout = async () => {
-    try {
-      window.location.href = 'http://127.0.0.1:3000/api/auth/logout'
-      localStorage.removeItem('userInfo')
-      sessionStorage.removeItem('userInfo')
-    } catch (e) {
-      console.error('Error in AppPrivate.subscription.tsx handleLogout : ', e)
-      throw e
-    }
-  }
-
   return (
     <div>
       <h1>Settings</h1>
-      <Button onClick={handleLogout}>Logout</Button>
       <h2>2fa configuration</h2>
       <Button onClick={handleGetSecretClick}>Get your own QR Code!</Button>
 

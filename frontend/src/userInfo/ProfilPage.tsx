@@ -5,6 +5,7 @@ import Settings from '../auth/2fa/settings'
 import { UserOutlined } from '@ant-design/icons'
 import { MdOutlineSecurity } from 'react-icons/md'
 import UserInformations from './components/UserInformations'
+import { ImExit } from 'react-icons/im'
 
 export const ProfilPage: React.FC = () => {
   const user = useAppSelector((state) => state.userInformations.user)
@@ -22,11 +23,28 @@ export const ProfilPage: React.FC = () => {
       label: '2FA',
       icon: <MdOutlineSecurity />,
       key: '2fa'
+    },
+    {
+      label: 'Logout',
+      icon: <ImExit />,
+      key: 'logout'
     }
   ]
 
+  const handleLogout = async () => {
+    try {
+      window.location.href = 'http://127.0.0.1:3000/api/auth/logout'
+      localStorage.removeItem('userInfo')
+      sessionStorage.removeItem('userInfo')
+    } catch (e) {
+      console.error('Error in AppPrivate.subscription.tsx handleLogout : ', e)
+      throw e
+    }
+  }
+
   const handleItemClick = (item: string) => {
     setSelectedItem(item)
+    if (item === 'logout') handleLogout()
   }
 
   return (
