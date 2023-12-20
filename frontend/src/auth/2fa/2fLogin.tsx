@@ -78,7 +78,7 @@ export const validation2fa: React.FC = () => {
               value={otpCode}
               onChange={(e) => setOtpCode(e.target.value)}
             />
-            <Button type='submit'>Validate</Button>
+            <button type='submit'>Validate</button>
           </form>
         </Space>
       </Col>
