@@ -3,6 +3,8 @@ import {
   ChannelMessage,
   CreateChannelInvitedMutation,
   CreateChannelInvitedMutationVariables,
+  DeleteChannelMemberMutation,
+  DeleteChannelMemberMutationVariables,
   DeleteChannelMutation,
   DeleteChannelMutationVariables,
   EChannelType,
@@ -17,6 +19,7 @@ import { useMutation, useQuery } from '@apollo/client'
 import {
   mutationCreateChannelInvited,
   mutationDeleteChannel,
+  mutationDeleteChannelMember,
   mutationUpdateChannel,
   queryFindAllChannelMessageInChannel
 } from '../graphql'
@@ -46,6 +49,7 @@ import {
 import { useMediaQuery } from 'react-responsive'
 import ErrorNotification from '../../notifications/ErrorNotificartion'
 import SuccessNotification from '../../notifications/SuccessNotification'
+import { ImExit } from 'react-icons/im'
 
 import {
   DeleteOutlined,
@@ -88,6 +92,11 @@ const ChannelComponent: React.FC<ChannelProps> = ({
     UpdateChannelMutation,
     UpdateChannelMutationVariables
   >(mutationUpdateChannel)
+
+  const [deleteChannelMember] = useMutation<
+    DeleteChannelMemberMutation,
+    DeleteChannelMemberMutationVariables
+  >(mutationDeleteChannelMember)
 
   try {
     const { loading, error } = useQuery<
@@ -141,6 +150,21 @@ const ChannelComponent: React.FC<ChannelProps> = ({
         )
       } catch (Error) {
         const error_message = 'Cannot delete channel'
+        ErrorNotification('Channel Error', error_message)
+      }
+    }
+
+    const handleLeaveChannel = async () => {
+      try {
+        await deleteChannelMember({
+          variables: {
+            userId: channelInfo.channelMemberUser.userId,
+            channelId: channelId
+          }
+        })
+        SuccessNotification('Success', 'You left the channel.')
+      } catch (error) {
+        const error_message = 'Cannot leave channel.'
         ErrorNotification('Channel Error', error_message)
       }
     }
@@ -335,6 +359,20 @@ const ChannelComponent: React.FC<ChannelProps> = ({
                         transition: 'opacity 0.3s ease-in-out'
                       }}
                       onClick={() => handleDeleteChannel()}
+                    />
+                  </Tooltip>
+                </>
+              )}
+              {channelInfo.channel.ownerId !==
+                channelInfo.channelMemberUser.userId && (
+                <>
+                  <Tooltip title='Leave Channel'>
+                    <ImExit
+                      style={{
+                        opacity: isHovered ? 1 : 0.5,
+                        transition: 'opacity 0.3s ease-in-out'
+                      }}
+                      onClick={handleLeaveChannel}
                     />
                   </Tooltip>
                 </>
