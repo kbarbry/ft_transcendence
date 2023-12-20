@@ -178,9 +178,9 @@ export class PongGame {
     }
     //  ball racket1 collision
     if (
-      this.ball.vPos >= this.p1racket.vPos &&
-      this.ball.vPos <= this.p1racket.vPos + this.p1racket.height &&
-      this.ball.hPos > this.p1racket.hPos + this.p1racket.width &&
+      this.ball.vPos >= this.p1racket.vPos - 5 &&
+      this.ball.vPos <= this.p1racket.vPos + this.p1racket.height + 5 &&
+      this.ball.hPos > this.p1racket.hPos &&
       this.ball.hPos <
         this.p1racket.hPos + this.p1racket.width + this.ball.radius
     ) {
@@ -209,9 +209,9 @@ export class PongGame {
 
     //  ball racket2 collision
     if (
-      this.ball.vPos >= this.p2racket.vPos &&
-      this.ball.vPos <= this.p2racket.vPos + this.p2racket.height &&
-      this.ball.hPos < this.p2racket.hPos &&
+      this.ball.vPos >= this.p2racket.vPos - 5 &&
+      this.ball.vPos <= this.p2racket.vPos + this.p2racket.height + 5 &&
+      this.ball.hPos < this.p2racket.hPos + this.p2racket.width &&
       this.ball.hPos > this.p2racket.hPos - this.ball.radius
     ) {
       this.ball.hPos = this.p2racket.hPos - this.ball.radius
@@ -317,9 +317,9 @@ export class PongGame {
     }
     //  ball racket1 collision
     if (
-      this.ball.vPos >= this.p1racket.vPos &&
-      this.ball.vPos <= this.p1racket.vPos + this.p1racket.height &&
-      this.ball.hPos > this.p1racket.hPos + this.p1racket.width &&
+      this.ball.vPos >= this.p1racket.vPos - 5 &&
+      this.ball.vPos <= this.p1racket.vPos + this.p1racket.height + 5 &&
+      this.ball.hPos > this.p1racket.hPos &&
       this.ball.hPos <
         this.p1racket.hPos + this.p1racket.width + this.ball.radius
     ) {
@@ -351,9 +351,9 @@ export class PongGame {
     }
     //  ball racket2 collision
     if (
-      this.ball.vPos >= this.p2racket.vPos &&
-      this.ball.vPos <= this.p2racket.vPos + this.p2racket.height &&
-      this.ball.hPos < this.p2racket.hPos &&
+      this.ball.vPos >= this.p2racket.vPos - 5 &&
+      this.ball.vPos <= this.p2racket.vPos + this.p2racket.height + 5 &&
+      this.ball.hPos < this.p2racket.hPos + this.p2racket.width &&
       this.ball.hPos > this.p2racket.hPos - this.ball.radius
     ) {
       this.ball.hPos = this.p2racket.hPos - this.ball.radius
