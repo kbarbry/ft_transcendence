@@ -331,13 +331,13 @@ export class PongGame {
         this.p1racket.vPos + this.p1racket.height - this.p1racket.height / 3
       ) {
         this.ball.dir.y = 210
-        this.ball.dir.x = 240
+        this.ball.dir.x = 260
       } else if (
         this.ball.vPos <
         this.p1racket.vPos + this.p1racket.height / 3
       ) {
         this.ball.dir.y = -210
-        this.ball.dir.x = 240
+        this.ball.dir.x = 260
       } else {
         this.ball.dir.y = 0
         this.ball.dir.x = this.ball.dir.x > 0 ? 318 : -318
@@ -363,13 +363,13 @@ export class PongGame {
         this.p2racket.vPos + this.p2racket.height - this.p2racket.height / 3
       ) {
         this.ball.dir.y = 210
-        this.ball.dir.x = -240
+        this.ball.dir.x = -260
       } else if (
         this.ball.vPos <
         this.p2racket.vPos + this.p2racket.height / 3
       ) {
         this.ball.dir.y = -210
-        this.ball.dir.x = -240
+        this.ball.dir.x = -260
       } else {
         this.ball.dir.y = 0
         this.ball.dir.x = this.ball.dir.x > 0 ? 318 : -318
