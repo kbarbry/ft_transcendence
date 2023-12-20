@@ -1,6 +1,9 @@
 export const corsConfig = {
-  origin: 'http://127.0.0.1:5173',
+  origin: [
+    process.env.COMPUTER_ADRESS || '', // Assurez-vous que la valeur n'est jamais undefined
+    process.env.COMPUTER_ADRESS_CORS || '' // Assurez-vous que la valeur n'est jamais undefined
+  ],
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
   credentials: true,
   optionsSuccessStatus: 204
-}
+};

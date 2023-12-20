@@ -22,11 +22,19 @@ export const SignIn: React.FC = () => {
     LogUser(email, pass)
       .then((userData) => {
         if (userData !== null) {
+          console.log(auth)
           if (userData.is2faverified == false) {
-            setLocation('http://127.0.0.1:5173/2fa/login', { replace: true })
+            setLocation(
+              import.meta.env.VITE_COMPUTER_ADRESS_FRONT + '/2fa/login',
+              {
+                replace: true
+              }
+            )
             window.location.reload()
           } else {
-            setLocation('http://127.0.0.1:5173/', { replace: true })
+            setLocation(import.meta.env.VITE_COMPUTER_ADRESS_FRONT + '/', {
+              replace: true
+            })
             window.location.reload()
           }
         }
@@ -133,7 +141,8 @@ export const SignIn: React.FC = () => {
             />
           }
           onClick={() => {
-            window.location.href = 'http://localhost:3000/api/auth/42/login'
+            window.location.href =
+              import.meta.env.VITE_COMPUTER_ADRESS_BACK + '/api/auth/42/login'
           }}
           style={{ width: '100%' }}
         >
@@ -153,7 +162,9 @@ export const SignIn: React.FC = () => {
             />
           }
           onClick={() => {
-            window.location.href = 'http://localhost:3000/api/auth/google/login'
+            window.location.href =
+              import.meta.env.VITE_COMPUTER_ADRESS_BACK +
+              '/api/auth/google/login'
           }}
           style={{ width: '100%' }}
         >
@@ -173,7 +184,9 @@ export const SignIn: React.FC = () => {
             />
           }
           onClick={() => {
-            window.location.href = 'http://localhost:3000/api/auth/github/login'
+            window.location.href =
+              import.meta.env.VITE_COMPUTER_ADRESS_BACK +
+              '/api/auth/github/login'
           }}
           style={{ width: '100%' }}
         >

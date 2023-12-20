@@ -8,8 +8,6 @@ import App_public from './App_public'
 import { ConfigProvider, theme } from 'antd'
 
 window.addEventListener('unhandledrejection', (event) => {
-  console.log('fatal error')
-
   event.preventDefault()
 })
 

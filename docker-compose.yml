@@ -4,9 +4,8 @@ services:
   frontend:
     image: front
     container_name: frontend
-    volumes:
-      - ./frontend:/usr/src/app/frontend
-      - node_modules_frontend:/usr/src/app/frontend/node_modules
+    # volumes:
+    #   - ./frontend:/app/frontend
     build:
       context: ./frontend
       dockerfile: Dockerfile
@@ -21,9 +20,8 @@ services:
   backend:
     image: back
     container_name: backend
-    volumes:
-      - ./backend:/usr/src/app/backend
-      - /usr/src/app/backend/node_modules
+    # volumes:
+    #   - ./backend:/app/backend
     build:
       context: backend
       dockerfile: Dockerfile
@@ -60,12 +58,12 @@ services:
     restart: always
 
 volumes:
-  node_modules_frontend:
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: ./frontend/node_modules
+  # node_modules_frontend:
+  #   driver: local
+  #   driver_opts:
+  #     type: none
+  #     o: bind
+  #     device: ./frontend/node_modules
   database:
 
 networks:

@@ -21,7 +21,9 @@ export const validation2fa: React.FC = () => {
     verifySecret(userId, otpCode)
       .then((validation) => {
         if (validation) {
-          setLocation('http://127.0.0.1:5173', { replace: true })
+          setLocation(import.meta.env.VITE_COMPUTER_ADRESS_FRONT, {
+            replace: true
+          })
           window.location.reload()
         }
       })

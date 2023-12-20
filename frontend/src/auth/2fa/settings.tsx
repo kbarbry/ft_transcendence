@@ -37,7 +37,7 @@ export const Settings: React.FC = () => {
     validateSecret(userId, otpCode)
       .then((isVerified) => {
         if (isVerified) {
-          setLocation('http://127.0.0.1:5173', { replace: true })
+          setLocation('/', { replace: true })
         }
       })
       .catch((error) => {
@@ -50,7 +50,7 @@ export const Settings: React.FC = () => {
     unset2fa(userId, otpCode)
       .then((isVerified) => {
         if (isVerified) {
-          setLocation('http://127.0.0.1:5173', { replace: true })
+          setLocation('/', { replace: true })
         }
       })
       .catch((error) => {
