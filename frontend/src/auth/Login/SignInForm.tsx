@@ -24,19 +24,15 @@ export const SignIn: React.FC = () => {
 
   const handleLogUserClick = () => {
     LogUser(email, pass)
-    .then((userData) => {
+      .then((userData) => {
         if (userData !== null) {
           console.log(auth)
-          if (userData.is2faverified == false)
-          {
+          if (userData.is2faverified == false) {
             setLocation('http://127.0.0.1:5173/2fa/login', { replace: true })
-             window.location.reload()
-          }
-          else
-          {
+            window.location.reload()
+          } else {
             setLocation('http://127.0.0.1:5173/', { replace: true })
-             window.location.reload()
-
+            window.location.reload()
           }
         }
       })
@@ -47,16 +43,15 @@ export const SignIn: React.FC = () => {
   }
 
   return (
-    
     <Space direction='vertical'>
-
       <Form name='login'>
         <Form.Item
           name='mail'
           rules={[
             { required: true, message: 'Mail is required' },
             { type: 'email', message: 'Must be a valid email' }
-          ]}>
+          ]}
+        >
           <Input
             prefix={<UserOutlined className='site-form-item-icon' />}
             placeholder='youremail@gmail.com'
@@ -143,7 +138,7 @@ export const SignIn: React.FC = () => {
             />
           }
           onClick={() => {
-            window.location.href = 'http://localhost:3000/api/auth/42/login'
+            window.location.href = 'http://127.0.0.1:3000/api/auth/42/login'
           }}
           style={{ width: '100%' }}
         >
@@ -163,7 +158,7 @@ export const SignIn: React.FC = () => {
             />
           }
           onClick={() => {
-            window.location.href = 'http://localhost:3000/api/auth/google/login'
+            window.location.href = 'http://127.0.0.1:3000/api/auth/google/login'
           }}
           style={{ width: '100%' }}
         >
@@ -183,7 +178,7 @@ export const SignIn: React.FC = () => {
             />
           }
           onClick={() => {
-            window.location.href = 'http://localhost:3000/api/auth/github/login'
+            window.location.href = 'http://127.0.0.1:3000/api/auth/github/login'
           }}
           style={{ width: '100%' }}
         >
