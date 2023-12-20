@@ -1,7 +1,7 @@
 export async function getToken(userId: any) {
   try {
     const response = await fetch(
-      'http://z3r3p3.42lyon.fr:3000/api/auth/2fa/getsecret',
+      import.meta.env.VITE_COMPUTER_ADRESS_BACK + '/api/auth/2fa/getsecret',
       {
         method: 'POST',
         headers: {

@@ -131,7 +131,6 @@ export class AuthController {
       })
       return res.redirect(process.env['COMPUTER_ADRESS'])
     } catch (Error) {
-      console.log('42 REDIRECT ERROR')
       return res.redirect(process.env['COMPUTER_ADRESS'])
     }
   }

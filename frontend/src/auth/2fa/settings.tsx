@@ -63,12 +63,8 @@ export const Settings: React.FC = () => {
 
   const handleLogout = async () => {
     try {
-      const computerAddress = import.meta.env.VITE_COMPUTER_ADDRESS
-      if (computerAddress) {
-        const logoutUrl = `http://${computerAddress}/api/auth/logout`
-        window.location.href = logoutUrl
-      }
-
+      window.location.href =
+        import.meta.env.VITE_COMPUTER_ADRESS_BACK + '/api/auth/logout'
       localStorage.removeItem('userInfo')
       sessionStorage.removeItem('userInfo')
     } catch (e) {

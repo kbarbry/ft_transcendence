@@ -28,12 +28,17 @@ export const SignIn: React.FC = () => {
         if (userData !== null) {
           console.log(auth)
           if (userData.is2faverified == false) {
-            setLocation('http://z3r3p3.42lyon.fr:5173/2fa/login', {
-              replace: true
-            })
+            setLocation(
+              import.meta.env.VITE_COMPUTER_ADRESS_FRONT + '/2fa/login',
+              {
+                replace: true
+              }
+            )
             window.location.reload()
           } else {
-            setLocation('http://z3r3p3.42lyon.fr:5173/', { replace: true })
+            setLocation(import.meta.env.VITE_COMPUTER_ADRESS_FRONT + '/', {
+              replace: true
+            })
             window.location.reload()
           }
         }
@@ -141,7 +146,7 @@ export const SignIn: React.FC = () => {
           }
           onClick={() => {
             window.location.href =
-              'http://z3r3p3.42lyon.fr:3000/api/auth/42/login'
+              import.meta.env.VITE_COMPUTER_ADRESS_BACK + '/api/auth/42/login'
           }}
           style={{ width: '100%' }}
         >
@@ -162,7 +167,8 @@ export const SignIn: React.FC = () => {
           }
           onClick={() => {
             window.location.href =
-              'http://z3r3p3.42lyon.fr:3000/api/auth/google/login'
+              import.meta.env.VITE_COMPUTER_ADRESS_BACK +
+              '/api/auth/google/login'
           }}
           style={{ width: '100%' }}
         >
@@ -183,7 +189,8 @@ export const SignIn: React.FC = () => {
           }
           onClick={() => {
             window.location.href =
-              'http://z3r3p3.42lyon.fr:3000/api/auth/github/login'
+              import.meta.env.VITE_COMPUTER_ADRESS_BACK +
+              '/api/auth/github/login'
           }}
           style={{ width: '100%' }}
         >

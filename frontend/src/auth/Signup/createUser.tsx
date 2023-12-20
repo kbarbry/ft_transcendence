@@ -6,7 +6,7 @@ export async function createUser(
 ) {
   try {
     const response = await fetch(
-      'http://z3r3p3.42lyon.fr:3000/api/auth/signup',
+      import.meta.env.VITE_COMPUTER_ADRESS_BACK + '/api/auth/signup',
       {
         method: 'POST',
         headers: {

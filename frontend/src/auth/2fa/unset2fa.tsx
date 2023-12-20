@@ -1,7 +1,7 @@
 export async function unset2fa(userId: any, token: any) {
   try {
     const response = await fetch(
-      'http://z3r3p3.42lyon.fr:3000/api/auth/2fa/disable',
+      import.meta.env.VITE_COMPUTER_ADRESS_BACK + '/api/auth/2fa/disable',
       {
         method: 'POST',
         headers: {

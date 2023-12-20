@@ -4,7 +4,7 @@ export async function LogUser(mail: string, password: string) {
   }
   try {
     const response = await fetch(
-      'http://z3r3p3.42lyon.fr:3000/api/auth/login',
+      import.meta.env.VITE_COMPUTER_ADRESS_BACK + '/api/auth/login',
       {
         method: 'POST',
         headers: {
